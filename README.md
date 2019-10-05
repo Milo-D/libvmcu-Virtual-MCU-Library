@@ -1,4 +1,4 @@
-# noBG-Assembly-Debugger
+# MDX-Assembly-Debugger
 An easy and fast CLI Assembly Debugger for 8-bit Atmel AVR
 Microprocessors.
 
