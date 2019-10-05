@@ -11,7 +11,4 @@ struct attributes;
 
 extern void (*instructions[INSTR_MAX]) (SimSys *sys, Table *table, struct attributes *attr);
 
-//instructions[0] = skip;
-//instructions[1] = mov;
-
 #endif

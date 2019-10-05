@@ -39,7 +39,7 @@ void table_menu(void) {
 	cout << "\n";
 }
 
-void debug_menu(SimSys *sys, Table *table, int row) {
+void debug_menu(SimSys *sys, Table *table, int seg, int row) {
 
 	clrscr();
 
@@ -54,7 +54,7 @@ void debug_menu(SimSys *sys, Table *table, int row) {
 	else
 		cout << "Status: Terminated\n";
 			
-	sys->print_reg();
+	sys->print_reg(seg);
 	sys->print_flag();
 	table->print_short(row);
 	sys->print_stack(row);

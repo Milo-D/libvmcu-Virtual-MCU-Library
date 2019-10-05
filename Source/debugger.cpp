@@ -21,6 +21,8 @@
 #define PR_DELAY 1
 #define ROW 8
 
+#define mover(seg, offs, range) *seg = ((*seg) + offs) % range
+
 using namespace std;
 
 namespace {
@@ -57,12 +59,13 @@ void debug(Table *table) {
 	if(table->size > 0)
 		table->jump_break();
 
+	int reg_seg = 0;
 	string last_select, select;
 	
 	do {
 
 		table->refresh();
-		debug_menu(&sys, table, ROW);
+		debug_menu(&sys, table, reg_seg, ROW);
 
 		cout << ">>> ";
 		getline(cin, select);
@@ -75,6 +78,9 @@ void debug(Table *table) {
 		
 		if(last_select == "n")
 			next(&sys, table);
+
+		if(last_select == "rn")
+			mover(&reg_seg, +1, 4);
 		
 	} while(select != "e");
 

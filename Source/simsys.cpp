@@ -16,18 +16,14 @@
 #define MAX_MEM 1024
 #define UN_INIT 16843009
 
-/*
-* eax ebx ecx edx
-* esp edi esi ebp
-**/
-
 using namespace std;
 
-extern const string registers[REG_NO] = { "eax", "ebx", "ecx", "edx",
-                                          "esp", "edi", "esi", "ebp" };
+extern const string registers[REG_NO] = { "r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+                                          "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15", 
+                                          "r16", "r17", "r18", "r19", "r20", "r21", "r22", "r23",
+                                          "r24", "r25", "r26", "r27", "r28", "r29", "r30", "r31" };
 
-static const string flags[FLAG_NO] = { "CF", "ZF", "SF", "OF",
-                                       "PF", "IF", "AF", "BF" };
+static const string flags[FLAG_NO] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
 
 SimSys::SimSys(unsigned int heap_size, unsigned int stack_size) {
 
@@ -41,13 +37,8 @@ SimSys::SimSys(unsigned int heap_size, unsigned int stack_size) {
 
 	this->reg[ESP] = stack_size - 1;
 
-	this->reg[EAX] = 0;
-	this->reg[EBX] = 0;
-	this->reg[ECX] = 0;
-	this->reg[EDX] = 0;
-	this->reg[EDI] = 0;
-	this->reg[ESI] = 0;
-	this->reg[EBP] = 0;
+	for(int i = 0; i < REG_NO; i++)
+		this->reg[i] = 0;
 
 	this->flag = 0x00;
 
@@ -126,7 +117,7 @@ void SimSys::write_reg(string reg_string, int data) {
 	this->reg[reg_id] = data;
 }
 
-uint8_t SimSys::read_flag(uint8_t flag_id) {
+int SimSys::read_flag(uint8_t flag_id) {
 
 	this->flag_col[flag_id] = RED;
 	return ((this->flag & (0x01 << flag_id)) >> flag_id);
@@ -185,22 +176,29 @@ void SimSys::print_stack(int row) {
 	cout << HORI_SEP;
 }
 
-void SimSys::print_reg(void) {
+void SimSys::print_reg(int segment) {
 
 	cout << HORI_SEP;
 	cout << "Registers:\n\n";
-	
-	for(int i = 0; i < REG_NO; i++) {
 
-		if(i == 4)
+	int seg_start = segment * 8;
+	int seg_end = seg_start + 8;
+	
+	for(int i = seg_start; i < seg_end; i++) {
+
+		if(i == seg_start + 4)
 			cout << "\n";
 
 		cout << reg_col[i];
-		cout << registers[i] << DEFAULT << ": ";
+		cout << registers[i] << DEFAULT;
 
-		cout << setfill(' ') << right << setw(4);
+		if(i <= 9)
+			cout << " ";
+		
+		cout << ": ";
+		cout << setfill(' ') << right << setw(5);
 
-		if(i == ESP || i == EBP)
+		if(i >= R26 && i <= R31)
 			cout << hex << "0x" << this->reg[i];
 		else
 			cout << dec << this->reg[i];
@@ -227,7 +225,7 @@ void SimSys::print_flag(void) {
 			cout << "\n";
 
 		cout << flag_col[i];
-		cout << flags[i] << DEFAULT << ": ";
+		cout << flags[i] << DEFAULT << " : ";
 
 		cout << setfill(' ') << right << setw(4);
 		cout << " " << ((this->flag & (0x01 << i)) >> i);
@@ -243,14 +241,8 @@ void SimSys::print_flag(void) {
 
 void SimSys::exit(void) {
 
-	this->reg[EAX] = 0;
-	this->reg[EBX] = 0;
-	this->reg[ECX] = 0;
-	this->reg[EDX] = 0;
-	this->reg[ESP] = 0;
-	this->reg[EDI] = 0;
-	this->reg[ESI] = 0;
-	this->reg[EBP] = 0;
+	for(int i = 0; i < REG_NO; i++)
+		this->reg[i] = 0;
 
 	this->flag = 0x00;
 	
