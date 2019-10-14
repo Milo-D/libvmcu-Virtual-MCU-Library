@@ -25,7 +25,6 @@ using namespace std;
 void skip(SimSys *sys, Table *table, struct attributes *attr) {
 
 	/* Label Skipping */
-
 	return;
 }
 
@@ -48,31 +47,33 @@ void push(SimSys *sys, Table *table, struct attributes *attr) {
 
 	int source;
 
+	if(sys->stack->is_pushable() == false) {
+	
+		print_delay("Segmentation Fault.", PR_DELAY, false);
+		return;
+	}
+
 	if((source = to_dec(attr->src)) != -1) {
 
-		if(sys->push_stack(source) < 0)
-			print_delay("Segmentation Fault.", PR_DELAY, false);
-
+		sys->stack->push(source);
 		return;
 	}
 	
 	source = sys->read_reg(attr->src);
-
-	if(sys->push_stack(source) < 0)
-		print_delay("Segmentation Fault.", PR_DELAY, false);
+	sys->stack->push(source);
 }
 
 void pop(SimSys *sys, Table *table, struct attributes *attr) {
 
 	int source;
 
-	if(sys->is_popable() == false) {
+	if(sys->stack->is_popable() == false) {
 	
-		print_delay("Could not pop Stack. Stack is empty", PR_DELAY, false);
+		print_delay("Could not pop Stack.", PR_DELAY, false);
 		return;
 	}
 	
-	source = sys->pop_stack();
+	source = sys->stack->pop();
 	sys->write_reg(attr->dest, source);
 }
 

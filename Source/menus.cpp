@@ -57,7 +57,7 @@ void debug_menu(SimSys *sys, Table *table, int seg, int row) {
 	sys->print_reg(seg);
 	sys->print_flag();
 	table->print_short(row);
-	sys->print_stack(row);
+	sys->stack->print(row);
 }
 
 void prog_int_menu(string msg) {

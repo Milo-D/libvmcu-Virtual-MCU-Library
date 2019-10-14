@@ -8,6 +8,8 @@
 #define BLUE "\033[0;36m"
 #define DEFAULT "\033[0m"
 
+#define ROW 8
+
 #define HORI_SEP "-----------------------------------------------------------------------------\n"
 
 #endif

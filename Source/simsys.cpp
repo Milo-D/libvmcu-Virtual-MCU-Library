@@ -11,10 +11,9 @@
 #include "simsys.hpp"
 #include "ehandling.hpp"
 #include "style.hpp"
+#include "simstack.hpp"
 
-#define ROW 8
 #define MAX_MEM 1024
-#define UN_INIT 16843009
 
 using namespace std;
 
@@ -30,57 +29,18 @@ SimSys::SimSys(unsigned int heap_size, unsigned int stack_size) {
 	if((this->heap = (int*) malloc(heap_size * sizeof(int))) == NULL)
 		print_status("Fatal, could not allocate Heap Memory", true);
 
-	if((this->stack = (int*) malloc(stack_size * sizeof(int))) == NULL)
-		print_status("Fatal, could not allocate Stack Memory", true);
-
-	memset(this->stack, 1, stack_size * sizeof(int));
-
-	this->reg[ESP] = stack_size - 1;
+	this->stack = (SimStack*) new SimStack(stack_size);
 
 	for(int i = 0; i < REG_NO; i++)
 		this->reg[i] = 0;
 
 	this->flag = 0x00;
-
-	this->off_top = this->reg[ESP];
-	this->off_bottom = this->reg[ESP] - ROW;
-
-	this->stack_end = stack_size;
 }
 
 SimSys::~SimSys(void) {
 
 	free(this->heap);
-	free(this->stack);
-}
-
-bool SimSys::is_popable(void) {
-
-	if(this->reg[ESP] == this->stack_end)
-		return false;
-
-	return true;
-}
-
-int SimSys::push_stack(int data) {
-
-	if(this->reg[ESP] == 0)
-		return -1;
-
-	*(this->stack + this->reg[ESP] - 1) = data;
-	this->reg[ESP] -= 1;
-
-	return 0;
-}
-
-int SimSys::pop_stack(void) {
-
-	int esp = this->reg[ESP];
-	int data = *(this->stack + esp);
-	
-	this->reg[ESP] += 1;
-
-	return data;
+	delete stack;
 }
 
 int SimSys::read_reg(string reg_string) {
@@ -139,41 +99,6 @@ void SimSys::set_flag(uint8_t flag_id, bool status) {
 void SimSys::reset_col(int reg_id) {
 
 	this->reg_col[reg_id] = "";
-}
-
-void SimSys::print_stack(int row) {
-
-	cout << "Stack:\n\n";
-
-	if(this->stack_end == 0) {
-	
-		cout << "[ No Stack available ]\n";
-		cout << HORI_SEP;
-
-		return;
-	}
-
-	this->scale_stack();
-
-	int stack_offset = this->reg[ESP] - row;
-
-	for(int i = this->off_bottom; i < this->off_top; i++) {
-
-		if(i < 0)
-			continue;
-
-		if(i == this->reg[ESP])
-			cout << BLUE;
-
-		cout << "0x" << hex << (i + 1) << dec << ":\t";
-
-		if(*(this->stack + i) == UN_INIT)
-			cout << "---" << "\n" << DEFAULT;
-		else
-			cout << *(this->stack + i) << "\n" << DEFAULT;
-	}
-
-	cout << HORI_SEP;
 }
 
 void SimSys::print_reg(int segment) {
@@ -245,32 +170,7 @@ void SimSys::exit(void) {
 		this->reg[i] = 0;
 
 	this->flag = 0x00;
-	
-	this->off_top = 0;
-	this->off_bottom = 0;
-	this->stack_end = 0;
-		
 	this->terminated = true;
 }
-
-void SimSys::scale_stack(void) {
-
-	/* toDo: fix this */
-
-	if(this->reg[ESP] > this->off_top) {
-
-		this->off_top += 1;
-		this->off_bottom -= 1;
-
-		return;
-	}
-
-	if(this->reg[ESP] < this->off_bottom) {
-
-		this->off_bottom += 1;
-		this->off_top -= 1;
-	}
-}
-
 
 

@@ -282,6 +282,8 @@ end:
 	cout << HORI_SEP;
 }
 
+/* Non Member Functions */
+
 Table* create_table(vector <string> asm_file, int amount) {
 
 	if(amount < 1)

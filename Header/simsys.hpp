@@ -6,6 +6,9 @@
 // C Headers
 #include <inttypes.h>
 
+// Project Headers
+#include "simstack.hpp"
+
 #define R0 0
 #define R1 1
 #define R2 2
@@ -39,8 +42,6 @@
 #define R30 30
 #define R31 31
 
-#define ESP 0
-
 #define CF 0
 #define ZF 1
 #define NF 2
@@ -61,30 +62,22 @@ public:
 	SimSys(unsigned int heap_size, unsigned int stack_size);
 	~SimSys(void);
 
-	bool is_popable(void);
-	int push_stack(int data);
-	int pop_stack(void);
 	int read_reg(std::string reg_string);
 	void write_reg(std::string reg_string, int data);
 	int read_flag(uint8_t flag_id);
 	void set_flag(uint8_t flag_id, bool status);
 	void reset_col(int reg_id);
-	void print_stack(int row);
 	void print_reg(int segment);
 	void print_flag(void);
 	void exit(void);
 
+	SimStack *stack;
 	bool terminated;
 
 private:
-	void scale_stack(void);
-
 	int *heap;
-	int *stack;
 	int reg[REG_NO];
 	uint8_t flag;
-	int off_top, off_bottom;
-	unsigned int stack_end;
 	std::string reg_col[REG_NO];
 	std::string flag_col[8];
 };

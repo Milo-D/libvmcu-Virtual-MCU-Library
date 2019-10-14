@@ -10,6 +10,7 @@
 #include "debugger.hpp"
 #include "ehandling.hpp"
 #include "menus.hpp"
+#include "style.hpp"
 #include "table.hpp"
 #include "simsys.hpp"
 #include "asmparser.hpp"
@@ -19,7 +20,6 @@
 #define HEAP 1024
 #define STACK 1024
 #define PR_DELAY 1
-#define ROW 8
 
 #define mover(seg, offs, range) *seg = ((*seg) + offs) % range
 
