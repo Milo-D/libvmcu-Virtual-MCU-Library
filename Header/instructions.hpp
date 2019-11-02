@@ -3,12 +3,10 @@
 #ifndef INSTRUCTIONS_HPP
 #define INSTRUCTIONS_HPP
 
-#define INSTR_MAX 11
+#define INSTR_MAX 111
 
-class Table;
-class SimSys;
-struct attributes;
+class Sys;
 
-extern void (*instructions[INSTR_MAX]) (SimSys *sys, Table *table, struct attributes *attr);
+extern void (*instructions[INSTR_MAX]) (Sys *sys, int opcode);
 
 #endif

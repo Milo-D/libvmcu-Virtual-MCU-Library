@@ -7,14 +7,7 @@
 
 // Project Headers
 #include "instructions.hpp"
-#include "ehandling.hpp"
-#include "style.hpp"
-#include "uparse.hpp"
-#include "asmparser.hpp"
-#include "table.hpp"
-#include "simsys.hpp"
-#include "attributes.hpp"
-#include "syscall.hpp"
+#include "sys.hpp"
 
 #define SRC 0
 #define DEST 1
@@ -22,142 +15,61 @@
 
 using namespace std;
 
-void skip(SimSys *sys, Table *table, struct attributes *attr) {
+namespace {
 
-	/* Label Skipping */
-	return;
-}
+	int extract(int opcode, int from, int to, int offs) {
 
-void mov(SimSys *sys, Table *table, struct attributes *attr) {
+		int res = 0;
 
-	int source;
-	
-	if((source = to_dec(attr->src)) != -1) {
+		for(int i = from; i < to; i++) {
 
-		sys->write_reg(attr->dest, source);
-		
-	} else {
-		
-		source = sys->read_reg(attr->src);
-		sys->write_reg(attr->dest, source);
+			int bit = (((0x01 << i) & opcode) >> i);
+			res += (bit << (i - from) + offs);
+		}
+
+		return res;
 	}
-}
+};
 
-void push(SimSys *sys, Table *table, struct attributes *attr) {
-
-	int source;
-
-	if(sys->stack->is_pushable() == false) {
-	
-		print_delay("Segmentation Fault.", PR_DELAY, false);
-		return;
-	}
-
-	if((source = to_dec(attr->src)) != -1) {
-
-		sys->stack->push(source);
-		return;
-	}
-	
-	source = sys->read_reg(attr->src);
-	sys->stack->push(source);
-}
-
-void pop(SimSys *sys, Table *table, struct attributes *attr) {
-
-	int source;
-
-	if(sys->stack->is_popable() == false) {
-	
-		print_delay("Could not pop Stack.", PR_DELAY, false);
-		return;
-	}
-	
-	source = sys->stack->pop();
-	sys->write_reg(attr->dest, source);
-}
-
-void jmp(SimSys *sys, Table *table, struct attributes *attr) {
-
-	int label_ln = table->get_label_ln(attr->label);
-
-	if(label_ln < 0) {
-
-		print_delay("Could not find label.", PR_DELAY, false);
-		return;
-	}
-
-	table->set_instr(label_ln);
-}
-
-void nop(SimSys *sys, Table *table, struct attributes *attr) {
+void nop(Sys *sys, int opcode) {
 
 	return;
 }
 
-void jle(SimSys *sys, Table *table, struct attributes *attr) {
+void movw(Sys *sys, int opcode) {
 
-	/* Work in Progress */
+	/* in progress */
 }
 
-void sub(SimSys *sys, Table *table, struct attributes *attr) {
+void muls(Sys *sys, int opcode) {
 
-	/* Work in Progress */
+	/* in progress */
 }
 
-void cmp(SimSys *sys, Table *table, struct attributes *attr) {
+void mulsu(Sys *sys, int opcode) {
 
-	/* toDo: cover all flags */
-
-	int destination, source, diff;
-
-	if((destination = to_dec(attr->dest)) == -1)
-		destination = sys->read_reg(attr->dest);			
-
-	if((source = to_dec(attr->src)) == -1)
-		source = sys->read_reg(attr->src);
-
-	diff = destination - source;
-
-	if(diff == 0) {
-
-		sys->set_flag(ZF, true);
-		sys->set_flag(CF, false);
-		return;
-	}
-
-	if(diff > 0) {
-
-		sys->set_flag(ZF, false);
-		sys->set_flag(CF, false);
-		return;
-	}
-
-	sys->set_flag(ZF, false);
-	sys->set_flag(CF, true);
+	/* in progress */
 }
 
-void je(SimSys *sys, Table *table, struct attributes *attr) {
+void fmul(Sys *sys, int opcode) {
 
-	if(sys->read_flag(ZF) == false)
-		return;
-
-	sys->set_flag(ZF, false);
-	jmp(sys, table, attr);
+	/* in progress */
 }
 
-void interrupt(SimSys *sys, Table *table, struct attributes *attr) {
+void ldi(Sys *sys, int opcode) {
 
-	switch(attr->int_id) {
+	int dest = extract(opcode, 4, 8, 0);
+	int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-		case 0x80: call_kernel(sys); break;
-		
-		default: /* currently only supporting 0x80 */ break;
-	}
+	sys->write_gpr(dest, src);
 }
 
-void (*instructions[INSTR_MAX]) (SimSys *sys, Table *table, struct attributes *attr) =
-{ skip, mov, push, pop, jmp, nop, jle, sub, cmp, je, interrupt };
+void rjmp(Sys *sys, int opcode) {
+
+	/* in progress */
+}
+
+void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp };
 
 
 

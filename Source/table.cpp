@@ -9,13 +9,13 @@
 #include <algorithm>
 #include <map>
 #include <fstream>
+#include <sstream>
 
 // Project Headers
 #include "table.hpp"
 #include "ehandling.hpp"
 #include "style.hpp"
 #include "uparse.hpp"
-#include "asmparser.hpp"
 
 #define PR_DELAY 1
 
@@ -48,7 +48,19 @@ namespace {
 
 		return line;
 	}
+
+	string get_label(string line) {
+	
+		int pos;
+	
+		if((pos = line.find(":")) == string::npos)
+			return "";
+	
+		return line.substr(0, pos);
+	}
 };
+
+/* --- Public --- */
 
 Table::Table(string asm_file) {
 
@@ -62,7 +74,7 @@ Table::Table(string asm_file) {
 
 		string label = "";
 	
-		this->line.push_back(c_line);
+		this->content.push_back(c_line);
 
 		trim(&c_line);
 		c_line = del_comment(c_line);
@@ -70,17 +82,16 @@ Table::Table(string asm_file) {
 		if((label = get_label(c_line)) != "")
 			this->add_label(label, i);
 
-		this->debug_line.push_back(c_line);
 		i += 1;
 	}
 
 set_data:
 
-	this->instr = -1;
-	this->size = this->line.size();
+	this->tip = -1;
+	this->table_size = this->content.size();
 	this->src_file = asm_file;
 
-	for(int i = 0; i < this->size; i++)
+	for(int i = 0; i < this->table_size; i++)
 		this->breaks.push_back(false);
 
 	read_file.close();
@@ -90,15 +101,15 @@ int Table::set_break(string point) {
 
 	int line = bp_lookup(this, point);
 
-	if(line < 0 || line >= this->size) {
+	if(line < 0 || line >= this->table_size) {
 
-		print_delay("Invalid Breakpoint.", PR_DELAY, false);
+		print_event("Invalid Breakpoint.");
 		return -1;
 	}
 
 	if(this->breaks[line] == true) {
 	
-		print_delay("Breakpoint already exists.", PR_DELAY, false);
+		print_event("Breakpoint already exists.");
 		return 0;
 	}
 
@@ -111,15 +122,15 @@ int Table::unset_break(string point) {
 
 	int line = bp_lookup(this, point);
 	
-	if(line < 0 || line >= this->size) {
+	if(line < 0 || line >= this->table_size) {
 
-		print_delay("Invalid Breakpoint.", PR_DELAY, false);
+		print_event("Invalid Breakpoint.");
 		return -1;
 	}
 
 	if(this->breaks[line] == false) {
 
-		print_delay("Breakpoint already unset", PR_DELAY, false);
+		print_event("Breakpoint already unset.");
 		return 0;
 	}
 
@@ -128,9 +139,9 @@ int Table::unset_break(string point) {
 	return 0;
 }
 
-void Table::add_label(string id, int line) {
+bool Table::is_break(int line) {
 
-	this->label[id] = line;
+	return this->breaks[line];
 }
 
 int Table::get_label_ln(string id) {
@@ -141,35 +152,40 @@ int Table::get_label_ln(string id) {
 	return this->label[id];
 }
 
-void Table::set_instr(int instr_line) {
+void Table::set_tip(int instr_line) {
 
-	if(instr_line >= this->size) {
+	if(instr_line >= this->table_size) {
 
-		print_delay("Invalid Instruction line.", PR_DELAY, false);
+		print_event("Invalid Instruction line.");
 		return;
 	}
 
-	this->instr = instr_line;
+	this->tip = instr_line;
 }
 
-int Table::get_instr(void) {
+int Table::get_tip(void) {
 
-	return this->instr;
+	return this->tip;
+}
+
+string Table::get_content(int line) {
+
+	return this->content[line];
 }
 
 void Table::step(void) {
 
-	if(this->instr >= this->size - 1) {
+	if(this->tip >= this->table_size - 1) {
 	
-		print_delay("Reached End of File.", PR_DELAY, false);
-		this->size = 0;
+		print_event("Reached End of File.");
+		this->table_size = 0;
 		
 		return;
 	}
 
 	/* toDo: fix this */
 
-	this->instr += 1;
+	this->tip += 1;
 }
 
 void Table::jump_break(void) {
@@ -180,19 +196,19 @@ void Table::jump_break(void) {
 	**/
 
 	/* Setting Instruction to the start */
-	this->instr = 0;
+	this->tip = 0;
 	
 	bool is_break = false;
-	int last_instr = this->instr;
+	int last_instr = this->tip;
 
 	int i = 0;
 
 	while((is_break = this->breaks[i]) == false) {
 
-		if(i >= this->size) {
+		if(i >= this->table_size) {
 
-			print_delay("No Breakpoints", PR_DELAY, false);
-			this->instr = last_instr;
+			print_event("No Breakpoints set.");
+			this->tip = last_instr;
 			return;
 		}
 
@@ -207,82 +223,70 @@ void Table::refresh(void) {
 
 	Table temp_table(this->src_file);
 
-	this->size = temp_table.size;
+	this->table_size = temp_table.table_size;
 	this->src_file = temp_table.src_file;
-	this->line.swap(temp_table.line);
+	this->content.swap(temp_table.content);
 	this->label.swap(temp_table.label);
-	this->debug_line.swap(temp_table.debug_line);
-
-	/*
-	* Do not swap breakpoints
-	* this->breaks.swap(temp_table.breaks);
-	**/
 }
 
-void Table::print_short(int row) {
+int Table::size(void) {
 
-	cout << HORI_SEP;
-	cout << "Instructions:\n\n";
+	return this->table_size;
+}
 
-	if(this->size == 0) {
+string Table::src(void) {
+
+	return this->src_file;
+}
+
+string Table::to_str(int start, int end) {
+
+	stringstream stream;
+	stream << SEPERATOR << "Instructions:\n\n";			
+
+	if(this->table_size == 0) {
 			
-		cout << "[ No Source available ]\n";
-		goto end;
+		stream << "[ No Source available ]\n";
+		stream << SEPERATOR;
+
+		return stream.str();
 	}
 
-	for(int i = this->instr; i < this->instr + row; i++) {
+	if(end > this->table_size)
+		end = this->table_size;
 
-		if(i == this->instr)
-			cout << BLUE;
+	for(int i = start; i < end; i++) {
 
-		if(i >= this->size) {
+		if(i == this->tip)
+			stream << BLUE;
+
+		if(i >= this->table_size) {
 		
-			cout << "\n";
+			stream << "\n";
 			continue;
 		}
 
 		if(this->breaks[i] == true)
-			cout << i << RED << " [b+] " << DEFAULT;
+			stream << to_string(i) << RED << " [b+] " << DEFAULT;
 		else
-			cout << i << "      ";
+			stream << to_string(i) << "      ";
 
-		cout << this->line[i] << endl;
-		cout << DEFAULT;
+		stream << this->content[i] << "\n";
+		stream << DEFAULT;
 	}
-	
-end:
-	cout << HORI_SEP;
+
+	stream << SEPERATOR;
+	return stream.str();
 }
 
-void Table::print(void) {
+/* --- Private --- */
 
-	cout << HORI_SEP;
+void Table::add_label(string id, int line) {
 
-	if(this->size == 0) {
-				
-		cout << "[ No Source available ]\n";
-		goto end;
-	}
-
-	for(int i = 0; i < this->size; i++) {
-
-		if(i == this->instr)
-			cout << BLUE;
-
-		if(this->breaks[i] == true)
-			cout << i << RED << " [b+] " << DEFAULT;
-		else
-			cout << i << "      ";
-			
-		cout << this->line[i] << endl;
-		cout << DEFAULT;
-	}
-
-end:
-	cout << HORI_SEP;
+	this->label[id] = line;
 }
 
-/* Non Member Functions */
+/* --- Non Member --- */
 
 Table* create_table(vector <string> asm_file, int amount) {
 

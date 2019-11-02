@@ -1,2 +1,0 @@
-1.) Restrict jumps to a total range of 256 bytes.
-2.) Set all relevant flags in cmp Instruction.

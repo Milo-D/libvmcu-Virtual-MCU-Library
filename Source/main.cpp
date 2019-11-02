@@ -10,10 +10,10 @@
 // Project Headers
 #include "ehandling.hpp"
 #include "uparse.hpp"
+#include "tableview.hpp"
+#include "debugger.hpp"
 #include "menus.hpp"
 #include "table.hpp"
-#include "tableio.hpp"
-#include "debugger.hpp"
 
 #define movec(cursor, offs, range) *cursor = ((*cursor) + offs) % range
 
@@ -34,9 +34,7 @@ int main(int argc, char **argv) {
 	do {
 
 		main_menu(debug_file[fcursor]);
-		cout << "\n>>> ";
 		cin >> select;
-		cout << "\n";
 
 		switch(select) {
 

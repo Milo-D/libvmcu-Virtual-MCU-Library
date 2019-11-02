@@ -116,6 +116,16 @@ vector <string> parse_table_in(string cmd) {
 	return cmd_split;
 }
 
+string get_file_name(string file) {
+
+	int pos;
+
+	if((pos = file.find(".")) == string::npos)
+		return "";
+
+	return file.substr(0, pos);
+}
+
 int to_dec(string input) {
 
 	int dec;
@@ -143,12 +153,12 @@ int hex_to_dec(string input) {
 
 		if(input[i] >= '0' && input[i] <= '9') {
 
-			dec += (input[i] - 48) * base;
+			dec += (input[i] - '0') * base;
 			base *= 16;
 						
-		} else if(input[i] >= 'a' && input[i] <= 'f') {
+		} else if(input[i] >= 'A' && input[i] <= 'F') {
 
-			dec += (input[i] - 87) * base;
+			dec += (10 + input[i] - 'A') * base;
 			base *= 16;
 			
 		} else {

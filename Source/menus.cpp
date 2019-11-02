@@ -8,8 +8,9 @@
 // Project Headers
 #include "menus.hpp"
 #include "ehandling.hpp"
+#include "style.hpp"
 #include "table.hpp"
-#include "simsys.hpp"
+#include "sys.hpp"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ void main_menu(string current_f) {
 
 	clrscr();
 	
-	cout << "MDX - Assembly Debugger\n\n";
+	cout << "MDX - AVR Assembly Debugger\n\n";
 		
 	cout << "Selected File: " << current_f << "\n";
 	cout << "prev: <p> next: <n>\n\n";
@@ -25,60 +26,43 @@ void main_menu(string current_f) {
 	cout << "0: Debug " << current_f << "\n";
 	cout << "1: Load Table of " << current_f << "\n";
 	cout << "2: Show Breakpoints of " << current_f << "\n";
-	cout << "e: Exit.\n";
+	cout << "e: Exit.\n\n";
+	cout << ">>> ";
 }
 
-void table_menu(void) {
+void table_menu(Table *table) {
 
 	clrscr();
 	
-	cout << "MDX: Table View\n\n";
+	cout << "MDX - AVR Assembly Debugger\n\n";
 	cout << "Set Breaks:  break <address>\n";
 	cout << "Undo Breaks: unbreak <address>\n";
 	cout << "Exit:        (e)xit\n";
 	cout << "\n";
+
+	cout << table->to_str(0, table->size());
+	cout << ">>> ";
 }
 
-void debug_menu(SimSys *sys, Table *table, int seg, int row) {
+void debug_menu(Sys *sys, Table *table, int cursor) {
 
 	clrscr();
 
-	cout << "MDX: Assembly Debugger\n\n";
+	cout << "MDX - AVR Assembly Debugger\n\n";
 	cout << "Single Step: (n)ext\n";
 	cout << "Back Step:   (b)ack\n";
 	cout << "Exit:        (e)xit\n";
 	cout << "\n";
 
-	if(sys->terminated == false)
+	if(sys->is_terminated() == false)
 		cout << "Status: Running\n";
 	else
 		cout << "Status: Terminated\n";
-			
-	sys->print_reg(seg);
-	sys->print_flag();
-	table->print_short(row);
-	sys->stack->print(row);
-}
 
-void prog_int_menu(string msg) {
+	int current = table->get_tip();
 
-	clrscr();
-
-	cout << "MDX: " << msg << "\n\n";
-	cout << "<Press 'c' to continue>";
-	cout << "\n\n";
-}
-
-string prog_stdin_menu(void) {
-
-	string read = "";
-
-	clrscr();
-
-	cout << "MDX: Reading from Stdin...\n\n";
+	cout << sys->gpr_to_str(cursor);	
+	cout << table->to_str(current, current + ROW);
 	cout << ">>> ";
-	cin >> read;
-
-	return read;
 }
 

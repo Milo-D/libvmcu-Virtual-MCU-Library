@@ -4,12 +4,10 @@
 #define MENUS_HPP
 
 class Table;
-class SimSys;
+class Sys;
 
 void main_menu(std::string current_f);
-void table_menu(void);
-void debug_menu(SimSys *sys, Table *table, int seg, int row);
-void prog_int_menu(std::string msg);
-std::string prog_stdin_menu(void);
+void table_menu(Table *table);
+void debug_menu(Sys *sys, Table *table, int cursor);
 
 #endif

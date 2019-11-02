@@ -17,25 +17,26 @@ using namespace std;
 
 void print_status(string msg, bool fatal) {
 
-	cout << "mdx: " << msg << endl;
+	cout << "MDX: " << msg << endl;
 
 	if(fatal == true)
 		exit(EXIT_FAILURE);
 }
 
-void print_delay(string msg, int delay, bool fatal) {
+void print_event(string msg) {
 
-	clrscr();
-	cout << "mdx: " << msg << endl;
+	string select = "";
 
-	sleep(delay);
+	do {
 
-	/*
-	* Switch to cin >>
-	**/
+		clrscr();
+		cout << "MDX: " << msg << "\n\n";
+		cout << "<Press 'c' to continue>\n\n";
+		cout << ">>> ";
 
-	if(fatal == true)
-		exit(EXIT_FAILURE);
+		getline(cin, select);
+		
+	} while(select != "c");
 }
 
 bool file_exists(const string &file) {

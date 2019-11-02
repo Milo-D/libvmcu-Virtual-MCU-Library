@@ -7,6 +7,7 @@
 
 std::vector <std::string> parse_main_in(int argsz, char **argls);
 std::vector <std::string> parse_table_in(std::string cmd);
+std::string get_file_name(std::string file);
 int to_dec(std::string input);
 int hex_to_dec(std::string input);
 

@@ -11,27 +11,29 @@ class Table {
 public:
 	Table(std::string asm_file);
 	
-	int set_break(std::string point);
-	int unset_break(std::string point);
-	void add_label(std::string id, int line);
-	int get_label_ln(std::string id);
-	void set_instr(int instr_line);
-	int get_instr(void);
-	void step(void);
-	void jump_break(void);
-	void refresh(void);
-	void print_short(int row);
-	void print(void);
-
-	int size;
-	std::string src_file;
-	std::vector <std::string> line;
-	std::vector <std::string> debug_line;
-	std::vector <bool> breaks;
+	int set_break(std::string point);			// setting breakpoints
+	int unset_break(std::string point);			// removing breakpoints
+	bool is_break(int line);					// checks if 'line' is a breakpoint
+	int get_label_ln(std::string id);			// translating label to line
+	void set_tip(int instr_line);				// moving tip to 'instr_line'
+	int get_tip(void);							// getting current tip
+	std::string get_content(int line);			// get content at index 'line'
+	void step(void);							// single stepping through Table
+	void jump_break(void);						// jumping to next breakpoint
+	void refresh(void);							// refreshing current Table
+	int size(void);								// get table size
+	std::string src(void);						// get origin of source code
+	std::string to_str(int start, int end);		// returning a Table String
 
 private:
-	int instr;
+	int tip;									// (t)able (i)nstruction (p)ointer
+	int table_size;
+	std::string src_file;								
+	std::vector <std::string> content;
+	std::vector <bool> breaks;
 	std::map <std::string, int> label;
+
+	void add_label(std::string id, int line);
 };
 
 Table* create_table(std::vector <std::string> asm_file, int amount);

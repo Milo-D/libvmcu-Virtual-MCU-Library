@@ -10,82 +10,48 @@
 #include "debugger.hpp"
 #include "ehandling.hpp"
 #include "menus.hpp"
-#include "style.hpp"
 #include "table.hpp"
-#include "simsys.hpp"
-#include "asmparser.hpp"
-#include "attributes.hpp"
-#include "instructions.hpp"
+#include "sys.hpp"
 
 #define HEAP 1024
 #define STACK 1024
-#define PR_DELAY 1
 
-#define mover(seg, offs, range) *seg = ((*seg) + offs) % range
+#define TIP_UNDEF -1
+
+#define movec(cursor, offs, range) *cursor = ((*cursor) + offs) % range
 
 using namespace std;
 
-namespace {
-
-	void next(SimSys *sys, Table *table) {
-
-		struct attributes attr;
-		int current = table->get_instr();
-
-		if(sys->terminated == true)
-			return;
-
-		if(parse_ln(table, &attr, current) == false) {
-		
-			print_delay("Instruction invalid.", PR_DELAY, false);
-			return;
-		}
-
-		(*instructions[attr.instr])(sys, table, &attr);
-
-		/* Double Checking in case of sys_exit */
-		if(sys->terminated == true)
-			return;
-		
-		table->step();					
-	}
-};
-
 void debug(Table *table) {
 
-	SimSys sys(HEAP, STACK);
-
-	/* toDo: interpret while jumping */
-	if(table->size > 0)
+	Sys sys(table->src(), HEAP, STACK);
+	
+	if(table->size() > 0)
 		table->jump_break();
 
-	int reg_seg = 0;
+	int cursor = 0;
 	string last_select, select;
 	
 	do {
 
-		table->refresh();
-		debug_menu(&sys, table, reg_seg, ROW);
-
-		cout << ">>> ";
+		debug_menu(&sys, table, cursor);
 		getline(cin, select);
 
-		if(table->size <= 0)
+		if(table->size() <= 0)
 			continue;
 		
 		if(select != "")
 			last_select = select;		 
 		
-		if(last_select == "n")
-			next(&sys, table);
+		if(last_select == "n")	// next instruction
+			sys.step();
 
-		if(last_select == "rn")
-			mover(&reg_seg, +1, 4);
+		if(last_select == "rn")	// next register site
+			movec(&cursor, +1, 4);
 		
 	} while(select != "e");
 
-	table->set_instr(-1);
-	// system.~SimSys();
+	table->set_tip(TIP_UNDEF);
 }
 
 
