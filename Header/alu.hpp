@@ -8,6 +8,7 @@
 class Sys;
 class Flash;
 class Gpr;
+class Sreg;
 
 class Alu {
 
@@ -17,13 +18,18 @@ public:
 		
 	int fetch(Sys *sys);						// fetching next instruction
 	
-	void write_reg(int rx, int8_t data);		// writing to register
-	int8_t read_reg(int rx);					// reading register
-	std::string get_gpr(int cursor);			// get gpr output string
+	void write_gpr(int rx, int8_t data);		// writing to GPR
+	int8_t read_gpr(int rx);					// reading GPR
+	std::string get_gpr(int cursor);			// get GPR output string
+
+	void write_sreg(int flag, bool bit);		// writing to SREG
+	bool read_sreg(int flag);					// reading SREG
+	std::string get_sreg(void);					// get SREG output string
 
 private:
 	Flash *flash;
 	Gpr *gpr;
+	Sreg *sreg;
 };
 
 #endif

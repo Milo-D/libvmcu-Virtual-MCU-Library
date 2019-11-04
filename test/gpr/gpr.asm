@@ -5,4 +5,5 @@
 ldi r16, 0x11
 ldi r17, 21
 mov r16, r17
-ldi r19, 20
+mov r0, r16
+ldi r20, 0x01

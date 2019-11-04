@@ -61,7 +61,8 @@ void debug_menu(Sys *sys, Table *table, int cursor) {
 
 	int current = table->get_tip();
 
-	cout << sys->gpr_to_str(cursor);	
+	cout << sys->gpr_to_str(cursor);
+	cout << sys->sreg_to_str();	
 	cout << table->to_str(current, current + ROW);
 	cout << ">>> ";
 }

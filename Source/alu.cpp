@@ -9,6 +9,7 @@
 #include "alu.hpp"
 #include "flash.hpp"
 #include "gpr.hpp"
+#include "sreg.hpp"
 #include "instructions.hpp"
 
 #include "ehandling.hpp"
@@ -19,6 +20,7 @@ Alu::Alu(string asm_file) {
 
 	this->flash = new Flash(asm_file);
 	this->gpr = new Gpr(32, 0);
+	this->sreg = new Sreg();
 }
 
 Alu::~Alu() {
@@ -44,12 +46,12 @@ int Alu::fetch(Sys *sys) {
 	return 0;
 }
 
-void Alu::write_reg(int rx, int8_t data) {
+void Alu::write_gpr(int rx, int8_t data) {
 
 	this->gpr->write(rx, data);
 }
 
-int8_t Alu::read_reg(int rx) {
+int8_t Alu::read_gpr(int rx) {
 
 	return (this->gpr->read(rx));
 }
@@ -58,5 +60,23 @@ string Alu::get_gpr(int cursor) {
 
 	return this->gpr->to_str(cursor);
 }
+
+void Alu::write_sreg(int flag, bool bit) {
+
+	this->sreg->write(flag, bit);
+}
+
+bool Alu::read_sreg(int flag) {
+
+	return (this->sreg->read(flag));		
+}
+
+string Alu::get_sreg(void) {
+
+	return this->sreg->to_str();
+}
+
+
+
 
 

@@ -20,10 +20,16 @@ public:
 	bool is_terminated(void);
 
 	/* GPR Operations */
-	
-	int8_t read_gpr(int rx);
+
 	void write_gpr(int rx, int8_t data);
+	int8_t read_gpr(int rx);
 	std::string gpr_to_str(int cursor);
+
+	/* SREG Operations */
+
+	void write_sreg(int flag, bool bit);
+	bool read_sreg(int flag);
+	std::string sreg_to_str(void);
 
 private:
 	Alu *alu;
