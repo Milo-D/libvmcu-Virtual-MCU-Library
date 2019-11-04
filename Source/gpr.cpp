@@ -35,17 +35,13 @@ Gpr::~Gpr() {
 
 void Gpr::write(int rx, int8_t data) {
 
-	this->clear_color();
-
 	this->reg[rx] = data;
 	this->color[rx] = GREEN;
 }
 
 int8_t Gpr::read(int rx) {
 
-	this->clear_color();
 	this->color[rx] = RED;
-
 	return this->reg[rx];
 }
 

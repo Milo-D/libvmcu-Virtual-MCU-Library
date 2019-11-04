@@ -67,9 +67,17 @@ void ldi(Sys *sys, int opcode) {
 void rjmp(Sys *sys, int opcode) {
 
 	/* in progress */
+} 
+
+void mov(Sys *sys, int opcode) {
+
+	int	dest = extract(opcode, 4, 9, 0);
+	int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+	sys->write_gpr(dest, sys->read_gpr(src));
 }
 
-void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp };
+void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov};
 
 
 
