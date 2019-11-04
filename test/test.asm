@@ -1,13 +1,5 @@
 .INCLUDE "m32def.inc"
 
-
-.dseg               ; data segment
-
-SRAM:
-.byte 4             ; allocating 4 bytes of SRAM
-
-.cseg               ; code segment
-
 start:              ; entry
 nop                 ; no instruction
 muls r16, r16       ; R16 <- R16 * R16

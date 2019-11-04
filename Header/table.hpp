@@ -18,6 +18,7 @@ public:
 	void set_tip(int instr_line);				// moving tip to 'instr_line'
 	int get_tip(void);							// getting current tip
 	std::string get_content(int line);			// get content at index 'line'
+	bool executable(void);						// returns 'true' if line is executable
 	void step(void);							// single stepping through Table
 	void jump_break(void);						// jumping to next breakpoint
 	void refresh(void);							// refreshing current Table
@@ -31,6 +32,7 @@ private:
 	std::string src_file;								
 	std::vector <std::string> content;
 	std::vector <bool> breaks;
+	std::vector <bool> exec;
 	std::map <std::string, int> label;
 
 	void add_label(std::string id, int line);

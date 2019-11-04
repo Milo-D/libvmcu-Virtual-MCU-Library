@@ -22,6 +22,18 @@
 
 using namespace std;
 
+namespace {
+	
+	void step_forward(Sys *sys, Table *table) {
+
+		if(table->executable() == true)
+			sys->step();
+
+		table->step();	
+	}
+}
+
+
 void debug(Table *table) {
 
 	Sys sys(table->src(), HEAP, STACK);
@@ -43,10 +55,10 @@ void debug(Table *table) {
 		if(select != "")
 			last_select = select;		 
 		
-		if(last_select == "n")	// next instruction
-			sys.step();
+		if(last_select == "n")				// next instruction
+			step_forward(&sys, table);
 
-		if(last_select == "rn")	// next register site
+		if(last_select == "rn")				// next register site
 			movec(&cursor, +1, 4);
 		
 	} while(select != "e");

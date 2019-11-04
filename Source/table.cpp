@@ -23,22 +23,6 @@ using namespace std;
 
 namespace {
 
-	string del_comment(string line) {
-
-		int pos;
-
-		if((pos = line.find(";")) == string::npos)
-			return line;
-
-		return line.substr(0, pos);		
-	}
-
-	void trim(string *x) {
-
-		x->erase(remove(x->begin(), x->end(), ' '), x->end());
-		x->erase(remove(x->begin(), x->end(), '\t'), x->end());
-	}
-
 	int bp_lookup(Table *table, string point) {
 
 		int line;
@@ -57,6 +41,25 @@ namespace {
 			return "";
 	
 		return line.substr(0, pos);
+	}
+
+	bool is_exec(string line) {
+
+		int pos;
+
+		if(line == "")
+			return false;
+
+		if((pos = line.find(".")) == 0)
+			return false;
+
+		if((pos = line.find(";")) == 0)
+			return false;
+
+		if((pos = line.find(":")) == line.size() - 1)
+			return false;
+
+		return true;
 	}
 };
 
@@ -81,7 +84,10 @@ Table::Table(string asm_file) {
 
 		if((label = get_label(c_line)) != "")
 			this->add_label(label, i);
-
+			
+		this->exec.push_back( is_exec(c_line) );
+		this->breaks.push_back(false);
+		
 		i += 1;
 	}
 
@@ -90,9 +96,6 @@ set_data:
 	this->tip = -1;
 	this->table_size = this->content.size();
 	this->src_file = asm_file;
-
-	for(int i = 0; i < this->table_size; i++)
-		this->breaks.push_back(false);
 
 	read_file.close();
 }
@@ -173,6 +176,11 @@ string Table::get_content(int line) {
 	return this->content[line];
 }
 
+bool Table::executable(void) {
+
+	return this->exec[this->tip];
+}
+
 void Table::step(void) {
 
 	if(this->tip >= this->table_size - 1) {
@@ -245,7 +253,7 @@ string Table::to_str(int start, int end) {
 	stream << SEPERATOR << "Instructions:\n\n";			
 
 	if(this->table_size == 0) {
-			
+
 		stream << "[ No Source available ]\n";
 		stream << SEPERATOR;
 

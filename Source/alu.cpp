@@ -11,6 +11,8 @@
 #include "gpr.hpp"
 #include "instructions.hpp"
 
+#include "ehandling.hpp"
+
 using namespace std;
 
 Alu::Alu(string asm_file) {
@@ -29,6 +31,8 @@ int Alu::fetch(Sys *sys) {
 
 	int opcode = this->flash->load_instr();
 	int key = this->flash->load_key();
+	
+	this->flash->pc_next();
 
 	if(opcode < 0)
 		return -1;

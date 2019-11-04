@@ -39,16 +39,6 @@ Flash::Flash(string asm_file) {
 	this->size_used = this->app.size();
 }
 
-int Flash::dec_pc(void) {
-
-	if(this->pc <= 0)
-		return -1;
-
-	this->pc -= 1;
-
-	return 0;
-}
-
 void Flash::insert_instr(int instr) {
 
 	this->app.push_back(instr);
@@ -61,16 +51,19 @@ void Flash::insert_key(int key) {
 
 int Flash::load_instr(void) {
 
-	if(this->pc >= this->size_used)
-		return -1;
-
-	int instruction = this->app[this->pc++];
-	
-	return instruction;
+	return this->app[this->pc];
 }
 
 int Flash::load_key(void) {
 
 	return this->key[this->pc];
+}
+
+void Flash::pc_next(void) {
+
+	if(this->pc == this->size_used - 1)
+		return;
+
+	this->pc += 1;
 }
 

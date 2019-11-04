@@ -66,12 +66,14 @@ string Gpr::to_str(int cursor) {
 		stream << this->color[start + i];
 		stream << "R" << to_string(start + i) << DEFAULT << ": ";
 
-		stream << setfill(' ') << right << setw(4);
-		stream << hex << "0x" << setw(2) << setfill('0');
-		stream << to_string(this->reg[start + i]);
+		if(start + i < 10)
+			stream << " ";
+
+		stream << "0x" << right << setw(2) << setfill('0');
+		stream << hex << (int) this->reg[start + i];
 
 		stream << setfill(' ') << left << setw(4);
-		stream << "\t";	
+		stream << "      ";	
 	}
 
 	stream << dec << "\n";

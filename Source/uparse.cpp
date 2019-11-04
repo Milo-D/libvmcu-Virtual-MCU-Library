@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <iterator>
 #include <sstream>
 
@@ -124,6 +125,22 @@ string get_file_name(string file) {
 		return "";
 
 	return file.substr(0, pos);
+}
+
+string del_comment(string line) {
+
+	int pos;
+
+	if((pos = line.find(";")) == string::npos)
+		return line;
+
+	return line.substr(0, pos);		
+}
+
+void trim(string *x) {
+
+	x->erase(remove(x->begin(), x->end(), ' '), x->end());
+	x->erase(remove(x->begin(), x->end(), '\t'), x->end());
 }
 
 int to_dec(string input) {

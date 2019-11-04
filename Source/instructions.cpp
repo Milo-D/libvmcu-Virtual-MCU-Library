@@ -61,7 +61,7 @@ void ldi(Sys *sys, int opcode) {
 	int dest = extract(opcode, 4, 8, 0);
 	int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-	sys->write_gpr(dest, src);
+	sys->write_gpr(dest + 16, src);
 }
 
 void rjmp(Sys *sys, int opcode) {

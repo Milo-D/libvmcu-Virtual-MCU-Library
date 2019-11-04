@@ -11,11 +11,11 @@ class Flash {
 public:
 	Flash(std::string asm_file);
 	
-	int dec_pc(void);						// decrementing PC
 	void insert_instr(int instr);			// adding instruction to Application Section
 	void insert_key(int key);				// adding instruction key
 	int load_instr(void);					// fetching next Instruction
 	int load_key(void);						// fetching Instruction key
+	void pc_next(void);						// incrementing program counter
 
 private:
 	int pc;									// Program Counter
