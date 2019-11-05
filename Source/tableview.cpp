@@ -21,33 +21,33 @@ using namespace std;
 
 void load_table(Table *table) {
 
-	/* Loading table and setting breakpoints */
+    /* Loading table and setting breakpoints */
 
-	string select;
+    string select;
 
-	do {
+    do {
 
-		vector <string> cmd;
+        vector <string> cmd;
 
-		table_menu(table);
-		getline(cin, select);
+        table_menu(table);
+        getline(cin, select);
 
-		parse_table_in(select).swap(cmd);
+        parse_table_in(select).swap(cmd);
 
-		if(cmd.size() == 0) // invalid option
-			continue;
+        if(cmd.size() == 0) // invalid option
+            continue;
 
-		if(cmd[0] == "break")
-			table->set_break(cmd[1]);
+        if(cmd[0] == "break")
+            table->set_break(cmd[1]);
 
-		if(cmd[0] == "unbreak")
-			table->unset_break(cmd[1]);
+        if(cmd[0] == "unbreak")
+            table->unset_break(cmd[1]);
 		
-	} while(select != "exit" && select != "e");
-	
+    } while(select != "exit" && select != "e");
+
 }
 
 void show_breaks(void) {
 
-	/* Showing a list of all breakpoints */
+    /* Showing a list of all breakpoints */
 }

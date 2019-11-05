@@ -18,34 +18,34 @@ using namespace std;
 
 void print_status(string msg, bool fatal) {
 
-	cout << "MDX: " << msg << endl;
+    cout << "MDX: " << msg << endl;
 
-	if(fatal == true)
-		exit(EXIT_FAILURE);
+    if(fatal == true)
+        exit(EXIT_FAILURE);
 }
 
 void print_event(string msg) {
 
-	string select = "";
+    string select = "";
 
-	do { 
+    do { 
 
-		clrscr();
-		cout << "MDX: " << msg << "\n\n";
-		cout << "<Press 'c' to continue>\n\n";
-		cout << PROMPT;
+        clrscr();
+        cout << "MDX: " << msg << "\n\n";
+        cout << "<Press 'c' to continue>\n\n";
+        cout << PROMPT;
 
-		getline(cin, select);
+        getline(cin, select);
 
-	} while(select != "c");
+    } while(select != "c");
 }
 		
 	
 
 bool file_exists(const string &file) {
 
-	ifstream check_file(file);
-	return check_file.good();
+    ifstream check_file(file);
+    return check_file.good();
 }
 
 

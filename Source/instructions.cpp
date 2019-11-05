@@ -17,64 +17,64 @@ using namespace std;
 
 namespace {
 
-	int extract(int opcode, int from, int to, int offs) {
+    int extract(int opcode, int from, int to, int offs) {
 
-		int res = 0;
+    int res = 0;
 
-		for(int i = from; i < to; i++) {
+        for(int i = from; i < to; i++) {
 
-			int bit = (((0x01 << i) & opcode) >> i);
-			res += (bit << (i - from) + offs);
-		}
+            int bit = (((0x01 << i) & opcode) >> i);
+            res += (bit << (i - from) + offs);
+        }
 
-		return res;
-	}
+        return res;
+    }
 };
 
 void nop(Sys *sys, int opcode) {
 
-	return;
+    return;
 }
 
 void movw(Sys *sys, int opcode) {
 
-	/* in progress */
+    /* in progress */
 }
 
 void muls(Sys *sys, int opcode) {
 
-	/* in progress */
+    /* in progress */
 }
 
 void mulsu(Sys *sys, int opcode) {
 
-	/* in progress */
+    /* in progress */
 }
 
 void fmul(Sys *sys, int opcode) {
 
-	/* in progress */
+    /* in progress */
 }
 
 void ldi(Sys *sys, int opcode) {
 
-	int dest = extract(opcode, 4, 8, 0);
-	int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    int dest = extract(opcode, 4, 8, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-	sys->write_gpr(dest + 16, src);
+    sys->write_gpr(dest + 16, src);
 }
 
 void rjmp(Sys *sys, int opcode) {
 
-	/* in progress */
+    /* in progress */
 } 
 
 void mov(Sys *sys, int opcode) {
 
-	int	dest = extract(opcode, 4, 9, 0);
-	int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    int	dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-	sys->write_gpr(dest, sys->read_gpr(src));
+    sys->write_gpr(dest, sys->read_gpr(src));
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov};

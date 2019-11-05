@@ -13,10 +13,10 @@ using namespace std;
 
 Sram::Sram(void) {
 
-	this->ram = (int*) malloc(SRAM_SIZE * sizeof(int));
+    this->ram = (int*) malloc(SRAM_SIZE * sizeof(int));
 }
 
 Sram::~Sram() {
 
-	free(this->ram);
+    free(this->ram);
 }

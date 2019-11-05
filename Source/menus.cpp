@@ -16,59 +16,59 @@ using namespace std;
 
 void main_menu(string current_f) {
 
-	clrscr();
+    clrscr();
 	
-	cout << "MDX - AVR Assembly Debugger\n\n";
+    cout << "MDX - AVR Assembly Debugger\n\n";
 		
-	cout << "Selected File: " << current_f << "\n";
-	cout << "prev: <p> next: <n>\n\n";
+    cout << "Selected File: " << current_f << "\n";
+    cout << "prev: <p> next: <n>\n\n";
 	
-	cout << "0: Debug " << current_f << "\n";
-	cout << "1: Load Table of " << current_f << "\n";
-	cout << "2: Show Breakpoints of " << current_f << "\n";
-	cout << "e: Exit.\n\n";
+    cout << "0: Debug " << current_f << "\n";
+    cout << "1: Load Table of " << current_f << "\n";
+    cout << "2: Show Breakpoints of " << current_f << "\n";
+    cout << "e: Exit.\n\n";
 	
-	cout << PROMPT;
+    cout << PROMPT;
 }
 
 void table_menu(Table *table) {
 
-	clrscr();
+    clrscr();
 	
-	cout << "MDX - AVR Assembly Debugger\n\n";
-	cout << "Set Breaks:  break <address>\n";
-	cout << "Undo Breaks: unbreak <address>\n";
-	cout << "Exit:        (e)xit\n";
-	cout << "\n";
+    cout << "MDX - AVR Assembly Debugger\n\n";
+    cout << "Set Breaks:  break <address>\n";
+    cout << "Undo Breaks: unbreak <address>\n";
+    cout << "Exit:        (e)xit\n";
+    cout << "\n";
 
-	cout << table->to_str(0, table->size());
+    cout << table->to_str(0, table->size());
 
-	cout << PROMPT;
+    cout << PROMPT;
 }
 
 void debug_menu(Sys *sys, Table *table, int cursor) {
 
-	clrscr();
+    clrscr();
 
-	cout << "MDX - AVR Assembly Debugger\n\n";
-	cout << "Single Step: (n)ext\n";
-	cout << "Back Step:   (b)ack\n";
-	cout << "Exit:        (e)xit\n";
-	cout << "\n";
+    cout << "MDX - AVR Assembly Debugger\n\n";
+    cout << "Single Step: (n)ext\n";
+    cout << "Back Step:   (b)ack\n";
+    cout << "Exit:        (e)xit\n";
+    cout << "\n";
 
-	if(sys->is_terminated() == false)
-		cout << "Status: " << GREEN << "Running\n";
-	else
-		cout << "Status: " << RED << "Terminated\n";
+    if(sys->is_terminated() == false)
+        cout << "Status: " << GREEN << "Running\n";
+    else
+        cout << "Status: " << RED << "Terminated\n";
 
-	cout << DEFAULT;
+    cout << DEFAULT;
 
-	int current = table->get_tip();
+    int current = table->get_tip();
 
-	cout << sys->gpr_to_str(cursor);
-	cout << sys->sreg_to_str();	
-	cout << table->to_str(current, current + ROW);
+    cout << sys->gpr_to_str(cursor);
+    cout << sys->sreg_to_str();	
+    cout << table->to_str(current, current + ROW);
 
-	cout << PROMPT;
+    cout << PROMPT;
 }
 

@@ -24,46 +24,46 @@ using namespace std;
 
 namespace {
 	
-	void step_forward(Sys *sys, Table *table) {
+    void step_forward(Sys *sys, Table *table) {
 
-		if(table->executable() == true)
-			sys->step();
+        if(table->executable() == true)
+            sys->step();
 
-		table->step();	
+        table->step();	
 	}
 }
 
 
 void debug(Table *table) {
 
-	Sys sys( table->src() );
+    Sys sys( table->src() );
 	
-	if(table->size() > 0)
-		table->jump_break();
+    if(table->size() > 0)
+        table->jump_break();
 
-	int cursor = 0;
-	string last_select, select;
+    int cursor = 0;
+    string last_select, select;
 	
-	do {
+    do {
 
-		debug_menu(&sys, table, cursor);
-		getline(cin, select);
+        debug_menu(&sys, table, cursor);
+        getline(cin, select);
 
-		if(table->size() <= 0)
-			continue;
+        if(table->size() <= 0)
+            continue;
 		
-		if(select != "")
-			last_select = select;		 
+        if(select != "")
+            last_select = select;		 
 		
-		if(last_select == "n")				// next instruction
-			step_forward(&sys, table);
+        if(last_select == "n")          // next instruction
+            step_forward(&sys, table);
 
-		if(last_select == "rn")				// next register site
-			movec(&cursor, +1, 4);
+        if(last_select == "rn")         // next register site
+            movec(&cursor, +1, 4);
 		
-	} while(select != "e");
+    } while(select != "e");
 
-	table->set_tip(TIP_UNDEF);
+    table->set_tip(TIP_UNDEF);
 }
 
 

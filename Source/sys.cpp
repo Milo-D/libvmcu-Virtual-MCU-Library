@@ -17,58 +17,56 @@ using namespace std;
 
 Sys::Sys(string asm_file) {
 
-	/* Initializing System Components */
+    /* Initializing System Components */
 
-	this->alu = new Alu(asm_file);
-	this->sram = new Sram();
-	this->eeprom = new Eeprom();
+    this->alu = new Alu(asm_file);
+    this->sram = new Sram();
+    this->eeprom = new Eeprom();
 
-	this->terminated = false;
+    this->terminated = false;
 }
 
 void Sys::step(void) {
 
-	/* alu->fetch(void) --> flash->load_instr --> execute */
+    if(this->terminated == true)
+        return;
 
-	if(this->terminated == true)
-		return;
-
-	if(this->alu->fetch(this) < 0)
-		this->terminated = true;
+    if(this->alu->fetch(this) < 0)
+        this->terminated = true;
 }
 
 bool Sys::is_terminated(void) {
 
-	return this->terminated;	
+    return this->terminated;	
 }
 
 void Sys::write_gpr(int rx, int8_t data) {
 
-	this->alu->write_gpr(rx, data);
+    this->alu->write_gpr(rx, data);
 }
 
 int8_t Sys::read_gpr(int rx) {
 
-	return (this->alu->read_gpr(rx));
+    return (this->alu->read_gpr(rx));
 }
 
 string Sys::gpr_to_str(int cursor) {
 
-	return this->alu->get_gpr(cursor);
+    return this->alu->get_gpr(cursor);
 }
 
 void Sys::write_sreg(int flag, bool bit) {
 
-	this->alu->write_sreg(flag, bit);
+    this->alu->write_sreg(flag, bit);
 }
 
 bool Sys::read_sreg(int flag) {
 
-	return (this->alu->read_sreg(flag));
+    return (this->alu->read_sreg(flag));
 }
 
 string Sys::sreg_to_str(void) {
 
-	return this->alu->get_sreg();
+    return this->alu->get_sreg();
 }
 

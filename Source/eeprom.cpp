@@ -13,11 +13,11 @@ using namespace std;
 
 Eeprom::Eeprom(void) {
 
-	this->data = (int*) malloc(EEPROM_SIZE * sizeof(int));
-	this->size = EEPROM_SIZE;
+    this->data = (int*) malloc(EEPROM_SIZE * sizeof(int));
+    this->size = EEPROM_SIZE;
 }
 
 Eeprom::~Eeprom() {
 
-	free(this->data);
+    free(this->data);
 }

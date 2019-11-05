@@ -17,73 +17,73 @@ using namespace std;
 
 Gpr::Gpr(void) {
 
-	this->reg = (int8_t*) malloc(GPR_SIZE * sizeof(int8_t));
+    this->reg = (int8_t*) malloc(GPR_SIZE * sizeof(int8_t));
 
-	for(int i = 0; i < GPR_SIZE; i++) {
+    for(int i = 0; i < GPR_SIZE; i++) {
 
-		this->reg[i] = 0;
-		this->color.push_back(DEFAULT);
-	}
+        this->reg[i] = 0;
+        this->color.push_back(DEFAULT);
+    }
 
-	this->size = GPR_SIZE;
+    this->size = GPR_SIZE;
 }
 
 Gpr::~Gpr() {
 
-	free(this->reg);
+    free(this->reg);
 }
 
 void Gpr::write(int rx, int8_t data) {
 
-	this->reg[rx] = data;
-	this->color[rx] = GREEN;
+    this->reg[rx] = data;
+    this->color[rx] = GREEN;
 }
 
 int8_t Gpr::read(int rx) {
 
-	this->color[rx] = RED;
-	return this->reg[rx];
+    this->color[rx] = RED;
+    return this->reg[rx];
 }
 
 string Gpr::to_str(int cursor) {
 
-	stringstream stream;
+    stringstream stream;
 	
-	stream << SEPERATOR;
-	stream << "Registers:\n\n";
+    stream << SEPERATOR;
+    stream << "Registers:\n\n";
 	
-	int start = (cursor * 8);
+    int start = (cursor * 8);
 	
-	for(int i = 0; i < 8; i++) {
+    for(int i = 0; i < 8; i++) {
 
-		if(i == 4)
-			stream << "\n";
+        if(i == 4)
+            stream << "\n";
 
-		stream << this->color[start + i];
-		stream << "R" << to_string(start + i) << DEFAULT << ": ";
+        stream << this->color[start + i];
+        stream << "R" << to_string(start + i) << DEFAULT << ": ";
 
-		if(start + i < 10)
-			stream << " ";
+        if(start + i < 10)
+            stream << " ";
 
-		stream << "0x" << right << setw(2) << setfill('0');
-		stream << hex << (int) this->reg[start + i];
+        stream << "0x" << right << setw(2) << setfill('0');
+        stream << hex << (int) this->reg[start + i];
 
-		stream << setfill(' ') << left << setw(4);
-		stream << "      ";	
-	}
+        stream << setfill(' ') << left << setw(4);
+        stream << "      ";	
+    }
 
-	stream << dec << "\n";
-	this->clear_color();
+    stream << dec << "\n";
+    this->clear_color();
 	
-	return stream.str();
+    return stream.str();
 }
 
 /* --- Private --- */
 
 void Gpr::clear_color(void) {
 
-	for(int i = 0; i < this->size; i++)
-		this->color[i] = DEFAULT;
+    for(int i = 0; i < this->size; i++)
+        this->color[i] = DEFAULT;
 }
 
 

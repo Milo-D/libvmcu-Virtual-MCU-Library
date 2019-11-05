@@ -17,65 +17,65 @@ using namespace std;
 
 Sreg::Sreg(void) {
 
-	this->status = 0x00;
+    this->status = 0x00;
 }
 
 void Sreg::write(int flag, bool bit) {
 
-	this->color[flag] = GREEN;
+    this->color[flag] = GREEN;
 
-	if(status == true) {
+    if(status == true) {
 
-		this->status |= (0x01 << flag);
-		return;
-	}
+        this->status |= (0x01 << flag);
+        return;
+    }
 	
-	this->status &= ~(0x01 << flag);
+    this->status &= ~(0x01 << flag);
 }
 
 bool Sreg::read(int flag) {
 
-	this->color[flag] = RED;
-	return ((this->status >> flag) & 0x01); 
+    this->color[flag] = RED;
+    return ((this->status >> flag) & 0x01); 
 }
 
 void Sreg::clear(void) {
 
-	this->status = 0x00;
+    this->status = 0x00;
 }
 
 string Sreg::to_str(void) {
 
-	stringstream stream;
+    stringstream stream;
 
-	stream << SEPERATOR;
-	stream << "SREG:\n\n";
+    stream << SEPERATOR;
+    stream << "SREG:\n\n";
 
-	for(int i = 0; i < SREG_SIZE; i++) {
+    for(int i = 0; i < SREG_SIZE; i++) {
 
-		if(i == SREG_SIZE / 2)
-			stream << "\n";
+        if(i == SREG_SIZE / 2)
+            stream << "\n";
 
-		stream << this->color[i];
-		stream << flags[i] << DEFAULT << ": ";
+        stream << this->color[i];
+        stream << flags[i] << DEFAULT << ": ";
 
-		stream << setfill(' ') << right << setw(2);
-		stream << " " << this->read(i);
-		stream << setfill(' ') << left << setw(4);
-		stream << "        ";	
-	}
+        stream << setfill(' ') << right << setw(2);
+        stream << " " << this->read(i);
+        stream << setfill(' ') << left << setw(4);
+        stream << "        ";	
+    }
 
-	stream << "\n";
+    stream << "\n";
 
-	this->clear_color();
-	return stream.str();
+    this->clear_color();
+    return stream.str();
 }
 
 /* --- Private --- */
 
 void Sreg::clear_color(void) {
 
-	for(int i = 0; i < SREG_SIZE; i++)
-		this->color[i] = DEFAULT;
+    for(int i = 0; i < SREG_SIZE; i++)
+        this->color[i] = DEFAULT;
 }
 
