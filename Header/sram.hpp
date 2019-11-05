@@ -6,11 +6,11 @@
 class Sram {
 
 public:
-	Sram(void);
-	~Sram();
+    Sram(void);
+    ~Sram();
 
 private:
-	int *ram;
+    int *ram;
 };
 
 #endif
