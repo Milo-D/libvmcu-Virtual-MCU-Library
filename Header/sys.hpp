@@ -12,7 +12,7 @@ class Eeprom;
 class Sys {
 
 public:
-	Sys(std::string asm_file, unsigned int heap_size, unsigned int stack_size);
+	Sys(std::string asm_file);
 
 	/* General System Functions */
 

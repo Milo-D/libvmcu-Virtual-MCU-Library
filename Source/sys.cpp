@@ -15,7 +15,7 @@
 
 using namespace std;
 
-Sys::Sys(string asm_file, unsigned int heap_size, unsigned int stack_size) {
+Sys::Sys(string asm_file) {
 
 	/* Initializing System Components */
 

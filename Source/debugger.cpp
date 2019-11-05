@@ -36,7 +36,7 @@ namespace {
 
 void debug(Table *table) {
 
-	Sys sys(table->src(), HEAP, STACK);
+	Sys sys( table->src() );
 	
 	if(table->size() > 0)
 		table->jump_break();
