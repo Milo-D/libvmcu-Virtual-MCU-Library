@@ -18,10 +18,11 @@ public:
 	void pc_next(void);						// incrementing program counter
 
 private:
-	int pc;									// Program Counter
-	unsigned int size_used;					// Size of used Flash
-	std::vector <int> app;					// Raw Application Section
-	std::vector <int> key;					// Vector of Instruction Keys 
+	int pc;									// program counter
+	unsigned int size;						// total FLASH size
+	unsigned int size_used;					// size of used FLASH
+	std::vector <int> app;					// raw application section
+	std::vector <int> key;					// vector of instruction keys 
 };
 
 #endif

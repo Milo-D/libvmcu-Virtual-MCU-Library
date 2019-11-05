@@ -12,14 +12,12 @@
 #include "sreg.hpp"
 #include "instructions.hpp"
 
-#include "ehandling.hpp"
-
 using namespace std;
 
 Alu::Alu(string asm_file) {
 
 	this->flash = new Flash(asm_file);
-	this->gpr = new Gpr(32, 0);
+	this->gpr = new Gpr();
 	this->sreg = new Sreg();
 }
 
@@ -39,7 +37,7 @@ int Alu::fetch(Sys *sys) {
 	if(opcode < 0)
 		return -1;
 
-	/* Using Instruction Key to call the right function */
+	/* Using the Instruction Key to call the right function */
 
 	(*instructions[key])(sys, opcode);
 

@@ -8,29 +8,29 @@
 
 // Project Headers
 #include "gpr.hpp"
+#include "mcu.hpp"
 #include "style.hpp"
 
 using namespace std;
 
 /* --- Public --- */
 
-Gpr::Gpr(unsigned int amount, int8_t init_val) {
+Gpr::Gpr(void) {
 
-	this->reg = (int8_t*) malloc(amount * sizeof(int8_t));
+	this->reg = (int8_t*) malloc(GPR_SIZE * sizeof(int8_t));
 
-	for(int i = 0; i < amount; i++) {
+	for(int i = 0; i < GPR_SIZE; i++) {
 
-		this->reg[i] = init_val;
-		this->color[i] = DEFAULT;
+		this->reg[i] = 0;
+		this->color.push_back(DEFAULT);
 	}
 
-	this->size = amount;
+	this->size = GPR_SIZE;
 }
 
 Gpr::~Gpr() {
 
 	free(this->reg);
-	free(this->color);
 }
 
 void Gpr::write(int rx, int8_t data) {

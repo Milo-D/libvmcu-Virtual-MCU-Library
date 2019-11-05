@@ -7,12 +7,13 @@
 
 // Project Headers
 #include "sram.hpp"
+#include "mcu.hpp"
 
 using namespace std;
 
-Sram::Sram(unsigned int size) {
+Sram::Sram(void) {
 
-	this->ram = (int*) malloc(size * sizeof(int));
+	this->ram = (int*) malloc(SRAM_SIZE * sizeof(int));
 }
 
 Sram::~Sram() {

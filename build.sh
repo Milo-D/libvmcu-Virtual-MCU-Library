@@ -1,3 +1,3 @@
 #!/bin/bash
 
-g++ -I ./Header/ -g -o mdx ./Source/*.cpp
+g++ -D ATMEGA32 -I ./Header/ -g -o mdx ./Source/*.cpp

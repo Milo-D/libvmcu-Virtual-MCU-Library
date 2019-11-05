@@ -20,8 +20,8 @@ Sys::Sys(string asm_file, unsigned int heap_size, unsigned int stack_size) {
 	/* Initializing System Components */
 
 	this->alu = new Alu(asm_file);
-	this->sram = new Sram(2048);
-	this->eeprom = new Eeprom(1024);
+	this->sram = new Sram();
+	this->eeprom = new Eeprom();
 
 	this->terminated = false;
 }

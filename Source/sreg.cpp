@@ -8,13 +8,10 @@
 
 // Project Headers
 #include "sreg.hpp"
+#include "mcu.hpp"
 #include "style.hpp"
 
-#define SREG_SIZE 8
-
 using namespace std;
-
-const string flags[SREG_SIZE] = { "IF", "TF", "HF", "SF", "VF", "NF", "ZF", "CF" };
 
 /* --- Public --- */
 

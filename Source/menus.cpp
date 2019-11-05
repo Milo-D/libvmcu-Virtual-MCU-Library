@@ -55,9 +55,11 @@ void debug_menu(Sys *sys, Table *table, int cursor) {
 	cout << "\n";
 
 	if(sys->is_terminated() == false)
-		cout << "Status: Running\n";
+		cout << "Status: " << GREEN << "Running\n";
 	else
-		cout << "Status: Terminated\n";
+		cout << "Status: " << RED << "Terminated\n";
+
+	cout << DEFAULT;
 
 	int current = table->get_tip();
 

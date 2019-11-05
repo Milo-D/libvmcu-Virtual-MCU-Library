@@ -6,11 +6,12 @@
 class Eeprom {
 
 public:
-	Eeprom(unsigned int size);
+	Eeprom(void);
 	~Eeprom();
 
 private:
-	int *data;	
+	int *data;
+	unsigned int size;
 };
 
 #endif

@@ -3,15 +3,16 @@
 #ifndef GPR_HPP
 #define GPR_HPP
 
+// C++
+#include <vector>
+
 // C Headers
 #include <inttypes.h>
-
-#define REG_NO 32
 
 class Gpr {
 
 public:
-	Gpr(unsigned int amount, int8_t init_val);	// gpr constructor
+	Gpr(void);									// gpr constructor
 	~Gpr();										// default gpr destructor
 
 	int8_t read(int rx);						// reading value from gpr 'rx'
@@ -22,7 +23,7 @@ private:
 	void clear_color(void);						// clearing gpr output colors
 
 	int8_t *reg;								// gpr file
-	std::string color[32];						// associated gpr colors
+	std::vector <std::string> color;			// associated gpr colors
 	
 	unsigned int size;							// total size of gpr file (size * 8-bit)
 };

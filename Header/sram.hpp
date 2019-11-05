@@ -6,7 +6,7 @@
 class Sram {
 
 public:
-	Sram(unsigned int size);
+	Sram(void);
 	~Sram();
 
 private:

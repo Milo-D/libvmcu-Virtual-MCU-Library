@@ -8,6 +8,7 @@
 
 // Project Headers
 #include "flash.hpp"
+#include "mcu.hpp"
 #include "ehandling.hpp"
 #include "uparse.hpp"
 #include "decoder.hpp"
@@ -36,6 +37,7 @@ Flash::Flash(string asm_file) {
 	read_file.close();
 					
 	this->pc = 0;
+	this->size = FLASH_SIZE;
 	this->size_used = this->app.size();
 }
 
