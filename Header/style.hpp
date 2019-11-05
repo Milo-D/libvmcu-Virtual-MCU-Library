@@ -10,6 +10,7 @@
 #define BLUE "\033[0;36m"
 #define DEFAULT "\033[0m"
 
+#define PROMPT ">>> "
 #define SEPERATOR "-----------------------------------------------------------------------------\n"
 
 #endif

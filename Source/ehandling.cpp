@@ -12,6 +12,7 @@
 
 // Project Headers
 #include "ehandling.hpp"
+#include "style.hpp"
 
 using namespace std;
 
@@ -27,17 +28,19 @@ void print_event(string msg) {
 
 	string select = "";
 
-	do {
+	do { 
 
 		clrscr();
 		cout << "MDX: " << msg << "\n\n";
 		cout << "<Press 'c' to continue>\n\n";
-		cout << ">>> ";
+		cout << PROMPT;
 
 		getline(cin, select);
-		
+
 	} while(select != "c");
 }
+		
+	
 
 bool file_exists(const string &file) {
 

@@ -27,7 +27,8 @@ void main_menu(string current_f) {
 	cout << "1: Load Table of " << current_f << "\n";
 	cout << "2: Show Breakpoints of " << current_f << "\n";
 	cout << "e: Exit.\n\n";
-	cout << ">>> ";
+	
+	cout << PROMPT;
 }
 
 void table_menu(Table *table) {
@@ -41,7 +42,8 @@ void table_menu(Table *table) {
 	cout << "\n";
 
 	cout << table->to_str(0, table->size());
-	cout << ">>> ";
+
+	cout << PROMPT;
 }
 
 void debug_menu(Sys *sys, Table *table, int cursor) {
@@ -66,6 +68,7 @@ void debug_menu(Sys *sys, Table *table, int cursor) {
 	cout << sys->gpr_to_str(cursor);
 	cout << sys->sreg_to_str();	
 	cout << table->to_str(current, current + ROW);
-	cout << ">>> ";
+
+	cout << PROMPT;
 }
 
