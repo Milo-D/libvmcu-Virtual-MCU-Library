@@ -14,8 +14,8 @@
 // Project Headers
 #include "table.hpp"
 #include "ehandling.hpp"
+#include "stringparse.hpp"
 #include "style.hpp"
-#include "uparse.hpp"
 
 #define PR_DELAY 1
 

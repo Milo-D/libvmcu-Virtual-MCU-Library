@@ -17,8 +17,6 @@ using namespace std;
 
 Sys::Sys(string asm_file) {
 
-    /* Initializing System Components */
-
     this->alu = new Alu(asm_file);
     this->sram = new Sram();
     this->eeprom = new Eeprom();
@@ -47,7 +45,7 @@ void Sys::write_gpr(int rx, int8_t data) {
 
 int8_t Sys::read_gpr(int rx) {
 
-    return (this->alu->read_gpr(rx));
+    return this->alu->read_gpr(rx);
 }
 
 string Sys::gpr_to_str(int cursor) {
@@ -62,7 +60,7 @@ void Sys::write_sreg(int flag, bool bit) {
 
 bool Sys::read_sreg(int flag) {
 
-    return (this->alu->read_sreg(flag));
+    return this->alu->read_sreg(flag);
 }
 
 string Sys::sreg_to_str(void) {

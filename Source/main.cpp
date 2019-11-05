@@ -8,12 +8,11 @@
 #include <fstream>
 
 // Project Headers
-#include "ehandling.hpp"
 #include "uparse.hpp"
-#include "tableview.hpp"
 #include "debugger.hpp"
-#include "menus.hpp"
 #include "table.hpp"
+#include "tableview.hpp"
+#include "menus.hpp"
 
 #define movec(cursor, offs, range) *cursor = ((*cursor) + offs) % range
 
@@ -22,8 +21,8 @@ using namespace std;
 int main(int argc, char **argv) {			
 
     vector <string> debug_file;
-
     parse_main_in(argc, argv).swap(debug_file);
+
     unsigned int file_no = debug_file.size();
 
     Table *table = create_table(debug_file, file_no);

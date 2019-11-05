@@ -13,4 +13,6 @@
 #define PROMPT ">>> "
 #define SEPERATOR "-----------------------------------------------------------------------------\n"
 
+#define clrscr() system("clear")
+
 #endif

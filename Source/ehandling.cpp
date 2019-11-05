@@ -39,13 +39,5 @@ void print_event(string msg) {
 
     } while(select != "c");
 }
-		
-	
-
-bool file_exists(const string &file) {
-
-    ifstream check_file(file);
-    return check_file.good();
-}
 
 
