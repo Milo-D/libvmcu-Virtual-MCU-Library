@@ -34,7 +34,7 @@ submit them in the issue segment.)
 - [x] GPR Visualization
 - [ ] SRAM Visualization
 - [ ] EEPROM Visualization
-- [ ] SREG Visualization
+- [x] SREG Visualization
 - [ ] FLASH Visualization
 - [ ] I/O Support
 - [x] Open and debug more than one file in the same session
