@@ -21,7 +21,6 @@ public:
     bool executable(void);                      // returns 'true' if line is executable
     void step(void);                            // single stepping through Table
     void jump_break(void);                      // jumping to next breakpoint
-    void refresh(void);                         // refreshing current Table
     int size(void);                             // get table size
     std::string src(void);                      // get origin of source code
     std::string to_str(void);                   // returning a Table String
@@ -40,6 +39,5 @@ private:
 };
 
 Table* create_table(std::vector <std::string> asm_file, int amount);
-void refresh_all(Table *table, int amount);
 
 #endif

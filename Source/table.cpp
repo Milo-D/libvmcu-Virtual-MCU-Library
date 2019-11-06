@@ -194,11 +194,6 @@ void Table::step(void) {
 
 void Table::jump_break(void) {
 
-   /*
-    * Jumping to the next breakpoint
-    * and popping it from the list.
-    **/
-
 	this->tip = 0;
 	
     bool is_break = false;
@@ -220,16 +215,6 @@ void Table::jump_break(void) {
     }
 
     this->breaks[i] = false; 	
-}
-
-void Table::refresh(void) {
-
-    Table temp_table(this->src_file);
-
-    this->table_size = temp_table.table_size;
-    this->src_file = temp_table.src_file;
-    this->content.swap(temp_table.content);
-    this->label.swap(temp_table.label);
 }
 
 int Table::size(void) {
@@ -319,17 +304,6 @@ Table* create_table(vector <string> asm_file, int amount) {
         new (&table[i]) Table(asm_file[i]);
 
     return table;
-}
-
-void refresh_all(Table *table, int amount) {
-
-    for(int i = 0; i < amount; i++) {
-
-        if(&table[i] == NULL)
-            continue;
-
-        table[i].refresh();
-    }
 }
 
 
