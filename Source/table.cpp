@@ -183,15 +183,11 @@ bool Table::executable(void) {
 
 void Table::step(void) {
 
-    if(this->tip >= this->table_size - 1) {
+    if(this->tip == this->table_size) {
 	
         print_event("Reached End of File.");
-        this->table_size = 0;
-		
         return;
     }
-
-    /* toDo: fix this */
 
     this->tip += 1;
 }
@@ -246,7 +242,7 @@ string Table::src(void) {
     return this->src_file;
 }
 
-string Table::to_str(int start, int end) {
+string Table::to_str(void) {
 
     stringstream stream;
     stream << SEPERATOR << "Instructions:\n\n";			
@@ -259,19 +255,36 @@ string Table::to_str(int start, int end) {
         return stream.str();
     }
 
-    if(end > this->table_size)
-        end = this->table_size;
+    for(int i = 0; i < this->table_size; i++) {
 
-    for(int i = start; i < end; i++) {
+        if(this->breaks[i] == true)
+            stream << to_string(i) << RED << " [b+] " << DEFAULT;
+        else
+            stream << to_string(i) << "      ";
 
-        if(i == this->tip)
-            stream << BLUE;
+        stream << this->content[i] << "\n";
+        stream << DEFAULT;
+    }
 
-        if(i >= this->table_size) {
-		
+    stream << SEPERATOR;
+    return stream.str();
+}
+
+string Table::center_to_str(void) {
+
+    stringstream stream;
+    stream << SEPERATOR << "Instructions:\n\n"; 
+
+    for(int i = (this->tip - 4); i <= (this->tip + 4); i++) {
+
+        if(i < 0 || i > this->table_size - 1) {
+
             stream << "\n";
             continue;
         }
+
+        if(i == this->tip)
+            stream << BLUE;
 
         if(this->breaks[i] == true)
             stream << to_string(i) << RED << " [b+] " << DEFAULT;

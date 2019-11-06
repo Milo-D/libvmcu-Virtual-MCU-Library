@@ -24,7 +24,8 @@ public:
     void refresh(void);                         // refreshing current Table
     int size(void);                             // get table size
     std::string src(void);                      // get origin of source code
-    std::string to_str(int start, int end);     // returning a Table String
+    std::string to_str(void);                   // returning a Table String
+    std::string center_to_str(void);            // returning a centered Table String
 
 private:
     int tip;                                    // (t)able (i)nstruction (p)ointer

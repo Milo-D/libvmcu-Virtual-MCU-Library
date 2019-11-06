@@ -40,7 +40,7 @@ void table_menu(Table *table) {
     cout << "Exit:        (e)xit\n";
     cout << "\n";
 
-    cout << table->to_str(0, table->size());
+    cout << table->to_str();
 
     cout << PROMPT;
 }
@@ -62,11 +62,9 @@ void debug_menu(Sys *sys, Table *table, int cursor) {
 
     cout << DEFAULT;
 
-    int current = table->get_tip();
-
     cout << sys->gpr_to_str(cursor);
     cout << sys->sreg_to_str();	
-    cout << table->to_str(current, current + ROW);
+    cout << table->center_to_str();
 
     cout << PROMPT;
 }
