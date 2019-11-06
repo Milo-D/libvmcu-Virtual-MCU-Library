@@ -13,9 +13,6 @@
 #include "table.hpp"
 #include "sys.hpp"
 
-#define HEAP 1024
-#define STACK 1024
-
 #define TIP_UNDEF -1
 
 #define movec(cursor, offs, range) *cursor = ((*cursor) + offs) % range
