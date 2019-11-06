@@ -17,6 +17,7 @@ public:
     /* General System Functions */
 
     void step(void);
+    void kill(void);
     bool is_terminated(void);
 
     /* GPR Operations */

@@ -19,7 +19,7 @@ public:
     int get_tip(void);                          // getting current tip
     std::string get_content(int line);          // get content at index 'line'
     bool executable(void);                      // returns 'true' if line is executable
-    void step(void);                            // single stepping through Table
+    int step(void);                             // single stepping through Table
     void jump_break(void);                      // jumping to next breakpoint
     int size(void);                             // get table size
     std::string src(void);                      // get origin of source code

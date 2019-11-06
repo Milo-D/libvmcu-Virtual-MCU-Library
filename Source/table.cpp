@@ -181,15 +181,13 @@ bool Table::executable(void) {
     return this->exec[this->tip];
 }
 
-void Table::step(void) {
+int Table::step(void) {
 
-    if(this->tip == this->table_size) {
-	
-        print_event("Reached End of File.");
-        return;
-    }
+    if(this->tip == this->table_size - 1)
+        return -1;
 
     this->tip += 1;
+    return 0;
 }
 
 void Table::jump_break(void) {

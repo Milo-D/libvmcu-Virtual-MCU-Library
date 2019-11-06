@@ -30,7 +30,12 @@ void Sys::step(void) {
         return;
 
     if(this->alu->fetch(this) < 0)
-        this->terminated = true;
+        this->kill();
+}
+
+void Sys::kill(void) {
+
+    this->terminated = true;
 }
 
 bool Sys::is_terminated(void) {

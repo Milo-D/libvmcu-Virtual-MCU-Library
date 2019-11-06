@@ -29,10 +29,10 @@ namespace {
         if(table->executable() == true)
             sys->step();
 
-        table->step();	
+        if(table->step() < 0)
+            sys->kill();
 	}
 }
-
 
 void debug(Table *table) {
 

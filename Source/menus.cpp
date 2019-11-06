@@ -55,10 +55,12 @@ void debug_menu(Sys *sys, Table *table, int cursor) {
     cout << "Exit:        (e)xit\n";
     cout << "\n";
 
+    cout << "Status: ";
+
     if(sys->is_terminated() == false)
-        cout << "Status: " << GREEN << "Running\n";
+        cout << GREEN << "Running\n";
     else
-        cout << "Status: " << RED << "Terminated\n";
+        cout << RED << "Terminated\n";
 
     cout << DEFAULT;
 
