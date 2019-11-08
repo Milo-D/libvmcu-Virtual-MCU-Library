@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "menus.hpp"
+#include "mcu.hpp"
 #include "table.hpp"
 #include "sys.hpp"
 #include "style.hpp"

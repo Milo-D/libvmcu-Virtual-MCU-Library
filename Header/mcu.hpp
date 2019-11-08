@@ -5,6 +5,8 @@
 
 #ifdef ATMEGA32
 
+    #define SYSTEM "ATmega32"
+
     #define GPR_SIZE 32
     #define SREG_SIZE 8
     #define SFR_SIZE 64

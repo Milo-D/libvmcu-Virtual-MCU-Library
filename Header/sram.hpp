@@ -3,14 +3,16 @@
 #ifndef SRAM_HPP
 #define SRAM_HPP
 
+#include <inttypes.h>
+
 class Sram {
 
 public:
-    Sram(void);
-    ~Sram();
+    Sram(void);                                 // Constructor of SRAM
+    ~Sram();                                    // SRAM Destructor
 
 private:
-    int *ram;
+    int8_t *ram;
 };
 
 #endif
