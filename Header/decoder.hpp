@@ -3,9 +3,6 @@
 #ifndef DECODER_HPP
 #define DECODER_HPP
 
-#define TOTAL_OP 111
-#define BUS 16
-
 // C Headers
 #include <inttypes.h>
 
@@ -17,8 +14,6 @@ class Flash;
 * blank (marked as an integer greater
 * than one).
 */
-
-extern const int opcode[TOTAL_OP][BUS]; 
 
 void decode(Flash *flash, std::string hex_line);
 

@@ -7,51 +7,30 @@
 
 // Project Headers
 #include "decoder.hpp"
+#include "opcode.hpp"
 #include "ehandling.hpp"
 #include "stringparse.hpp"
 #include "flash.hpp"
 
-#define D 2
-#define R 3
-#define K 4
-
 using namespace std;
-
-extern const int opcode[TOTAL_OP][BUS] = {
-
-/* <----------------- 16 bit -----------------> */
-
-{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, /* NOP */
-{ 0, 0, 0, 0, 0, 0, 0, 1, D, D, D, D, R, R, R, R }, /* MOVW */
-{ 0, 0, 0, 0, 0, 0, 1, 0, D, D, D, D, R, R, R, R }, /* MULS */
-{ 0, 0, 0, 0, 0, 0, 1, 1, 0, D, D, D, 0, R, R, R }, /* MULSU */
-{ 0, 0, 0, 0, 0, 0, 1, 1, 0, D, D, D, 1, R, R, R }, /* FMUL */
-{ 1, 1, 1, 0, K, K, K, K, D, D, D, D, K, K, K, K }, /* LDI */
-{ 1, 1, 0, 0, K, K, K, K, K, K, K, K, K, K, K, K }, /* RJMP */
-{ 0, 0, 1, 0, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* MOV */
-{ 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 1, 0, 1, 0 }  /* DEC */
-
-/* More OPCodes coming soon... */
-
-};
 
 namespace {
 
     int get_key_from_op(int data) {
 
-        for(int i = 0; i < TOTAL_OP; i++) {
+        for(int i = 0; i < SET_SIZE; i++) {
 
             int match = 0;
 
-            for(int j = 0; j < BUS; j++) {
+            for(int j = 0; j < WORD; j++) {
 
-                int binary = ((0x01 << (BUS - j - 1)) & data) >> (BUS - j - 1);
+                int binary = ((0x01 << (WORD - j - 1)) & data) >> (WORD - j - 1);
 
                 if(!(opcode[i][j] == 0 || opcode[i][j] == 1)) {
 
                     match += 1;
 
-                    if(match == BUS)    // returning key
+                    if(match == WORD)    // returning key
                         return i;
 					
                     continue;
@@ -62,7 +41,7 @@ namespace {
                 else
                     match += 1;
 
-                if(match == BUS)    // returning key
+                if(match == WORD)    // returning key
                     return i;
             }
         }
