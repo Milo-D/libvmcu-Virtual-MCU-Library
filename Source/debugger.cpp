@@ -55,8 +55,14 @@ void debug(Table *table) {
         if(last_select == "n")          // next instruction
             step_forward(&sys, table);
 
-        if(last_select == "rn")         // next register site
+        if(last_select == "rn")         // next GPR site
             movec(&cursor, +1, 4);
+
+        if(last_select == "dn")         // next DATA position
+            sys.scale_data(+1);
+
+        if(last_select == "dp")         // previous DATA position
+            sys.scale_data(-1);
 		
     } while(select != "e");
 

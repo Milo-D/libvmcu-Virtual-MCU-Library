@@ -50,6 +50,17 @@ int8_t Data::read(int addr) {
     return this->memory[addr];
 }
 
+void Data::scale(int offs) {
+
+    if((this->cursor + offs) == RAM_END)
+        return;
+
+    if((this->cursor + offs) < 0x0000)
+        return;
+
+    this->cursor += offs;
+}
+
 string Data::to_str(void) {
 
     stringstream stream;

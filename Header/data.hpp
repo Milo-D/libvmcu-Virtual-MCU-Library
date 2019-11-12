@@ -18,6 +18,7 @@ public:
     void write(int addr, int8_t value);             // writing to DATA memory at 'addr'
     int8_t read(int addr);                          // reading 'addr' from DATA
 
+    void scale(int offs);                           // scaling DATA Memory
     std::string to_str(void);                       // returning a printable DATA string
 
 private:

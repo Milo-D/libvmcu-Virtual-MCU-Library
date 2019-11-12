@@ -38,6 +38,7 @@ public:
     int8_t pop_stack(void);
     void write_data(int addr, int8_t value);
     int8_t read_data(int addr);
+    void scale_data(int offs);
     std::string data_to_str(void);
 
 private:

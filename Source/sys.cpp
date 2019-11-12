@@ -93,6 +93,11 @@ int8_t Sys::read_data(int addr) {
     return this->data->read(addr);
 }
 
+void Sys::scale_data(int offs) {
+
+    this->data->scale(offs);
+}
+
 string Sys::data_to_str(void) {
 
     return this->data->to_str();
