@@ -12,6 +12,10 @@
 #include "mcu.hpp"
 #include "style.hpp"
 
+#define sp(spl, sph) ((sph << 8) + spl)
+#define spl(sp) (((0x01 << 8) - 1) & sp)
+#define sph(sp) (((((0x01 << 8) - 1) << 8) & sp) >> 8)
+
 using namespace std;
 
 Data::Data(void) {
@@ -29,7 +33,17 @@ Data::~Data(void) {
 
 void Data::push(int8_t value) {
 
-    /* in progress */
+    int16_t sp = sp(this->memory[SPL], this->memory[SPH]);
+
+    if(sp <= SRAM_START)
+        return;
+
+    this->memory[sp--] = value;
+
+    this->memory[SPL] = spl(sp);
+    this->memory[SPH] = sph(sp);
+
+    this->cursor = sp;
 }
 
 int8_t Data::pop(void) {

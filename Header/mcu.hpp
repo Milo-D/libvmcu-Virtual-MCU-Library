@@ -16,6 +16,9 @@
     #define SRAM_START 0x0060
     #define RAM_END 0x085f
 
+    #define SPL 0x003d
+    #define SPH 0x003e
+
     #define IF 7
     #define TF 6
     #define HF 5

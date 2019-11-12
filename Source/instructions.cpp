@@ -79,7 +79,15 @@ void dec(Sys *sys, int opcode) {
     /* in progress */
 }
 
-void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, dec };
+void push(Sys *sys, int opcode) {
+
+    int src = extract(opcode, 4, 9, 0);
+    int8_t val = sys->read_gpr(src);
+
+    sys->push_stack(val);
+}
+
+void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, dec, push };
 
 
 
