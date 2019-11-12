@@ -7,11 +7,8 @@
 
 // Project Headers
 #include "instructions.hpp"
+#include "mcu.hpp"
 #include "sys.hpp"
-
-#define SRC 0
-#define DEST 1
-#define PR_DELAY 2
 
 using namespace std;
 
@@ -19,7 +16,7 @@ namespace {
 
     int extract(int opcode, int from, int to, int offs) {
 
-    int res = 0;
+        int res = 0;
 
         for(int i = from; i < to; i++) {
 
@@ -77,7 +74,12 @@ void mov(Sys *sys, int opcode) {
     sys->write_gpr(dest, sys->read_gpr(src));
 }
 
-void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov};
+void dec(Sys *sys, int opcode) {
+
+    /* in progress */
+}
+
+void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, dec };
 
 
 

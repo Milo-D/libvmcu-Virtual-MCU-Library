@@ -28,7 +28,8 @@ extern const int opcode[TOTAL_OP][BUS] = {
 { 0, 0, 0, 0, 0, 0, 1, 1, 0, D, D, D, 1, R, R, R }, /* FMUL */
 { 1, 1, 1, 0, K, K, K, K, D, D, D, D, K, K, K, K }, /* LDI */
 { 1, 1, 0, 0, K, K, K, K, K, K, K, K, K, K, K, K }, /* RJMP */
-{ 0, 0, 1, 0, 1, 1, R, D, D, D, D, D, R, R, R, R }  /* MOV */
+{ 0, 0, 1, 0, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* MOV */
+{ 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 1, 0, 1, 0 }  /* DEC */
 
 /* More OPCodes coming soon... */
 

@@ -69,7 +69,7 @@ string Gpr::to_str(int cursor) {
         stream << hex << (int) this->reg[start + i];
 
         stream << setfill(' ') << left << setw(4);
-        stream << "      ";	
+        stream << "      ";
     }
 
     stream << dec << "\n";

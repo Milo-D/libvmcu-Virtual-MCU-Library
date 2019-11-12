@@ -14,11 +14,11 @@ class Flash;
 /*
 * Atmel AVR Opcodes to parse Assembly
 * Instructions. Leaving variable bits
-* blank (marked as an Integer greater
+* blank (marked as an integer greater
 * than one).
 */
 
-extern const int opcode[TOTAL_OP][BUS];
+extern const int opcode[TOTAL_OP][BUS]; 
 
 void decode(Flash *flash, std::string hex_line);
 
