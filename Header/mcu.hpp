@@ -14,6 +14,7 @@
     #define EEPROM_SIZE 1024
     #define FLASH_SIZE 16384    /* 16384 x 16-bit */
     #define SRAM_START 0x0060
+    #define RAM_END 0x085f
 
     #define IF 7
     #define TF 6

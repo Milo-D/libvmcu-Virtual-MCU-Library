@@ -9,7 +9,7 @@
 #include "sys.hpp"
 #include "alu.hpp"
 #include "gpr.hpp"
-#include "sram.hpp"
+#include "data.hpp"
 #include "flash.hpp"
 #include "eeprom.hpp"
 
@@ -18,7 +18,7 @@ using namespace std;
 Sys::Sys(string asm_file) {
 
     this->alu = new Alu(asm_file);
-    this->sram = new Sram();
+    this->data = new Data();
     this->eeprom = new Eeprom();
 
     this->terminated = false;
@@ -71,5 +71,30 @@ bool Sys::read_sreg(int flag) {
 string Sys::sreg_to_str(void) {
 
     return this->alu->get_sreg();
+}
+
+void Sys::push_stack(int8_t value) {
+
+    this->data->push(value);
+}
+
+int8_t Sys::pop_stack(void) {
+
+    return this->data->pop();
+}
+
+void Sys::write_data(int addr, int8_t value) {
+
+    this->data->write(addr, value);
+}
+
+int8_t Sys::read_data(int addr) {
+
+    return this->data->read(addr);
+}
+
+string Sys::data_to_str(void) {
+
+    return this->data->to_str();
 }
 

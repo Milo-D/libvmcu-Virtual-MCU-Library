@@ -269,10 +269,12 @@ string Table::center_to_str(void) {
         if(i == this->tip)
             stream << BLUE;
 
+        stream << "0x" << setfill('0') << setw(4);
+
         if(this->breaks[i] == true)
-            stream << to_string(i) << RED << " [b+] " << DEFAULT;
+            stream << hex << i << RED << " [b+] " << DEFAULT;
         else
-            stream << to_string(i) << "      ";
+            stream << hex << i << "      ";
 
         stream << this->content[i] << "\n";
         stream << DEFAULT;

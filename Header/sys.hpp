@@ -6,7 +6,7 @@
 #include <inttypes.h>
 
 class Alu;
-class Sram;
+class Data;
 class Eeprom;
 
 class Sys {
@@ -32,9 +32,17 @@ public:
     bool read_sreg(int flag);
     std::string sreg_to_str(void);
 
+    /* DATA Operations */
+
+    void push_stack(int8_t value);
+    int8_t pop_stack(void);
+    void write_data(int addr, int8_t value);
+    int8_t read_data(int addr);
+    std::string data_to_str(void);
+
 private:
     Alu *alu;
-    Sram *sram;
+    Data *data;
     Eeprom *eeprom;
 
     bool terminated;
