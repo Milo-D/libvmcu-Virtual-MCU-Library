@@ -21,7 +21,7 @@ using namespace std;
 Data::Data(void) {
 
     this->memory = (int8_t*) malloc((RAM_END + 1) * sizeof(int8_t));
-    memset(this->memory, 0x00, sizeof(this->memory));
+    memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
     this->cursor = SRAM_START;
 }
@@ -43,7 +43,7 @@ void Data::push(int8_t value) {
     this->memory[SPL] = spl(sp);
     this->memory[SPH] = sph(sp);
 
-    this->cursor = sp;
+    this->cursor = (sp + 1);
 }
 
 int8_t Data::pop(void) {

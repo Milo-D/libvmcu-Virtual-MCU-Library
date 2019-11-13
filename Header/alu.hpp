@@ -13,8 +13,8 @@ class Sreg;
 class Alu {
 
 public:
-    Alu(std::string asm_file);
-    ~Alu();
+    Alu(std::string asm_file);                  // ALU Constructor
+    ~Alu();                                     // ALU Destructor
 		
     int fetch(Sys *sys);                        // fetching next instruction
 	
