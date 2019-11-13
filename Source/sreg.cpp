@@ -22,8 +22,6 @@ Sreg::Sreg(void) {
 
 void Sreg::write(int flag, bool bit) {
 
-    this->color[flag] = GREEN;
-
     if(status == true) {
 
         this->status |= (0x01 << flag);
@@ -31,6 +29,7 @@ void Sreg::write(int flag, bool bit) {
     }
 	
     this->status &= ~(0x01 << flag);
+    this->color[flag] = GREEN;
 }
 
 bool Sreg::read(int flag) {
@@ -66,8 +65,8 @@ string Sreg::to_str(void) {
     }
 
     stream << "\n";
-
     this->clear_color();
+
     return stream.str();
 }
 

@@ -6,6 +6,7 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include <tuple>
 
 // Project Header
 #include "data.hpp"
@@ -18,12 +19,15 @@
 
 using namespace std;
 
+/* --- Public --- */
+
 Data::Data(void) {
 
     this->memory = (int8_t*) malloc((RAM_END + 1) * sizeof(int8_t));
     memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
     this->cursor = SRAM_START;
+    this->color = make_tuple(0x0000, DEFAULT);
 }
 
 Data::~Data(void) {
@@ -43,6 +47,7 @@ void Data::push(int8_t value) {
     this->memory[SPL] = spl(sp);
     this->memory[SPH] = sph(sp);
 
+    this->set_color(sp + 1, GREEN);
     this->cursor = (sp + 1);
 }
 
@@ -54,13 +59,17 @@ int8_t Data::pop(void) {
 
 void Data::write(int addr, int8_t value) {
 
-    this->cursor = addr;
     this->memory[addr] = value;
+
+    this->set_color(addr, GREEN);
+    this->cursor = addr;
 }
 
 int8_t Data::read(int addr) {
 
+    this->set_color(addr, RED);
     this->cursor = addr;
+
     return this->memory[addr];
 }
 
@@ -88,14 +97,34 @@ string Data::to_str(void) {
             continue;
         }
 
+        if(i == get <0> (this->color))
+            stream << get <1> (this->color);
+
         stream << "0x" << setfill('0') << setw(4);
         stream << hex << i << "      ";
 
         stream << "0x" << setfill('0') << setw(2);
         stream << hex << (int) this->memory[i] << "\n";
+        stream << DEFAULT;
     }
 
     stream << SEPERATOR;
+    this->clear_color();
+
     return stream.str();
+}
+
+/* --- Private --- */
+
+void Data::set_color(int cell, string color) {
+
+    get <0> (this->color) = cell;
+    get <1> (this->color) = color;
+}
+
+void Data::clear_color(void) {
+
+    get <0> (this->color) = 0;
+    get <1> (this->color) = DEFAULT;
 }
 

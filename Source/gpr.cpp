@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <cstring>
 #include <sstream>
 
 // Project Headers
@@ -18,12 +19,10 @@ using namespace std;
 Gpr::Gpr(void) {
 
     this->reg = (int8_t*) malloc(GPR_SIZE * sizeof(int8_t));
+    memset(this->reg, 0x00, GPR_SIZE * sizeof(int8_t));
 
-    for(int i = 0; i < GPR_SIZE; i++) {
-
-        this->reg[i] = 0;
+    for(int i = 0; i < GPR_SIZE; i++)
         this->color.push_back(DEFAULT);
-    }
 
     this->size = GPR_SIZE;
 }
@@ -74,7 +73,7 @@ string Gpr::to_str(int cursor) {
 
     stream << dec << "\n";
     this->clear_color();
-	
+
     return stream.str();
 }
 
