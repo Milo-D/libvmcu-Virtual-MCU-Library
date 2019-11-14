@@ -26,9 +26,6 @@ Data::Data(void) {
     this->memory = (int8_t*) malloc((RAM_END + 1) * sizeof(int8_t));
     memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
-    this->memory[SPL] = 0x007f;
-    this->memory[SPH] = 0x0000;
-
     this->cursor = SRAM_START;
     this->color = make_tuple(0x0000, DEFAULT);
 }
