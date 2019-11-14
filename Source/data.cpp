@@ -26,6 +26,9 @@ Data::Data(void) {
     this->memory = (int8_t*) malloc((RAM_END + 1) * sizeof(int8_t));
     memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
+    this->memory[SPL] = 0x007f;
+    this->memory[SPH] = 0x0000;
+
     this->cursor = SRAM_START;
     this->color = make_tuple(0x0000, DEFAULT);
 }
@@ -101,6 +104,8 @@ string Data::to_str(void) {
     stringstream stream;
     stream << "Data Memory:\n\n"; 
 
+    int sp = sp(this->memory[SPL], this->memory[SPH]);
+
     for(int i = (this->cursor - 4); i <= (this->cursor + 4); i++) {
 
         if(i < 0 || i > RAM_END) {
@@ -109,11 +114,14 @@ string Data::to_str(void) {
             continue;
         }
 
-        if(i == get <0> (this->color))
-            stream << get <1> (this->color);
+        if(i == sp)
+            stream << BLUE;
 
         stream << "0x" << setfill('0') << setw(4);
-        stream << hex << i << "      ";
+        stream << hex << i << "      " << DEFAULT;
+
+        if(i == get <0> (this->color))
+            stream << get <1> (this->color);
 
         stream << "0x" << setfill('0') << setw(2);
         stream << hex << (int) this->memory[i] << "\n";
