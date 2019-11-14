@@ -26,6 +26,9 @@ Data::Data(void) {
     this->memory = (int8_t*) malloc((RAM_END + 1) * sizeof(int8_t));
     memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
+    this->memory[SPL] = 0x007f;
+    this->memory[SPH] = 0x0000;
+
     this->cursor = SRAM_START;
     this->color = make_tuple(0x0000, DEFAULT);
 }
@@ -53,8 +56,20 @@ void Data::push(int8_t value) {
 
 int8_t Data::pop(void) {
 
-    /* in progress */
-    return 0;
+    int16_t sp = sp(this->memory[SPL], this->memory[SPH]);
+
+    if(sp >= RAM_END)
+        return 0xff;
+
+    int8_t value = this->memory[++sp];
+
+    this->memory[SPL] = spl(sp);
+    this->memory[SPH] = sph(sp);
+
+    this->set_color(sp, RED);
+    this->cursor = sp;
+
+    return value;
 }
 
 void Data::write(int addr, int8_t value) {

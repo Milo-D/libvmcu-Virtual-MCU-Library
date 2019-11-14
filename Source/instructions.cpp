@@ -87,7 +87,15 @@ void push(Sys *sys, int opcode) {
     sys->push_stack(val);
 }
 
-void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, dec, push };
+void pop(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int8_t val = sys->pop_stack();
+
+    sys->write_gpr(dest, val);
+}
+
+void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, dec, push, pop };
 
 
 
