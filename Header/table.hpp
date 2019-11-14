@@ -14,13 +14,13 @@ public:
     int set_break(std::string point);           // setting breakpoints
     int unset_break(std::string point);         // removing breakpoints
     bool is_break(int line);                    // checks if 'line' is a breakpoint
+    bool has_break(void);                       // checks if table has breakpoints
     int get_label_ln(std::string id);           // translating label to line
     void set_tip(int instr_line);               // moving tip to 'instr_line'
     int get_tip(void);                          // getting current tip
     std::string get_content(int line);          // get content at index 'line'
     bool executable(void);                      // returns 'true' if line is executable
     int step(void);                             // single stepping through Table
-    void jump_break(void);                      // jumping to next breakpoint
     int size(void);                             // get table size
     std::string src(void);                      // get origin of source code
     std::string to_str(void);                   // returning a Table String
@@ -29,6 +29,7 @@ public:
 private:
     int tip;                                    // (t)able (i)nstruction (p)ointer
     int table_size;
+    int break_counter;
     std::string src_file;								
     std::vector <std::string> content;
     std::vector <bool> breaks;

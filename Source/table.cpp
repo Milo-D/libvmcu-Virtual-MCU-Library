@@ -27,7 +27,7 @@ namespace {
 
         int line;
 		
-        if((line = to_dec(point)) < 0)	// check return of map
+        if((line = to_dec(point)) < 0)	         // check return of map
             return table->get_label_ln(point);
 
         return line;
@@ -94,6 +94,7 @@ Table::Table(string asm_file) {
 set_data:
 
     this->tip = -1;
+    this->break_counter = 0;
     this->table_size = this->content.size();
     this->src_file = asm_file;
 
@@ -117,6 +118,7 @@ int Table::set_break(string point) {
     }
 
     this->breaks[line] = true;
+    this->break_counter += 1;
 
     return 0;
 }
@@ -138,6 +140,7 @@ int Table::unset_break(string point) {
     }
 
     this->breaks[line] = false;
+    this->break_counter -= 1;
 
     return 0;
 }
@@ -145,6 +148,11 @@ int Table::unset_break(string point) {
 bool Table::is_break(int line) {
 
     return this->breaks[line];
+}
+
+bool Table::has_break(void) {
+
+    return (this->break_counter > 0);
 }
 
 int Table::get_label_ln(string id) {
@@ -188,31 +196,6 @@ int Table::step(void) {
 
     this->tip += 1;
     return 0;
-}
-
-void Table::jump_break(void) {
-
-	this->tip = 0;
-	
-    bool is_break = false;
-    int last_instr = this->tip;
-
-    int i = 0;
-
-    while((is_break = this->breaks[i]) == false) {
-
-        if(i >= this->table_size) {
-
-            print_event("No Breakpoints set.");
-            this->tip = last_instr;
-            return;
-        }
-
-        this->step();
-        i += 1;
-    }
-
-    this->breaks[i] = false; 	
 }
 
 int Table::size(void) {
