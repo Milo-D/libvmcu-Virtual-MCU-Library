@@ -24,39 +24,8 @@ using namespace std;
 using namespace std::chrono;
 using namespace std::this_thread;
 
-namespace {
-
-    void step_forward(Sys *sys, Table *table) {
-
-        if(table->executable() == true)
-            sys->step();
-
-        if(table->step() < 0)
-            sys->kill();
-	}
-
-    void jump_forward(Sys *sys, Table *table, int cursor) {
-
-        int line;
-
-        do {
-
-            line = table->get_tip();
-
-            if(table->is_break(line) == true) {
-
-                table->unset_break(to_string(line));
-                break;
-            }
-
-            debug_menu(sys, table, cursor);
-            step_forward(sys, table);
-
-            sleep_for(milliseconds(500));
-
-        } while(sys->is_terminated() == false);
-    }
-}
+void step_forward(Sys *sys, Table *table);
+void jump_forward(Sys *sys, Table *table, int cursor);
 
 void debug(Table *table) {
 
@@ -99,6 +68,37 @@ void debug(Table *table) {
     } while(select != "e");
 
     table->set_tip(TIP_UNDEF);
+}
+
+void step_forward(Sys *sys, Table *table) {
+
+    if(table->executable() == true)
+        sys->step();
+
+    if(table->step() < 0)
+        sys->kill();
+}
+
+void jump_forward(Sys *sys, Table *table, int cursor) {
+
+    int line;
+
+    do {
+
+        line = table->get_tip();
+
+        if(table->is_break(line) == true) {
+
+            table->unset_break(to_string(line));
+            break;
+        }
+
+        debug_menu(sys, table, cursor);
+        step_forward(sys, table);
+
+        sleep_for(milliseconds(500));
+
+    } while(sys->is_terminated() == false);
 }
 
 

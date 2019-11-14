@@ -95,7 +95,18 @@ void pop(Sys *sys, int opcode) {
     sys->write_gpr(dest, val);
 }
 
-void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, dec, push, pop };
+void out(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
+    int src = extract(opcode, 4, 9, 0);
+
+    int8_t val = sys->read_gpr(src);
+
+    sys->write_data(dest, val);
+}
+
+void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
+                                                           dec, push, pop, out };
 
 
 
