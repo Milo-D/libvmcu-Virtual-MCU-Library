@@ -35,7 +35,7 @@ namespace {
             sys->kill();
 	}
 
-    void jump_forward(Sys *sys, Table *table) {
+    void jump_forward(Sys *sys, Table *table, int cursor) {
 
         int line;
 
@@ -49,7 +49,10 @@ namespace {
                 break;
             }
 
+            debug_menu(sys, table, cursor);
             step_forward(sys, table);
+
+            sleep_for(milliseconds(500));
 
         } while(sys->is_terminated() == false);
     }
@@ -65,7 +68,7 @@ void debug(Table *table) {
     table->set_tip(TIP_DEF);
 
     if(table->has_break() == true)
-        jump_forward(&sys, table);
+        jump_forward(&sys, table, cursor);
 	
     do {
 
@@ -82,7 +85,7 @@ void debug(Table *table) {
             step_forward(&sys, table);
 
         if(last_select == "jb")
-            jump_forward(&sys, table);
+            jump_forward(&sys, table, cursor);
 
         if(last_select == "rn")
             movec(&cursor, +1, 4);
