@@ -11,6 +11,7 @@
 // Project Headers
 #include "debugger.hpp"
 #include "ehandling.hpp"
+#include "debugparser.hpp"
 #include "menus.hpp"
 #include "table.hpp"
 #include "sys.hpp"
@@ -30,6 +31,7 @@ void jump_forward(Sys *sys, Table *table, int cursor);
 void debug(Table *table) {
 
     Sys sys( table->src() );
+    DebugParser parser;
 
     int cursor = 0;
     string last_select, select;
@@ -48,22 +50,19 @@ void debug(Table *table) {
             continue;
 		
         if(select != "")
-            last_select = select;		 
-		
-        if(last_select == "n")
-            step_forward(&sys, table);
+            last_select = select;
 
-        if(last_select == "jb")
-            jump_forward(&sys, table, cursor);
+        switch(parser.index_of(last_select)) {
 
-        if(last_select == "rn")
-            movec(&cursor, +1, 4);
+            case 0: step_forward(&sys, table); break;
+            case 1: movec(&cursor, +1, 4); break;
+            case 2: sys.scale_data(+1); break;
+            case 3: sys.scale_data(-1); break;
+            case 4: jump_forward(&sys, table, cursor); break;
+            case 5: /* Exit */ break;
 
-        if(last_select == "dn")
-            sys.scale_data(+1);
-
-        if(last_select == "dp")
-            sys.scale_data(-1);
+            default: /* Ignoring invalid Input */ break;
+        } 
 		
     } while(select != "e");
 
