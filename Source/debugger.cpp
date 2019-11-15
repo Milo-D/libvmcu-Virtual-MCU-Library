@@ -87,16 +87,13 @@ void jump_forward(Sys *sys, Table *table, int cursor) {
 
         line = table->get_tip();
 
-        if(table->is_break(line) == true) {
-
-            table->unset_break(to_string(line));
+        if(table->is_break(line) == true)
             break;
-        }
 
         debug_menu(sys, table, cursor);
         step_forward(sys, table);
 
-        sleep_for(milliseconds(500));
+        sleep_for(milliseconds(100));
 
     } while(sys->is_terminated() == false);
 }
