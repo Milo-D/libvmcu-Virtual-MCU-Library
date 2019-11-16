@@ -17,7 +17,6 @@ public:
     bool has_break(void);                       // checks if table has breakpoints
     int get_label_ln(std::string id);           // translating label to line
     void set_tip(int instr_line);               // moving tip to 'instr_line'
-    int get_tip(void);                          // getting current tip
     std::string get_content(int line);          // get content at index 'line'
     bool executable(void);                      // returns 'true' if line is executable
     int step(void);                             // single stepping through Table

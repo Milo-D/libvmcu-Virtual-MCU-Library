@@ -174,11 +174,6 @@ void Table::set_tip(int instr_line) {
     this->tip = instr_line;
 }
 
-int Table::get_tip(void) {
-
-    return this->tip;
-}
-
 string Table::get_content(int line) {
 
     return this->content[line];
