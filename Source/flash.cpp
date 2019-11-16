@@ -12,10 +12,13 @@
 #include "stringparse.hpp"
 #include "mcu.hpp"
 #include "decoder.hpp"
+#include "table.hpp"
 
 using namespace std;
 
-Flash::Flash(string asm_file) {
+Flash::Flash(Table *table) {
+
+    string asm_file = table->src();
 
     string cmd = "avra -I /usr/share/avra/ " + asm_file;
     system(cmd.c_str());
@@ -39,6 +42,7 @@ Flash::Flash(string asm_file) {
     this->pc = 0;
     this->size = FLASH_SIZE;
     this->size_used = this->app.size();
+    this->table = table;
 }
 
 void Flash::insert_instr(int instr) {
@@ -67,5 +71,40 @@ void Flash::pc_next(void) {
         return;
 
     this->pc += 1;
+}
+
+int Flash::table_step(void) {
+
+    return this->table->step();
+}
+
+void Flash::table_set_tip(int instr_line) {
+
+    this->table->set_tip(instr_line);
+}
+
+bool Flash::table_has_break(void) {
+
+    return this->table->has_break();
+}
+
+bool Flash::table_is_break(void) {
+
+    return this->table->is_break();
+}
+
+bool Flash::table_is_exec(void) {
+
+    return this->table->executable();
+}
+
+int Flash::table_size(void) {
+
+    return this->table->size();
+}
+
+string Flash::table_to_str(void) {
+
+    return this->table->center_to_str();
 }
 

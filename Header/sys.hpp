@@ -8,11 +8,12 @@
 class Alu;
 class Data;
 class Eeprom;
+class Table;
 
 class Sys {
 
 public:
-    Sys(std::string asm_file);
+    Sys(Table *table);
 
     /* General System Functions */
 
@@ -40,6 +41,14 @@ public:
     int8_t read_data(int addr);
     void scale_data(int offs);
     std::string data_to_str(void);
+
+    /* Table Operations */
+
+    void table_set_tip(int instr_line);
+    bool table_has_break(void);
+    bool table_is_break(void);
+    int table_size(void);
+    std::string table_to_str(void);
 
 private:
     Alu *alu;

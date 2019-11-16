@@ -12,12 +12,13 @@
 #include "data.hpp"
 #include "flash.hpp"
 #include "eeprom.hpp"
+#include "table.hpp"
 
 using namespace std;
 
-Sys::Sys(string asm_file) {
+Sys::Sys(Table *table) {
 
-    this->alu = new Alu(asm_file);
+    this->alu = new Alu(table);
     this->data = new Data();
     this->eeprom = new Eeprom();
 
@@ -101,5 +102,30 @@ void Sys::scale_data(int offs) {
 string Sys::data_to_str(void) {
 
     return this->data->to_str();
+}
+
+void Sys::table_set_tip(int instr_line) {
+
+    this->alu->table_set_tip(instr_line);
+}
+
+bool Sys::table_has_break(void) {
+
+    return this->alu->table_has_break();
+}
+
+bool Sys::table_is_break(void) {
+
+    return this->alu->table_is_break();
+}
+
+int Sys::table_size(void) {
+
+    return this->alu->table_size();
+}
+
+string Sys::table_to_str(void) {
+
+    return this->alu->table_to_str();
 }
 

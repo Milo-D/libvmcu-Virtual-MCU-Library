@@ -13,7 +13,7 @@ public:
 	
     int set_break(std::string point);           // setting breakpoints
     int unset_break(std::string point);         // removing breakpoints
-    bool is_break(int line);                    // checks if 'line' is a breakpoint
+    bool is_break(void);                        // checks if current line is a breakpoint
     bool has_break(void);                       // checks if table has breakpoints
     int get_label_ln(std::string id);           // translating label to line
     void set_tip(int instr_line);               // moving tip to 'instr_line'

@@ -145,9 +145,9 @@ int Table::unset_break(string point) {
     return 0;
 }
 
-bool Table::is_break(int line) {
+bool Table::is_break(void) {
 
-    return this->breaks[line];
+    return this->breaks[this->tip];
 }
 
 bool Table::has_break(void) {

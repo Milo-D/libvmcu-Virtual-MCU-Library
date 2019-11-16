@@ -25,28 +25,44 @@ using namespace std;
 using namespace std::chrono;
 using namespace std::this_thread;
 
-void step_forward(Sys *sys, Table *table);
-void jump_forward(Sys *sys, Table *table, int cursor);
+namespace {
+
+    void jump_forward(Sys *sys, int cursor) {
+
+        do {
+
+            if(sys->table_is_break() == true)
+                break;
+
+            debug_menu(sys, cursor);
+            sys->step();
+
+            sleep_for(milliseconds(100));
+
+        } while(sys->is_terminated() == false);
+    }
+
+};
 
 void debug(Table *table) {
 
-    Sys sys( table->src() );
     DebugParser parser;
+    Sys sys(table);
 
     int cursor = 0;
     string last_select, select;
 	
-    table->set_tip(TIP_DEF);
+    sys.table_set_tip(TIP_DEF);
 
-    if(table->has_break() == true)
-        jump_forward(&sys, table, cursor);
+    if(sys.table_has_break() == true)
+        jump_forward(&sys, cursor);
 	
     do {
 
-        debug_menu(&sys, table, cursor);
+        debug_menu(&sys, cursor);
         getline(cin, select);
 
-        if(table->size() <= 0)
+        if(sys.table_size() <= 0)
             continue;
 		
         if(select != "")
@@ -54,11 +70,11 @@ void debug(Table *table) {
 
         switch(parser.index_of(last_select)) {
 
-            case 0: step_forward(&sys, table); break;
+            case 0: sys.step(); break;
             case 1: movec(&cursor, +1, 4); break;
             case 2: sys.scale_data(+1); break;
             case 3: sys.scale_data(-1); break;
-            case 4: jump_forward(&sys, table, cursor); break;
+            case 4: jump_forward(&sys, cursor); break;
             case 5: /* Exit */ break;
 
             default: /* Ignoring invalid Input */ break;
@@ -66,35 +82,7 @@ void debug(Table *table) {
 		
     } while(select != "e");
 
-    table->set_tip(TIP_UNDEF);
-}
-
-void step_forward(Sys *sys, Table *table) {
-
-    if(table->executable() == true)
-        sys->step();
-
-    if(table->step() < 0)
-        sys->kill();
-}
-
-void jump_forward(Sys *sys, Table *table, int cursor) {
-
-    int line;
-
-    do {
-
-        line = table->get_tip();
-
-        if(table->is_break(line) == true)
-            break;
-
-        debug_menu(sys, table, cursor);
-        step_forward(sys, table);
-
-        sleep_for(milliseconds(100));
-
-    } while(sys->is_terminated() == false);
+    sys.table_set_tip(TIP_UNDEF);
 }
 
 
