@@ -27,6 +27,9 @@ public:
     bool read_sreg(int flag);                   // reading SREG
     std::string get_sreg(void);                 // get SREG output string
 
+    int get_pc(void);                           // returning program counter
+    void set_pc(int addr);                      // setting program counter on 'addr'
+
     void table_set_tip(int instr_line);         // setting tip to 'instr_line'
     bool table_has_break(void);                 // checking if table has breakpoints
     bool table_is_break(void);                  // checking if current tip line is a breakpoint

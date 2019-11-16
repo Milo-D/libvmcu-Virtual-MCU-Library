@@ -73,6 +73,20 @@ void Flash::pc_next(void) {
     this->pc += 1;
 }
 
+int Flash::pc_get(void) {
+
+    return this->pc;
+}
+
+void Flash::pc_set(int addr) {
+
+    if(addr > this->size_used)
+        return;
+
+    this->pc = addr - 1;
+    this->table->jump(addr);
+}
+
 int Flash::table_step(void) {
 
     return this->table->step();

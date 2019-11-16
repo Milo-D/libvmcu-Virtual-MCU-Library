@@ -63,7 +63,20 @@ void ldi(Sys *sys, int opcode) {
 
 void rjmp(Sys *sys, int opcode) {
 
-    /* in progress */
+    int offs = extract(opcode, 0, 12, 0);
+    int prog_counter = sys->get_pc();
+
+    if(((0x01 << 11) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 12) - 1);
+        offs += 0x01;
+
+        sys->set_pc(prog_counter - offs + 1);
+
+        return;
+    }
+
+    sys->set_pc(prog_counter + offs + 1);
 } 
 
 void mov(Sys *sys, int opcode) {

@@ -74,6 +74,16 @@ string Sys::sreg_to_str(void) {
     return this->alu->get_sreg();
 }
 
+int Sys::get_pc(void) {
+
+    return this->alu->get_pc();
+}
+
+void Sys::set_pc(int addr) {
+
+    this->alu->set_pc(addr);
+}
+
 void Sys::push_stack(int8_t value) {
 
     this->data->push(value);

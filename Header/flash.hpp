@@ -18,6 +18,8 @@ public:
     int load_instr(void);                   // fetching next Instruction
     int load_key(void);                     // fetching Instruction key
     void pc_next(void);                     // incrementing program counter
+    int pc_get(void);                       // getting program counter
+    void pc_set(int addr);                  // setting program counter on 'addr'
 
     int table_step(void);                   // single stepping through table
     void table_set_tip(int instr_line);     // setting tip to 'instr_line'

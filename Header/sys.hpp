@@ -33,6 +33,11 @@ public:
     bool read_sreg(int flag);
     std::string sreg_to_str(void);
 
+    /* FLASH Operations */
+
+    int get_pc(void);
+    void set_pc(int addr);
+
     /* DATA Operations */
 
     void push_stack(int8_t value);

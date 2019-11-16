@@ -16,9 +16,6 @@
 #include "table.hpp"
 #include "sys.hpp"
 
-#define TIP_UNDEF -1
-#define TIP_DEF 0
-
 #define movec(cursor, offs, range) *cursor = ((*cursor) + offs) % range
 
 using namespace std;
@@ -46,13 +43,11 @@ namespace {
 
 void debug(Table *table) {
 
-    DebugParser parser;
-    Sys sys(table);
-
     int cursor = 0;
     string last_select, select;
-	
-    sys.table_set_tip(TIP_DEF);
+
+    DebugParser parser;
+    Sys sys(table);
 
     if(sys.table_has_break() == true)
         jump_forward(&sys, cursor);
@@ -75,14 +70,12 @@ void debug(Table *table) {
             case 2: sys.scale_data(+1); break;
             case 3: sys.scale_data(-1); break;
             case 4: jump_forward(&sys, cursor); break;
-            case 5: /* Exit */ break;
+            case 5: sys.table_set_tip(0); break;
 
             default: /* Ignoring invalid Input */ break;
         } 
 		
     } while(select != "e");
-
-    sys.table_set_tip(TIP_UNDEF);
 }
 
 

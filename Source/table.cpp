@@ -93,7 +93,7 @@ Table::Table(string asm_file) {
 
 set_data:
 
-    this->tip = -1;
+    this->tip = 0;
     this->break_counter = 0;
     this->table_size = this->content.size();
     this->src_file = asm_file;
@@ -172,6 +172,21 @@ void Table::set_tip(int instr_line) {
     }
 
     this->tip = instr_line;
+}
+
+void Table::jump(int exec_addr) {
+
+    int i = 0; int j = 0;
+
+    while(i != exec_addr) {
+
+        if(this->exec[j] == true)
+            i += 1;
+
+        j += 1;
+    }
+
+    this->tip = j;
 }
 
 string Table::get_content(int line) {
