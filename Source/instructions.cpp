@@ -118,8 +118,24 @@ void out(Sys *sys, int opcode) {
     sys->write_data(dest, val);
 }
 
+void clr(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    int8_t val_dest = sys->read_gpr(dest);
+    int8_t val_src = sys->read_gpr(src);
+
+    sys->write_gpr(dest, (val_dest ^ val_src));
+
+    sys->write_sreg(SF, 0x00);
+    sys->write_sreg(VF, 0x00);
+    sys->write_sreg(NF, 0x00);
+    sys->write_sreg(ZF, 0x01);
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, push, pop, out };
+                                                           dec, push, pop, out, clr };
 
 
 

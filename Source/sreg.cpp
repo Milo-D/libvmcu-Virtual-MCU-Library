@@ -22,9 +22,11 @@ Sreg::Sreg(void) {
 
 void Sreg::write(int flag, bool bit) {
 
-    if(status == true) {
+    if(bit == true) {
 
         this->status |= (0x01 << flag);
+        this->color[flag] = GREEN;
+        
         return;
     }
 	
