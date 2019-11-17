@@ -27,7 +27,7 @@ public:
     bool table_is_break(void);              // checking if current tip line is a breakpoint
     bool table_is_exec(void);               // checking if current line is an executable line
     int table_size(void);                   // returning size of table
-    std::string table_to_str(void);         // get TABLE output string
+    std::string get_table(void);            // get TABLE output string
 
 private:
     int pc;                                 // program counter

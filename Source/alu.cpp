@@ -51,6 +51,16 @@ skip:
     return 0;
 }
 
+int Alu::get_pc(void) {
+
+    return this->flash->pc_get();
+}
+
+void Alu::set_pc(int addr) {
+
+    this->flash->pc_set(addr);
+}
+
 void Alu::write_gpr(int rx, int8_t data) {
 
     this->gpr->write(rx, data);
@@ -81,16 +91,6 @@ string Alu::get_sreg(void) {
     return this->sreg->to_str();
 }
 
-int Alu::get_pc(void) {
-
-    return this->flash->pc_get();
-}
-
-void Alu::set_pc(int addr) {
-
-    this->flash->pc_set(addr);
-}
-
 void Alu::table_set_tip(int instr_line) {
 
     this->flash->table_set_tip(instr_line);
@@ -111,9 +111,9 @@ int Alu::table_size(void) {
     return this->flash->table_size();
 }
 
-string Alu::table_to_str(void) {
+string Alu::get_table(void) {
 
-    return this->flash->table_to_str();
+    return this->flash->get_table();
 }
 
 

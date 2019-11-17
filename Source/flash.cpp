@@ -117,7 +117,7 @@ int Flash::table_size(void) {
     return this->table->size();
 }
 
-string Flash::table_to_str(void) {
+string Flash::get_table(void) {
 
     return this->table->center_to_str();
 }

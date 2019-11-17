@@ -136,6 +136,6 @@ int Sys::table_size(void) {
 
 string Sys::table_to_str(void) {
 
-    return this->alu->table_to_str();
+    return this->alu->get_table();
 }
 
