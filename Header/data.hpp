@@ -19,7 +19,7 @@ public:
     int8_t read(int addr);                          // reading 'addr' from DATA
 
     void scale(int offs);                           // scaling DATA Memory
-    std::string to_str(void);                       // returning a printable DATA string
+    std::vector <std::string> to_vector(void);      // returning a vector of DATA
 
 private:
     int8_t *memory;                                 // 8-bit DATA Field

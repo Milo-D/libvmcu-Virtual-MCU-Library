@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <cstring>
+#include <vector>
 #include <sstream>
 #include <tuple>
 
@@ -87,7 +88,7 @@ int8_t Data::read(int addr) {
 
 void Data::scale(int offs) {
 
-    if((this->cursor + offs) == RAM_END)
+    if((this->cursor + offs) > RAM_END)
         return;
 
     if((this->cursor + offs) < 0x0000)
@@ -96,18 +97,20 @@ void Data::scale(int offs) {
     this->cursor += offs;
 }
 
-string Data::to_str(void) {
+vector <string> Data::to_vector(void) {
 
-    stringstream stream;
-    stream << "Data Memory:\n\n"; 
+    vector <string> out;
+    out.push_back("Data Memory:");
 
     int sp = sp(this->memory[SPL], this->memory[SPH]);
 
     for(int i = (this->cursor - 4); i <= (this->cursor + 4); i++) {
 
+        stringstream stream;
+
         if(i < 0 || i > RAM_END) {
 
-            stream << "\n";
+            out.push_back(SPACING);
             continue;
         }
 
@@ -121,14 +124,14 @@ string Data::to_str(void) {
             stream << get <1> (this->color);
 
         stream << "0x" << setfill('0') << setw(2);
-        stream << hex << (int) this->memory[i] << "\n";
+        stream << hex << (int) this->memory[i];
         stream << DEFAULT;
+
+        out.push_back(stream.str());
     }
 
-    stream << SEPERATOR;
     this->clear_color();
-
-    return stream.str();
+    return out;
 }
 
 /* --- Private --- */

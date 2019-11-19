@@ -4,6 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <vector>
 
 // Project Headers
 #include "sys.hpp"
@@ -13,6 +14,7 @@
 #include "flash.hpp"
 #include "eeprom.hpp"
 #include "table.hpp"
+#include "stringparse.hpp"
 
 using namespace std;
 
@@ -109,9 +111,24 @@ void Sys::scale_data(int offs) {
     this->data->scale(offs);
 }
 
-string Sys::data_to_str(void) {
+void Sys::write_eeprom(int addr, int8_t value) {
 
-    return this->data->to_str();
+    this->eeprom->write(addr, value);
+}
+
+int8_t Sys::read_eeprom(int addr) {
+
+    return this->eeprom->read(addr);
+}
+
+void Sys::scale_eeprom(int offs) {
+
+    this->eeprom->scale(offs);
+}
+
+string Sys::memory_to_str(void) {
+
+    return mix_memory(data->to_vector(), eeprom->to_vector());
 }
 
 void Sys::table_set_tip(int instr_line) {

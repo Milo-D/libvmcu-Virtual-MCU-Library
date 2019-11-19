@@ -68,8 +68,9 @@ void debug_menu(Sys *sys, int cursor) {
     cout << sys->gpr_to_str(cursor);
     cout << sys->sreg_to_str();	
     cout << sys->table_to_str();
-    cout << sys->data_to_str();
+    cout << sys->memory_to_str();
 
+    cout << SEPERATOR;
     cout << PROMPT;
 }
 

@@ -4,9 +4,10 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <algorithm>
-#include <fstream>  
 #include <iterator>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 
 // Project Header
 #include "stringparse.hpp"
@@ -81,6 +82,28 @@ int hex_to_dec(string input) {
     }
 
     return dec;
+}
+
+string mix_memory(vector <string> first, vector <string> second) {
+
+    stringstream stream;
+
+    for(int i = 0; i < first.size(); i++) {
+
+        stream << first[i] << right << setfill(' ');
+
+        if(i == 0)
+            stream << setw(33);
+        else
+            stream << setw(46);
+
+        stream << second[i] << endl;
+
+        if(i == 0)
+            stream << endl;
+    }
+
+    return stream.str();
 }
 
 bool file_exists(const string &file) {

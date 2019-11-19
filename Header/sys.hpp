@@ -45,7 +45,16 @@ public:
     void write_data(int addr, int8_t value);
     int8_t read_data(int addr);
     void scale_data(int offs);
-    std::string data_to_str(void);
+
+    /* EEPROM Operations */
+
+    void write_eeprom(int addr, int8_t value);
+    int8_t read_eeprom(int addr);
+    void scale_eeprom(int offs);
+
+    /* DATA and EEPROM Operations */
+
+    std::string memory_to_str(void);
 
     /* Table Operations */
 

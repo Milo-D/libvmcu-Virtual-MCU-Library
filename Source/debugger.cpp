@@ -38,7 +38,6 @@ namespace {
 
         } while(sys->is_terminated() == false);
     }
-
 };
 
 void debug(Table *table) {
@@ -70,7 +69,9 @@ void debug(Table *table) {
             case 2: sys.scale_data(+1); break;
             case 3: sys.scale_data(-1); break;
             case 4: jump_forward(&sys, cursor); break;
-            case 5: sys.table_set_tip(0); break;
+            case 5: sys.scale_eeprom(+1); break;
+            case 6: sys.scale_eeprom(-1); break;
+            case 7: sys.table_set_tip(0); break;
 
             default: /* Ignoring invalid Input */ break;
         } 
