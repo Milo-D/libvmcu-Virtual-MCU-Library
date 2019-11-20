@@ -23,7 +23,8 @@ public:
 
 private:
     int8_t *memory;                                 // 8-bit DATA Field
-    unsigned int cursor;                            // DATA cursor
+    
+    int cursor;                                     // DATA cursor
     std::tuple <int, std::string> color;            // color tuple (memory cell, color)
 
     void set_color(int cell, std::string color);    // setting color of memory cell

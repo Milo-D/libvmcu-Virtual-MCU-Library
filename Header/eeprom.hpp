@@ -18,12 +18,13 @@ public:
     std::vector <std::string> to_vector(void);              // returning a vector of EEPROM
 
 private:
-    int8_t *memory;
-    unsigned int cursor;
-    std::tuple <int, std::string> color;
+    int8_t *memory;                                         // EEPROM memory block
 
-    void set_color(int cell, std::string color);
-    void clear_color(void);
+    int cursor;                                             // EEPROM cursor
+    std::tuple <int, std::string> color;                    // memory cell color
+
+    void set_color(int cell, std::string color);            // setting color of cell
+    void clear_color(void);                                 // clear all cell colors
 };
 
 #endif
