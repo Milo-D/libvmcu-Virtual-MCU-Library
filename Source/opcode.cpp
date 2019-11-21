@@ -25,7 +25,8 @@ extern const int opcode[SET_SIZE][WORD] = {
 { 1, 0, 0, 1, 0, 0, 0, D, D, D, D, D, 1, 1, 1, 1 }, /* POP */
 { 1, 0, 1, 1, 1, A, A, R, R, R, R, R, A, A, A, A }, /* OUT */
 { 0, 0, 1, 0, 0, 1, D, D, D, D, D, D, D, D, D, D }, /* CLR */
-{ 1, 0, 0, 1, 0, 0, 0, D, D, D, D, D, 1, 1, 0, 0 }  /* LD */
+{ 1, 0, 0, 1, 0, 0, 0, D, D, D, D, D, 1, 1, 0, 0 }, /* LD(X) */
+{ 1, 0, 0, 0, 0, 0, 0, D, D, D, D, D, 1, 0, 0, 0 }  /* LD(Y) */
 
 /* More OPCodes coming soon... */
 

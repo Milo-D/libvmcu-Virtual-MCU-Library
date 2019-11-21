@@ -134,7 +134,7 @@ void clr(Sys *sys, int opcode) {
     sys->write_sreg(ZF, 0x01);
 }
 
-void ld(Sys *sys, int opcode) {
+void ld_x(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
 
@@ -142,12 +142,22 @@ void ld(Sys *sys, int opcode) {
     int8_t xh = sys->read_gpr(27);
 
     int8_t data = sys->read_data((xh << 8) + xl);
+    sys->write_gpr(dest, data);
+}
 
+void ld_y(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    int8_t yl = sys->read_gpr(28);
+    int8_t yh = sys->read_gpr(29);
+
+    int8_t data = sys->read_data((yh << 8) + yl);
     sys->write_gpr(dest, data);
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, push, pop, out, clr, ld };
+                                                           dec, push, pop, out, clr, ld_x, ld_y };
 
 
 
