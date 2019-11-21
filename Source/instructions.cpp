@@ -156,8 +156,19 @@ void ld_y(Sys *sys, int opcode) {
     sys->write_gpr(dest, data);
 }
 
+void ld_z(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    int8_t zl = sys->read_gpr(ZL);
+    int8_t zh = sys->read_gpr(ZH);
+
+    int8_t data = sys->read_data((zh << 8) + zl);
+    sys->write_gpr(dest, data);
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, push, pop, out, clr, ld_x, ld_y };
+                                                           dec, push, pop, out, clr, ld_x, ld_y, ld_z };
 
 
 
