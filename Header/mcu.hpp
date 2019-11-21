@@ -28,6 +28,13 @@
     #define ZF 1
     #define CF 0
 
+    #define XL 26
+    #define XH 27
+    #define YL 28
+    #define YH 29
+    #define ZL 30
+    #define ZH 31
+
     const std::string flags[SREG_SIZE] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
 
 #endif

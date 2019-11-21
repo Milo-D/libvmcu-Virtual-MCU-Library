@@ -138,8 +138,8 @@ void ld_x(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
 
-    int8_t xl = sys->read_gpr(26);
-    int8_t xh = sys->read_gpr(27);
+    int8_t xl = sys->read_gpr(XL);
+    int8_t xh = sys->read_gpr(XH);
 
     int8_t data = sys->read_data((xh << 8) + xl);
     sys->write_gpr(dest, data);
@@ -149,8 +149,8 @@ void ld_y(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
 
-    int8_t yl = sys->read_gpr(28);
-    int8_t yh = sys->read_gpr(29);
+    int8_t yl = sys->read_gpr(YL);
+    int8_t yh = sys->read_gpr(YH);
 
     int8_t data = sys->read_data((yh << 8) + yl);
     sys->write_gpr(dest, data);
