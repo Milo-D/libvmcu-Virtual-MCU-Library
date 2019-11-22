@@ -9,13 +9,13 @@
 // Project Headers
 #include "debugparser.hpp"
 
-#define MAX 8
+#define MAX 9
 
 using namespace std;
 
 DebugParser::DebugParser(void) {
 
-    string valid[MAX] = { "n", "rn", "dn", "dp", "jb", "en", "ep", "e" };
+    string valid[MAX] = { "n", "rn", "dn", "dp", "jb", "en", "ep", "e", "?" };
 
     for(int i = 0; i < MAX; i++)
         this->cmd[ valid[i] ] = i;

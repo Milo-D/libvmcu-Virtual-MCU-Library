@@ -13,6 +13,7 @@
 #include "ehandling.hpp"
 #include "debugparser.hpp"
 #include "menus.hpp"
+#include "help.hpp"
 #include "table.hpp"
 #include "sys.hpp"
 
@@ -72,6 +73,7 @@ void debug(Table *table) {
             case 5: sys.scale_eeprom(+1); break;
             case 6: sys.scale_eeprom(-1); break;
             case 7: sys.table_set_tip(0); break;
+            case 8: help(); break;
 
             default: /* Ignoring invalid Input */ break;
         } 
