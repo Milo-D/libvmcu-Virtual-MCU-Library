@@ -176,16 +176,7 @@ void Table::set_tip(int instr_line) {
 
 void Table::jump(int exec_addr) {
 
-    int i = 0; int j = 0;
-
-    if(exec_addr == 0) {
-
-        while(this->exec[j] == false)
-            j += 1;
-
-        j -= 1;
-        goto move_tip;
-    }
+    int i = -1; int j = 0;
 
     while(i != exec_addr) {
 
@@ -195,9 +186,7 @@ void Table::jump(int exec_addr) {
         j += 1;
     }
 
-    j += 1;
-
-move_tip:
+    j -= 2;
 
     if(j >= this->table_size) {
 
