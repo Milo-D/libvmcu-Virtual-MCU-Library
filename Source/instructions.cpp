@@ -171,8 +171,13 @@ void ld_z(Sys *sys, int opcode) {
     sys->write_gpr(dest, data);
 }
 
+void ses(Sys *sys, int opcode) {
+
+    sys->write_sreg(SF, 0x01);
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, push, pop, out, clr, ld_x, ld_y, ld_z };
+                                                           dec, push, pop, out, clr, ld_x, ld_y, ld_z, ses };
 
 
 
