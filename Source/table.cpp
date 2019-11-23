@@ -178,12 +178,31 @@ void Table::jump(int exec_addr) {
 
     int i = 0; int j = 0;
 
+    if(exec_addr == 0) {
+
+        while(this->exec[j] == false)
+            j += 1;
+
+        j -= 1;
+        goto move_tip;
+    }
+
     while(i != exec_addr) {
 
         if(this->exec[j] == true)
             i += 1;
 
         j += 1;
+    }
+
+    j += 1;
+
+move_tip:
+
+    if(j >= this->table_size) {
+
+        this->tip = this->table_size - 2;
+        return;
     }
 
     this->tip = j;

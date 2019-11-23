@@ -211,9 +211,30 @@ void sen(Sys *sys, int opcode) {
     sys->write_sreg(NF, 0x01);
 }
 
+void brne(Sys *sys, int opcode) {
+
+    if(sys->read_sreg(ZF) == 0x01)
+        return;
+
+    int offs = extract(opcode, 3, 10, 0);
+    int prog_counter = sys->get_pc();
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 7) - 1);
+        offs += 0x01;
+
+        sys->set_pc(prog_counter - offs + 1);
+
+        return;
+    }
+
+    sys->set_pc(prog_counter + offs + 1);
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, push, pop, out, clr, ld_x, ld_y, ld_z, ses,
-                                                           set, sev, sez, seh, sec, sei, sen };
+                                                           set, sev, sez, seh, sec, sei, sen, brne };
 
 
 
