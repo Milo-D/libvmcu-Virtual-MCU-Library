@@ -191,9 +191,14 @@ void sez(Sys *sys, int opcode) {
     sys->write_sreg(ZF, 0x01);
 }
 
+void seh(Sys *sys, int opcode) {
+
+    sys->write_sreg(HF, 0x01);
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, push, pop, out, clr, ld_x, ld_y, ld_z, ses,
-                                                           set, sev, sez };
+                                                           set, sev, sez, seh };
 
 
 
