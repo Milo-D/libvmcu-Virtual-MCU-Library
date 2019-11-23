@@ -35,7 +35,11 @@ void nop(Sys *sys, int opcode) {
 
 void movw(Sys *sys, int opcode) {
 
-    /* in progress */
+    int dest = extract(opcode, 4, 8, 0) * 2;
+    int src = extract(opcode, 0, 4, 0) * 2;
+
+    sys->write_gpr(dest, sys->read_gpr(src));
+    sys->write_gpr(dest + 1, sys->read_gpr(src + 1));
 }
 
 void muls(Sys *sys, int opcode) {
