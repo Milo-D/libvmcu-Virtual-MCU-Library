@@ -188,46 +188,6 @@ void ld_z(Sys *sys, int opcode) {
     sys->write_gpr(dest, data);
 }
 
-void ses(Sys *sys, int opcode) {
-
-    sys->write_sreg(SF, 0x01);
-}
-
-void set(Sys *sys, int opcode) {
-
-    sys->write_sreg(TF, 0x01);
-}
-
-void sev(Sys *sys, int opcode) {
-
-    sys->write_sreg(VF, 0x01);
-}
-
-void sez(Sys *sys, int opcode) {
-
-    sys->write_sreg(ZF, 0x01);
-}
-
-void seh(Sys *sys, int opcode) {
-
-    sys->write_sreg(HF, 0x01);
-}
-
-void sec(Sys *sys, int opcode) {
-
-    sys->write_sreg(CF, 0x01);
-}
-
-void sei(Sys *sys, int opcode) {
-
-    sys->write_sreg(IF, 0x01);
-}
-
-void sen(Sys *sys, int opcode) {
-
-    sys->write_sreg(NF, 0x01);
-}
-
 void brne(Sys *sys, int opcode) {
 
     if(sys->read_sreg(ZF) == 0x01)
@@ -276,9 +236,49 @@ void cpi(Sys *sys, int opcode) {
     sys->write_sreg(ZF, (result == 0x00));
 }
 
+void ses(Sys *sys, int opcode) {
+
+    sys->write_sreg(SF, 0x01);
+}
+
+void set(Sys *sys, int opcode) {
+
+    sys->write_sreg(TF, 0x01);
+}
+
+void sev(Sys *sys, int opcode) {
+
+    sys->write_sreg(VF, 0x01);
+}
+
+void sez(Sys *sys, int opcode) {
+
+    sys->write_sreg(ZF, 0x01);
+}
+
+void seh(Sys *sys, int opcode) {
+
+    sys->write_sreg(HF, 0x01);
+}
+
+void sec(Sys *sys, int opcode) {
+
+    sys->write_sreg(CF, 0x01);
+}
+
+void sei(Sys *sys, int opcode) {
+
+    sys->write_sreg(IF, 0x01);
+}
+
+void sen(Sys *sys, int opcode) {
+
+    sys->write_sreg(NF, 0x01);
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, push, pop, out, clr, ld_x, ld_y, ld_z, ses,
-                                                           set, sev, sez, seh, sec, sei, sen, brne, cpi };
+                                                           dec, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
+                                                           cpi, ses, set, sev, sez, seh, sec, sei, sen };
 
 
 
