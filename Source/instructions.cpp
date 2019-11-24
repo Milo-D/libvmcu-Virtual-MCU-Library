@@ -95,7 +95,22 @@ void mov(Sys *sys, int opcode) {
 
 void dec(Sys *sys, int opcode) {
 
-    /* in progress */
+    int dest = extract(opcode, 4, 9, 0);
+    int8_t value = sys->read_gpr(dest);
+
+    int8_t result = value - 0x01;
+
+    int8_t vf_res = ~bit(result, 7) * bit(result, 6) * bit(result, 5) * bit(result, 4);
+    vf_res *= bit(result, 3) * bit(result, 2) * bit(result, 1) * bit(result, 0);
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, vf_res ^ nf_res);
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
 }
 
 void push(Sys *sys, int opcode) {
@@ -251,7 +266,7 @@ void cpi(Sys *sys, int opcode) {
     int8_t hf_res = (~bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
     hf_res += (bit(result, 3) * ~bit(value, 3));
 
-    int8_t nf_res = bit(result, 8);
+    int8_t nf_res = bit(result, 7);
 
     sys->write_sreg(CF, cf_res);
     sys->write_sreg(VF, vf_res);
