@@ -276,9 +276,16 @@ void sen(Sys *sys, int opcode) {
     sys->write_sreg(NF, 0x01);
 }
 
+void bclr(Sys *sys, int opcode) {
+
+    int s_bit = extract(opcode, 4, 7, 0);
+
+    sys->write_sreg(s_bit, 0x00);
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
-                                                           cpi, ses, set, sev, sez, seh, sec, sei, sen };
+                                                           cpi, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
 
 

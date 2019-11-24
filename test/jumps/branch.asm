@@ -3,7 +3,7 @@
 .def temp = r18
 
 init:                    ; SP Init
-ldi r16, 0x0f            ; R16 <- 0x0f
+ldi r16, 0x05            ; R16 <- 0x0f
 rjmp useless             ; PC <- PC + useless + 1 
 
 useless:

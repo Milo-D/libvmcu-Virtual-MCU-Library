@@ -186,7 +186,7 @@ void Table::jump(int exec_addr) {
         j += 1;
     }
 
-    j -= 2;
+    j -= 3;
 
     if(j >= this->table_size) {
 
