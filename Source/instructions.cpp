@@ -10,6 +10,8 @@
 #include "mcu.hpp"
 #include "sys.hpp"
 
+#define bit(value, i) (((0x01 << i) & value) >> i)
+
 using namespace std;
 
 namespace {
@@ -232,9 +234,36 @@ void brne(Sys *sys, int opcode) {
     sys->set_pc(prog_counter + offs + 1);
 }
 
+void cpi(Sys *sys, int opcode) {
+
+    int reg = extract(opcode, 4, 8, 0);
+    int8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    int8_t value = sys->read_gpr(16 + reg);
+    int8_t result = value - comp;
+
+    int8_t cf_res = (~(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * ~bit(value, 7));
+
+    int8_t vf_res = (bit(value, 7) * ~bit(comp, 7) * ~bit(result, 7));
+    vf_res += (~bit(value, 7) * bit(comp, 7) * bit(result, 7));
+
+    int8_t hf_res = (~bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
+    hf_res += (bit(result, 3) * ~bit(value, 3));
+
+    int8_t nf_res = bit(result, 8);
+
+    sys->write_sreg(CF, cf_res);
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(HF, hf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, nf_res ^ vf_res);
+    sys->write_sreg(ZF, (result == 0x00));
+}
+
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, push, pop, out, clr, ld_x, ld_y, ld_z, ses,
-                                                           set, sev, sez, seh, sec, sei, sen, brne };
+                                                           set, sev, sez, seh, sec, sei, sen, brne, cpi };
 
 
 

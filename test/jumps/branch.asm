@@ -11,6 +11,7 @@ out SPL, temp            ; [SRAM + 0x20 + SPL] <- R18
 start: 
 ldi r16, 0x2c            ; R16 <- 0x2c
 ldi r17, 0x1f            ; R17 <- 0x1f
+cpi r17, 0x1f            ; R17 - 0x1f
 brne init                ; if (Z = 0): PC <- PC + init + 1
 rjmp exit                ; PC <- PC + exit + 1
 
