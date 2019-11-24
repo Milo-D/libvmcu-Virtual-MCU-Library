@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <bits/stdc++.h> 
 
 // Project Header
 #include "stringparse.hpp"
@@ -82,6 +83,35 @@ int hex_to_dec(string input) {
     }
 
     return dec;
+}
+
+string get_hex(int8_t input) {
+
+    char hex[2] = { '0', '0' }; 
+    int dec = 0; int i = 0;
+
+    for(int i = 0; i < 8; i++)
+        dec |= ((1 << i) & input);
+
+    while(dec != 0) {
+
+        int res = (dec % 16);
+
+        if(res < 10)
+            hex[i] = (res + 48);
+        else
+            hex[i] = (res + 87);
+
+        i += 1;
+        dec /= 16;
+    }
+
+    char temp = hex[0];
+
+    hex[0] = hex[1];
+    hex[1] = temp;
+
+    return string(hex);
 }
 
 string mix_memory(vector <string> first, vector <string> second) {

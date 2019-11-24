@@ -12,6 +12,7 @@
 // Project Header
 #include "data.hpp"
 #include "mcu.hpp"
+#include "stringparse.hpp"
 #include "style.hpp"
 
 #define sp(spl, sph) ((sph << 8) + spl)
@@ -124,7 +125,7 @@ vector <string> Data::to_vector(void) {
             stream << get <1> (this->color);
 
         stream << "0x" << setfill('0') << setw(2);
-        stream << hex << (int) this->memory[i];
+        stream << get_hex(this->memory[i]);
         stream << DEFAULT;
 
         out.push_back(stream.str());

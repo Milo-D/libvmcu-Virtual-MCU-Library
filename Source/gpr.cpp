@@ -10,6 +10,7 @@
 // Project Headers
 #include "gpr.hpp"
 #include "mcu.hpp"
+#include "stringparse.hpp"
 #include "style.hpp"
 
 using namespace std;
@@ -65,7 +66,7 @@ string Gpr::to_str(int cursor) {
             stream << " ";
 
         stream << "0x" << right << setw(2) << setfill('0');
-        stream << hex << (int) this->reg[start + i];
+        stream << get_hex(this->reg[start + i]);
 
         stream << setfill(' ') << left << setw(4);
         stream << "      ";
