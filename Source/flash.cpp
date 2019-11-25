@@ -16,15 +16,32 @@
 
 using namespace std;
 
+namespace {
+
+    void create(string asm_file) {
+
+        string cmd = "avra -I /usr/share/avra/ " + asm_file;
+        system(cmd.c_str());
+    }
+
+    void destroy(string prefix) {
+
+        string type[4] = { ".cof", ".hex", ".eep.hex", ".obj" };
+
+        for(int i = 0; i < 4; i++) {
+
+            string cmd = "rm " + prefix + type[i];
+            system(cmd.c_str());
+        }
+    }
+};
+
 Flash::Flash(Table *table) {
 
     string asm_file = table->src();
-
-    string cmd = "avra -I /usr/share/avra/ " + asm_file;
-    system(cmd.c_str());
+    create(asm_file);
 
     string hex_file = get_file_name(asm_file) + ".hex";
-		
     ifstream read_file(hex_file, ios::in);
 
     if(read_file.good() == false)
@@ -35,7 +52,7 @@ Flash::Flash(Table *table) {
     while(getline(read_file, line))
         decode(this, line);
 
-    // toDo: cleanup files
+    destroy(get_file_name(asm_file));
 		
     read_file.close();
 					
