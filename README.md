@@ -1,6 +1,6 @@
 # MDX-Assembly-Debugger
 An easy and fast CLI Assembly Debugger for 8-bit Atmel AVR
-Microprocessors.
+Microcontrollers.
 
 # Overview
 MDX is an easy and fast CLI Debugger for AVR Assembly Programs.
@@ -8,27 +8,28 @@ MDX is an easy and fast CLI Debugger for AVR Assembly Programs.
 You are able to open up more than just one file while debugging. This
 allows you to switch fast and spontanious between your files.
 
-And because MDX simulates a System for Assembly Instructions, it will be
-possible to move back in time and do a "backstep".
-
 Every Instruction is colorfully visualized. You will see exactly what
 happens in the program.
 
-(Note: MDX is still in Developement. There might be issues, feel free to
-submit them in the issue segment.)
+(MDX is still in Developement. There might be issues, feel free to submit them in the issue segment.)
 
 ##### Table of Contents
 [I How MDX works](#How-MDX-works)
+
 [II Installation](#Installation)
-[III Supported MCUs](#Supported-Microcontroller)
-[IV Features](#How-To)
 
-[V Instruction Set](#Instructions)
+[III Troubleshooting](#Troubleshooting)
 
-[VI Screenshots](#Screenshots)
+[IV Supported MCUs](#Supported-Microcontroller)
+
+[V Features](#How-To)
+
+[VI Instruction Set](#Instructions)
+
+[VII Screenshots](#Screenshots)
 
 # How MDX works
-MDX accepts AVR Assembly files as input. Avra is only used to convert this
+MDX accepts AVR Assembly files as input. Avra is only used to convert these
 Assembly file to a Hex file. Then MDX decodes hexcodes into opcodes.
 These opcodes are used by MDX to simulate the AVR Instructions.
 
@@ -66,13 +67,15 @@ Troubleshooting Section.
 
 # Troubleshooting
 
--> Issue: Could not generate a hex file (for AtMega32).
--> Solution: The Include File 'm32def.inc' contains a line, which is too long
+-  Issue: Could not generate a hex file (for AtMega32).
+
+-  Solution: The Include File 'm32def.inc' contains a line, which is too long
    for avra. Just replace the original 'm32def.inc' (usually found in /usr/share/avra/)
    with the m32def.inc in this repo (found in 'inc' folder).
 
--> Issue: Could not parse Hexcode.
--> Solution: Because MDX is still in Development, it does not support every
+-  Issue: Could not parse Hexcode.
+
+-  Solution: Because MDX is still in Development, it does not support every
    Instruction. I am working on adding new Instructions to MDX. 
 
 # Supported Microcontroller
@@ -94,7 +97,6 @@ Troubleshooting Section.
 - [ ] I/O Support
 - [ ] Seperate I/O Pin View
 - [x] Open and debug more than one file in the same session
-- [ ] Customize it
 - [x] Fast and easy to use
 - [x] Short CLI Commands to debug faster
 - [ ] Full Instruction Support
@@ -103,5 +105,7 @@ Troubleshooting Section.
 Currently MDX supports: 24 Instructions. More Instructions are coming soon.
 
 # Screenshots
+
+By the way: You will find more Screenshots in the 'img' directory of this Repo.
 
 ![Alt text](/img/mdx.png?raw=true)
