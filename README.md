@@ -19,8 +19,11 @@ submit them in the issue segment.)
 
 ##### Table of Contents
 [I How MDX works](#How-MDX-works)
+
 [II Installation](#Installation)
+
 [III Supported MCUs](#Supported-Microcontroller)
+
 [IV Features](#How-To)
 
 [V Instruction Set](#Instructions)
