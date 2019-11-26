@@ -69,13 +69,13 @@ Troubleshooting Section.
 
 -  Issue: Could not generate a hex file (for AtMega32).
 
--> Solution: The Include File 'm32def.inc' contains a line, which is too long
+-  Solution: The Include File 'm32def.inc' contains a line, which is too long
    for avra. Just replace the original 'm32def.inc' (usually found in /usr/share/avra/)
    with the m32def.inc in this repo (found in 'inc' folder).
 
 -  Issue: Could not parse Hexcode.
 
--> Solution: Because MDX is still in Development, it does not support every
+-  Solution: Because MDX is still in Development, it does not support every
    Instruction. I am working on adding new Instructions to MDX. 
 
 # Supported Microcontroller
