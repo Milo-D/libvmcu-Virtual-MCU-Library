@@ -18,9 +18,9 @@ happens in the program.
 submit them in the issue segment.)
 
 ##### Table of Contents
-[I How MDX works](#How MDX works)
+[I How MDX works](#How-MDX-works)
 [II Installation](#Installation)
-[III Supported MCUs](#Supported Microcontroller)
+[III Supported MCUs](#Supported-Microcontroller)
 [IV Features](#How-To)
 
 [V Instruction Set](#Instructions)
@@ -66,9 +66,9 @@ Troubleshooting Section.
 
 # Troubleshooting
 
--> Issue: Could not generate a hex file (for Atmega32).
+-> Issue: Could not generate a hex file (for AtMega32).
 -> Solution: The Include File 'm32def.inc' contains a line, which is too long
-   for AVRA. Just replace the original 'm32def.inc' (usually found in /usr/share/avra/)
+   for avra. Just replace the original 'm32def.inc' (usually found in /usr/share/avra/)
    with the m32def.inc in this repo (found in 'inc' folder).
 
 -> Issue: Could not parse Hexcode.
