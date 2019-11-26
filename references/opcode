@@ -1,16 +1,3 @@
- d  bits that specify an Rd (0..31 or 16..31 or 16..23 or 24..30)
-  r  bits that specify an Rr ( - ditto - )
-  k  bits that specify a constant or an address
-  q  bits that specify an offset
-  -  bit that specifies pre-decrement mode: 0=no, 1=yes
-  +  bit that specifies post-decrement mode: 0=no, 1=yes
-  x  bit of any value
-  s  bits that specify a status bit (0..7)
-  A  bits that specify i/o memory
-  b  bits that define a bit (0..7)
-
-Note: all bits shown as . are the same as in the row above.
-
 0000 0000 0000 0000  NOP
 .... 0001 dddd rrrr  MOVW
 .... 0010 dddd rrrr  MULS
