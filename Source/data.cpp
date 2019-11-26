@@ -103,7 +103,7 @@ vector <string> Data::to_vector(void) {
     vector <string> out;
     out.push_back("Data Memory:");
 
-    int sp = sp(this->memory[SPL], this->memory[SPH]);
+    int16_t sp = sp(this->memory[SPL], this->memory[SPH]);
 
     for(int i = (this->cursor - 4); i <= (this->cursor + 4); i++) {
 

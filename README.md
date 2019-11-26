@@ -12,10 +12,68 @@ And because MDX simulates a System for Assembly Instructions, it will be
 possible to move back in time and do a "backstep".
 
 Every Instruction is colorfully visualized. You will see exactly what
-happens in the program, and which sreg's/registers/... had been changed.
+happens in the program.
 
 (Note: MDX is still in Developement. There might be issues, feel free to
 submit them in the issue segment.)
+
+##### Table of Contents
+[I How MDX works](#How MDX works)
+[II Installation](#Installation)
+[III Supported MCUs](#Supported Microcontroller)
+[IV Features](#How-To)
+
+[V Instruction Set](#Instructions)
+
+[VI Screenshots](#Screenshots)
+
+# How MDX works
+MDX accepts AVR Assembly files as input. Avra is only used to convert this
+Assembly file to a Hex file. Then MDX decodes hexcodes into opcodes.
+These opcodes are used by MDX to simulate the AVR Instructions.
+
+# Installation
+Setting up MDX isn't really difficult. There are only 5 Steps:
+
+- Step 1: Clone this repo.
+```console
+You@Terminal:~$ git clone https://www.github.com/Milo-D/MDX-Assembly-Debugger.git/
+```
+
+- Step 2: Run 'build.sh' to compile MDX.
+```console
+You@Terminal:~$ ./build.sh
+```
+
+- Step 3: Get avra to generate .hex for AVR MCUs. Under Fedora type: 
+```console
+You@Terminal:~$ sudo dnf install avra
+```
+
+- Step 4: (Optional) Move mdx to /usr/bin/
+```console
+You@Terminal:~$ mv mdx /usr/bin/
+```
+
+- Step 5: Run MDX.
+```console
+You@Terminal:~$ mdx <file.asm>
+```
+
+If you have compiled MDX against the AtMega32, there might be an Issue with the
+Include File called 'm32def.inc'. There is an easy solution for this in the 
+Troubleshooting Section.  
+
+# Troubleshooting
+
+-> Issue: Could not generate a hex file (for Atmega32).
+-> Solution: The Include File 'm32def.inc' contains a line, which is too long
+   for AVRA. Just replace the original 'm32def.inc' (usually found in /usr/share/avra/)
+   with the m32def.inc in this repo (found in 'inc' folder).
+
+-> Issue: Could not parse Hexcode.
+-> Solution: Because MDX is still in Development, it does not support every
+   Instruction. I am working on adding new Instructions to MDX. 
 
 # Supported Microcontroller
 - [x] ATmega32
@@ -26,7 +84,7 @@ submit them in the issue segment.)
 
 # Features
 - [x] Debugging Assembly
-- [ ] Backwards Stepping (coming soon)
+- [ ] Backwards Stepping
 - [x] Simple and fancy Commandline Design
 - [x] GPR Visualization
 - [x] SRAM Visualization
@@ -34,11 +92,15 @@ submit them in the issue segment.)
 - [x] SREG Visualization
 - [ ] FLASH Visualization
 - [ ] I/O Support
+- [ ] Seperate I/O Pin View
 - [x] Open and debug more than one file in the same session
 - [ ] Customize it
 - [x] Fast and easy to use
 - [x] Short CLI Commands to debug faster
 - [ ] Full Instruction Support
+
+# Instructions
+Currently MDX supports: 24 Instructions. More Instructions are coming soon.
 
 # Screenshots
 
