@@ -23,10 +23,10 @@ void main_menu(string current_f) {
     cout << "Selected File: " << current_f << "\n";
     cout << "prev: <p> next: <n>\n\n";
 	
-    cout << "0: Debug " << current_f << "\n";
-    cout << "1: Load Table of " << current_f << "\n";
-    cout << "2: Show Breakpoints of " << current_f << "\n";
-    cout << "e: Exit.\n\n";
+    cout << "< d > Debug " << current_f << "\n";
+    cout << "< t > Load Table of " << current_f << "\n";
+    cout << "< b > Show Breakpoints of " << current_f << "\n";
+    cout << "< e > Exit.\n\n";
 	
     cout << PROMPT;
 }

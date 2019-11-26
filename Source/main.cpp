@@ -40,9 +40,9 @@ int main(int argc, char **argv) {
             case 'p': movec(&fcursor, -1, file_no); break;
             case 'n': movec(&fcursor, +1, file_no); break;
 		
-            case '0': debug(&table[fcursor]); break;
-            case '1': load_table(&table[fcursor]); break;
-            case '2': show_breaks(); break;
+            case 'd': debug(&table[fcursor]); break;
+            case 't': load_table(&table[fcursor]); break;
+            case 'b': show_breaks(); break;
             case 'e': cout << "Leaving...\n"; break;
 
             default: /* ignore invalid input */ break;
