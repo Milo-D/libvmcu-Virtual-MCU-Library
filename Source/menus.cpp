@@ -19,7 +19,13 @@ void main_menu(string current_f) {
     clrscr();
 	
     cout << "MDX - AVR Assembly Debugger\n\n";
-		
+
+    cout << "    _/      _/  _/_/_/    _/      _/ \n";
+    cout << "   _/_/  _/_/  _/    _/    _/  _/     \n";
+    cout << "  _/  _/  _/  _/    _/      _/         \n";
+    cout << " _/      _/  _/    _/    _/  _/        \n";
+    cout << "_/      _/  _/_/_/    _/      _/       \n\n";
+
     cout << "Selected File: " << current_f << "\n";
     cout << "prev: <p> next: <n>\n\n";
 	
