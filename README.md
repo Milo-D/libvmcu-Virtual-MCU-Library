@@ -1,11 +1,4 @@
-# MDX-Assembly-Debugger
-
-    _/      _/  _/_/_/    _/      _/ 
-   _/_/  _/_/  _/    _/    _/  _/     
-  _/  _/  _/  _/    _/      _/         
- _/      _/  _/    _/    _/  _/        
-_/      _/  _/_/_/    _/      _/       
-
+# MDX-Assembly-Debugger                        
 An easy and fast CLI Assembly Debugger for 8-bit Atmel AVR
 Microcontrollers.
 
