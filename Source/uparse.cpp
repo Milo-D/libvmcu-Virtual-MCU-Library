@@ -44,11 +44,11 @@ namespace {
         return !token.empty() && it == token.end();
 	}
 
-	void is_asm(string file) {
+	void is_hex(string file) {
 
         unsigned int pos;
 
-        if((pos = file.find(".asm")) == string::npos)
+        if((pos = file.find(".hex")) == string::npos)
             print_status("Could not parse file.", true);
 
         if(pos + 4 != file.size())
@@ -76,7 +76,7 @@ vector <string> parse_main_in(int argsz, char **argls) {
         if(file_exists(current) == false)
             print_status("Specified file does not exist.", true);
 
-        is_asm(current);
+        is_hex(current);
         arguments.push_back(current);
     }
 

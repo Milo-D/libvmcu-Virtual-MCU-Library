@@ -30,20 +30,17 @@ Alu::~Alu() {
 
 int Alu::fetch(Sys *sys) {
 
-    int opcode = this->flash->load_instr();
+    int opcode = this->flash->load_opcode();
     int key = this->flash->load_key();
 
-    if(this->flash->table_is_exec() == false)
-        goto skip; 
+    if(this->table_is_sync() == true) {
 
-    if(opcode < 0)
-        return -1;
+        if(key < 0)
+            return -1;
 
-    (*instructions[key])(sys, opcode);
-    
-    this->flash->pc_next();
-
-skip:
+        (*instructions[key])(sys, opcode);
+        this->flash->pc_next();
+    }
 
     if(this->flash->table_step() < 0)
         sys->kill();
@@ -104,6 +101,11 @@ bool Alu::table_has_break(void) {
 bool Alu::table_is_break(void) {
 
     return this->flash->table_is_break();
+}
+
+bool Alu::table_is_sync(void) {
+
+    return this->flash->table_is_sync();
 }
 
 int Alu::table_size(void) {

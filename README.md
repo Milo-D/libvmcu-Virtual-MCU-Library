@@ -29,9 +29,11 @@ happens in the program.
 [VII Screenshots](#Screenshots)
 
 # How MDX works
-MDX accepts AVR Assembly files as input. Avra is only used to convert these
-Assembly file to a Hex file. Then MDX decodes hexcodes into opcodes.
-These opcodes are used by MDX to simulate the AVR Instructions.
+MDX accepts AVR Hex Files as input and decodes them. Then, a readable
+Assembly Source File is reconstructed from the decoded Hexdump.
+Now you are able to step through the Source Code and see what really happens.
+
+You will find some example programs in the /test/ directory of this Repository.
 
 # Installation
 Setting up MDX isn't really difficult. There are only 5 Steps:
@@ -46,32 +48,17 @@ You@Terminal:~$ git clone https://www.github.com/Milo-D/MDX-Assembly-Debugger.gi
 You@Terminal:~$ ./build.sh
 ```
 
-- Step 3: Get avra to generate .hex for AVR MCUs. Under Fedora type: 
-```console
-You@Terminal:~$ sudo dnf install avra
-```
-
-- Step 4: (Optional) Move mdx to /usr/bin/
+- Step 3: (Optional) Move mdx to /usr/bin/
 ```console
 You@Terminal:~$ mv mdx /usr/bin/
 ```
 
-- Step 5: Run MDX.
+- Step 4: Run MDX.
 ```console
-You@Terminal:~$ mdx <file.asm>
+You@Terminal:~$ mdx <file.hex>
 ```
 
-If you have compiled MDX against the AtMega32, there might be an Issue with the
-Include File called 'm32def.inc'. There is an easy solution for this in the 
-Troubleshooting Section.  
-
 # Troubleshooting
-
--  Issue: Could not generate a hex file (for AtMega32).
-
--  Solution: The Include File 'm32def.inc' contains a line, which is too long
-   for avra. Just replace the original 'm32def.inc' (usually found in /usr/share/avra/)
-   with the m32def.inc in this repo (found in 'inc' folder).
 
 -  Issue: Could not parse Hexcode.
 
@@ -94,6 +81,7 @@ Troubleshooting Section.
 - [ ] EEPROM Visualization
 - [x] SREG Visualization
 - [ ] FLASH Visualization
+- [ ] Relation between Code Segments
 - [ ] I/O Support
 - [ ] Seperate I/O Pin View
 - [x] Open and debug more than one file in the same session

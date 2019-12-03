@@ -4,10 +4,10 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <vector>
 #include <iterator>
 #include <algorithm>
 #include <map>
+#include <tuple>
 #include <fstream>
 #include <sstream>
 
@@ -15,95 +15,37 @@
 #include "table.hpp"
 #include "ehandling.hpp"
 #include "stringparse.hpp"
+#include "codegen.hpp"
 #include "style.hpp"
-
-#define PR_DELAY 1
 
 using namespace std;
 
-namespace {
-
-    int bp_lookup(Table *table, string point) {
-
-        int line;
-		
-        if((line = to_dec(point)) < 0)	         // check return of map
-            return table->get_label_ln(point);
-
-        return line;
-    }
-
-    string get_label(string line) {
-	
-        int pos;
-	
-        if((pos = line.find(":")) == string::npos)
-            return "";
-	
-        return line.substr(0, pos);
-    }
-
-    bool is_exec(string line) {
-
-        int pos;
-
-        if(line == "")
-            return false;
-
-        if((pos = line.find(".")) == 0)
-            return false;
-
-        if((pos = line.find(";")) == 0)
-            return false;
-
-        if((pos = line.find(":")) == line.size() - 1)
-            return false;
-
-        return true;
-    }
-};
-
 /* --- Public --- */
 
-Table::Table(string asm_file) {
+Table::Table(string hex_file) {
 
-    ifstream read_file(asm_file, ios::in);
-    string c_line = ""; int i = 0;
+    create_source(hex_file).swap(this->content);
 
-    if(file_exists(asm_file) == false)
-        goto set_data;
-
-    while(getline(read_file, c_line)) {
-
-        string label = "";
-	
-        this->content.push_back(c_line);
-
-        trim(&c_line);
-        c_line = del_comment(c_line);
-
-        if((label = get_label(c_line)) != "")
-            this->add_label(label, i);
-			
-        this->exec.push_back( is_exec(c_line) );
+    for(int i = 0; i < this->content.size(); i++)
         this->breaks.push_back(false);
-		
-        i += 1;
-    }
-
-set_data:
 
     this->tip = 0;
-    this->break_counter = 0;
     this->table_size = this->content.size();
-    this->src_file = asm_file;
+    this->source_file = hex_file;
+}
 
-    read_file.close();
+int Table::step(void) {
+
+    if(this->tip == this->table_size - 1)
+        return -1;
+
+    this->tip += 1;
+    return 0;
 }
 
 int Table::set_break(string point) {
 
-    int line = bp_lookup(this, point);
+    int line = to_dec(point);
 
     if(line < 0 || line >= this->table_size) {
 
@@ -125,7 +67,7 @@ int Table::set_break(string point) {
 
 int Table::unset_break(string point) {
 
-    int line = bp_lookup(this, point);
+    int line = to_dec(point);
 	
     if(line < 0 || line >= this->table_size) {
 
@@ -145,24 +87,6 @@ int Table::unset_break(string point) {
     return 0;
 }
 
-bool Table::is_break(void) {
-
-    return this->breaks[this->tip];
-}
-
-bool Table::has_break(void) {
-
-    return (this->break_counter > 0);
-}
-
-int Table::get_label_ln(string id) {
-
-    if(this->label.find(id) == this->label.end())
-        return -1;
-
-    return this->label[id];
-}
-
 void Table::set_tip(int instr_line) {
 
     if(instr_line >= this->table_size) {
@@ -176,44 +100,29 @@ void Table::set_tip(int instr_line) {
 
 void Table::jump(int exec_addr) {
 
-    int i = -1; int j = 0;
+    int i = 0;
 
-    while(i != exec_addr) {
+    while(get <1> (this->content[i]) != exec_addr)
+        i += 1;
 
-        if(this->exec[j] == true)
-            i += 1;
-
-        j += 1;
-    }
-
-    j -= 3;
-
-    if(j >= this->table_size) {
-
-        this->tip = this->table_size - 2;
-        return;
-    }
-
-    this->tip = j;
+    this->tip = (i - 1);
 }
 
-string Table::get_content(int line) {
+bool Table::is_break(void) {
 
-    return this->content[line];
+    return this->breaks[this->tip];
 }
 
-bool Table::executable(void) {
+bool Table::has_break(void) {
 
-    return this->exec[this->tip];
+    return (this->break_counter > 0);
 }
 
-int Table::step(void) {
+bool Table::is_sync(int hex_addr) {
 
-    if(this->tip == this->table_size - 1)
-        return -1;
+    int match = get <1> (this->content[this->tip]);
 
-    this->tip += 1;
-    return 0;
+    return (match == hex_addr);
 }
 
 int Table::size(void) {
@@ -223,7 +132,7 @@ int Table::size(void) {
 
 string Table::src(void) {
 
-    return this->src_file;
+    return this->source_file;
 }
 
 string Table::to_str(void) {
@@ -241,12 +150,14 @@ string Table::to_str(void) {
 
     for(int i = 0; i < this->table_size; i++) {
 
+        stream << setw(2) << setfill(' ');
+
         if(this->breaks[i] == true)
             stream << to_string(i) << RED << " [b+] " << DEFAULT;
         else
             stream << to_string(i) << "      ";
 
-        stream << this->content[i] << "\n";
+        stream << get <0> (this->content[i]) << "\n";
         stream << DEFAULT;
     }
 
@@ -277,7 +188,7 @@ string Table::center_to_str(void) {
         else
             stream << hex << i << "      ";
 
-        stream << this->content[i] << "\n";
+        stream << get <0> (this->content[i]) << "\n";
         stream << DEFAULT;
     }
 
@@ -285,16 +196,9 @@ string Table::center_to_str(void) {
     return stream.str();
 }
 
-/* --- Private --- */
-
-void Table::add_label(string id, int line) {
-
-    this->label[id] = line;
-}
-
 /* --- Non Member --- */
 
-Table* create_table(vector <string> asm_file, int amount) {
+Table* create_table(vector <string> hex_file, int amount) {
 
     if(amount < 1)
         return NULL;
@@ -302,7 +206,7 @@ Table* create_table(vector <string> asm_file, int amount) {
     Table *table = (Table*) malloc(amount * sizeof(Table));
 
     for(int i = 0; i < amount; i++)
-        new (&table[i]) Table(asm_file[i]);
+        new (&table[i]) Table(hex_file[i]);
 
     return table;
 }

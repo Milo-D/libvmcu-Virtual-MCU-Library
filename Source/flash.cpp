@@ -4,7 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <fstream>
+#include <cstring>
+#include <tuple>
 
 // Project Headers
 #include "flash.hpp"
@@ -16,75 +17,53 @@
 
 using namespace std;
 
-namespace {
-
-    void create(string asm_file) {
-
-        string cmd = "avra -I /usr/share/avra/ " + asm_file;
-        system(cmd.c_str());
-    }
-
-    void destroy(string prefix) {
-
-        string type[4] = { ".cof", ".hex", ".eep.hex", ".obj" };
-
-        for(int i = 0; i < 4; i++) {
-
-            string cmd = "rm " + prefix + type[i];
-            system(cmd.c_str());
-        }
-    }
-};
-
 Flash::Flash(Table *table) {
 
-    string asm_file = table->src();
-    create(asm_file);
+    vector <struct plain> plain;
+	decode_file( table->src() ).swap(plain);
 
-    string hex_file = get_file_name(asm_file) + ".hex";
-    ifstream read_file(hex_file, ios::in);
+    this->memory = (int16_t*) malloc(FLASH_SIZE * sizeof(int16_t));
+    memset(this->memory, 0x0000, FLASH_SIZE * sizeof(int16_t));
 
-    if(read_file.good() == false)
-        print_status("Could not create Hex File.", true);
+    this->mem_usage = 0;
 
-    string line = "";
+    for(int i = 0; i < plain.size(); i++) {
 
-    while(getline(read_file, line))
-        decode(this, line);
+        this->memory[ plain[i].addr ] = plain[i].opcode;
+        this->mem_usage += 1;
 
-    destroy(get_file_name(asm_file));
-		
-    read_file.close();
-					
+        tuple <int, int> key = make_tuple(plain[i].addr, plain[i].key);
+        this->keys.push_back(key);
+    }
+
     this->pc = 0;
-    this->size = FLASH_SIZE;
-    this->size_used = this->app.size();
     this->table = table;
 }
 
-void Flash::insert_instr(int instr) {
+Flash::~Flash(void) {
 
-    this->app.push_back(instr);
+    free(this->memory);
 }
 
-void Flash::insert_key(int key) {
+int Flash::load_opcode(void) {
 
-    this->key.push_back(key);
-}
-
-int Flash::load_instr(void) {
-
-    return this->app[this->pc];
+    return this->memory[this->pc];
 }
 
 int Flash::load_key(void) {
 
-    return this->key[this->pc];
+    for(int i = 0; i < this->keys.size(); i++) {
+
+        if(get <0> (this->keys[i]) == this->pc)
+            return get <1> (this->keys[i]);
+    }
+
+    return -1;
 }
 
 void Flash::pc_next(void) {
 
-    if(this->pc == this->size_used - 1)
+    if(this->pc == FLASH_SIZE - 1)
         return;
 
     this->pc += 1;
@@ -97,7 +76,10 @@ int Flash::pc_get(void) {
 
 void Flash::pc_set(int addr) {
 
-    if(addr > this->size_used)
+    if(addr >= FLASH_SIZE)
+        return;
+
+    if(addr < 0)
         return;
 
     this->pc = addr - 1;
@@ -124,9 +106,9 @@ bool Flash::table_is_break(void) {
     return this->table->is_break();
 }
 
-bool Flash::table_is_exec(void) {
+bool Flash::table_is_sync(void) {
 
-    return this->table->executable();
+    return this->table->is_sync(this->pc);
 }
 
 int Flash::table_size(void) {

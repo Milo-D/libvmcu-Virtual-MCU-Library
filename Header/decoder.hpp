@@ -6,7 +6,8 @@
 // C Headers
 #include <inttypes.h>
 
-class Flash;
+// C++ Headers
+#include <vector>
 
 /*
 * Atmel AVR Opcodes to parse Assembly
@@ -15,6 +16,13 @@ class Flash;
 * than one).
 */
 
-void decode(Flash *flash, std::string hex_line);
+struct plain {
+
+    int opcode;
+    int key;
+    int addr;
+};
+
+std::vector <struct plain> decode_file(std::string hex_file);
 
 #endif

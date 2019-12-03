@@ -4,13 +4,13 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <fstream>
 
 // Project Headers
 #include "decoder.hpp"
 #include "opcode.hpp"
 #include "ehandling.hpp"
 #include "stringparse.hpp"
-#include "flash.hpp"
 
 using namespace std;
 
@@ -48,39 +48,72 @@ namespace {
 
         return -1;  // no valid opcode found, returning -1
     }
+
+    vector <struct plain> decode_line(string hex_line) {
+
+        vector <struct plain> decrypt;
+        hex_line = hex_line.substr(1, hex_line.size()); 
+
+        if(hex_line[7] != '0')
+            return decrypt;
+
+        int byte_count = hex_to_dec(hex_line.substr(0, 2));
+
+        int s_addr = hex_to_dec(hex_line.substr(2, 4)) / 2;
+        int total_instr = byte_count / 2;
+
+        for(int i = 0; i < total_instr; i++) {
+
+            struct plain p;
+
+            int order[4] = { 2, 3, 0, 1 };
+            string current = "";
+
+            for(int j = 0; j < 4; j++) {
+
+                int index = (8 + (i * 4) + order[j]);
+
+                if(index >= hex_line.size())
+                    print_status("Invalid Byte Count.", true);
+
+                current += hex_line[index];     
+            }
+
+            int instr = hex_to_dec(current); int found;
+
+            if((found = get_key_from_op(instr)) < 0)
+                print_status("Could not decode " + hex_line, true);
+
+            p.opcode = instr;
+            p.key = found;
+            p.addr = (s_addr + i);
+
+            decrypt.push_back(p);
+        }
+
+        return decrypt;
+    }
 };
 
-void decode(Flash *flash, string hex_line) {
+vector <struct plain> decode_file(string hex_file) {
 
-    hex_line = hex_line.substr(1, hex_line.size()); 
+    vector <struct plain> dump;
+    ifstream read_file(hex_file, ios::in);
 
-    if(hex_line[7] != '0')  // validate record type
-        return;
+    if(read_file.good() == false)
+        print_status("Could not open Hex File.", true);
 
-    int byte_count = hex_to_dec(hex_line.substr(0, 2));
+    string line = "";
 
-    if((byte_count & 0x01) == true) // lowest bit set (?)
-        return;
+    while(getline(read_file, line)) {
 
-    int total_instr = byte_count / 2;
+        vector <struct plain> p;
+        decode_line(line).swap(p);
 
-    for(int i = 0; i < total_instr; i++) {
-
-        /* Byte Order: 0C EF -> EF 0C -> 2,3 0,1 */
-
-        int order[4] = { 2, 3, 0, 1 };
-        string current = "";
-
-        for(int j = 0; j < 4; j++)
-            current += hex_line[8 + (i*4) + order[j]];		
-
-        int instr = hex_to_dec(current); int key;
-
-        if((key = get_key_from_op(instr)) < 0)
-            print_status("Could not decode " + hex_line, true);
-
-        flash->insert_instr(instr);
-        flash->insert_key(key);
+        dump.insert(dump.end(), p.begin(), p.end());    
     }
+
+    read_file.close();
+    return dump;
 }
 
