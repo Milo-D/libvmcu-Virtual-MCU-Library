@@ -9,7 +9,7 @@
 // Project Headers
 #include "uparse.hpp"
 #include "ehandling.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 
 using namespace std;
 

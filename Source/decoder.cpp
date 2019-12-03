@@ -10,7 +10,7 @@
 #include "decoder.hpp"
 #include "opcode.hpp"
 #include "ehandling.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 
 using namespace std;
 

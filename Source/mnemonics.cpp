@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "mnemonics.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 #include "mcu.hpp"
 
 using namespace std;

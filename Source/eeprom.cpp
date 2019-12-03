@@ -12,7 +12,7 @@
 // Project Headers
 #include "eeprom.hpp"
 #include "mcu.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 #include "style.hpp"
 
 using namespace std;

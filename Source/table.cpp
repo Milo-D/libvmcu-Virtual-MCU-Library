@@ -14,7 +14,7 @@
 // Project Headers
 #include "table.hpp"
 #include "ehandling.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 #include "codegen.hpp"
 #include "style.hpp"
 

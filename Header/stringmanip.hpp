@@ -1,7 +1,7 @@
-/* String-Parse Header */
+/* String-Manipulators Header */
 
-#ifndef STRINGPARSE_HPP
-#define STRINGPARSE_HPP
+#ifndef STRINGMANIP_HPP
+#define STRINGMANIP_HPP
 
 // C++ Header
 #include <vector>

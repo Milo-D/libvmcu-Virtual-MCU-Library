@@ -14,7 +14,7 @@
 #include "flash.hpp"
 #include "eeprom.hpp"
 #include "table.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 
 using namespace std;
 

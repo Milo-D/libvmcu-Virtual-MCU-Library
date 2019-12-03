@@ -1,4 +1,4 @@
-/* String-Parse Implementation */
+/* String-Manipulators Implementation */
 
 // C++ Header
 #include <iostream>
@@ -11,7 +11,7 @@
 #include <bits/stdc++.h> 
 
 // Project Header
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 
 using namespace std;
 

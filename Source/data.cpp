@@ -12,7 +12,7 @@
 // Project Header
 #include "data.hpp"
 #include "mcu.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 #include "style.hpp"
 
 #define sp(spl, sph) ((sph << 8) + spl)

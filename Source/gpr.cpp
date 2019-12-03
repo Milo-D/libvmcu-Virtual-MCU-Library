@@ -10,7 +10,7 @@
 // Project Headers
 #include "gpr.hpp"
 #include "mcu.hpp"
-#include "stringparse.hpp"
+#include "stringmanip.hpp"
 #include "style.hpp"
 
 using namespace std;
