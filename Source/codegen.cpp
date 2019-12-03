@@ -69,6 +69,9 @@ vector < tuple <string, int> > create_source(string hex_file) {
         source.push_back(t);
     }
 
+    if(source.size() == 0)
+        return source;
+
     add_labels(source).swap(source);
 
     return source;
