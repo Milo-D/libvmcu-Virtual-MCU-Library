@@ -105,7 +105,7 @@ void Table::jump(int exec_addr) {
     while(get <1> (this->content[i]) != exec_addr)
         i += 1;
 
-    this->tip = (i - 1);
+    this->tip = (i - 2);
 }
 
 bool Table::is_break(void) {

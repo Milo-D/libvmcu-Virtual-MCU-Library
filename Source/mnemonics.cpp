@@ -374,7 +374,7 @@ string bclr(int opcode) {
 
     stream << "bclr 0x0" << s_bit;
     stream << fill(stream.str().size());
-    stream << "; SF <- 0x01";
+    stream << "; " << flags[s_bit] << " <- 0x00";
 
     return stream.str();
 }
