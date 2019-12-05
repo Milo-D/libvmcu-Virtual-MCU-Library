@@ -15,7 +15,7 @@
 #include "table.hpp"
 #include "ehandling.hpp"
 #include "stringmanip.hpp"
-#include "codegen.hpp"
+#include "disassembler.hpp"
 #include "style.hpp"
 
 using namespace std;
@@ -105,7 +105,13 @@ void Table::jump(int exec_addr) {
     while(get <1> (this->content[i]) != exec_addr)
         i += 1;
 
-    this->tip = (i - 2);
+    if(get <1> (this->content[i - 2]) < 0) {
+
+        this->tip = (i - 2);
+        return;
+    }
+
+    this->tip = (i - 1);
 }
 
 bool Table::is_break(void) {

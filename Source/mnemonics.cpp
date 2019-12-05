@@ -114,7 +114,7 @@ string rjmp(int opcode) {
 
     stringstream stream;
 
-    stream << "rjmp 0x" << hex << offs;
+    stream << "rjmp " << sign << offs;
     stream << fill(stream.str().size());
     stream << "; PC <- PC " << sign << " 0x" << hex << offs << " + 1";
 
@@ -255,11 +255,46 @@ string brne(int opcode) {
 
     stringstream stream;
 
-    stream << "brne 0x" << hex << offs;
+    stream << "brne " << sign << offs;
     stream << fill(stream.str().size());
 
     stream << "; (Z = 0): PC <- PC " << sign;
     stream << " 0x" << hex << offs << " + 1";
+
+    return stream.str();
+}
+
+string rcall(int opcode) {
+
+    int offs = extract(opcode, 0, 12, 0);
+    char sign = '+';
+
+    if(((0x01 << 11) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 12) - 1);
+        offs += 0x01;
+
+        sign = '-';
+    }
+
+    stringstream stream;
+
+    stream << "rcall " << sign << offs;
+    stream << fill(stream.str().size());
+
+    stream << "; PC <- PC " << sign;
+    stream << " 0x" << hex << offs << " + 1";
+
+    return stream.str();
+}
+
+string ret(int opcode) {
+
+    stringstream stream;
+
+    stream << "ret";
+    stream << fill(stream.str().size());
+    stream << "; PC <- PC + DATA[SP]";
 
     return stream.str();
 }
@@ -381,4 +416,5 @@ string bclr(int opcode) {
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
-                                                cpi, ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                rcall, ret, cpi, ses, set, sev, sez, seh, sec, sei, 
+                                                sen, bclr };

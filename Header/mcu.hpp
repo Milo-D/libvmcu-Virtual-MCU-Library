@@ -19,6 +19,8 @@
     #define SPL 0x003d
     #define SPH 0x003e
 
+    #define PC_BIT 16
+
     #define IF 7
     #define TF 6
     #define HF 5

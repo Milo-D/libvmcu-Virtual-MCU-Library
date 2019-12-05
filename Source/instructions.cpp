@@ -209,6 +209,59 @@ void brne(Sys *sys, int opcode) {
     sys->set_pc(prog_counter + offs + 1);
 }
 
+void rcall(Sys *sys, int opcode) {
+
+    int offs = extract(opcode, 0, 12, 0);
+    int pc = sys->get_pc();
+
+    switch(PC_BIT) {
+
+        case 16:
+
+            sys->push_stack((pc + 1) & 0x00ff);
+            sys->push_stack((pc + 1) & 0xff00);
+
+        break;
+
+        case 22: /* currently not supported */ break;
+
+        default: return;
+    }
+
+    if(((0x01 << 11) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 12) - 1);
+        offs += 0x01;
+
+        sys->set_pc(pc - offs + 1);
+
+        return;
+    }
+
+    sys->set_pc(pc + offs + 1);
+}
+
+void ret(Sys *sys, int opcode) {
+
+    int8_t pcl, pch, pcm;
+
+    switch(PC_BIT) {
+
+        case 16:
+            
+            pch = sys->pop_stack();
+            pcl = sys->pop_stack();
+
+            sys->set_pc((pch << 8) + pcl);
+
+        break;
+
+        case 22: /* currently not supported */ break;
+
+        default: return;
+    }
+}
+
 void cpi(Sys *sys, int opcode) {
 
     int reg = extract(opcode, 4, 8, 0);
@@ -285,7 +338,8 @@ void bclr(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
-                                                           cpi, ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                           rcall, ret, cpi, ses, set, sev, sez, seh, sec, sei, 
+                                                           sen, bclr };
 
 
 
