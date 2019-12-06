@@ -316,7 +316,7 @@ void ret(Sys *sys, int opcode) {
 void cpi(Sys *sys, int opcode) {
 
     int reg = extract(opcode, 4, 8, 0);
-    int8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    uint8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
     int8_t value = sys->read_gpr(16 + reg);
     int8_t result = value - comp;
@@ -338,6 +338,24 @@ void cpi(Sys *sys, int opcode) {
     sys->write_sreg(NF, nf_res);
     sys->write_sreg(SF, nf_res ^ vf_res);
     sys->write_sreg(ZF, (result == 0x00));
+}
+
+void ori(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 8, 0);
+    uint8_t const_val = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    int8_t dest_val = sys->read_gpr(16 + dest);
+    int8_t result = dest_val | const_val;
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, 0x00);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, nf_res ^ 0);
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(16 + dest, result);
 }
 
 void ses(Sys *sys, int opcode) {
@@ -389,7 +407,7 @@ void bclr(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
-                                                           breq, rcall, ret, cpi, ses, set, sev, sez, seh, sec, 
+                                                           breq, rcall, ret, cpi, ori, ses, set, sev, sez, seh, sec, 
                                                            sei, sen, bclr };
 
 

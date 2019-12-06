@@ -340,13 +340,28 @@ string ret(int opcode) {
 string cpi(int opcode) {
 
     int reg = extract(opcode, 4, 8, 0);
-    int8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    uint8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
     stringstream stream;
 
     stream << "cpi r" << (reg + 16) << ", 0x" << get_hex(comp);
     stream << fill(stream.str().size());
     stream << "; R" << (reg + 16) << " - R" << reg;
+
+    return stream.str();
+}
+
+string ori(int opcode) {
+
+    int dest = extract(opcode, 4, 8, 0);
+    uint8_t const_val = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    stringstream stream;
+
+    stream << "ori r" << (dest + 16) << ", 0x" << get_hex(const_val);
+    stream << fill(stream.str().size());
+    stream << "; R" << (dest + 16) << " <- " << "R" << (dest + 16);
+    stream << " | 0x" << get_hex(const_val);
 
     return stream.str();
 }
@@ -454,5 +469,5 @@ string bclr(int opcode) {
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne, 
-                                                breq, rcall, ret, cpi, ses, set, sev, sez, seh, sec,
+                                                breq, rcall, ret, cpi, ori, ses, set, sev, sez, seh, sec,
                                                 sei, sen, bclr };
