@@ -57,12 +57,12 @@ string movw(int opcode) {
 
     stringstream stream;
 
-    stream << "movw r" << dest << ":r" << (dest - 1);
-    stream << ", r" << src << ":r" << (src - 1);
+    stream << "movw r" << (dest + 1) << ":r" << dest;
+    stream << ", r" << (src + 1) << ":r" << src;
 
     stream << fill(stream.str().size());
-    stream << "; R" << dest << ":R" << (dest - 1);
-    stream << " <- R" << src << ":R" << (src - 1);
+    stream << "; R" << (dest + 1) << ":R" << dest;
+    stream << " <- R" << (src + 1) << ":R" << src;
 
     return stream.str();
 }
@@ -157,7 +157,7 @@ string inc(int opcode) {
     stream << "inc r" << dest;
     stream << fill(stream.str().size());
     stream << "; R" << dest << " <- R" << dest << " + 0x01";
-    
+
     return stream.str();
 }
 
