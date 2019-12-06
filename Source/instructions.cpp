@@ -113,6 +113,36 @@ void dec(Sys *sys, int opcode) {
     sys->write_gpr(dest, result);
 }
 
+void add(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    int8_t dest_val = sys->read_gpr(dest);
+    int8_t src_val = sys->read_gpr(src);
+    int8_t result = dest_val + src_val;
+
+    int8_t vf_res = bit(dest_val, 7) * bit(src_val, 7) * ~bit(result, 7);
+    vf_res += ~bit(dest_val, 7) * ~bit(src_val, 7) * bit(result, 7);
+
+    int8_t cf_res = (bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * ~bit(result, 7));
+    cf_res += ~bit(result, 7) * bit(dest_val, 7);
+
+    int8_t hf_res = (bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * ~bit(result, 3));
+    cf_res += ~bit(result, 3) * bit(dest_val, 3);
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(CF, cf_res);
+    sys->write_sreg(HF, hf_res);
+    sys->write_sreg(SF, vf_res ^ nf_res);
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
+}
+
 void push(Sys *sys, int opcode) {
 
     int src = extract(opcode, 4, 9, 0);
@@ -202,6 +232,27 @@ void brne(Sys *sys, int opcode) {
         offs += 0x01;
 
         sys->set_pc(prog_counter - offs + 1);
+
+        return;
+    }
+
+    sys->set_pc(prog_counter + offs + 1);
+}
+
+void breq(Sys *sys, int opcode) {
+
+    if(sys->read_sreg(ZF) == 0x00)
+        return;
+
+    int offs = extract(opcode, 3, 10, 0);
+    int prog_counter = sys->get_pc();
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 7) - 1);
+        offs += 0x01;
+
+        sys->set_pc(prog_counter - offs - 1);
 
         return;
     }
@@ -337,9 +388,9 @@ void bclr(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
-                                                           rcall, ret, cpi, ses, set, sev, sez, seh, sec, sei, 
-                                                           sen, bclr };
+                                                           dec, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
+                                                           breq, rcall, ret, cpi, ses, set, sev, sez, seh, sec, 
+                                                           sei, sen, bclr };
 
 
 

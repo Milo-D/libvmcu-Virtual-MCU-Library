@@ -21,6 +21,7 @@ extern const int opcode[SET_SIZE][WORD] = {
 { 1, 1, 0, 0, K, K, K, K, K, K, K, K, K, K, K, K }, /* RJMP */
 { 0, 0, 1, 0, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* MOV */
 { 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 1, 0, 1, 0 }, /* DEC */
+{ 0, 0, 0, 0, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* ADD */
 { 1, 0, 0, 1, 0, 0, 1, D, D, D, D, D, 1, 1, 1, 1 }, /* PUSH */
 { 1, 0, 0, 1, 0, 0, 0, D, D, D, D, D, 1, 1, 1, 1 }, /* POP */
 { 1, 0, 1, 1, 1, A, A, R, R, R, R, R, A, A, A, A }, /* OUT */
@@ -29,6 +30,7 @@ extern const int opcode[SET_SIZE][WORD] = {
 { 1, 0, 0, 0, 0, 0, 0, D, D, D, D, D, 1, 0, 0, 0 }, /* LD(Y) */
 { 1, 0, 0, 0, 0, 0, 0, D, D, D, D, D, 0, 0, 0, 0 }, /* LD(Z) */
 { 1, 1, 1, 1, 0, 1, K, K, K, K, K, K, K, 0, 0, 1 }, /* BRNE */
+{ 1, 1, 1, 1, 0, 0, K, K, K, K, K, K, K, 0, 0, 1 }, /* BREQ */ 
 { 1, 1, 0, 1, K, K, K, K, K, K, K, K, K, K, K, K }, /* RCALL */
 { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0 }, /* RET */
 { 0, 0, 1, 1, K, K, K, K, D, D, D, D, K, K, K, K }, /* CPI */
