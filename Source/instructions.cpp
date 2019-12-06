@@ -358,6 +358,17 @@ void ori(Sys *sys, int opcode) {
     sys->write_gpr(16 + dest, result);
 }
 
+void or_asm(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    int8_t dest_val = sys->read_gpr(dest);
+    int8_t src_val = sys->read_gpr(src);
+
+    sys->write_gpr(dest, dest_val | src_val);
+}
+
 void ses(Sys *sys, int opcode) {
 
     sys->write_sreg(SF, 0x01);
@@ -407,7 +418,7 @@ void bclr(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
-                                                           breq, rcall, ret, cpi, ori, ses, set, sev, sez, seh, sec, 
+                                                           breq, rcall, ret, cpi, ori, or_asm, ses, set, sev, sez, seh, sec, 
                                                            sei, sen, bclr };
 
 
