@@ -113,6 +113,26 @@ void dec(Sys *sys, int opcode) {
     sys->write_gpr(dest, result);
 }
 
+void inc(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int8_t value = sys->read_gpr(dest);
+
+    int8_t result = value + 1;
+
+    int8_t vf_res = bit(result, 7) * ~bit(result, 6) * ~bit(result, 5) * ~bit(result, 4);
+    vf_res *= ~bit(result, 3) * ~bit(result, 2) * ~bit(result, 1) * ~bit(result, 0);
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, vf_res ^ nf_res);
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
+}
+
 void add(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -417,7 +437,7 @@ void bclr(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
+                                                           dec, inc, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
                                                            breq, rcall, ret, cpi, ori, or_asm, ses, set, sev, sez, seh, sec, 
                                                            sei, sen, bclr };
 

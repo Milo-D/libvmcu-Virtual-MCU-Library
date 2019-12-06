@@ -148,6 +148,19 @@ string dec(int opcode) {
     return stream.str();
 }
 
+string inc(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    stringstream stream;
+
+    stream << "inc r" << dest;
+    stream << fill(stream.str().size());
+    stream << "; R" << dest << " <- R" << dest << " + 0x01";
+    
+    return stream.str();
+}
+
 string add(int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -482,6 +495,6 @@ string bclr(int opcode) {
 }
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                dec, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne, 
+                                                dec, inc, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne, 
                                                 breq, rcall, ret, cpi, ori, or_asm, ses, set, sev, sez, seh, sec,
                                                 sei, sen, bclr };
