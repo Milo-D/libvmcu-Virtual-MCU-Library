@@ -68,7 +68,7 @@ void debug_menu(Sys *sys, int cursor) {
     if(sys->is_terminated() == false)
         cout << GREEN << "Running\n";
     else
-        cout << RED << "Terminated\n";
+        cout << RED << BLINK << "Terminated\n";
 
     cout << DEFAULT;
 
