@@ -51,17 +51,19 @@ namespace {
             tuple <int, string> t = lmap.get(i);
 
             int t_addr = get <0> (t);
-            string t_lable = get <1> (t);
+            string t_label = get <1> (t);
 
             tuple <string, int> blank = make_tuple("", -1);
-            tuple <string, int> label = make_tuple(t_lable, -1);
+            tuple <string, int> label = make_tuple(t_label, -1);
 
-            if(t_addr > 0)
+            if(t_addr > 0) {
+
                 source.insert(source.begin() + t_addr + offs, blank);
+                offs += 1;
+            }
             
-            source.insert(source.begin() + t_addr + offs + 1, label);
-
-            offs += 2;
+            source.insert(source.begin() + t_addr + offs, label);
+            offs += 1;
         }
 
         return source;
