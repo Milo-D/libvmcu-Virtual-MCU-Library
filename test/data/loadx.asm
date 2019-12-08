@@ -21,6 +21,7 @@ ldi XL, 0x5e             ; R26 <- 0x5e
 ldi XH, 0x08             ; R27 <- 0x08
 ld r16, X+               ; R16 <- DATA[X+]
 ld r17, X                ; R17 <- DATA[X]
+ld r20, -X               ; R20 <- DATA[-X]
 rjmp end                 ; PC <- [PC + end + 1]
 
 end:
