@@ -440,6 +440,24 @@ void or_asm(Sys *sys, int opcode) {
     sys->write_gpr(dest, dest_val | src_val);
 }
 
+void com(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    int8_t value = sys->read_gpr(dest);
+    int8_t result = (0xff - value);
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(CF, 0x01);
+    sys->write_sreg(VF, 0x00);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, nf_res ^ 0);
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
+}
+
 void ses(Sys *sys, int opcode) {
 
     sys->write_sreg(SF, 0x01);
@@ -489,8 +507,8 @@ void bclr(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                           brne, breq, brge, rcall, ret, cpi, ori, or_asm, ses, set, sev, sez, 
-                                                           seh, sec, sei, sen, bclr };
+                                                           brne, breq, brge, rcall, ret, cpi, ori, or_asm, com, ses, set, sev, 
+                                                           sez, seh, sec, sei, sen, bclr };
 
 
 
