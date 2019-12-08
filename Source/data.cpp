@@ -73,6 +73,9 @@ int8_t Data::pop(void) {
 
 void Data::write(int addr, int8_t value) {
 
+    if(addr < 0 || addr > RAM_END)
+        return;
+
     this->memory[addr] = value;
 
     this->set_color(addr, GREEN);
@@ -80,6 +83,9 @@ void Data::write(int addr, int8_t value) {
 }
 
 int8_t Data::read(int addr) {
+
+    if(addr < 0 || addr > RAM_END)
+        return 0xff;
 
     this->set_color(addr, RED);
     this->cursor = addr;

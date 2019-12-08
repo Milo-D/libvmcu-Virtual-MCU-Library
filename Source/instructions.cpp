@@ -216,6 +216,21 @@ void ld_x(Sys *sys, int opcode) {
     sys->write_gpr(dest, data);
 }
 
+void ld_xi(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    int8_t xl = sys->read_gpr(XL);
+    int8_t xh = sys->read_gpr(XH);
+
+    int8_t data = sys->read_data((xh << 8) + xl);
+    int16_t post_x = ((xh << 8) + xl) + 0x01;
+
+    sys->write_gpr(dest, data);
+    sys->write_gpr(XL, (0x00ff & post_x));
+    sys->write_gpr(XH, (0xff00 & post_x) >> 8);
+}
+
 void ld_y(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -311,7 +326,7 @@ void rcall(Sys *sys, int opcode) {
         case 16:
 
             sys->push_stack((pc + 1) & 0x00ff);
-            sys->push_stack((pc + 1) & 0xff00);
+            sys->push_stack(((pc + 1) & 0xff00) >> 8);
 
         break;
 
@@ -458,7 +473,7 @@ void bclr(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, inc, add, push, pop, out, clr, ld_x, ld_y, ld_z, brne,
+                                                           dec, inc, add, push, pop, out, clr, ld_x, ld_xi, ld_y, ld_z, brne,
                                                            breq, brge, rcall, ret, cpi, ori, or_asm, ses, set, sev, sez, 
                                                            seh, sec, sei, sen, bclr };
 
