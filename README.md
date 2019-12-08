@@ -90,7 +90,7 @@ You@Terminal:~$ mdx <file.hex>
 - [ ] Full Instruction Support
 
 # Instructions
-Currently MDX supports: 30 Instructions. More Instructions are coming soon.
+Currently MDX supports: 35 Instructions. More Instructions are coming soon.
 
 # Screenshots
 
