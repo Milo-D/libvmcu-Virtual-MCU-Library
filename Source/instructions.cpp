@@ -331,6 +331,27 @@ void brge(Sys *sys, int opcode) {
     sys->set_pc(prog_counter + offs + 1);
 }
 
+void brpl(Sys *sys, int opcode) {
+
+    if(sys->read_sreg(NF) == 0x01)
+        return;
+
+    int offs = extract(opcode, 3, 10, 0);
+    int prog_counter = sys->get_pc();
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 7) - 1);
+        offs += 0x01;
+
+        sys->set_pc(prog_counter - offs + 1);
+
+        return;
+    }
+
+    sys->set_pc(prog_counter + offs + 1);
+}
+
 void rcall(Sys *sys, int opcode) {
 
     int offs = extract(opcode, 0, 12, 0);
@@ -507,8 +528,8 @@ void bclr(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                           brne, breq, brge, rcall, ret, cpi, ori, or_asm, com, ses, set, sev, 
-                                                           sez, seh, sec, sei, sen, bclr };
+                                                           brne, breq, brge, brpl, rcall, ret, cpi, ori, or_asm, com, ses, set, 
+                                                           sev, sez, seh, sec, sei, sen, bclr };
 
 
 
