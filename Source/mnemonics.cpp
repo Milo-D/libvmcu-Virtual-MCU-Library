@@ -27,16 +27,6 @@ namespace {
 
         return res;
     }
-
-    string fill(int len) {
-
-        string space = "";
-
-        for(int i = 0; i < 24 - len; i++)
-            space += " ";
-
-        return space;
-    }
 };
 
 string nop(int opcode) {
