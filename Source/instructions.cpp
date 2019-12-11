@@ -46,12 +46,30 @@ void movw(Sys *sys, int opcode) {
 
 void muls(Sys *sys, int opcode) {
 
-    /* in progress */
+    int dest = extract(opcode, 4, 8, 0) + 16;
+    int src = extract(opcode, 0, 4, 0) + 16;
+
+    int16_t result = sys->read_gpr(dest) * sys->read_gpr(src);
+
+    sys->write_sreg(CF, bit(result, 15));
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(0, (result & 0x00ff));
+    sys->write_gpr(1, (result & 0xff00) >> 8);
 }
 
 void mulsu(Sys *sys, int opcode) {
 
-    /* in progress */
+    int dest = extract(opcode, 4, 7, 0) + 16;
+    int src = extract(opcode, 0, 3, 0) + 16;
+
+    int16_t result = sys->read_gpr(dest) * (uint8_t) sys->read_gpr(src);
+
+    sys->write_sreg(CF, bit(result, 15));
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(0, (result & 0x00ff));
+    sys->write_gpr(1, (result & 0xff00) >> 8);
 }
 
 void fmul(Sys *sys, int opcode) {
@@ -159,6 +177,20 @@ void add(Sys *sys, int opcode) {
     sys->write_sreg(HF, hf_res);
     sys->write_sreg(SF, vf_res ^ nf_res);
     sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
+}
+
+void sub(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    int8_t dest_val = sys->read_gpr(dest);
+    int8_t src_val = sys->read_gpr(src);
+    int8_t result = dest_val - src_val;
+
+    /* toDo: Set Flags in SREG */
 
     sys->write_gpr(dest, result);
 }
@@ -432,6 +464,25 @@ void cpi(Sys *sys, int opcode) {
     sys->write_sreg(ZF, (result == 0x00));
 }
 
+void lsr(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    int8_t value = sys->read_gpr(dest);
+    int8_t result = (value >> 1);
+
+    int8_t cf_res = bit(value, 0);
+    int8_t vf_res = cf_res ^ 0;
+
+    sys->write_sreg(CF, cf_res);
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(NF, 0x00);
+    sys->write_sreg(SF, vf_res ^ 0);
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
+}
+
 void ori(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 8, 0);
@@ -459,6 +510,25 @@ void or_asm(Sys *sys, int opcode) {
     int8_t src_val = sys->read_gpr(src);
 
     sys->write_gpr(dest, dest_val | src_val);
+}
+
+void and_asm(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    int8_t dest_val = sys->read_gpr(dest);
+    int8_t src_val = sys->read_gpr(src);
+    int8_t result = dest_val & src_val;
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, 0x00);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, (nf_res ^ 0));
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
 }
 
 void com(Sys *sys, int opcode) {
@@ -527,9 +597,9 @@ void bclr(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, inc, add, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                           brne, breq, brge, brpl, rcall, ret, cpi, ori, or_asm, com, ses, set, 
-                                                           sev, sez, seh, sec, sei, sen, bclr };
+                                                           dec, inc, add, sub, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
+                                                           brne, breq, brge, brpl, rcall, ret, cpi, lsr, ori, or_asm, and_asm, com, 
+                                                           ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
 
 

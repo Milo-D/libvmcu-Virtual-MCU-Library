@@ -59,14 +59,30 @@ string movw(int opcode) {
 
 string muls(int opcode) {
 
-    /* in progress */
-    return "currently not supported";
+    int dest = extract(opcode, 4, 8, 0);
+    int src = extract(opcode, 0, 4, 0);
+
+    stringstream stream;
+
+    stream << "muls r" << (dest + 16) << ", r" << (src + 16);
+    stream << fill(stream.str().size());
+    stream << "; R1:R0 <- " << (dest + 16) << " * R" << (src + 16);
+
+    return stream.str();
 }
 
 string mulsu(int opcode) {
 
-    /* in progress */
-    return "currently not supported";
+    int dest = extract(opcode, 4, 7, 0);
+    int src = extract(opcode, 0, 3, 0);
+
+    stringstream stream;
+
+    stream << "mulsu r" << (dest + 16) << ", r" << (src + 16);
+    stream << fill(stream.str().size());
+    stream << "; R1:R0 <- " << (dest + 16) << " * R" << (src + 16);
+
+    return stream.str();
 }
 
 string fmul(int opcode) {
@@ -161,6 +177,20 @@ string add(int opcode) {
     stream << "add r" << dest << ", r" << src;
     stream << fill(stream.str().size());
     stream << "; R" << dest << " <- R" << dest << " + R" << src;
+
+    return stream.str();
+}
+
+string sub(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    stringstream stream;
+
+    stream << "sub r" << dest << ", r" << src;
+    stream << fill(stream.str().size());
+    stream << "; R" << dest << " <- R" << dest << " - R" << src;
 
     return stream.str();
 }
@@ -423,7 +453,20 @@ string cpi(int opcode) {
 
     stream << "cpi r" << (reg + 16) << ", 0x" << get_hex(comp);
     stream << fill(stream.str().size());
-    stream << "; R" << (reg + 16) << " - R" << reg;
+    stream << "; R" << (reg + 16) << " - 0x" << get_hex(comp);
+
+    return stream.str();
+}
+
+string lsr(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    stringstream stream;
+
+    stream << "lsr r" << dest;
+    stream << fill(stream.str().size());
+    stream << "; R" << dest << " <- R" << dest << " > 1";
 
     return stream.str();
 }
@@ -455,6 +498,20 @@ string or_asm(int opcode) {
     stream << "; R" << dest << " <- R" << dest << " | R" << src;
 
     return stream.str();
+}
+
+string and_asm(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    stringstream stream;
+
+    stream << "and r" << dest << ", r" << src;
+    stream << fill(stream.str().size());
+    stream << "; R" << dest << " <- R" << dest << " & R" << src;
+
+    return stream.str();  
 }
 
 string com(int opcode) {
@@ -572,7 +629,7 @@ string bclr(int opcode) {
 }
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                dec, inc, add, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                brne, breq, brge, brpl, rcall, ret, cpi, ori, or_asm, com, ses, set, 
-                                                sev, sez, seh, sec, sei, sen, bclr };
+                                                dec, inc, add, sub, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
+                                                brne, breq, brge, brpl, rcall, ret, cpi, lsr, ori, or_asm, and_asm, com, 
+                                                ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
