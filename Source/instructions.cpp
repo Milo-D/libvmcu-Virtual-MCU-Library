@@ -125,7 +125,7 @@ void dec(Sys *sys, int opcode) {
 
     sys->write_sreg(VF, vf_res);
     sys->write_sreg(NF, nf_res);
-    sys->write_sreg(SF, vf_res ^ nf_res);
+    sys->write_sreg(SF, nf_res ^ vf_res);
     sys->write_sreg(ZF, (result == 0x00));
 
     sys->write_gpr(dest, result);
@@ -145,7 +145,7 @@ void inc(Sys *sys, int opcode) {
 
     sys->write_sreg(VF, vf_res);
     sys->write_sreg(NF, nf_res);
-    sys->write_sreg(SF, vf_res ^ nf_res);
+    sys->write_sreg(SF, nf_res ^ vf_res);
     sys->write_sreg(ZF, (result == 0x00));
 
     sys->write_gpr(dest, result);
@@ -172,10 +172,10 @@ void add(Sys *sys, int opcode) {
     int8_t nf_res = bit(result, 7);
 
     sys->write_sreg(VF, vf_res);
-    sys->write_sreg(NF, nf_res);
     sys->write_sreg(CF, cf_res);
     sys->write_sreg(HF, hf_res);
-    sys->write_sreg(SF, vf_res ^ nf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, nf_res ^ vf_res);
     sys->write_sreg(ZF, (result == 0x00));
 
     sys->write_gpr(dest, result);
@@ -190,7 +190,23 @@ void sub(Sys *sys, int opcode) {
     int8_t src_val = sys->read_gpr(src);
     int8_t result = dest_val - src_val;
 
-    /* toDo: Set Flags in SREG */
+    int8_t vf_res = bit(dest_val, 7) * ~bit(src_val, 7) * ~bit(result, 7);
+    vf_res += ~bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
+
+    int8_t cf_res = (~bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * ~bit(dest_val, 7));
+
+    int8_t hf_res = (~bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
+    hf_res += bit(result, 3) * ~bit(dest_val, 3);
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(CF, cf_res);
+    sys->write_sreg(HF, hf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, nf_res ^ vf_res);
+    sys->write_sreg(ZF, (result == 0x00));
 
     sys->write_gpr(dest, result);
 }
