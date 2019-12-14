@@ -497,7 +497,7 @@ void cpi(Sys *sys, int opcode) {
     int reg = extract(opcode, 4, 8, 0);
     uint8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-    int8_t value = sys->read_gpr(16 + reg);
+    uint8_t value = sys->read_gpr(16 + reg);
     int8_t result = value - comp;
 
     int8_t cf_res = (~(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
@@ -586,6 +586,24 @@ void and_asm(Sys *sys, int opcode) {
     sys->write_gpr(dest, result);
 }
 
+void andi(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 8, 0) + 16;
+    int value = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    int8_t dest_val = sys->read_gpr(dest);
+    uint8_t result = dest_val & value;
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, 0x00);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, (nf_res ^ 0));
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
+}
+
 void com(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -595,7 +613,6 @@ void com(Sys *sys, int opcode) {
 
     int8_t nf_res = bit(result, 7);
 
-    sys->write_sreg(CF, 0x01);
     sys->write_sreg(VF, 0x00);
     sys->write_sreg(NF, nf_res);
     sys->write_sreg(SF, nf_res ^ 0);
@@ -654,7 +671,7 @@ void bclr(Sys *sys, int opcode) {
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, sub, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                            st_x, brne, breq, brge, brpl, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
-                                                           com, ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                           andi, com, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
 
 

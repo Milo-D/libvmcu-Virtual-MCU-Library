@@ -542,6 +542,22 @@ string and_asm(int opcode) {
     return stream.str();  
 }
 
+string andi(int opcode) {
+
+    int dest = extract(opcode, 4, 8, 0) + 16;
+    int value = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    stringstream stream;
+
+    stream << "andi r" << dest << ", 0x" << hex << value << dec;
+    stream << fill(stream.str().size());
+
+    stream << "; R" << dest << " <- R" << dest << " & 0x";
+    stream << hex << value << dec;
+
+    return stream.str();  
+}
+
 string com(int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -659,5 +675,5 @@ string bclr(int opcode) {
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, inc, add, sub, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                 st_x, brne, breq, brge, brpl, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
-                                                com, ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                andi, com, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
