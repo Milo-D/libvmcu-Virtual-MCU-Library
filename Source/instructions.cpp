@@ -445,7 +445,7 @@ void rcall(Sys *sys, int opcode) {
 
 void ret(Sys *sys, int opcode) {
 
-    int8_t pcl, pch, pcm;
+    uint8_t pcl, pch, pcm;
 
     switch(PC_BIT) {
 
