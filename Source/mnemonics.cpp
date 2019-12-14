@@ -313,6 +313,19 @@ string ld_z(int opcode) {
     return stream.str();
 }
 
+string st_x(int opcode) {
+
+    int src = extract(opcode, 4, 9, 0);
+
+    stringstream stream;
+
+    stream << "st X" << ", r" << src;
+    stream << fill(stream.str().size());
+    stream << "; DATA[X] <- R" << src;
+
+    return stream.str();
+}
+
 string brne(int opcode) {
 
     int offs = extract(opcode, 3, 10, 0);
@@ -442,6 +455,21 @@ string ret(int opcode) {
     stream << "; PC <- PC + DATA[SP]";
 
     return stream.str();
+}
+
+string cp(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    stringstream stream;
+
+    stream << "cp r" << dest << ", r" << src;
+    stream << fill(stream.str().size());
+    stream << "; R" << dest << " - R" << src;
+
+    return stream.str();
+
 }
 
 string cpi(int opcode) {
@@ -630,6 +658,6 @@ string bclr(int opcode) {
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, inc, add, sub, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                brne, breq, brge, brpl, rcall, ret, cpi, lsr, ori, or_asm, and_asm, com, 
-                                                ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                st_x, brne, breq, brge, brpl, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
+                                                com, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
