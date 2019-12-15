@@ -37,7 +37,7 @@ Now you are able to step through the Source Code and see what really happens.
 You will find some example programs in the /test/ directory of this Repository.
 
 # Installation
-Setting up MDX isn't really difficult. There are only 5 Steps:
+Setting up MDX isn't really difficult. There are only 4 Steps:
 
 - Step 1: Clone this repo.
 ```console
