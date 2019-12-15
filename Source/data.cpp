@@ -39,7 +39,10 @@ Data::~Data(void) {
 
 void Data::push(int8_t value) {
 
-    int16_t sp = sp(this->memory[SPL], this->memory[SPH]);
+    uint8_t spl = this->memory[SPL];
+    uint8_t sph = this->memory[SPH];
+    
+    uint16_t sp = sp(spl, sph);
 
     if(sp <= SRAM_START)
         return;
@@ -55,7 +58,10 @@ void Data::push(int8_t value) {
 
 int8_t Data::pop(void) {
 
-    int16_t sp = sp(this->memory[SPL], this->memory[SPH]);
+    uint8_t spl = this->memory[SPL];
+    uint8_t sph = this->memory[SPH];
+    
+    uint16_t sp = sp(spl, sph);
 
     if(sp >= RAM_END)
         return 0xff;
