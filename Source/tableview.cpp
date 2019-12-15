@@ -20,18 +20,24 @@ using namespace std;
 
 void load_table(Table *table) {
 
-    /* Loading table and setting breakpoints */
-
-    string select;
+    vector <string> cmd;
+    string last_select, select;
 
     do {
-
-        vector <string> cmd;
 
         table_menu(table);
         getline(cin, select);
 
-        parse_table_in(select).swap(cmd);
+        if(select != "")
+            last_select = select;
+
+        if(last_select == "pn")
+            table->next_page(+1);
+
+        if(last_select == "pp")
+            table->next_page(-1);
+
+        parse_table_in(last_select).swap(cmd);
 
         if(cmd.size() == 0) // invalid option
             continue;

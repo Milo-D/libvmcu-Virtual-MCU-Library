@@ -18,6 +18,8 @@
 #include "disassembler.hpp"
 #include "style.hpp"
 
+#define PGS 31
+
 using namespace std;
 
 /* --- Public --- */
@@ -29,8 +31,14 @@ Table::Table(string hex_file) {
     for(int i = 0; i < this->content.size(); i++)
         this->breaks.push_back(false);
 
-    this->tip = 0;
     this->table_size = this->content.size();
+    this->page_size = this->table_size / PGS;
+
+    if(this->table_size % PGS != 0)
+        this->page_size += 1;
+
+    this->tip = 0;
+    this->page = 0;
     this->source_file = hex_file;
 }
 
@@ -136,6 +144,14 @@ int Table::size(void) {
     return this->table_size;
 }
 
+void Table::next_page(int offs) {
+
+    if(this->page + offs < 0)
+        return;
+
+    this->page = ((this->page + offs) % this->page_size);
+}
+
 string Table::src(void) {
 
     return this->source_file;
@@ -144,7 +160,7 @@ string Table::src(void) {
 string Table::to_str(void) {
 
     stringstream stream;
-    stream << SEPERATOR << "Instructions:\n\n";			
+    stream << SEPERATOR << "Source Code:\n\n";			
 
     if(this->table_size == 0) {
 
@@ -154,9 +170,18 @@ string Table::to_str(void) {
         return stream.str();
     }
 
-    for(int i = 0; i < this->table_size; i++) {
+    int page_start = (this->page * PGS);
+    int page_end = ((this->page * PGS) + PGS);
 
-        stream << setw(2) << setfill(' ');
+    for(int i = page_start; i < page_end; i++) {
+
+        stream << setw(3) << setfill(' ');
+
+        if(i >= this->table_size) {
+
+            stream << to_string(i) << "\n";
+            continue;
+        }
 
         if(this->breaks[i] == true)
             stream << to_string(i) << RED << " [b+] " << DEFAULT;

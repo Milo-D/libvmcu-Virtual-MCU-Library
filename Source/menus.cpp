@@ -44,6 +44,7 @@ void table_menu(Table *table) {
     cout << "MDX - AVR Assembly Debugger\n\n";
     cout << "Set Breaks:  break <address>\n";
     cout << "Undo Breaks: unbreak <address>\n";
+    cout << "Scroll Page: pn / pp\n";
     cout << "Exit:        (e)xit\n";
     cout << "\n";
 

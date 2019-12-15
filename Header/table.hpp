@@ -19,12 +19,15 @@ public:
     bool has_break(void);                                               // checks if table has breakpoints
     bool is_sync(int hex_addr);                                         // returning true if table is synchronized
     int size(void);                                                     // get table size
+    void next_page(int offs);                                           // next/previous table page
     std::string src(void);                                              // get origin of source code
     std::string to_str(void);                                           // returning a Table String
     std::string center_to_str(void);                                    // returning a centered Table String
 
 private:
     int tip;                                                            // (t)able (i)nstruction (p)ointer
+    int page;                                                           // table page
+    int page_size;                                                      // total table pages
     int table_size;                                                     // table size
     int break_counter;                                                  // breakpoint counter
     std::string source_file;							                // source of table
