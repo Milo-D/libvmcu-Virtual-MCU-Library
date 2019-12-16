@@ -1,3 +1,4 @@
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/5964af10f14742d19d0be39f8b3e10b6)](https://www.codacy.com/manual/Milo-D/MDX-Assembly-Debugger?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Milo-D/MDX-Assembly-Debugger&amp;utm_campaign=Badge_Grade)
 # MDX-Assembly-Debugger                        
 An easy and fast CLI Assembly Debugger for 8-bit Atmel AVR
 Microcontrollers.
@@ -36,7 +37,7 @@ Now you are able to step through the Source Code and see what really happens.
 You will find some example programs in the /test/ directory of this Repository.
 
 # Installation
-Setting up MDX isn't really difficult. There are only 5 Steps:
+Setting up MDX isn't really difficult. There are only 4 Steps:
 
 - Step 1: Clone this repo.
 ```console
@@ -90,7 +91,7 @@ You@Terminal:~$ mdx <file.hex>
 - [ ] Full Instruction Support
 
 # Instructions
-Currently MDX supports: 35 Instructions. More Instructions are coming soon.
+Currently MDX supports: 44 Instructions. More Instructions are coming soon.
 
 # Screenshots
 
