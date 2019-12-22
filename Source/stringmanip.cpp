@@ -97,7 +97,7 @@ int hex_to_dec(string input) {
 
 string get_hex(int8_t input) {
 
-    char hex[2] = { '0', '0' }; 
+    char hex[3] = { '0', '0' }; 
     int dec = 0; int i = 0;
 
     for(int i = 0; i < 8; i++)
@@ -120,6 +120,7 @@ string get_hex(int8_t input) {
 
     hex[0] = hex[1];
     hex[1] = temp;
+    hex[2] = '\0';
 
     return string(hex);
 }
