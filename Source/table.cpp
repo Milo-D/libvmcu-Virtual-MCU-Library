@@ -44,7 +44,10 @@ Table::Table(string hex_file) {
 
 int Table::step(void) {
 
-    if(this->tip == this->table_size - 1)
+    if(this->tip >= this->table_size - 1)
+        return -1;
+
+    if(this->tip < 0)
         return -1;
 
     this->tip += 1;
@@ -99,7 +102,13 @@ void Table::set_tip(int instr_line) {
 
     if(instr_line >= this->table_size) {
 
-        print_event("Invalid Instruction line.");
+        print_event("Table Pointer out of Source.");
+        return;
+    }
+
+    if(instr_line < 0) {
+
+        print_event("Table Pointer out of Source.");
         return;
     }
 
@@ -110,16 +119,24 @@ void Table::jump(int exec_addr) {
 
     int i = 0;
 
-    while(get <1> (this->content[i]) != exec_addr)
+    while(get <1> (this->content[i]) != exec_addr) {
+
         i += 1;
+
+        if(i >= this->table_size) {
+
+            this->set_tip(-1);
+            return;
+        }
+    }
 
     if(get <1> (this->content[i - 2]) < 0) {
 
-        this->tip = (i - 2);
+        this->set_tip(i - 2);
         return;
     }
 
-    this->tip = (i - 1);
+    this->set_tip(i - 1);
 }
 
 bool Table::is_break(void) {

@@ -53,6 +53,9 @@ namespace {
             int t_addr = get <0> (t);
             string t_label = get <1> (t);
 
+            if(t_addr + offs >= source.size() || t_addr + offs < 0)
+                continue;
+
             tuple <string, int> blank = make_tuple("", -1);
             tuple <string, int> label = make_tuple(t_label, -1);
 

@@ -81,6 +81,9 @@ namespace {
 
             int instr = hex_to_dec(current); int found;
 
+            if(instr < 0)
+                print_status("Illegal symbols in Hex File.", true);
+
             if((found = get_key_from_op(instr)) < 0)
                 print_status("Could not decode " + hex_line, true);
 
@@ -92,6 +95,17 @@ namespace {
         }
 
         return decrypt;
+    }
+
+    bool validate_hex(string line) {
+
+        if(line.size() < 11)
+            return false;
+
+        if(line.find(":") != 0)
+            return false;
+
+        return true;
     }
 };
 
@@ -108,8 +122,11 @@ vector <struct plain> decode_file(string hex_file) {
     while(getline(read_file, line)) {
 
         vector <struct plain> p;
-        decode_line(line).swap(p);
 
+        if(validate_hex(line) == false)
+            print_status("Wrong Hex Format.", true);
+
+        decode_line(line).swap(p);
         dump.insert(dump.end(), p.begin(), p.end());    
     }
 
