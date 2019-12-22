@@ -166,6 +166,9 @@ void Table::next_page(int offs) {
     if(this->page + offs < 0)
         return;
 
+    if(this->table_size == 0)
+        return;
+
     this->page = ((this->page + offs) % this->page_size);
 }
 
