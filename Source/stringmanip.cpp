@@ -45,6 +45,25 @@ string fill(int len) {
     return space;
 }
 
+vector <string> split(string s, vector <string> res) {
+
+    int pos = s.find(" ");
+
+    if(pos == string::npos) {
+
+        res.push_back(s);
+            
+    } else {
+
+        res.push_back(s.substr(0, pos));
+        s = s.substr(pos + 1, s.size());
+
+        split(s, res).swap(res);
+    }
+
+    return res;
+}
+
 void trim(string *x) {
 
     x->erase(remove(x->begin(), x->end(), ' '), x->end());

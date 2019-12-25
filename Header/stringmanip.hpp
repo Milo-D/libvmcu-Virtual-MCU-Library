@@ -8,6 +8,7 @@
 
 std::string get_file_name(std::string file);
 std::string del_comment(std::string line);
+std::vector <std::string> split(std::string s, std::vector <std::string> res);
 std::string fill(int len);
 void trim(std::string *x);
 int to_dec(std::string input);

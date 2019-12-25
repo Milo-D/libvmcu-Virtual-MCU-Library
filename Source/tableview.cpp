@@ -12,7 +12,8 @@
 
 // Project Headers
 #include "tableview.hpp"
-#include "uparse.hpp"
+#include "stringmanip.hpp"
+#include "parser.hpp"
 #include "table.hpp"
 #include "menus.hpp"
 
@@ -20,7 +21,7 @@ using namespace std;
 
 void load_table(Table *table) {
 
-    vector <string> cmd;
+    Parser parser(TABLE_CONTEXT);
     string last_select, select;
 
     do {
@@ -31,24 +32,21 @@ void load_table(Table *table) {
         if(select != "")
             last_select = select;
 
-        if(last_select == "pn")
-            table->next_page(+1);
+        vector <string> cmd;
+        split(last_select, cmd).swap(cmd);
 
-        if(last_select == "pp")
-            table->next_page(-1);
+        switch(parser.parseln(last_select)) {
 
-        parse_table_in(last_select).swap(cmd);
+            case 0: table->set_break(cmd[1]); break;
+            case 1: table->unset_break(cmd[1]); break;
+            case 2: table->next_page(+1); break;
+            case 3: table->next_page(-1); break;
+            case 4: /* leaving... */ break;
 
-        if(cmd.size() == 0) // invalid option
-            continue;
-
-        if(cmd[0] == "break")
-            table->set_break(cmd[1]);
-
-        if(cmd[0] == "unbreak")
-            table->unset_break(cmd[1]);
+            default: /* ignoring invalid input */ break;
+        }
 		
-    } while(select != "exit" && select != "e");
+    } while(select != "e");
 
 }
 

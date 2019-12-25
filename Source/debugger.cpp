@@ -11,7 +11,7 @@
 // Project Headers
 #include "debugger.hpp"
 #include "ehandling.hpp"
-#include "debugparser.hpp"
+#include "parser.hpp"
 #include "menus.hpp"
 #include "help.hpp"
 #include "table.hpp"
@@ -46,8 +46,8 @@ void debug(Table *table) {
     int cursor = 0;
     string last_select, select;
 
-    DebugParser parser;
     Sys sys(table);
+    Parser parser(DEBUG_CONTEXT);
 
     if(sys.table_has_break() == true)
         jump_forward(&sys, cursor);
@@ -63,7 +63,7 @@ void debug(Table *table) {
         if(select != "")
             last_select = select;
 
-        switch(parser.index_of(last_select)) {
+        switch(parser.parseln(last_select)) {
 
             case 0: sys.step(); break;
             case 1: movec(&cursor, +1, 4); break;
