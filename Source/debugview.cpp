@@ -1,4 +1,4 @@
-/* Implementation of Debugger Functions */
+/* Implementation of Debugger View */
 
 // C++ Headers
 #include <iostream>
@@ -9,7 +9,7 @@
 #include <thread>
 
 // Project Headers
-#include "debugger.hpp"
+#include "debugview.hpp"
 #include "ehandling.hpp"
 #include "parser.hpp"
 #include "menus.hpp"

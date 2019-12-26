@@ -11,8 +11,8 @@
 #include "ehandling.hpp"
 #include "stringmanip.hpp"
 #include "parser.hpp"
-#include "debugger.hpp"
 #include "table.hpp"
+#include "debugview.hpp"
 #include "tableview.hpp"
 #include "menus.hpp"
 
