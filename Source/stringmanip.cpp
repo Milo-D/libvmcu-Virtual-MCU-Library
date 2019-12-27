@@ -6,7 +6,6 @@
 #include <string>
 #include <iterator>
 #include <algorithm>
-#include <fstream>
 #include <sstream>
 #include <bits/stdc++.h> 
 
@@ -164,10 +163,4 @@ string mix_memory(vector <string> first, vector <string> second) {
     }
 
     return stream.str();
-}
-
-bool file_exists(const string &file) {
-
-    ifstream check_file(file);
-    return check_file.good();
 }

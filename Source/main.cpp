@@ -8,8 +8,10 @@
 #include <fstream>
 
 // Project Headers
+#include "mode.hpp"
 #include "ehandling.hpp"
 #include "stringmanip.hpp"
+#include "filemanip.hpp"
 #include "parser.hpp"
 #include "table.hpp"
 #include "debugview.hpp"
@@ -20,52 +22,14 @@
 
 using namespace std;
 
-namespace {
-    
-    void is_hex(string file) {
-
-        unsigned int pos;
-
-        if((pos = file.find(".hex")) == string::npos)
-            print_status("Could not parse file.", true);
-
-        if(pos + 4 != file.size())
-            print_status("Could not parse file.", true);
-
-        if(pos == 0)
-            print_status("Invalid file name.", true);
-    }
-
-    vector <string> parse_args(int argsz, char **argls) {
-
-        vector <string> arguments;
-
-        print_status("Parsing files...", false);
-
-        if(argsz < 2)
-            print_status("Missing arguments.", true);
-
-        for(int i = 1; i < argsz; i++) {
-
-            string current = (string) argls[i];
-
-            if(file_exists(current) == false)
-                print_status("Specified file does not exist.", true);
-
-            is_hex(current);
-            arguments.push_back(current);
-        }
-
-        print_status("Done!", false);
-
-        return arguments;
-    }
-};
-
-int main(int argc, char **argv) {			
+int main(int argc, char **argv) {
 
     vector <string> debug_file;
-    parse_args(argc, argv).swap(debug_file);
+
+    if(call_mode(argc, argv) == 0)
+        return EXIT_SUCCESS;
+
+    get_files(argc, argv).swap(debug_file);
 
     int fcursor = 0;
     unsigned int file_no = debug_file.size();

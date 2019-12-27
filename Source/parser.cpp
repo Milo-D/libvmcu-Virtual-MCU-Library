@@ -9,6 +9,7 @@
 #include "parser.hpp"
 #include "commands.hpp"
 #include "ehandling.hpp"
+#include "filemanip.hpp"
 #include "stringmanip.hpp"
 
 using namespace std;
@@ -35,19 +36,50 @@ int Parser::parseln(string cmd) {
 
     bool passed = false;
     
-    if(this->context == MAIN_CONTEXT)
-        passed = this->parse_main(cmd_split);
-		
-    if(this->context == TABLE_CONTEXT)
-        passed = this->parse_table(cmd_split);
-		
-    if(this->context == DEBUG_CONTEXT)
-        passed = this->parse_debug(cmd_split);
-	
+    switch(this->context) {
+
+        case ARG_CONTEXT: passed = this->parse_arg(cmd_split); break;
+        case MAIN_CONTEXT: passed = this->parse_main(cmd_split); break;
+        case TABLE_CONTEXT: passed = this->parse_table(cmd_split); break;
+        case DEBUG_CONTEXT: passed = this->parse_debug(cmd_split); break;
+
+        default: break;
+    }
+
     return (passed ? this->cmap[cmd_split[0]] : -1);
 }
 
 /* --- Private --- */
+
+bool Parser::parse_arg(vector <string> cmd) {
+
+    int index = this->cmap[cmd[0]];
+    int argc = cmd.size() - 1;
+
+    switch(index) {
+
+        case 0: case 1:
+
+            if(argc != 1)
+                print_status("Missing File.", true);
+
+            if(file_exists(cmd[1]) == false)
+                print_status("File does not exist.", true);
+
+        break;
+
+        case 2:
+
+            if(argc != 0)
+                print_status("Too many arguments.", true);
+
+        break;
+
+        default: return false;
+    }
+
+    return true;
+}
 
 bool Parser::parse_main(vector <string> cmd) {
 
