@@ -19,15 +19,17 @@ happens in the program.
 
 [II Installation](#Installation)
 
-[III Troubleshooting](#Troubleshooting)
+[III Cheatsheet](#Cheatsheet)
 
-[IV Supported MCUs](#Supported-Microcontroller)
+[IV Troubleshooting](#Troubleshooting)
 
-[V Features](#How-To)
+[V Supported MCUs](#Supported-Microcontroller)
 
-[VI Instruction Set](#Instructions)
+[VI Features](#How-To)
 
-[VII Screenshots](#Screenshots)
+[VII Instruction Set](#Instructions)
+
+[VIII Screenshots](#Screenshots)
 
 # How MDX works
 MDX accepts AVR Hex Files as input and decodes them. Then, a readable
@@ -59,12 +61,50 @@ You@Terminal:~$ mv mdx /usr/bin/
 You@Terminal:~$ mdx <file.hex>
 ```
 
+# Cheatsheet
+
+Note: You may open multiple files in interactive Debugging Mode.
+
+| CL Options    | Arguments     | Description                 |
+| ------------- |:-------------:|:----------------------------|
+| none          | <file.hex>    | Interactive Debugging Mode  |
+| -d            | <file.hex>    | Disassembler                |
+| -hl           | <file.hex>    | Headless Mode (in progress) |
+| -h            | none          | Help (in progress)          |
+
+
+
+| Table Commands| Arguments     | Description                 |
+| ------------- |:-------------:|:----------------------------|
+| break         | address       | Setting a Debug Breakpoint  |
+| unbreak       | address       | Removing Debug Breakpoint   |
+| pn            | none          | Show next Table Page        |
+| pp            | none          | Show previous Table Page    |
+| e             | none          | Leave Table-View            |
+   
+   
+   
+| Debug Commands| Arguments     | Description                 |
+| ------------- |:-------------:|:----------------------------|
+| n             | none          | Single Step forward         |
+| b             | none          | Step backwards (in progress)|
+| rn            | none          | Show next GPR Page          |
+| dn            | none          | Scroll to next Data Cell    |
+| dp            | none          | Scroll to prev. Data Cell   |
+| jb            | none          | Jump to next Breakpoint     |
+| en            | none          | Scroll to next EEPROM Cell  |
+| ep            | none          | Scrool to prev. EEPROM Cell |
+| e             | none          | Leave Debug-View            |
+| ?             | none          | Show Help                   |
+
+
 # Troubleshooting
 
 -  Issue: Could not parse Hexcode.
 
 -  Solution: Because MDX is still in Development, it does not support every
-   Instruction. I am working on adding new Instructions to MDX. 
+   Instruction. I am working on adding new Instructions to MDX. Also manipulating
+   the Hexfile can lead to a corrupted Hexfile, which MDX wont parse.
 
 # Supported Microcontroller
 - [x] ATmega32
