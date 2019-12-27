@@ -115,6 +115,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 
 # Features
 - [x] Debugging Assembly
+- [x] Advanced Disassembler, recovering Labels
 - [ ] Backwards Stepping
 - [x] Simple and fancy Commandline Design
 - [x] GPR Visualization
