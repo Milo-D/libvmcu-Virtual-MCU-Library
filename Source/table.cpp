@@ -98,6 +98,29 @@ int Table::unset_break(string point) {
     return 0;
 }
 
+void Table::define(const string &alias, const string &seq) {
+
+    for(int i = 0; i < this->table_size; i++) {
+
+        int pos;
+        string line = get <0> (this->content[i]);
+
+        if(get <1> (this->content[i]) < 0) {
+
+            get <0> (this->content[i]) = replace_str(line, alias, seq);
+            continue;
+        }
+
+        if((pos = line.find(";")) == string::npos)
+            continue;
+
+        string code = line.substr(0, pos);
+        string comment = line.substr(pos, line.size());
+
+        get <0> (this->content[i]) = replace_str(code, alias, seq) + comment;
+    }
+}
+
 void Table::set_tip(int instr_line) {
 
     if(instr_line >= this->table_size) {

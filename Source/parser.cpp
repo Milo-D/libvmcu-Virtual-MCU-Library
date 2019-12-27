@@ -104,8 +104,15 @@ bool Parser::parse_table(vector <string> cmd) {
                 return false;
 		
         break;
+
+        case 2:
+
+            if(argc != 2)
+                return false;
+
+        break;
 		
-        case 2: case 3: case 4:
+        case 3: case 4: case 5:
 		
             if(argc != 0)
                 return false;

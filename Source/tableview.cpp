@@ -39,9 +39,10 @@ void load_table(Table *table) {
 
             case 0: table->set_break(cmd[1]); break;
             case 1: table->unset_break(cmd[1]); break;
-            case 2: table->next_page(+1); break;
-            case 3: table->next_page(-1); break;
-            case 4: /* leaving... */ break;
+            case 2: table->define(cmd[1], cmd[2]); break;
+            case 3: table->next_page(+1); break;
+            case 4: table->next_page(-1); break;
+            case 5: /* leaving... */ break;
 
             default: /* ignoring invalid input */ break;
         }

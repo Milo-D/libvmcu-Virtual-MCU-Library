@@ -13,6 +13,7 @@ public:
     int step(void);                                                     // single stepping through Table
     int set_break(std::string point);                                   // setting breakpoints
     int unset_break(std::string point);                                 // removing breakpoints
+    void define(const std::string &alias, const std::string &seq);      // defining 'seq' as 'alias'
     void set_tip(int instr_line);                                       // moving tip to 'instr_line'
     void jump(int exec_addr);                                           // jumping to executable address
     bool is_break(void);                                                // checks if current line is a breakpoint

@@ -38,10 +38,51 @@ string fill(int len) {
 
     string space = "";
 
-    for(int i = 0; i < 24 - len; i++)
+    for(int i = 0; i < 26 - len; i++)
         space += " ";
 
     return space;
+}
+
+string replace_str(string line, const string &alias, const string &seq) {
+
+    int diff;
+    int lc = 0; size_t pos = 0;
+
+    while((pos = line.find(seq, pos)) != string::npos) {
+    
+        line.replace(pos, seq.length(), alias);
+        pos += alias.length();
+
+        lc += 1;
+    }
+
+    if(lc == 0)
+        return line;
+
+    unsigned int line_len = line.length();
+    unsigned int alias_len = alias.length();
+    unsigned int seq_len = seq.length();
+
+    diff = (alias_len - seq_len);
+    
+    if(diff < 0) {
+
+        for(int i = 0; i < (-1 * diff); i++)
+            line += " ";
+
+        return line;
+    }
+
+    for(int i = 0; i < diff; i++) {
+
+        if(line[line_len - i - 1] != ' ')
+            break;
+
+        line.erase((line_len - i - 1), 1);
+    }
+
+    return line;
 }
 
 vector <string> split(string s, vector <string> res) {
