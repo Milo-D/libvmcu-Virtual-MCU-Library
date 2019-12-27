@@ -1,6 +1,6 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5964af10f14742d19d0be39f8b3e10b6)](https://www.codacy.com/manual/Milo-D/MDX-Assembly-Debugger?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Milo-D/MDX-Assembly-Debugger&amp;utm_campaign=Badge_Grade)
 # MDX-Assembly-Debugger                        
-An easy and fast CLI Assembly Debugger for 8-bit Atmel AVR
+An easy and fast CLI Assembly Debugger and Disassembler for 8-bit Atmel AVR
 Microcontrollers.
 
 # Overview
