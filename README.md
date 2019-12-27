@@ -78,6 +78,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | ------------- |:-------------:|:----------------------------|
 | break         | address       | Setting a Debug Breakpoint  |
 | unbreak       | address       | Removing Debug Breakpoint   |
+| def           | alias seq     | Defining 'seq' as 'alias'   |
 | pn            | none          | Show next Table Page        |
 | pp            | none          | Show previous Table Page    |
 | e             | none          | Leave Table-View            |
