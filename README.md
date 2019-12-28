@@ -46,7 +46,7 @@ Setting up MDX isn't really difficult. There are only 4 Steps:
 You@Terminal:~$ git clone https://www.github.com/Milo-D/MDX-Assembly-Debugger.git/
 ```
 
-- Step 2: Run 'make clean all' to compile MDX.
+- Step 2: Run 'make' to compile MDX.
 ```console
 You@Terminal:~$ make clean all
 ```
