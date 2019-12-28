@@ -46,14 +46,14 @@ Setting up MDX isn't really difficult. There are only 4 Steps:
 You@Terminal:~$ git clone https://www.github.com/Milo-D/MDX-Assembly-Debugger.git/
 ```
 
-- Step 2: Run 'build.sh' to compile MDX.
+- Step 2: Run 'make clean all' to compile MDX.
 ```console
-You@Terminal:~$ ./build.sh
+You@Terminal:~$ make clean all
 ```
 
 - Step 3: (Optional) Move mdx to /usr/bin/
 ```console
-You@Terminal:~$ mv mdx /usr/bin/
+You@Terminal:~$ mv build/apps/mdx /usr/bin/
 ```
 
 - Step 4: Run MDX.
