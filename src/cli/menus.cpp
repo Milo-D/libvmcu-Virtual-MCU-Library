@@ -14,7 +14,7 @@
 
 using namespace std;
 
-void main_menu(string current_f) {
+void main_menu(const string &current_f) {
 
     clrscr();
 	

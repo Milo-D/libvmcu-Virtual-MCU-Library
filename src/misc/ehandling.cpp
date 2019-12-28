@@ -16,7 +16,7 @@
 
 using namespace std;
 
-void print_status(string msg, bool fatal) {
+void print_status(const string &msg, bool fatal) {
 
     cout << "MDX: " << msg << endl;
 
@@ -24,7 +24,7 @@ void print_status(string msg, bool fatal) {
         exit(EXIT_FAILURE);
 }
 
-void print_event(string msg) {
+void print_event(const string &msg) {
 
     string select = "";
 
