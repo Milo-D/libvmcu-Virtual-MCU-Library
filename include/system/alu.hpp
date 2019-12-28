@@ -15,7 +15,7 @@ class Alu {
 
 public:
     Alu(Table *table);                          // ALU Constructor
-    ~Alu();                                     // ALU Destructor
+    ~Alu(void);                                 // ALU Destructor
 
     int fetch(Sys *sys);                        // fetching next instruction
     int get_pc(void);                           // returning program counter

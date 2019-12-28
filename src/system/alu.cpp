@@ -22,10 +22,11 @@ Alu::Alu(Table *table) {
     this->sreg = new Sreg();
 }
 
-Alu::~Alu() {
+Alu::~Alu(void) {
 
-    delete flash;
-    delete gpr;
+    delete this->flash;
+    delete this->gpr;
+    delete this->sreg;
 }
 
 int Alu::fetch(Sys *sys) {

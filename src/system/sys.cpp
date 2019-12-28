@@ -27,6 +27,13 @@ Sys::Sys(Table *table) {
     this->terminated = false;
 }
 
+Sys::~Sys(void) {
+
+    delete this->alu;
+    delete this->data;
+    delete this->eeprom;
+}
+
 void Sys::step(void) {
 
     if(this->terminated == true)

@@ -14,6 +14,7 @@ class Sys {
 
 public:
     Sys(Table *table);
+    ~Sys(void);
 
     /* General System Functions */
 
