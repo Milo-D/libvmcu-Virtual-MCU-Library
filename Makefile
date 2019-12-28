@@ -41,5 +41,7 @@ release: CXXFLAGS += -O2
 release: all
 
 clean:
-	-@rm -rvf $(OBJ_DIR)/*
-	-@rm -rvf $(APP_DIR)/*
+	find $(OBJ_DIR) ! -name 'README' -type f -exec rm -f {} +
+	find $(APP_DIR) ! -name 'README' -type f -exec rm -f {} +
+	-@rmdir $(OBJ_DIR)/src/*
+	-@rmdir $(OBJ_DIR)/src
