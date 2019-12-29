@@ -109,6 +109,12 @@ Note: You may open multiple files in interactive Debugging Mode.
 -  Solution: Because MDX is still in Development, it does not support every
    Instruction. I am working on adding new Instructions to MDX. Also manipulating
    the Hexfile can lead to a corrupted Hexfile, which MDX wont parse.
+   
+- Issue: Wrong Hex Format.
+
+- Solution: Currently, the Decoder accepts only capital hexadecimal letters. This, or any
+  other manipulation (adding useless space, new-lines, ...) could lead to such an exception.
+  Non-capital letters will be supported soon.
 
 # Supported Microcontroller
 - [x] ATmega32
