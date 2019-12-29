@@ -92,6 +92,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | n             | none          | Single Step forward         |
 | b             | none          | Step backwards (in progress)|
 | rn            | none          | Show next GPR Page          |
+| rp            | none          | Show prev. GPR Page         |
 | dn            | none          | Scroll to next Data Cell    |
 | dp            | none          | Scroll to prev. Data Cell   |
 | jb            | none          | Jump to next Breakpoint     |
