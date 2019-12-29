@@ -13,6 +13,8 @@
 #include "misc/stringmanip.hpp"
 #include "cli/style.hpp"
 
+#define movec(cursor, offs, range) *cursor = ((*cursor) + offs) % range
+
 using namespace std;
 
 /* --- Public --- */

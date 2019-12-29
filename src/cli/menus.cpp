@@ -20,11 +20,15 @@ void main_menu(const string &current_f) {
 	
     cout << "MDX - AVR Assembly Debugger\n\n";
 
+    cout << GREEN;
+
     cout << "    _/      _/  _/_/_/    _/      _/ \n";
     cout << "   _/_/  _/_/  _/    _/    _/  _/     \n";
     cout << "  _/  _/  _/  _/    _/      _/         \n";
     cout << " _/      _/  _/    _/    _/  _/        \n";
     cout << "_/      _/  _/_/_/    _/      _/       \n\n";
+    
+    cout << DEFAULT;
 
     cout << "Selected File: " << current_f << "\n";
     cout << "prev: <p> next: <n>\n\n";
