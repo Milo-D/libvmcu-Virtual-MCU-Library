@@ -91,29 +91,9 @@ int Flash::table_step(void) {
     return this->table->step();
 }
 
-void Flash::table_set_tip(int instr_line) {
-
-    this->table->set_tip(instr_line);
-}
-
-bool Flash::table_has_break(void) {
-
-    return this->table->has_break();
-}
-
-bool Flash::table_is_break(void) {
-
-    return this->table->is_break();
-}
-
 bool Flash::table_is_sync(void) {
 
     return this->table->is_sync(this->pc);
-}
-
-int Flash::table_size(void) {
-
-    return this->table->size();
 }
 
 string Flash::get_table(void) {

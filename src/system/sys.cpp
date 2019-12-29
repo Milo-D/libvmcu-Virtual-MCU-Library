@@ -138,26 +138,6 @@ string Sys::memory_to_str(void) {
     return mix_memory(data->to_vector(), eeprom->to_vector());
 }
 
-void Sys::table_set_tip(int instr_line) {
-
-    this->alu->table_set_tip(instr_line);
-}
-
-bool Sys::table_has_break(void) {
-
-    return this->alu->table_has_break();
-}
-
-bool Sys::table_is_break(void) {
-
-    return this->alu->table_is_break();
-}
-
-int Sys::table_size(void) {
-
-    return this->alu->table_size();
-}
-
 string Sys::table_to_str(void) {
 
     return this->alu->get_table();

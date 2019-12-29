@@ -59,10 +59,6 @@ public:
 
     /* Table Operations */
 
-    void table_set_tip(int instr_line);
-    bool table_has_break(void);
-    bool table_is_break(void);
-    int table_size(void);
     std::string table_to_str(void);
 
 private:

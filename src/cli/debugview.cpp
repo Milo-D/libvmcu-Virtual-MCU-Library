@@ -25,11 +25,11 @@ using namespace std::this_thread;
 
 namespace {
 
-    void jump_forward(Sys *sys, int cursor) {
+    void jump_forward(Sys *sys, Table *table, int cursor) {
 
         do {
 
-            if(sys->table_is_break() == true)
+            if(table->is_break() == true)
                 break;
 
             debug_menu(sys, cursor);
@@ -49,15 +49,15 @@ void debug(Table *table) {
     Sys sys(table);
     Parser parser(DEBUG_CONTEXT);
 
-    if(sys.table_has_break() == true)
-        jump_forward(&sys, cursor);
+    if(table->has_break() == true)
+        jump_forward(&sys, table, cursor);
 	
     do {
 
         debug_menu(&sys, cursor);
         getline(cin, select);
 
-        if(sys.table_size() <= 0)
+        if(table->size() <= 0)
             continue;
 		
         if(select != "")
@@ -69,10 +69,10 @@ void debug(Table *table) {
             case 1: movec(&cursor, +1, 4); break;
             case 2: sys.scale_data(+1); break;
             case 3: sys.scale_data(-1); break;
-            case 4: jump_forward(&sys, cursor); break;
+            case 4: jump_forward(&sys, table, cursor); break;
             case 5: sys.scale_eeprom(+1); break;
             case 6: sys.scale_eeprom(-1); break;
-            case 7: sys.table_set_tip(0); break;
+            case 7: table->set_tip(0); break;
             case 8: help(); break;
 
             default: /* Ignoring invalid Input */ break;

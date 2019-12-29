@@ -34,7 +34,7 @@ int Alu::fetch(Sys *sys) {
     int opcode = this->flash->load_opcode();
     int key = this->flash->load_key();
 
-    if(this->table_is_sync() == true) {
+    if(this->flash->table_is_sync() == true) {
 
         if(key < 0)
             return -1;
@@ -87,31 +87,6 @@ bool Alu::read_sreg(int flag) {
 string Alu::get_sreg(void) {
 
     return this->sreg->to_str();
-}
-
-void Alu::table_set_tip(int instr_line) {
-
-    this->flash->table_set_tip(instr_line);
-}
-
-bool Alu::table_has_break(void) {
-
-    return this->flash->table_has_break();
-}
-
-bool Alu::table_is_break(void) {
-
-    return this->flash->table_is_break();
-}
-
-bool Alu::table_is_sync(void) {
-
-    return this->flash->table_is_sync();
-}
-
-int Alu::table_size(void) {
-
-    return this->flash->table_size();
 }
 
 string Alu::get_table(void) {
