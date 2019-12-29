@@ -53,7 +53,7 @@ void table_menu(Table *table) {
     cout << PROMPT;
 }
 
-void debug_menu(Sys *sys, int cursor) {
+void debug_menu(Sys *sys) {
 
     clrscr();
 
@@ -73,8 +73,8 @@ void debug_menu(Sys *sys, int cursor) {
 
     cout << DEFAULT;
 
-    cout << sys->gpr_to_str(cursor);
-    cout << sys->sreg_to_str();	
+    cout << sys->gpr_to_str();
+    cout << sys->sreg_to_str();
     cout << sys->table_to_str();
     cout << sys->memory_to_str();
 

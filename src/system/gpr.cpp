@@ -26,6 +26,7 @@ Gpr::Gpr(void) {
         this->color.push_back(DEFAULT);
 
     this->size = GPR_SIZE;
+    this->cursor = 0;
 }
 
 Gpr::~Gpr() {
@@ -45,14 +46,25 @@ int8_t Gpr::read(int rx) {
     return this->reg[rx];
 }
 
-string Gpr::to_str(int cursor) {
+void Gpr::scale(int offs) {
+
+    if((this->cursor + offs) >= (GPR_SIZE / 8))
+        return;
+
+    if((this->cursor + offs) < 0)
+        return;
+
+    this->cursor += offs;
+}
+
+string Gpr::to_str(void) {
 
     stringstream stream;
 	
     stream << SEPERATOR;
     stream << "Registers:\n\n";
 	
-    int start = (cursor * 8);
+    int start = (this->cursor * 8);
 	
     for(int i = 0; i < 8; i++) {
 

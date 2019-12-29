@@ -26,7 +26,8 @@ public:
 
     void write_gpr(int rx, int8_t data);
     int8_t read_gpr(int rx);
-    std::string gpr_to_str(int cursor);
+    void scale_gpr(int offs);
+    std::string gpr_to_str(void);
 
     /* SREG Operations */
 

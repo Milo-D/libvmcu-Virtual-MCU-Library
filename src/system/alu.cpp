@@ -69,9 +69,14 @@ int8_t Alu::read_gpr(int rx) {
     return (this->gpr->read(rx));
 }
 
-string Alu::get_gpr(int cursor) {
+void Alu::scale_gpr(int offs) {
 
-    return this->gpr->to_str(cursor);
+    this->gpr->scale(offs);
+}
+
+string Alu::get_gpr(void) {
+
+    return this->gpr->to_str();
 }
 
 void Alu::write_sreg(int flag, bool bit) {
