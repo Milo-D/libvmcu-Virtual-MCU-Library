@@ -64,13 +64,14 @@ void debug(Table *table) {
 
             case 0: sys.step(); break;
             case 1: sys.scale_gpr(+1); break;
-            case 2: sys.scale_data(+1); break;
-            case 3: sys.scale_data(-1); break;
-            case 4: jump_forward(&sys, table); break;
-            case 5: sys.scale_eeprom(+1); break;
-            case 6: sys.scale_eeprom(-1); break;
-            case 7: table->set_tip(0); break;
-            case 8: help(); break;
+            case 2: sys.scale_gpr(-1); break;
+            case 3: sys.scale_data(+1); break;
+            case 4: sys.scale_data(-1); break;
+            case 5: jump_forward(&sys, table); break;
+            case 6: sys.scale_eeprom(+1); break;
+            case 7: sys.scale_eeprom(-1); break;
+            case 8: table->set_tip(0); break;
+            case 9: help(); break;
 
             default: /* Ignoring invalid Input */ break;
         } 
