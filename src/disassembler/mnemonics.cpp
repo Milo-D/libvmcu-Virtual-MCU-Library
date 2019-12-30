@@ -326,6 +326,19 @@ string st_x(int opcode) {
     return stream.str();
 }
 
+string st_xi(int opcode) {
+
+    int src = extract(opcode, 4, 9, 0);
+
+    stringstream stream;
+
+    stream << "st X+" << ", r" << src;
+    stream << fill(stream.str().size());
+    stream << "; DATA[X+] <- R" << src;
+
+    return stream.str();
+}
+
 string brne(int opcode) {
 
     int offs = extract(opcode, 3, 10, 0);
@@ -698,6 +711,6 @@ string bclr(int opcode) {
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, inc, add, sub, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                st_x, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
+                                                st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
                                                 andi, com, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
