@@ -211,6 +211,38 @@ void sub(Sys *sys, int opcode) {
     sys->write_gpr(dest, result);
 }
 
+void sbc(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    int8_t dest_val = sys->read_gpr(dest);
+    int8_t src_val = sys->read_gpr(src);
+
+    bool carry = sys->read_sreg(CF);
+    int8_t result = (dest_val - src_val - carry);
+
+    int8_t vf_res = bit(dest_val, 7) * ~bit(src_val, 7) * ~bit(result, 7);
+    vf_res += ~bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
+
+    int8_t cf_res = (~bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * ~bit(dest_val, 7));
+
+    int8_t hf_res = (~bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
+    hf_res += bit(result, 3) * ~bit(dest_val, 3);
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(CF, cf_res);
+    sys->write_sreg(HF, hf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, nf_res ^ vf_res);
+    sys->write_sreg(ZF, (result == 0x00) * sys->read_sreg(ZF));
+
+    sys->write_gpr(dest, result);
+}
+
 void push(Sys *sys, int opcode) {
 
     int src = extract(opcode, 4, 9, 0);
@@ -705,7 +737,7 @@ void bclr(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, inc, add, sub, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
+                                                           dec, inc, add, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                            st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
                                                            andi, com, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
