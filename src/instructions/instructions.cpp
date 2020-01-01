@@ -706,6 +706,15 @@ void bld(Sys *sys, int opcode) {
     sys->write_gpr(dest, (val |= (0x01 << bpos)));
 }
 
+void bst(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int bpos = extract(opcode, 0, 3, 0);
+
+    int8_t val = sys->read_gpr(dest);
+    sys->write_sreg(TF, ((0x01 << bpos) & val) >> bpos);
+}
+
 void ses(Sys *sys, int opcode) {
 
     sys->write_sreg(SF, 0x01);
@@ -756,7 +765,7 @@ void bclr(Sys *sys, int opcode) {
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                            st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
-                                                           andi, com, bld, ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                           andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
 
 

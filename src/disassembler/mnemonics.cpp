@@ -638,6 +638,20 @@ string bld(int opcode) {
     return stream.str();
 }
 
+string bst(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int bpos = extract(opcode, 0, 3, 0);
+
+    stringstream stream;
+
+    stream << "bst r" << dest << ", " << bpos;
+    stream << fill(stream.str().size());
+    stream << "; TF <- R" << dest << "[" << bpos << "]";
+
+    return stream.str();
+}
+
 string ses(int opcode) {
 
     stringstream stream;
@@ -742,5 +756,5 @@ string bclr(int opcode) {
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, inc, add, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                 st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
-                                                andi, com, bld, ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, bclr };
 
