@@ -787,6 +787,11 @@ void sen(Sys *sys, int opcode) {
     sys->write_sreg(NF, 0x01);
 }
 
+void cls(Sys *sys, int opcode) {
+
+    sys->write_sreg(SF, 0x00);
+}
+
 void bclr(Sys *sys, int opcode) {
 
     int s_bit = extract(opcode, 4, 7, 0);
@@ -797,7 +802,7 @@ void bclr(Sys *sys, int opcode) {
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, adc, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                            st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
-                                                           andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, bclr };
+                                                           andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, bclr };
 
 
 
