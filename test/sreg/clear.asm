@@ -13,6 +13,7 @@ rjmp main
 
 main:
 cls
+clt
 rjmp exit
 
 exit:
