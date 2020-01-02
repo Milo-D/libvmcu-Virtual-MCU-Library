@@ -14,6 +14,12 @@ rjmp main
 main:
 cls
 clt
+clv
+clz
+clh
+clc
+cli
+cln
 rjmp exit
 
 exit:
