@@ -822,6 +822,16 @@ string clc(int opcode) {
     return stream.str();
 }
 
+string cli(int opcode) {
+
+    stringstream stream;
+
+    stream << "cli";
+    stream << fill(stream.str().size());
+    stream << "; IF <- 0x00";
+
+    return stream.str(); 
+}
 
 string bclr(int opcode) {
 
@@ -840,5 +850,5 @@ string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ld
                                                 dec, inc, add, adc, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                 st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, lsr, ori, or_asm, and_asm, 
                                                 andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, clz, clh, 
-                                                clc, bclr };
+                                                clc, cli, bclr };
 
