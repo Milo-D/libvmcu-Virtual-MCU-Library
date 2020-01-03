@@ -74,7 +74,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | ------------- |:-------------:|:----------------------------|
 | none          | <file.hex>    | Interactive Debugging Mode  |
 | -d            | <file.hex>    | Disassembler                |
-| -hl           | <file.hex>    | Headless Mode (in progress) |
+| -hl           | <file.hex>    | Headless Mode               |
 | -h            | none          | Help (in progress)          |
 
 
