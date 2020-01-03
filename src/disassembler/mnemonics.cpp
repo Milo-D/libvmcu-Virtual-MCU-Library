@@ -66,7 +66,7 @@ string muls(int opcode) {
 
     stream << "muls r" << (dest + 16) << ", r" << (src + 16);
     stream << fill(stream.str().size());
-    stream << "; R1:R0 <- " << (dest + 16) << " * R" << (src + 16);
+    stream << "; R1:R0 <- R" << (dest + 16) << " * R" << (src + 16);
 
     return stream.str();
 }
