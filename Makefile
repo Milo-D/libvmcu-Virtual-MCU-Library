@@ -1,5 +1,5 @@
 CXX      := -g++
-CXXFLAGS := -D
+CXXFLAGS := -g -D
 LDFLAGS  := -L /usr/lib -lstdc++ -lm
 MCU_ARCH := ATMEGA32 
 BUILD    := ./build
@@ -28,14 +28,11 @@ $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(MCU_ARCH) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
 
-.PHONY: all build clean debug release
+.PHONY: all build clean release
 
 build:
 	@mkdir -p $(APP_DIR)
 	@mkdir -p $(OBJ_DIR)
-
-debug: CXXFLAGS += -g
-debug: all
 
 release: CXXFLAGS += -O2
 release: all

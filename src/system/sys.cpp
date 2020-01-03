@@ -24,6 +24,7 @@ Sys::Sys(Table *table) {
     this->data = new Data();
     this->eeprom = new Eeprom();
 
+    this->steps = 0;
     this->terminated = false;
 }
 
@@ -41,6 +42,30 @@ void Sys::step(void) {
 
     if(this->alu->fetch(this) < 0)
         this->kill();
+
+    this->steps += 1;
+}
+
+void Sys::backstep(Table *table) {
+
+    if(this->terminated == true)
+        return;
+
+    int counter = (this->steps - 1);
+    table->set_tip(0);
+
+    delete this->alu;
+    delete this->data;
+    delete this->eeprom;
+
+    this->alu = new Alu(table);
+    this->data = new Data();
+    this->eeprom = new Eeprom();
+
+    this->steps = 0;
+
+    while(counter-- > 0)
+        this->step();
 }
 
 void Sys::kill(void) {

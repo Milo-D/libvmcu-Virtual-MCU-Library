@@ -33,9 +33,9 @@ public:
     std::string get_table(void);                // get TABLE output string
 
 private:
-    Flash *flash;
-    Gpr *gpr;
-    Sreg *sreg;
+    Flash *flash;                               // FLASH Module
+    Gpr *gpr;                                   // GPR Module
+    Sreg *sreg;                                 // SREG Module
 };
 
 #endif

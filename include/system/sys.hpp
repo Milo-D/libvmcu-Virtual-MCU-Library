@@ -19,6 +19,7 @@ public:
     /* General System Functions */
 
     void step(void);
+    void backstep(Table *table);
     void kill(void);
     bool is_terminated(void);
 
@@ -67,6 +68,7 @@ private:
     Data *data;
     Eeprom *eeprom;
 
+    int steps;
     bool terminated;
 };
 
