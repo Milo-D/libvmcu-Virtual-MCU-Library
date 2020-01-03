@@ -4,6 +4,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <vector>
+#include <tuple>
 #include <sstream>
 
 // C Headers
@@ -109,6 +111,8 @@ namespace {
         stream << CONST_TAB;
         stream << "\"general_purpose_registers\": {\n\n";
 
+        vector < tuple <string, string> > element;
+
         for(int i = 0; i < GPR_SIZE; i++) {
 
             int8_t cell_data = sys->read_gpr(i);
@@ -119,7 +123,18 @@ namespace {
             string value = "0x" + get_hex(cell_data);
             string key = "R" + to_string(i);
 
-            bool last = (i == GPR_SIZE - 1);
+            tuple <string, string> t = make_tuple(key, value);
+            element.push_back(t);
+        }
+
+        int size = element.size();
+
+        for(int i = 0; i < size; i++) {
+
+            string key = get <0> (element[i]);
+            string value = get <1> (element[i]);
+
+            bool last = (i == (size - 1));
             stream << new_alpha_pair(key, value, last);
         }
 
@@ -157,6 +172,8 @@ namespace {
         stream << CONST_TAB;
         stream << "\"data_memory\": {\n\n";
 
+        vector < tuple <string, string> > element;
+
         for(int i = 0; i < (RAM_END + 1); i++) {
 
             stringstream addr_stream;
@@ -172,7 +189,18 @@ namespace {
             string value = "0x" + get_hex(cell_data);
             string key = addr_stream.str();
 
-            bool last = (i == RAM_END);
+            tuple <string, string> t = make_tuple(key, value);
+            element.push_back(t);
+        }
+
+        int size = element.size();
+
+        for(int i = 0; i < size; i++) {
+
+            string key = get <0> (element[i]);
+            string value = get <1> (element[i]);
+
+            bool last = (i == (size - 1));
             stream << new_alpha_pair(key, value, last);
         }
 
@@ -189,6 +217,8 @@ namespace {
         stream << CONST_TAB;
         stream << "\"eeprom_memory\": {\n\n";
 
+        vector < tuple <string, string> > element;
+
         for(int i = 0; i < EEPROM_SIZE; i++) {
 
             stringstream addr_stream;
@@ -204,7 +234,18 @@ namespace {
             string value = "0x" + get_hex(cell_data);
             string key = addr_stream.str();
 
-            bool last = (i == EEPROM_SIZE - 1);
+            tuple <string, string> t = make_tuple(key, value);
+            element.push_back(t);
+        }
+
+        int size = element.size();
+
+        for(int i = 0; i < size; i++) {
+
+            string key = get <0> (element[i]);
+            string value = get <1> (element[i]);
+
+            bool last = (i == (size - 1));
             stream << new_alpha_pair(key, value, last);
         }
 
