@@ -111,7 +111,12 @@ namespace {
 
         for(int i = 0; i < GPR_SIZE; i++) {
 
-            string value = "0x" + get_hex(sys->read_gpr(i));
+            int8_t cell_data = sys->read_gpr(i);
+
+            if(cell_data == 0x00)
+                continue;
+
+            string value = "0x" + get_hex(cell_data);
             string key = "R" + to_string(i);
 
             bool last = (i == GPR_SIZE - 1);
