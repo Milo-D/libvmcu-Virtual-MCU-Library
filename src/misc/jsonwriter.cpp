@@ -114,7 +114,8 @@ namespace {
             string value = "0x" + get_hex(sys->read_gpr(i));
             string key = "R" + to_string(i);
 
-            stream << new_alpha_pair(key, value, (GPR_SIZE / (i + 1)));
+            bool last = (i == GPR_SIZE - 1);
+            stream << new_alpha_pair(key, value, last);
         }
 
         stream << CONST_TAB;
@@ -133,6 +134,8 @@ namespace {
         for(int i = 0; i < SREG_SIZE; i++) {
 
             bool value = sys->read_sreg(i);
+            
+            bool last = (i == SREG_SIZE - 1);
             stream << new_numerical_pair(flags[i], value, (SREG_SIZE / (i + 1)));
         }
 
@@ -153,18 +156,19 @@ namespace {
 
             stringstream addr_stream;
 
-            int cell_data = sys->read_data(i);
+            int8_t cell_data = sys->read_data(i);
 
             if(cell_data == 0x00)
                 continue;
 
-            stream << "0x" << setfill('0') << setw(4);
-            stream << hex << i;
+            addr_stream << "0x" << setfill('0') << setw(4);
+            addr_stream << hex << i;
 
             string value = "0x" + get_hex(cell_data);
             string key = addr_stream.str();
 
-            stream << new_alpha_pair(key, value, ((RAM_END + 1) / (i + 1)));
+            bool last = (i == RAM_END);
+            stream << new_alpha_pair(key, value, last);
         }
 
         stream << CONST_TAB;
@@ -184,18 +188,19 @@ namespace {
 
             stringstream addr_stream;
 
-            int cell_data = sys->read_eeprom(i);
+            int8_t cell_data = sys->read_eeprom(i);
 
             if(cell_data == 0x00)
                 continue;
 
-            stream << "0x" << setfill('0') << setw(4);
-            stream << hex << i;
+            addr_stream << "0x" << setfill('0') << setw(4);
+            addr_stream << hex << i;
 
             string value = "0x" + get_hex(cell_data);
             string key = addr_stream.str();
 
-            stream << new_alpha_pair(key, value, (EEPROM_SIZE / (i + 1)));
+            bool last = (i == EEPROM_SIZE - 1);
+            stream << new_alpha_pair(key, value, last);
         }
 
         stream << CONST_TAB;
