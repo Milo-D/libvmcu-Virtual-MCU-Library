@@ -164,7 +164,7 @@ namespace {
             string value = "0x" + get_hex(cell_data);
             string key = addr_stream.str();
 
-            stream << new_alpha_pair("0", value, ((RAM_END + 1) / (i + 1)));
+            stream << new_alpha_pair(key, value, ((RAM_END + 1) / (i + 1)));
         }
 
         stream << CONST_TAB;
