@@ -90,7 +90,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | Debug Commands| Arguments     | Description                 |
 | ------------- |:-------------:|:----------------------------|
 | n             | none          | Single Step forward         |
-| b             | none          | Step backwards (in progress)|
+| b             | none          | Step backwards              |
 | rn            | none          | Show next GPR Page          |
 | rp            | none          | Show prev. GPR Page         |
 | dn            | none          | Scroll to next Data Cell    |
@@ -126,7 +126,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 # Features
 - [x] Debugging Assembly
 - [x] Advanced Disassembler, recovering Labels
-- [ ] Backwards Stepping
+- [x] Backwards Stepping
 - [x] Simple and fancy Commandline Design
 - [x] GPR Visualization
 - [x] SRAM Visualization
