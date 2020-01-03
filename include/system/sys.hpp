@@ -20,6 +20,7 @@ public:
 
     void step(void);
     void backstep(Table *table);
+    void reboot(Table *table);
     void kill(void);
     bool is_terminated(void);
 

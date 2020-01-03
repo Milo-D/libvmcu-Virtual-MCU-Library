@@ -52,7 +52,14 @@ void Sys::backstep(Table *table) {
         return;
 
     int counter = (this->steps - 1);
-    table->set_tip(0);
+    
+    this->reboot(table);
+
+    while(counter-- > 0)
+        this->step();
+}
+
+void Sys::reboot(Table *table) {
 
     delete this->alu;
     delete this->data;
@@ -63,9 +70,7 @@ void Sys::backstep(Table *table) {
     this->eeprom = new Eeprom();
 
     this->steps = 0;
-
-    while(counter-- > 0)
-        this->step();
+    table->set_tip(0);
 }
 
 void Sys::kill(void) {
