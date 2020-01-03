@@ -156,3 +156,6 @@ Interactive Debugger:
 
 Disassembler:
 ![mdx_disassembler](https://user-images.githubusercontent.com/46600932/71648200-c023a480-2d01-11ea-982c-8dcbe0f92ed0.png)
+
+Headless Mode:
+![mdx_headless](https://user-images.githubusercontent.com/46600932/71708192-ae202f80-2def-11ea-9334-a6daf6a5fe88.png)
