@@ -136,7 +136,7 @@ namespace {
             bool value = sys->read_sreg(i);
             
             bool last = (i == SREG_SIZE - 1);
-            stream << new_numerical_pair(flags[i], value, (SREG_SIZE / (i + 1)));
+            stream << new_numerical_pair(flags[i], value, last);
         }
 
         stream << CONST_TAB;
