@@ -12,7 +12,7 @@ You are able to open up more than just one file while debugging. This
 allows you to switch fast and spontanious between your files.
 
 Did you ever stepped too far? No problem, you don't have to restart the Session.
-Just step back and continue debugging.
+Just **step back** and continue debugging.
 
 Additionally, every Instruction is colorfully visualized. You will see exactly what
 happens in the program.
