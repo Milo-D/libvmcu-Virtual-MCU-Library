@@ -7,15 +7,22 @@
 #include <vector>
 #include <tuple>
 #include <fstream>
+#include <chrono>
 
 // Project Headers
 #include "cli/mode.hpp"
-#include "disassembler/disassembler.hpp"
-#include "parser/parser.hpp"
 #include "misc/ehandling.hpp"
 #include "misc/filemanip.hpp"
+#include "misc/jsonwriter.hpp"
+#include "disassembler/disassembler.hpp"
+#include "table/table.hpp"
+#include "system/sys.hpp"
+#include "parser/parser.hpp"
+
+#define time_now() steady_clock::now()
 
 using namespace std;
+using namespace std::chrono;
 
 namespace {
 
@@ -56,7 +63,25 @@ static void mode_disassembler(char *hex_file) {
 
 static void mode_headless(char *hex_file) {
 
-    /* in progress */
+    Table table((string) hex_file);
+
+    if(table.size() <= 0)
+        return;
+
+    Sys sys(&table);
+
+    steady_clock::time_point start = time_now();
+
+    do {
+
+        if(time_now() - start > seconds(5))
+            break;
+
+        sys.step();
+
+    } while(sys.is_terminated() == false);
+
+    cout << create_json(&sys);
 }
 
 static void mode_help(void) {
