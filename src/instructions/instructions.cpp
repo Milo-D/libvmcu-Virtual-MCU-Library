@@ -492,7 +492,7 @@ void brpl(Sys *sys, int opcode) {
 
 void brlo(Sys *sys, int opcode) {
 
-    if(sys->read_sreg(CF) == 0x01)
+    if(sys->read_sreg(CF) == 0x00)
         return;
 
     int offs = extract(opcode, 3, 10, 0);
