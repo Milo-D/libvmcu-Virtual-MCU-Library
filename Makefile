@@ -1,6 +1,6 @@
 CXX      := -g++
 CXXFLAGS := -g -D
-LDFLAGS  := -L /usr/lib -lstdc++ -lm
+LDFLAGS  := -L /usr/lib -lstdc++ -lm -lncurses
 MCU_ARCH := ATMEGA32 
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
@@ -26,7 +26,7 @@ $(OBJ_DIR)/%.o: %.cpp
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(MCU_ARCH) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(MCU_ARCH) $(INCLUDE) -o $(APP_DIR)/$(TARGET) $(OBJECTS) $(LDFLAGS)
 
 .PHONY: all build clean release
 

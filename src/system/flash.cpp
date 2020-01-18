@@ -12,6 +12,7 @@
 #include "system/mcu.hpp"
 #include "misc/ehandling.hpp"
 #include "misc/stringmanip.hpp"
+#include "cli/debugwindow.hpp"
 #include "disassembler/decoder.hpp"
 #include "table/table.hpp"
 
@@ -96,8 +97,8 @@ bool Flash::table_is_sync(void) {
     return this->table->is_sync(this->pc);
 }
 
-string Flash::get_table(void) {
+void Flash::put_table(DebugWindow *dwin, bool full) {
 
-    return this->table->center_to_str();
+    this->table->to_win(dwin, full);
 }
 

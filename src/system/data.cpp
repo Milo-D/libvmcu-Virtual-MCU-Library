@@ -5,7 +5,6 @@
 #include <iomanip>
 #include <string>
 #include <cstring>
-#include <vector>
 #include <sstream>
 #include <tuple>
 
@@ -13,6 +12,7 @@
 #include "system/data.hpp"
 #include "system/mcu.hpp"
 #include "misc/stringmanip.hpp"
+#include "cli/debugwindow.hpp"
 #include "cli/style.hpp"
 
 #define sp(spl, sph) ((sph << 8) + spl)
@@ -29,7 +29,7 @@ Data::Data(void) {
     memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
     this->cursor = SRAM_START;
-    this->color = make_tuple(0x0000, DEFAULT);
+    this->color = make_tuple(0x0000, DEF);
 }
 
 Data::~Data(void) {
@@ -52,7 +52,7 @@ void Data::push(int8_t value) {
     this->memory[SPL] = spl(sp);
     this->memory[SPH] = sph(sp);
 
-    this->set_color(sp + 1, GREEN);
+    this->set_color(sp + 1, G);
     this->cursor = (sp + 1);
 }
 
@@ -71,7 +71,7 @@ int8_t Data::pop(void) {
     this->memory[SPL] = spl(sp);
     this->memory[SPH] = sph(sp);
 
-    this->set_color(sp, RED);
+    this->set_color(sp, R);
     this->cursor = sp;
 
     return value;
@@ -84,7 +84,7 @@ void Data::write(int addr, int8_t value) {
 
     this->memory[addr] = value;
 
-    this->set_color(addr, GREEN);
+    this->set_color(addr, G);
     this->cursor = addr;
 }
 
@@ -93,7 +93,7 @@ int8_t Data::read(int addr) {
     if(addr < 0 || addr > RAM_END)
         return 0xff;
 
-    this->set_color(addr, RED);
+    this->set_color(addr, R);
     this->cursor = addr;
 
     return this->memory[addr];
@@ -110,46 +110,48 @@ void Data::scale(int offs) {
     this->cursor += offs;
 }
 
-vector <string> Data::to_vector(void) {
+void Data::to_win(DebugWindow *dwin) {
 
-    vector <string> out;
-    out.push_back("Data Memory:");
+    stringstream stream;
+    dwin->write(DATA_PANEL, "Data Memory:\n\n", DEF);
 
     int16_t sp = sp(this->memory[SPL], this->memory[SPH]);
 
     for(int i = (this->cursor - 4); i <= (this->cursor + 4); i++) {
 
-        stringstream stream;
+        int isp = DEF; int ism = DEF;
 
         if(i < 0 || i > RAM_END) {
 
-            out.push_back(SPACING);
+            dwin->write(DATA_PANEL, "\n", DEF);
             continue;
         }
 
         if(i == sp)
-            stream << BLUE;
-
-        stream << "0x" << setfill('0') << setw(4);
-        stream << hex << i << "      " << DEFAULT;
+            isp = B;
 
         if(i == get <0> (this->color))
-            stream << get <1> (this->color);
+            ism = get <1> (this->color);
+
+        stream << "0x" << setfill('0') << setw(4);
+        stream << hex << i << "      ";
+
+        dwin->write(DATA_PANEL, stream.str(), isp);
+        stream.str(string());
 
         stream << "0x" << setfill('0') << setw(2);
         stream << get_hex(this->memory[i]);
-        stream << DEFAULT;
 
-        out.push_back(stream.str());
+        dwin->write(DATA_PANEL, stream.str() + "\n", ism);
+        stream.str(string());
     }
 
     this->clear_color();
-    return out;
 }
 
 /* --- Private --- */
 
-void Data::set_color(int cell, string color) {
+void Data::set_color(int cell, int color) {
 
     get <0> (this->color) = cell;
     get <1> (this->color) = color;
@@ -157,7 +159,7 @@ void Data::set_color(int cell, string color) {
 
 void Data::clear_color(void) {
 
-    get <0> (this->color) = 0;
-    get <1> (this->color) = DEFAULT;
+    get <0> (this->color) = 0x0000;
+    get <1> (this->color) = DEF;
 }
 

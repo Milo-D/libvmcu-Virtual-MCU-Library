@@ -46,7 +46,10 @@ Now you are able to step through the Source Code and see what really happens.
 You will find some example programs in the /test/ directory of this Repository.
 
 # Installation
-Setting up MDX isn't really difficult. There are only 4 Steps:
+Setting up MDX isn't really difficult. Since the new CLI is based on NCurses,
+you will need to get NCurses before hitting make.
+
+After that, only 4 Steps are left:
 
 - Step 1: Clone this repo.
 ```console
@@ -88,7 +91,6 @@ Note: You may open multiple files in interactive Debugging Mode.
 | def           | alias seq     | Defining 'seq' as 'alias'   |
 | pn            | none          | Show next Table Page        |
 | pp            | none          | Show previous Table Page    |
-| e             | none          | Leave Table-View            |
    
    
    
@@ -103,8 +105,10 @@ Note: You may open multiple files in interactive Debugging Mode.
 | jb            | none          | Jump to next Breakpoint     |
 | en            | none          | Scroll to next EEPROM Cell  |
 | ep            | none          | Scrool to prev. EEPROM Cell |
-| e             | none          | Leave Debug-View            |
-| ?             | none          | Show Help                   |
+| xd            | address       | Examine Data Memory         |
+| q             | none          | Back to File Selector       |
+| q + q         | none          | Quit                        |
+| ?             | none          | Show Help (in progress)     |
 
 
 # Troubleshooting
@@ -120,6 +124,13 @@ Note: You may open multiple files in interactive Debugging Mode.
 - Solution: Currently, the Decoder accepts only capital hexadecimal letters. This, or any
   other manipulation (adding useless space, new-lines, ...) could lead to such an exception.
   Non-capital letters will be supported soon.
+
+- Issue: CLI Glitches
+
+- Solution: MDX has a new CLI, which is based on NCurses. There might be some glitches.
+  In general, if you experience some glitches, try resizing your terminal and hit a key.
+  This may trigger the Signal Handler, and the screen will be rewritten.
+  In case of serious glitches and issues, feel free to submit them in the Issue Segment.
 
 # Supported Microcontroller
 - [x] ATmega32
@@ -154,10 +165,13 @@ Currently MDX supports: 60 Instructions. More Instructions are coming soon.
 By the way: You will find more Screenshots in the 'img' directory of this Repo.
 
 Interactive Debugger:
-![mdx_debug](https://user-images.githubusercontent.com/46600932/69670835-182d1280-1095-11ea-8fd7-0117d2dfbbbf.png)
+![mdx_debug](https://user-images.githubusercontent.com/46600932/72665865-e7ba8280-3a0c-11ea-8b47-a80f315a1417.png)
+
+File Selector:
+![mdx_file](https://user-images.githubusercontent.com/46600932/72665867-e7ba8280-3a0c-11ea-9259-78b1ddf9c793.png)
 
 Disassembler:
-![mdx_disassembler](https://user-images.githubusercontent.com/46600932/71648200-c023a480-2d01-11ea-982c-8dcbe0f92ed0.png)
+![mdx_disassembler](https://user-images.githubusercontent.com/46600932/72665866-e7ba8280-3a0c-11ea-8bd5-24d1f4a1c3aa.png)
 
 Headless Mode:
-![mdx_headless](https://user-images.githubusercontent.com/46600932/71708192-ae202f80-2def-11ea-9334-a6daf6a5fe88.png)
+![mdx_headless](https://user-images.githubusercontent.com/46600932/72665868-e7ba8280-3a0c-11ea-9c0a-5482cd337d63.png)

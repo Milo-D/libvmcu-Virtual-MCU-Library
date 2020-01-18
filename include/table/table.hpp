@@ -5,6 +5,8 @@
 
 #include <vector>
 
+class DebugWindow;
+
 class Table {
 
 public:
@@ -22,8 +24,7 @@ public:
     int size(void);                                                     // get table size
     void next_page(int offs);                                           // next/previous table page
     std::string src(void);                                              // get origin of source code
-    std::string to_str(void);                                           // returning a Table String
-    std::string center_to_str(void);                                    // returning a centered Table String
+    void to_win(DebugWindow *dwin, bool full);                          // adding Table data to DebugWindow
 
 private:
     int tip;                                                            // (t)able (i)nstruction (p)ointer
@@ -35,6 +36,7 @@ private:
     std::vector <bool> breaks;                                          // breakpoint storage
     std::vector < std::tuple <std::string, int> > content;              // actual table
 
+    void full_to_win(DebugWindow *dwin);                                // adding full Table to Side-Panel
 };
 
 Table* create_table(std::vector <std::string> hex_file, int amount);

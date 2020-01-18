@@ -6,60 +6,62 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <signal.h>
 
 // Project Headers
+#include "cli/mainwindow.hpp"
 #include "cli/mode.hpp"
 #include "cli/debugview.hpp"
-#include "cli/tableview.hpp"
-#include "cli/menus.hpp"
+#include "misc/stdmsg.hpp"
 #include "misc/ehandling.hpp"
 #include "misc/stringmanip.hpp"
 #include "misc/filemanip.hpp"
 #include "parser/parser.hpp"
 #include "table/table.hpp"
 
-#define movec(cursor, offs, range) *cursor = ((*cursor) + offs) % range
-
 using namespace std;
 
-int main(int argc, char **argv) {
+static MainWindow *mwin;
 
-    vector <string> debug_file;
+int main(int argc, char **argv) {
 
     if(call_mode(argc, argv) == 0)
         return EXIT_SUCCESS;
 
+    vector <string> debug_file;
     get_files(argc, argv).swap(debug_file);
 
-    int fcursor = 0;
+    int fcursor = 0; int key, i;
     unsigned int file_no = debug_file.size();
 
     Table *table = create_table(debug_file, file_no);
 
-    Parser parser(MAIN_CONTEXT);
-    string select;
+    if(file_no > 4) {
+
+        print_status(MAX_FILE_REACH, true);
+        delete table;
+    }
+
+    if(file_no == 1)
+        debug(&table[0]);
+
+    mwin = new MainWindow(debug_file);
 
     do {
 
-        main_menu(debug_file[fcursor]);
-        getline(cin, select);
+        if(((key = mwin->read_key()) == SELECT)) {
 
-        switch(parser.parseln(select)) {
+            mwin->destroy();
 
-            case 0: movec(&fcursor, +1, file_no); break;
-            case 1: movec(&fcursor, -1, file_no); break;
-		
-            case 2: debug(&table[fcursor]); break;
-            case 3: load_table(&table[fcursor]); break;
-            case 4: show_breaks(); break;
-            case 5: cout << "Leaving...\n"; break;
-
-            default: /* ignore invalid input */ break;
+            i = mwin->get_choice();
+            debug(&table[i]);
+            mwin->re_init();
         }
-		
-    } while(select != "e");
 
-    // toDo: cleanup table memory
+    } while(key != QUIT);
+
+    delete mwin;
+    delete table;
 
     return EXIT_SUCCESS;
 }

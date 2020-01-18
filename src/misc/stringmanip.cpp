@@ -183,25 +183,3 @@ string get_hex(int8_t input) {
 
     return string(hex);
 }
-
-string mix_memory(vector <string> first, vector <string> second) {
-
-    stringstream stream;
-
-    for(int i = 0; i < first.size(); i++) {
-
-        stream << first[i] << right << setfill(' ');
-
-        if(i == 0)
-            stream << setw(33);
-        else
-            stream << setw(46);
-
-        stream << second[i] << endl;
-
-        if(i == 0)
-            stream << endl;
-    }
-
-    return stream.str();
-}

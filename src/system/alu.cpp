@@ -6,6 +6,7 @@
 #include <string>
 
 // Project Headers
+#include "cli/debugwindow.hpp"
 #include "system/alu.hpp"
 #include "system/sys.hpp"
 #include "system/flash.hpp"
@@ -74,9 +75,9 @@ void Alu::scale_gpr(int offs) {
     this->gpr->scale(offs);
 }
 
-string Alu::get_gpr(void) {
+void Alu::put_gpr(DebugWindow *dwin) {
 
-    return this->gpr->to_str();
+    this->gpr->to_win(dwin);
 }
 
 void Alu::write_sreg(int flag, bool bit) {
@@ -89,14 +90,14 @@ bool Alu::read_sreg(int flag) {
     return (this->sreg->read(flag));		
 }
 
-string Alu::get_sreg(void) {
+void Alu::put_sreg(DebugWindow *dwin) {
 
-    return this->sreg->to_str();
+    this->sreg->to_win(dwin);
 }
 
-string Alu::get_table(void) {
+void Alu::put_table(DebugWindow *dwin, bool full) {
 
-    return this->flash->get_table();
+    this->flash->put_table(dwin, full);
 }
 
 

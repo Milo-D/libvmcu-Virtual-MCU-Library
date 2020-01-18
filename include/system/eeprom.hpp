@@ -5,6 +5,8 @@
 
 #include <inttypes.h>
 
+class DebugWindow;
+
 class Eeprom {
 
 public:
@@ -15,15 +17,15 @@ public:
     int8_t read(int addr);                                  // reading to EEPROM
 
     void scale(int offs);                                   // scaling EEPROM memory
-    std::vector <std::string> to_vector(void);              // returning a vector of EEPROM
+    void to_win(DebugWindow *dwin);                         // returning a vector of EEPROM
 
 private:
     int8_t *memory;                                         // EEPROM memory block
 
     int cursor;                                             // EEPROM cursor
-    std::tuple <int, std::string> color;                    // memory cell color
+    std::tuple <int, int> color;                            // memory cell color
 
-    void set_color(int cell, std::string color);            // setting color of cell
+    void set_color(int cell, int color);                    // setting color of cell
     void clear_color(void);                                 // clear all cell colors
 };
 

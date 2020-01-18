@@ -24,20 +24,4 @@ void print_status(const string &msg, bool fatal) {
         exit(EXIT_FAILURE);
 }
 
-void print_event(const string &msg) {
-
-    string select = "";
-
-    do { 
-
-        clrscr();
-        cout << "MDX: " << msg << "\n\n";
-        cout << "<Press 'c' to continue>\n\n";
-        cout << PROMPT;
-
-        getline(cin, select);
-
-    } while(select != "c");
-}
-
 

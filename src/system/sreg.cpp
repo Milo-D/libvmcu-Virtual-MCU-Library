@@ -4,11 +4,13 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <cstring>  
 #include <sstream>
 
 // Project Headers
 #include "system/sreg.hpp"
 #include "system/mcu.hpp"
+#include "cli/debugwindow.hpp"
 #include "cli/style.hpp"
 
 using namespace std;
@@ -18,6 +20,7 @@ using namespace std;
 Sreg::Sreg(void) {
 
     this->status = 0x00;
+    memset(this->color, DEF, SREG_SIZE * sizeof(int));
 }
 
 void Sreg::write(int flag, bool bit) {
@@ -25,18 +28,18 @@ void Sreg::write(int flag, bool bit) {
     if(bit == true) {
 
         this->status |= (0x01 << flag);
-        this->color[flag] = GREEN;
+        this->color[flag] = G;
         
         return;
     }
 	
     this->status &= ~(0x01 << flag);
-    this->color[flag] = GREEN;
+    this->color[flag] = G;
 }
 
 bool Sreg::read(int flag) {
 
-    this->color[flag] = RED;
+    this->color[flag] = R;
     return ((this->status >> flag) & 0x01); 
 }
 
@@ -45,31 +48,29 @@ void Sreg::clear(void) {
     this->status = 0x00;
 }
 
-string Sreg::to_str(void) {
+void Sreg::to_win(DebugWindow *dwin) {
 
     stringstream stream;
-
-    stream << SEPERATOR;
-    stream << "SREG:\n\n";
+    dwin->write(SREG_PANEL, "Status-Register:\n\n", DEF);
 
     for(int i = 0; i < SREG_SIZE; i++) {
 
         if(i == SREG_SIZE / 2)
-            stream << "\n";
+            dwin->write(SREG_PANEL, "\n", DEF);
 
-        stream << this->color[i];
-        stream << flags[i] << DEFAULT << ": ";
+        dwin->write(SREG_PANEL, flags[i], this->color[i]);
 
-        stream << setfill(' ') << right << setw(2);
+        stream << ": " << setfill(' ') << right << setw(2);
         stream << " " << this->read(i);
         stream << setfill(' ') << left << setw(4);
-        stream << "        ";	
+        stream << "        ";
+
+        dwin->write(SREG_PANEL, stream.str(), DEF);
+        stream.str(string());
     }
 
-    stream << "\n";
+    dwin->write(SREG_PANEL, "\n", DEF);
     this->clear_color();
-
-    return stream.str();
 }
 
 /* --- Private --- */
@@ -77,6 +78,6 @@ string Sreg::to_str(void) {
 void Sreg::clear_color(void) {
 
     for(int i = 0; i < SREG_SIZE; i++)
-        this->color[i] = DEFAULT;
+        this->color[i] = DEF;
 }
 

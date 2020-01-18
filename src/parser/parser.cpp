@@ -39,8 +39,6 @@ int Parser::parseln(string cmd) {
     switch(this->context) {
 
         case ARG_CONTEXT: passed = this->parse_arg(cmd_split); break;
-        case MAIN_CONTEXT: passed = this->parse_main(cmd_split); break;
-        case TABLE_CONTEXT: passed = this->parse_table(cmd_split); break;
         case DEBUG_CONTEXT: passed = this->parse_debug(cmd_split); break;
 
         default: break;
@@ -81,56 +79,67 @@ bool Parser::parse_arg(vector <string> cmd) {
     return true;
 }
 
-bool Parser::parse_main(vector <string> cmd) {
-
-    int argc = cmd.size() - 1;
-    
-    if(argc == 0)
-        return true;
-	
-    return false;
-}
-
-bool Parser::parse_table(vector <string> cmd) {
+bool Parser::parse_debug(vector <string> cmd) {
 	
     int index = this->cmap[cmd[0]];
     int argc = cmd.size() - 1;
 	
+    if(argc == 0 && index < 10)
+        return true;
+
     switch(index) {
-		
-        case 0: case 1:
-		
-            if(argc != 1 || to_dec(cmd[1]) < 0)
+
+        case 0: case 1: case 2: case 3: case 4:
+
+            if(argc != 0)
                 return false;
-		
+
         break;
 
-        case 2:
+        case 5: case 6: case 7: case 8:
+
+            if(argc != 0)
+                return false;
+
+        break;
+        
+        case 9:
+
+            if(argc != 1)
+                return false;
+
+        break;
+
+        case 10: case 11:
+
+            if(argc != 0)
+                return false;
+
+        break;
+
+        case 12: case 13:
+        
+            if(argc != 1 || to_dec(cmd[1]) < 0)
+                return false;
+        
+        break;
+
+        case 14:
 
             if(argc != 2)
                 return false;
 
         break;
-		
-        case 3: case 4: case 5:
-		
+        
+        case 15: case 16:
+        
             if(argc != 0)
                 return false;
-		
+        
         break;
-		
+        
         default: print_status("Could not parse line.", true); break;
     }
-	
-    return true;
-}
-
-bool Parser::parse_debug(vector <string> cmd) {
-	
-    int argc = cmd.size() - 1;
-	
-    if(argc == 0)
-        return true;
 		
-    return false;
+    return true;
 }

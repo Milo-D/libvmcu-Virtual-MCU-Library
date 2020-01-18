@@ -15,6 +15,5 @@ void trim(std::string *x);
 int to_dec(std::string input);
 int hex_to_dec(std::string input);
 std::string get_hex(int8_t input);
-std::string mix_memory(std::vector <std::string> first, std::vector <std::string> second);
 
 #endif

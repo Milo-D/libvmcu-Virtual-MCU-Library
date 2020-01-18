@@ -13,8 +13,8 @@
 #include "system/data.hpp"
 #include "system/flash.hpp"
 #include "system/eeprom.hpp"
+#include "cli/debugwindow.hpp"
 #include "table/table.hpp"
-#include "misc/stringmanip.hpp"
 
 using namespace std;
 
@@ -52,11 +52,22 @@ void Sys::backstep(Table *table) {
         return;
 
     int counter = (this->steps - 1);
-    
     this->reboot(table);
 
     while(counter-- > 0)
         this->step();
+}
+
+void Sys::put_sys(DebugWindow *dwin) {
+
+    dwin->clear();
+
+    this->put_gpr(dwin);
+    this->put_sreg(dwin);
+    this->put_table(dwin, 0);    
+    this->put_data(dwin);
+    this->put_eeprom(dwin);
+    this->put_table(dwin, 1);
 }
 
 void Sys::reboot(Table *table) {
@@ -98,9 +109,9 @@ void Sys::scale_gpr(int offs) {
     this->alu->scale_gpr(offs);
 }
 
-string Sys::gpr_to_str(void) {
+void Sys::put_gpr(DebugWindow *dwin) {
 
-    return this->alu->get_gpr();
+    this->alu->put_gpr(dwin);
 }
 
 void Sys::write_sreg(int flag, bool bit) {
@@ -113,9 +124,9 @@ bool Sys::read_sreg(int flag) {
     return this->alu->read_sreg(flag);
 }
 
-string Sys::sreg_to_str(void) {
+void Sys::put_sreg(DebugWindow *dwin) {
 
-    return this->alu->get_sreg();
+    this->alu->put_sreg(dwin);
 }
 
 int Sys::get_pc(void) {
@@ -153,6 +164,11 @@ void Sys::scale_data(int offs) {
     this->data->scale(offs);
 }
 
+void Sys::put_data(DebugWindow *dwin) {
+
+    this->data->to_win(dwin);
+}
+
 void Sys::write_eeprom(int addr, int8_t value) {
 
     this->eeprom->write(addr, value);
@@ -168,13 +184,13 @@ void Sys::scale_eeprom(int offs) {
     this->eeprom->scale(offs);
 }
 
-string Sys::memory_to_str(void) {
+void Sys::put_eeprom(DebugWindow *dwin) {
 
-    return mix_memory(data->to_vector(), eeprom->to_vector());
+    this->eeprom->to_win(dwin);
 }
 
-string Sys::table_to_str(void) {
+void Sys::put_table(DebugWindow *dwin, bool full) {
 
-    return this->alu->get_table();
+    this->alu->put_table(dwin, full);
 }
 

@@ -13,6 +13,7 @@
 #include "system/eeprom.hpp"
 #include "system/mcu.hpp"
 #include "misc/stringmanip.hpp"
+#include "cli/debugwindow.hpp"
 #include "cli/style.hpp"
 
 using namespace std;
@@ -25,7 +26,7 @@ Eeprom::Eeprom(void) {
     memset(this->memory, 0x00, EEPROM_SIZE * sizeof(int8_t));
 
     this->cursor = (unsigned int) (EEPROM_SIZE / 2);
-    this->color = make_tuple(0x0000, DEFAULT);
+    this->color = make_tuple(0x0000, DEF);
 }
 
 Eeprom::~Eeprom(void) {
@@ -43,13 +44,13 @@ void Eeprom::write(int addr, int8_t value) {
 
     this->memory[addr] = value;
 
-    this->set_color(addr, GREEN);
+    this->set_color(addr, G);
     this->cursor = addr;
 }
 
 int8_t Eeprom::read(int addr) {
 
-    this->set_color(addr, RED);
+    this->set_color(addr, R);
     this->cursor = addr;
 
     return this->memory[addr];
@@ -66,41 +67,43 @@ void Eeprom::scale(int offs) {
     this->cursor += offs;
 }
 
-vector <string> Eeprom::to_vector(void) {
+void Eeprom::to_win(DebugWindow *dwin) {
 
-    vector <string> out;
-    out.push_back("EEPROM:");
+    stringstream stream;
+    dwin->write(EEPROM_PANEL, "EEPROM:\n\n", DEF);
 
     for(int i = (this->cursor - 4); i <= (this->cursor + 4); i++) {
 
-        stringstream stream;
+        int ism = DEF;
 
         if(i < 0 || i > EEPROM_SIZE) {
 
-            out.push_back("");
+            dwin->write(EEPROM_PANEL, "\n", DEF);
             continue;
         }
-        
+
         stream << "0x" << setfill('0') << setw(4);
-        stream << hex << i << "      " << DEFAULT;
+        stream << hex << i << "      ";
+
+        dwin->write(EEPROM_PANEL, stream.str(), DEF);
+        stream.str(string());
 
         if(i == get <0> (this->color))
-            stream << get <1> (this->color);
+            ism = get <1> (this->color);
 
         stream << "0x" << setfill('0') << setw(2);
         stream << get_hex(this->memory[i]);
-        stream << DEFAULT;
-
-        out.push_back(stream.str());
+        
+        dwin->write(EEPROM_PANEL, stream.str() + "\n", ism);
+        stream.str(string());
     }
 
     this->clear_color();
-    return out;
 }
 
 /* --- Private --- */
 
-void Eeprom::set_color(int cell, string color) {
+void Eeprom::set_color(int cell, int color) {
 
     get <0> (this->color) = cell;
     get <1> (this->color) = color;
@@ -109,5 +112,5 @@ void Eeprom::set_color(int cell, string color) {
 void Eeprom::clear_color(void) {
 
     get <0> (this->color) = 0;
-    get <1> (this->color) = DEFAULT;
+    get <1> (this->color) = DEF;
 }

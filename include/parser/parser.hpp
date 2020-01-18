@@ -4,9 +4,7 @@
 #define PARSER_HPP
 
 #define ARG_CONTEXT 0
-#define MAIN_CONTEXT 1
-#define TABLE_CONTEXT 2
-#define DEBUG_CONTEXT 3
+#define DEBUG_CONTEXT 1
 
 // C++ Headers
 #include <vector>
@@ -24,8 +22,6 @@ private:
 	std::map <std::string, int> cmap;
 	
     bool parse_arg(std::vector <std::string> cmd);
-	bool parse_main(std::vector <std::string> cmd);
-	bool parse_table(std::vector <std::string> cmd);
 	bool parse_debug(std::vector <std::string> cmd);
 };
 

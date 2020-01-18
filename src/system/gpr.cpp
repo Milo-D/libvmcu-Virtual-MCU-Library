@@ -11,6 +11,7 @@
 #include "system/gpr.hpp"
 #include "system/mcu.hpp"
 #include "misc/stringmanip.hpp"
+#include "cli/debugwindow.hpp"
 #include "cli/style.hpp"
 
 using namespace std;
@@ -23,7 +24,7 @@ Gpr::Gpr(void) {
     memset(this->reg, 0x00, GPR_SIZE * sizeof(int8_t));
 
     for(int i = 0; i < GPR_SIZE; i++)
-        this->color.push_back(DEFAULT);
+        this->color.push_back(DEF);
 
     this->size = GPR_SIZE;
     this->cursor = 0;
@@ -37,12 +38,12 @@ Gpr::~Gpr(void) {
 void Gpr::write(int rx, int8_t data) {
 
     this->reg[rx] = data;
-    this->color[rx] = GREEN;
+    this->color[rx] = G;
 }
 
 int8_t Gpr::read(int rx) {
 
-    this->color[rx] = RED;
+    this->color[rx] = R;
     return this->reg[rx];
 }
 
@@ -57,37 +58,36 @@ void Gpr::scale(int offs) {
     this->cursor += offs;
 }
 
-string Gpr::to_str(void) {
+void Gpr::to_win(DebugWindow *dwin) {
 
-    stringstream stream;
-	
-    stream << SEPERATOR;
-    stream << "Registers:\n\n";
-	
+	stringstream stream;	
     int start = (this->cursor * 8);
+
+	dwin->write(GPR_PANEL, "Registers:\n\n", DEF);
 	
     for(int i = 0; i < 8; i++) {
 
         if(i == 4)
-            stream << "\n";
+            dwin->write(GPR_PANEL, "\n", DEF);
 
-        stream << this->color[start + i];
-        stream << "R" << to_string(start + i) << DEFAULT << ": ";
+        dwin->write(GPR_PANEL, "R" + to_string(start + i), this->color[start + i]);
+        dwin->write(GPR_PANEL, ": ", DEF);
 
         if(start + i < 10)
-            stream << " ";
+            dwin->write(GPR_PANEL, " ", DEF);
 
         stream << "0x" << right << setw(2) << setfill('0');
         stream << get_hex(this->reg[start + i]);
 
         stream << setfill(' ') << left << setw(4);
         stream << "      ";
+
+        dwin->write(GPR_PANEL, stream.str(), DEF);
+        stream.str(string());
     }
 
-    stream << dec << "\n";
+    dwin->write(GPR_PANEL, "\n", DEF);
     this->clear_color();
-
-    return stream.str();
 }
 
 /* --- Private --- */
@@ -95,7 +95,7 @@ string Gpr::to_str(void) {
 void Gpr::clear_color(void) {
 
     for(int i = 0; i < this->size; i++)
-        this->color[i] = DEFAULT;
+        this->color[i] = DEF;
 }
 
 

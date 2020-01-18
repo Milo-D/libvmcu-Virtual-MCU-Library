@@ -6,6 +6,8 @@
 // C Header
 #include <inttypes.h>
 
+class DebugWindow;
+
 class Data {
 
 public:
@@ -19,15 +21,15 @@ public:
     int8_t read(int addr);                          // reading 'addr' from DATA
 
     void scale(int offs);                           // scaling DATA Memory
-    std::vector <std::string> to_vector(void);      // returning a vector of DATA
+    void to_win(DebugWindow *dwin);                 // returning a vector of DATA
 
 private:
     int8_t *memory;                                 // 8-bit DATA Field
     
     int cursor;                                     // DATA cursor
-    std::tuple <int, std::string> color;            // color tuple (memory cell, color)
+    std::tuple <int, int> color;                    // color tuple (memory cell, color)
 
-    void set_color(int cell, std::string color);    // setting color of memory cell
+    void set_color(int cell, int color);            // setting color of memory cell
     void clear_color(void);                         // clearing color of memory cells
 };
 

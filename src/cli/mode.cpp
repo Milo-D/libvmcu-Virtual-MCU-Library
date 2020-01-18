@@ -86,7 +86,43 @@ static void mode_headless(char *hex_file) {
 
 static void mode_help(void) {
 
-    /* in progress */
+    cout << "\nNote that, MDX is still in development.\n";
+
+    cout << "\nARGUMENTS\n";
+    cout << " <blank>       <HEX-FILE, ...>           - Interactive Assembly Debugger\n";
+    cout << " -d            <HEX-FILE>                - Disassembler\n";
+    cout << " -hl           <HEX-FILE>                - Headless Mode\n";
+    cout << " -h            <blank>                   - Help\n";
+
+    cout << "\nDEBUG COMMANDS\n";
+    cout << " n             <blank>                   - Stepping forward\n";
+    cout << " b             <blank>                   - Stepping backwards\n";
+    cout << " rn            <blank>                   - Show next GPR Page\n";
+    cout << " rp            <blank>                   - Show prev. GPR Page\n";
+    cout << " dn            <blank>                   - Next Data memory cell\n";
+    cout << " dp            <blank>                   - Prev. Data memory cell\n";
+    cout << " jb            <blank>                   - Jump to next Breakpoint\n";
+    cout << " en            <blank>                   - Next EEPROM memory cell\n";
+    cout << " ep            <blank>                   - Prev. EEPROM memory cell\n";
+    cout << " q             <blank>                   - Leave / Open File Selector\n";
+    cout << " ?             <blank>                   - Show commands (coming soon)\n";
+    cout << " break         <LINE>                    - Set a Breakpoint at LINE\n";
+    cout << " unbreak       <LINE>                    - Remove Breakpoint at LINE\n";
+    cout << " def           <alias> <seq>             - Redefine Symbols in Table\n";
+    cout << " pn            <blank>                   - Show next Source Code Page\n";
+    cout << " pp            <blank>                   - Show prev. Source Code Page\n";
+    cout << " xd            <ADDRESS>                 - Examine Data Memory at ADDRESS\n";
+
+    cout << "\nGITHUB\n";
+    cout << " https://github.com/Milo-D/NSL/\n";
+
+    cout << "\nAUTHOR OF MDX\n";
+    cout << " Name: David Milosevic\n";
+    cout << " Email: David.Milosevic@web.de\n";
+    cout << " GitHub: Milo-D\n";
+
+    cout << "\nREPORTING BUGS\n";
+    cout << " https://github.com/Milo-D/MDX-Assembly-Debugger/issues/\n\n";
 }
 
 int call_mode(int argc, char **argv) {

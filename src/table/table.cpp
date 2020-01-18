@@ -13,9 +13,9 @@
 
 // Project Headers
 #include "table/table.hpp"
-#include "misc/ehandling.hpp"
 #include "misc/stringmanip.hpp"
 #include "disassembler/disassembler.hpp"
+#include "cli/debugwindow.hpp"
 #include "cli/style.hpp"
 
 #define PGS 31
@@ -58,17 +58,11 @@ int Table::set_break(string point) {
 
     int line = to_dec(point);
 
-    if(line < 0 || line >= this->table_size) {
-
-        print_event("Invalid Breakpoint.");
+    if(line < 0 || line >= this->table_size)
         return -1;
-    }
 
-    if(this->breaks[line] == true) {
-	
-        print_event("Breakpoint already exists.");
+    if(this->breaks[line] == true)
         return 0;
-    }
 
     this->breaks[line] = true;
     this->break_counter += 1;
@@ -80,17 +74,11 @@ int Table::unset_break(string point) {
 
     int line = to_dec(point);
 	
-    if(line < 0 || line >= this->table_size) {
-
-        print_event("Invalid Breakpoint.");
+    if(line < 0 || line >= this->table_size)
         return -1;
-    }
 
-    if(this->breaks[line] == false) {
-
-        print_event("Breakpoint already unset.");
+    if(this->breaks[line] == false)
         return 0;
-    }
 
     this->breaks[line] = false;
     this->break_counter -= 1;
@@ -123,17 +111,11 @@ void Table::define(const string &alias, const string &seq) {
 
 void Table::set_tip(int instr_line) {
 
-    if(instr_line >= this->table_size) {
-
-        print_event("Table Pointer out of Source.");
+    if(instr_line >= this->table_size)
         return;
-    }
 
-    if(instr_line < 0) {
-
-        print_event("Table Pointer out of Source.");
+    if(instr_line < 0)
         return;
-    }
 
     this->tip = instr_line;
 }
@@ -200,17 +182,61 @@ string Table::src(void) {
     return this->source_file;
 }
 
-string Table::to_str(void) {
+void Table::to_win(DebugWindow *dwin, bool full) {  
+
+    if(full == true) {
+
+        this->full_to_win(dwin);
+        return;
+    }
 
     stringstream stream;
-    stream << SEPERATOR << "Source Code:\n\n";			
+    dwin->write(CODE_PANEL, "Instructions:\n\n", DEF); 
+
+    for(int i = (this->tip - 4); i <= (this->tip + 4); i++) {
+
+        int isp = DEF; int isb = DEF;
+
+        if(i < 0 || i > this->table_size - 1) {
+
+            dwin->write(CODE_PANEL, "\n", DEF);
+            continue;
+        }
+
+        if(i == this->tip)
+            isp = B;
+
+        if(this->breaks[i] == true)
+            isb = R;
+
+        stream << "0x" << setfill('0') << setw(4);
+        stream << hex << i;
+
+        dwin->write(CODE_PANEL, stream.str(), isp);
+
+        if(this->breaks[i] == true)
+            dwin->write(CODE_PANEL, " [b+] ", R);
+        else
+            dwin->write(CODE_PANEL, "      ", DEF);
+
+        dwin->write(CODE_PANEL, get <0> (this->content[i]), isp);
+        dwin->write(CODE_PANEL, "\n", DEF);
+
+        stream.str(string());
+    }
+}
+
+/* --- Private --- */
+
+void Table::full_to_win(DebugWindow *dwin) {
+
+    stringstream stream;
+    dwin->write(SIDE_PANEL, "Source Code:\n\n", DEF);   
 
     if(this->table_size == 0) {
 
-        stream << "[ No Source available ]\n";
-        stream << SEPERATOR;
-
-        return stream.str();
+        dwin->write(SIDE_PANEL, "[ No Source available ]\n", DEF);
+        return;
     }
 
     int page_start = (this->page * PGS);
@@ -218,56 +244,33 @@ string Table::to_str(void) {
 
     for(int i = page_start; i < page_end; i++) {
 
+        int isp = DEF;
         stream << setw(3) << setfill(' ');
 
         if(i >= this->table_size) {
 
             stream << to_string(i) << "\n";
-            continue;
-        }
+            dwin->write(SIDE_PANEL, stream.str(), DEF);
+            stream.str(string());
 
-        if(this->breaks[i] == true)
-            stream << to_string(i) << RED << " [b+] " << DEFAULT;
-        else
-            stream << to_string(i) << "      ";
-
-        stream << get <0> (this->content[i]) << "\n";
-        stream << DEFAULT;
-    }
-
-    stream << SEPERATOR;
-    return stream.str();
-}
-
-string Table::center_to_str(void) {
-
-    stringstream stream;
-    stream << SEPERATOR << "Instructions:\n\n"; 
-
-    for(int i = (this->tip - 4); i <= (this->tip + 4); i++) {
-
-        if(i < 0 || i > this->table_size - 1) {
-
-            stream << "\n";
             continue;
         }
 
         if(i == this->tip)
-            stream << BLUE;
+            isp = B;
 
-        stream << "0x" << setfill('0') << setw(4);
+        stream << to_string(i);
+
+        dwin->write(SIDE_PANEL, stream.str(), isp);
+        stream.str(string());
 
         if(this->breaks[i] == true)
-            stream << hex << i << RED << " [b+] " << DEFAULT;
+            dwin->write(SIDE_PANEL, " [b+] ", R);
         else
-            stream << hex << i << "      ";
+            dwin->write(SIDE_PANEL, "      ", DEF);
 
-        stream << get <0> (this->content[i]) << "\n";
-        stream << DEFAULT;
+        dwin->write(SIDE_PANEL, get <0> (this->content[i]) + "\n", isp);
     }
-
-    stream << SEPERATOR;
-    return stream.str();
 }
 
 /* --- Non Member --- */

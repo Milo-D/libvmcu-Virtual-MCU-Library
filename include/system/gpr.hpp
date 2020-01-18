@@ -9,6 +9,8 @@
 // C Headers
 #include <inttypes.h>
 
+class DebugWindow;
+
 class Gpr {
 
 public:
@@ -19,14 +21,14 @@ public:
     void write(int rx, int8_t data);            // writing 'data' to gpr 'rx'
 
     void scale(int offs);                       // scaling GPR file
-    std::string to_str(void);                   // returning printable gpr string
+    void to_win(DebugWindow *dwin);             // putting GPR content onto the screen
 
 private:
     int8_t *reg;                                // gpr file
     unsigned int size;                          // total size of gpr file (size * 8-bit)
 
     int cursor;                                 // GPR file cursor
-    std::vector <std::string> color;            // associated gpr colors
+    std::vector <int> color;                    // associated gpr colors
 
     void clear_color(void);                     // clearing gpr output colors
 };

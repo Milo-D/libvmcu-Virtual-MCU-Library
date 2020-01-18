@@ -10,13 +10,12 @@
 
 using namespace std;
 
-int cmd_count[CONTEXT] = { 3, 6, 6, 11 };
+int cmd_count[CONTEXT] = { 3, 17 };
 
-string commands[CONTEXT][12] = {
+string commands[CONTEXT][17] = {
 	
-    { "-d", "-hl", "-h" },                                                 /* CL Arguments */
-	{ "n", "p", "d", "t", "b", "e" },                                      /* Main Commands */
-	{ "break", "unbreak", "def", "pn", "pp", "e" },                        /* Table Commands */
-	{ "n", "b", "rn", "rp", "dn", "dp", "jb", "en", "ep", "e", "?" }       /* Debug Commands */
+    { "-d", "-hl", "-h" },                                                      /* CL Arguments */
+	{ "n", "b", "rn", "rp", "dn", "dp", "jb", "en", "ep", "xd", "q", "?",       /* Debug Commands */
+      "break", "unbreak", "def", "pn", "pp" }
 	
 };
