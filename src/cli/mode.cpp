@@ -114,7 +114,7 @@ static void mode_help(void) {
     cout << " xd            <ADDRESS>                 - Examine Data Memory at ADDRESS\n";
 
     cout << "\nGITHUB\n";
-    cout << " https://github.com/Milo-D/NSL/\n";
+    cout << " https://github.com/Milo-D/MDX-Assembly-Debugger/\n";
 
     cout << "\nAUTHOR OF MDX\n";
     cout << " Name: David Milosevic\n";
