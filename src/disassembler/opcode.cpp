@@ -47,6 +47,7 @@ extern const int opcode[SET_SIZE][WORD] = {
 { 0, 0, 0, 1, 0, 1, R, D, D, D, D, D, R, R, R, R }, /* CP */
 { 0, 0, 1, 1, K, K, K, K, D, D, D, D, K, K, K, K }, /* CPI */
 { 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 0, 1, 1, 0 }, /* LSR */
+{ 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 0, 1, 0, 1 }, /* ASR */
 { 0, 1, 1, 0, K, K, K, K, D, D, D, D, K, K, K, K }, /* ORI */
 { 0, 0, 1, 0, 1, 0, R, D, D, D, D, D, R, R, R, R }, /* OR */
 { 0, 0, 1, 0, 0, 0, R, D, D, D, D, D, R, R, R, R }, /* AND */
