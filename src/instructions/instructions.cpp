@@ -623,7 +623,7 @@ void lsr(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
 
-    int8_t value = sys->read_gpr(dest);
+    uint8_t value = sys->read_gpr(dest);
     int8_t result = (value >> 1);
 
     int8_t cf_res = bit(value, 0);

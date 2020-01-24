@@ -563,7 +563,7 @@ string lsr(int opcode) {
 
     stream << "lsr r" << dest;
     stream << fill(stream.str().size());
-    stream << "; R" << dest << " <- R" << dest << " > 1";
+    stream << "; R" << dest << " <- R" << dest << " >> 1";
 
     return stream.str();
 }
