@@ -597,6 +597,21 @@ string asr(int opcode) {
     return stream.str();
 }
 
+string swap(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    stringstream stream;
+
+    stream << "swap r" << dest;
+    stream << fill(stream.str().size());
+
+    stream << "; R" << dest << "[7:4] <- R" << dest << "[3:0],";
+    stream << " R" << dest << "[3:0] <- R" << dest << "[7:4]";
+
+    return stream.str();
+}
+
 string ori(int opcode) {
 
     int dest = extract(opcode, 4, 8, 0);
@@ -901,7 +916,7 @@ string bset(int opcode) {
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, inc, add, adc, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, ori, or_asm, 
-                                                and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
+                                                st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
+                                                or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                 clz, clh, clc, cli, cln, bclr, bset };
 

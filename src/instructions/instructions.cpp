@@ -688,6 +688,16 @@ void asr(Sys *sys, int opcode) {
     sys->write_gpr(dest, result);
 }
 
+void swap(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    uint8_t value = sys->read_gpr(dest);
+    uint8_t result = ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
+
+    sys->write_gpr(dest, result);
+}
+
 void ori(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 8, 0);
@@ -891,8 +901,8 @@ void bset(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, adc, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                           st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, ori, or_asm, 
-                                                           and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
+                                                           st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
+                                                           or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                            clz, clh, clc, cli, cln, bclr, bset };
 
 
