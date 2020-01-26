@@ -406,6 +406,20 @@ void st_xi(Sys *sys, int opcode) {
     sys->write_gpr(XH, (0xff00 & post_x) >> 8);
 }
 
+void xch(Sys *sys, int opcode) {
+
+    int src = extract(opcode, 4, 9, 0);
+
+    uint8_t zl = sys->read_gpr(ZL);
+    uint8_t zh = sys->read_gpr(ZH);
+
+    int8_t reg_val = sys->read_gpr(src);
+    int8_t data_val = sys->read_data((zh << 8) + zl);
+
+    sys->write_data((zh << 8) + zl, reg_val);
+    sys->write_gpr(src, data_val);
+}
+
 void brne(Sys *sys, int opcode) {
 
     if(sys->read_sreg(ZF) == 0x01)
@@ -901,7 +915,7 @@ void bset(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, adc, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                           st_x, st_xi, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
+                                                           st_x, st_xi, xch, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
                                                            or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                            clz, clh, clc, cli, cln, bclr, bset };
 
