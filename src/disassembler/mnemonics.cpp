@@ -253,6 +253,20 @@ string pop(int opcode) {
     return stream.str();
 }
 
+string in(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
+
+    stringstream stream;
+
+    stream << "in r" << dest << ", 0x" << hex << src << dec;
+    stream << fill(stream.str().size());
+    stream << "; R" << dest << " <- DATA[addr]";
+
+    return stream.str();
+}
+
 string out(int opcode) {
 
     int dest = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
@@ -930,7 +944,7 @@ string bset(int opcode) {
 }
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                dec, inc, add, adc, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
+                                                dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                 st_x, st_xi, xch, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
                                                 or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                 clz, clh, clc, cli, cln, bclr, bset };

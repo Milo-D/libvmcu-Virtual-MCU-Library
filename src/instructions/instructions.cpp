@@ -291,6 +291,16 @@ void pop(Sys *sys, int opcode) {
     sys->write_gpr(dest, val);
 }
 
+void in(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+    int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
+
+    int8_t val = sys->read_data(src);
+
+    sys->write_gpr(dest, val);
+}
+
 void out(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
@@ -914,7 +924,7 @@ void bset(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, inc, add, adc, sub, sbc, push, pop, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
+                                                           dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
                                                            st_x, st_xi, xch, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
                                                            or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                            clz, clh, clc, cli, cln, bclr, bset };
