@@ -385,6 +385,26 @@ string st_xi(int opcode) {
     return stream.str();
 }
 
+string sts(int opcode) {
+
+    int src = extract(opcode, 4, 8, 0) + 16;
+    int dest = extract(opcode, 0, 4, 0) + extract(opcode, 8, 11, 4);
+
+    int addr = (~(0x10 & dest) << 3) | ((0x10 & dest) << 2) | 
+                ((0x40 & dest) >> 1) | ((0x20 & dest) >> 1) |
+                ((0x0f & opcode));
+
+    stringstream stream;
+
+    stream << "sts 0x" << hex << addr << dec;
+    stream << ", r" << src;
+
+    stream << fill(stream.str().size());
+    stream << "; DATA[addr] <- R" << src;
+
+    return stream.str();
+}
+
 string xch(int opcode) {
 
     int src = extract(opcode, 4, 9, 0);
@@ -969,7 +989,7 @@ string bset(int opcode) {
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                st_x, st_xi, xch, brne, breq, brge, brpl, brlo, brlt, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
-                                                or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
+                                                st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, rcall, ret, cp, cpi, cpc, lsr, asr, 
+                                                swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                 clz, clh, clc, cli, cln, bclr, bset };
 

@@ -416,6 +416,20 @@ void st_xi(Sys *sys, int opcode) {
     sys->write_gpr(XH, (0xff00 & post_x) >> 8);
 }
 
+void sts(Sys *sys, int opcode) {
+
+    int src = extract(opcode, 4, 8, 0);
+    int dest = extract(opcode, 0, 4, 0) + extract(opcode, 8, 11, 4);
+
+    int value = sys->read_gpr(src + 16);
+
+    int addr = (~(0x10 & dest) << 3) | ((0x10 & dest) << 2) | 
+                ((0x40 & dest) >> 1) | ((0x20 & dest) >> 1) |
+                ((0x0f & dest));
+
+    sys->write_data(addr, value);
+}
+
 void xch(Sys *sys, int opcode) {
 
     int src = extract(opcode, 4, 9, 0);
@@ -946,8 +960,8 @@ void bset(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                           st_x, st_xi, xch, brne, breq, brge, brpl, brlo, brlt, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
-                                                           or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
+                                                           st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, rcall, ret, cp, cpi, cpc, lsr, asr, 
+                                                           swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                            clz, clh, clc, cli, cln, bclr, bset };
 
 
