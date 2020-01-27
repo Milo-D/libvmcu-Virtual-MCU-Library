@@ -92,6 +92,9 @@ void debug(Table *table) {
         if(select != "")
             last_select = select;
 
+        if(sys.is_terminated() == true)
+            dwin->write(OUTPUT_PANEL, SYS_TERM, DEF);
+
         vector <string> cmd;
         split(last_select, cmd).swap(cmd); 
 

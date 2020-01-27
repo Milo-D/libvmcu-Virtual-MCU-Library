@@ -47,6 +47,7 @@ extern const int opcode[SET_SIZE][WORD] = {
 { 1, 1, 1, 1, 0, 0, K, K, K, K, K, K, K, 0, 0, 0 }, /* BRLO */
 { 1, 1, 1, 1, 0, 0, K, K, K, K, K, K, K, 1, 0, 0 }, /* BRLT */
 { 1, 1, 1, 1, 0, 1, K, K, K, K, K, K, K, 0, 0, 0 }, /* BRCC */
+{ 1, 1, 1, 1, 0, 0, K, K, K, K, K, K, K, 0, 0, 0 }, /* BRCS */
 { 1, 1, 0, 1, K, K, K, K, K, K, K, K, K, K, K, K }, /* RCALL */
 { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0 }, /* RET */
 { 0, 0, 0, 1, 0, 1, R, D, D, D, D, D, R, R, R, R }, /* CP */

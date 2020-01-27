@@ -591,6 +591,27 @@ void brcc(Sys *sys, int opcode) {
     sys->set_pc(prog_counter + offs + 1);
 }
 
+void brcs(Sys *sys, int opcode) {
+
+    if(sys->read_sreg(CF) == 0x00)
+        return;
+
+    int offs = extract(opcode, 3, 10, 0);
+    int prog_counter = sys->get_pc();
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 7) - 1);
+        offs += 0x01;
+
+        sys->set_pc(prog_counter - offs + 1);
+
+        return;
+    }
+
+    sys->set_pc(prog_counter + offs + 1);
+}
+
 void rcall(Sys *sys, int opcode) {
 
     int offs = extract(opcode, 0, 12, 0);
@@ -981,7 +1002,7 @@ void bset(Sys *sys, int opcode) {
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                            dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                           st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, brcc, rcall, ret, cp, cpi, cpc, lsr, asr, 
+                                                           st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
                                                            swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                            clz, clh, clc, cli, cln, bclr, bset };
 
