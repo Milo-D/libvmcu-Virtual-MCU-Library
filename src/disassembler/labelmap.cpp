@@ -60,9 +60,9 @@ namespace {
 
 LabelMap::LabelMap(void) {
 
-    const int size = 7;
+    const int size = 8;
 
-    string instr[size] = { "rjmp", "brne", "breq", "brge", "brpl", "brlo", "rcall" };
+    string instr[size] = { "rjmp", "brne", "breq", "brge", "brpl", "brlo", "brlt", "rcall" };
 
     for(int i = 0; i < size; i++)
         this->imap[ instr[i] ] = true;

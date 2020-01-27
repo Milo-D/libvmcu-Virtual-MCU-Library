@@ -520,6 +520,30 @@ string brlo(int opcode) {
     return stream.str();
 }
 
+string brlt(int opcode) {
+
+    int offs = extract(opcode, 3, 10, 0);
+    char sign = '+';
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs ^= ((0x01 << 7) - 1);
+        offs += 0x01;
+
+        sign = '-';
+    }
+
+    stringstream stream;
+
+    stream << "brlt " << sign << offs;
+    stream << fill(stream.str().size());
+
+    stream << "; (N ^ V = 1): PC <- PC " << sign;
+    stream << " 0x" << hex << offs << " + 1";
+
+    return stream.str();
+}
+
 string rcall(int opcode) {
 
     int offs = extract(opcode, 0, 12, 0);
@@ -945,7 +969,7 @@ string bset(int opcode) {
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
                                                 dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
-                                                st_x, st_xi, xch, brne, breq, brge, brpl, brlo, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
+                                                st_x, st_xi, xch, brne, breq, brge, brpl, brlo, brlt, rcall, ret, cp, cpi, cpc, lsr, asr, swap, ori, 
                                                 or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                 clz, clh, clc, cli, cln, bclr, bset };
 
