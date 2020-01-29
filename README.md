@@ -10,7 +10,7 @@ Microcontrollers.
 # Overview
 MDX is an easy and fast CLI Debugger for AVR Assembly Programs.
 
-![mdx](https://user-images.githubusercontent.com/46600932/73336727-e5f58800-4272-11ea-9b76-69b6b6398291.gif)
+![mdx](https://user-images.githubusercontent.com/46600932/73336968-92d00500-4273-11ea-9b14-5a0709b4a607.gif)
 
 You are able to open up more than just one file while debugging. This
 allows you to switch fast and spontanious between your files.
