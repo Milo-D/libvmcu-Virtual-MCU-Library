@@ -107,6 +107,8 @@ Note: You may open multiple files in interactive Debugging Mode.
 | ep            | none          | Scrool to prev. EEPROM Cell |
 | xd            | address       | Examine Data Memory         |
 | xe            | address       | Examine EEPROM Memory       |
+| xec           | addr range    | EEP. Mem. as char literal   |
+| leep          | file.eep.hex  | Loading .eep.hex into MCU   |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
 | ?             | none          | Show Help (in progress)     |
@@ -147,6 +149,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [x] Simple and fancy Commandline Design
 - [x] GPR Visualization
 - [x] SRAM Visualization
+- [x] Loading .eep.hex into the Microcontroller
 - [ ] EEPROM Visualization
 - [x] SREG Visualization
 - [ ] FLASH Visualization
@@ -159,7 +162,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [ ] Full Instruction Support
 
 # Instructions
-Currently MDX supports: 60 Instructions. More Instructions are coming soon.
+Currently MDX supports: ~ 65 Instructions. More Instructions are coming soon.
 
 # Screenshots
 
