@@ -36,6 +36,8 @@ void jump_forward(DebugWindow *dwin, Sys *sys, Table *table) {
         sleep_for(milliseconds(100));
 
     } while(sys->is_terminated() == false);
+
+    dwin->write(OUTPUT_PANEL, BREAK_REACHED, G);
 }
 
 

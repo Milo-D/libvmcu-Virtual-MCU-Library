@@ -10,6 +10,8 @@
 #define MEM_CELL_ERR "(mdx) Illegal memory cell.\n"
 #define val_of(c, v) "(mdx) " + c + " ~> 0x" + v + "\n"
 
+#define BREAK_REACHED "(mdx) <--- Breakpoint reached --->\n"
+
 #define MAX_FILE_REACH "Maximum of 4 files reached."
 
 #endif
