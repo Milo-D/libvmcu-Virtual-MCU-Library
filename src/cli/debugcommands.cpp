@@ -40,7 +40,6 @@ void jump_forward(DebugWindow *dwin, Sys *sys, Table *table) {
     dwin->write(OUTPUT_PANEL, BREAK_REACHED, G);
 }
 
-
 void examine_data(DebugWindow *dwin, Sys *sys, string mem_cell) {
 
     int cell = hex_to_dec(mem_cell);
