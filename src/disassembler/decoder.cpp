@@ -106,7 +106,7 @@ namespace {
             return decrypt;
 
         int byte_count = hex_to_dec(hex_line.substr(0, 2));
-        int s_addr = hex_to_dec(hex_line.substr(2, 4)) / 2;
+        int s_addr = hex_to_dec(hex_line.substr(2, 4));
 
         for(int i = 0; i < byte_count; i++) {
 
