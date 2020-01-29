@@ -106,12 +106,15 @@ static void mode_help(void) {
     cout << " ep            <blank>                   - Prev. EEPROM memory cell\n";
     cout << " q             <blank>                   - Leave / Open File Selector\n";
     cout << " ?             <blank>                   - Show commands (coming soon)\n";
-    cout << " break         <LINE>                    - Set a Breakpoint at LINE\n";
-    cout << " unbreak       <LINE>                    - Remove Breakpoint at LINE\n";
+    cout << " break         <line>                    - Set a Breakpoint at 'line'\n";
+    cout << " unbreak       <line>                    - Remove Breakpoint at 'line'\n";
     cout << " def           <alias> <seq>             - Redefine Symbols in Table\n";
     cout << " pn            <blank>                   - Show next Source Code Page\n";
     cout << " pp            <blank>                   - Show prev. Source Code Page\n";
-    cout << " xd            <ADDRESS>                 - Examine Data Memory at ADDRESS\n";
+    cout << " xd            <address>                 - Examine Data Memory at 'address'\n";
+    cout << " xe            <address>                 - Examine EEPROM Memory at 'address'\n";
+    cout << " xec           <addr> <range>            - Examine EEPROM Memory as char literal\n";
+    cout << " leep          <eep.hex>                 - Load an .eep.hex file into the EEPROM\n";
 
     cout << "\nGITHUB\n";
     cout << " https://github.com/Milo-D/MDX-Assembly-Debugger/\n";
