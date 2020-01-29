@@ -78,7 +78,7 @@ vector < tuple <string, int> > create_source(string hex_file) {
     vector < tuple <string, int> > source;
 
     vector <struct plain> dump;
-    decode_file(hex_file).swap(dump);
+    decode_hex(hex_file).swap(dump);
 
     for(int i = 0; i < dump.size(); i++) {
 

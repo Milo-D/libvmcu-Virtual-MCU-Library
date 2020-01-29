@@ -21,7 +21,7 @@ using namespace std;
 Flash::Flash(Table *table) {
 
     vector <struct plain> plain;
-	decode_file( table->src() ).swap(plain);
+	decode_hex( table->src() ).swap(plain);
 
     this->memory = (int16_t*) malloc(FLASH_SIZE * sizeof(int16_t));
     memset(this->memory, 0x0000, FLASH_SIZE * sizeof(int16_t));

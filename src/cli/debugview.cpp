@@ -76,13 +76,15 @@ void debug(Table *table) {
             case 8: sys.scale_eeprom(-1); break;
             case 9: examine_data(dwin, &sys, cmd[1]); break;
             case 10: examine_eeprom(dwin, &sys, cmd[1]); break;
-            case 11: table->set_tip(0); break;
-            case 12: /* here comes help output*/break;
-            case 13: table->set_break(cmd[1]); break;
-            case 14: table->unset_break(cmd[1]); break;
-            case 15: table->define(cmd[1], cmd[2]); break;
-            case 16: table->next_page(+1); break;
-            case 17: table->next_page(-1); break;
+            case 11: examine_eeprom_char(dwin, &sys, cmd[1], cmd[2]); break;
+            case 12: load_eep_hex(dwin, &sys, cmd[1]); break;
+            case 13: table->set_tip(0); break;
+            case 14: /* here comes help output*/ break;
+            case 15: table->set_break(cmd[1]); break;
+            case 16: table->unset_break(cmd[1]); break;
+            case 17: table->define(cmd[1], cmd[2]); break;
+            case 18: table->next_page(+1); break;
+            case 19: table->next_page(-1); break;
 
             default: /* ignoring invalid input */ break;
         } 

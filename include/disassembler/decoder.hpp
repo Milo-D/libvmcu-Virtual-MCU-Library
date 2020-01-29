@@ -23,6 +23,13 @@ struct plain {
     int addr;
 };
 
-std::vector <struct plain> decode_file(std::string hex_file);
+struct data {
+
+    int value;
+    int addr;
+};
+
+std::vector <struct plain> decode_hex(std::string hex_file);
+std::vector <struct data> decode_eep_hex(std::string hex_file);
 
 #endif

@@ -15,7 +15,7 @@ int cmd_count[CONTEXT] = { 3, MAX_COM };
 string commands[CONTEXT][MAX_COM] = {
 	
     { "-d", "-hl", "-h" },                                                             /* CL Arguments */
-	{ "n", "b", "rn", "rp", "dn", "dp", "jb", "en", "ep", "xd", "xe", "q", "?",        /* Debug Commands */
-      "break", "unbreak", "def", "pn", "pp" }
+	{ "n", "b", "rn", "rp", "dn", "dp", "jb", "en", "ep", "xd", "xe",                  /* Debug Commands */
+      "xec", "leep", "q", "?", "break", "unbreak", "def", "pn", "pp" }
 	
 };

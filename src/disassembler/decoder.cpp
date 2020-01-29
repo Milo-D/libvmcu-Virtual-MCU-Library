@@ -49,7 +49,7 @@ namespace {
         return -1;  // no valid opcode found, returning -1
     }
 
-    vector <struct plain> decode_line(string hex_line) {
+    vector <struct plain> decode_hex_line(string hex_line) {
 
         vector <struct plain> decrypt;
         hex_line = hex_line.substr(1, hex_line.size()); 
@@ -97,6 +97,50 @@ namespace {
         return decrypt;
     }
 
+    vector <struct data> decode_eep_line(string hex_line) {
+
+        vector <struct data> decrypt;
+        hex_line = hex_line.substr(1, hex_line.size());
+
+        if(hex_line[7] != '0')
+            return decrypt;
+
+        int byte_count = hex_to_dec(hex_line.substr(0, 2));
+        int s_addr = hex_to_dec(hex_line.substr(2, 4)) / 2;
+
+        for(int i = 0; i < byte_count; i++) {
+
+            struct data d;
+            string current = "";
+
+            for(int j = 0; j < 2; j++) {
+
+                if((8 + (i * 2) + j) >= hex_line.size()) {
+
+                    decrypt.clear();
+                    return decrypt;
+                }
+
+                current += hex_line[8 + (i * 2) + j];
+            }
+
+            int eep_data = hex_to_dec(current);
+
+            if(eep_data < 0) {
+
+                decrypt.clear();
+                return decrypt;
+            }
+
+            d.value = eep_data;
+            d.addr = (s_addr + i);
+
+            decrypt.push_back(d);
+        }
+
+        return decrypt;
+    }
+
     bool validate_hex(string line) {
 
         if(line.size() < 11)
@@ -109,7 +153,7 @@ namespace {
     }
 };
 
-vector <struct plain> decode_file(string hex_file) {
+vector <struct plain> decode_hex(string hex_file) {
 
     vector <struct plain> dump;
     ifstream read_file(hex_file, ios::in);
@@ -126,8 +170,39 @@ vector <struct plain> decode_file(string hex_file) {
         if(validate_hex(line) == false)
             print_status("Wrong Hex Format.", true);
 
-        decode_line(line).swap(p);
+        decode_hex_line(line).swap(p);
         dump.insert(dump.end(), p.begin(), p.end());    
+    }
+
+    read_file.close();
+    return dump;
+}
+
+vector <struct data> decode_eep_hex(string hex_file) {
+
+    vector <struct data> dump;
+    ifstream read_file(hex_file, ios::in);
+
+    if(read_file.good() == false) {
+
+        dump.clear();
+        return dump;
+    }
+
+    string line = "";
+
+    while(getline(read_file, line)) {
+
+        vector <struct data> d;
+
+        if(validate_hex(line) == false) {
+
+            dump.clear();
+            return dump;
+        }
+
+        decode_eep_line(line).swap(d);
+        dump.insert(dump.end(), d.begin(), d.end());
     }
 
     read_file.close();
