@@ -642,7 +642,7 @@ string ret(int opcode) {
 
     stream << "ret";
     stream << fill(stream.str().size());
-    stream << "; PC <- PC + DATA[SP]";
+    stream << "; PC <- DATA[SP]";
 
     return stream.str();
 }
