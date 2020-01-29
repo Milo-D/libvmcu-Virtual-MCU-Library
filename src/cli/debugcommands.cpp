@@ -52,3 +52,17 @@ void examine_data(DebugWindow *dwin, Sys *sys, string mem_cell) {
     int8_t data = sys->read_data(cell);
     dwin->write(OUTPUT_PANEL, val_of(mem_cell, get_hex(data)), DEF);
 }
+
+void examine_eeprom(DebugWindow *dwin, Sys *sys, string mem_cell) {
+
+    int cell = hex_to_dec(mem_cell);
+
+    if(cell < 0 || cell > EEPROM_SIZE - 1) {
+
+        dwin->write(OUTPUT_PANEL, MEM_CELL_ERR, DEF);
+        return;
+    }
+
+    int8_t data = sys->read_eeprom(cell);
+    dwin->write(OUTPUT_PANEL, val_of(mem_cell, get_hex(data)), DEF);
+}
