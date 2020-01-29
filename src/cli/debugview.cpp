@@ -5,13 +5,12 @@
 #include <iomanip>
 #include <string>
 #include <cstring>
-#include <chrono>
-#include <thread>
 #include <signal.h>
 
 // Project Headers
 #include "cli/debugview.hpp"
 #include "cli/debugwindow.hpp"
+#include "cli/debugcommands.hpp"
 #include "cli/style.hpp"
 #include "misc/stdmsg.hpp"
 #include "misc/ehandling.hpp"
@@ -25,48 +24,14 @@
 #define SIG_OFF signal(SIGWINCH, SIG_DFL)
 
 using namespace std;
-using namespace std::chrono;
-using namespace std::this_thread;
 
 static DebugWindow *dwin;
 
-namespace {
+static void sig_handler(int signal) {
 
-    void jump_forward(Sys *sys, Table *table) {
-
-        do {
-
-            if(table->is_break() == true)
-                break;
-
-            sys->put_sys(dwin);
-            sys->step();
-
-            sleep_for(milliseconds(100));
-
-        } while(sys->is_terminated() == false);
-    }
-
-    void examine_data(Sys *sys, string mem_cell) {
-
-        int cell = hex_to_dec(mem_cell);
-
-        if(cell < 0 || cell > RAM_END) {
-
-            dwin->write(OUTPUT_PANEL, MEM_CELL_ERR, DEF);
-            return;
-        }
-
-        int8_t data = sys->read_data(cell);
-        dwin->write(OUTPUT_PANEL, val_of(mem_cell, get_hex(data)), DEF);
-    }
-
-    void sig_handler(int signal) {
-
-        delete dwin;
-        dwin = new DebugWindow;
-    }
-};
+    delete dwin;
+    dwin = new DebugWindow;
+}
 
 void debug(Table *table) {
 
@@ -106,10 +71,10 @@ void debug(Table *table) {
             case 3: sys.scale_gpr(-1); break;
             case 4: sys.scale_data(+1); break;
             case 5: sys.scale_data(-1); break;
-            case 6: jump_forward(&sys, table); break;
+            case 6: jump_forward(dwin, &sys, table); break;
             case 7: sys.scale_eeprom(+1); break;
             case 8: sys.scale_eeprom(-1); break;
-            case 9: examine_data(&sys, cmd[1]); break;
+            case 9: examine_data(dwin, &sys, cmd[1]); break;
             case 10: table->set_tip(0); break;
             case 11: /* help comes here */ break;
             case 12: table->set_break(cmd[1]); break;
