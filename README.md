@@ -106,6 +106,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | en            | none          | Scroll to next EEPROM Cell  |
 | ep            | none          | Scrool to prev. EEPROM Cell |
 | xd            | address       | Examine Data Memory         |
+| xe            | address       | Examine EEPROM Memory       |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
 | ?             | none          | Show Help (in progress)     |
