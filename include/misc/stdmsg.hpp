@@ -13,6 +13,9 @@
 #define val_of_eep(a, o, t) "(mdx) " + a + " [" + o + "] ~> \"" + t + "\"\n"
 
 #define BREAK_REACHED "(mdx) <--- Breakpoint reached --->\n"
+#define break_set_success(l) "(mdx) Breakpoint set at line " + l + ".\n"
+#define break_rem_success(l) "(mdx) Removing Breakpoint at line " + l + ".\n"
+
 #define eep_success(f) "(mdx) Successfully loaded \"" + f + "\" into EEPROM.\n"
 
 #define EEP_DECODE_ERR "(mdx) Could not decode EEPROM Hex File.\n"

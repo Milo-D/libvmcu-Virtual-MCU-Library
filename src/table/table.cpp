@@ -62,7 +62,7 @@ int Table::set_break(string point) {
         return -1;
 
     if(this->breaks[line] == true)
-        return 0;
+        return -1;
 
     this->breaks[line] = true;
     this->break_counter += 1;
@@ -78,7 +78,7 @@ int Table::unset_break(string point) {
         return -1;
 
     if(this->breaks[line] == false)
-        return 0;
+        return -1;
 
     this->breaks[line] = false;
     this->break_counter -= 1;

@@ -43,6 +43,22 @@ void jump_forward(DebugWindow *dwin, Sys *sys, Table *table) {
     dwin->write(OUTPUT_PANEL, BREAK_REACHED, G);
 }
 
+void set_breakpoint(DebugWindow *dwin, Table *table, string bp) {
+
+    if(table->set_break(bp) < 0)
+        return;
+
+    dwin->write(OUTPUT_PANEL, break_set_success(bp), DEF);
+}
+
+void remove_breakpoint(DebugWindow *dwin, Table *table, string bp) {
+
+    if(table->unset_break(bp) < 0)
+        return;
+
+    dwin->write(OUTPUT_PANEL, break_rem_success(bp), DEF);
+}
+
 void examine_data(DebugWindow *dwin, Sys *sys, string mem_cell) {
 
     int cell = hex_to_dec(mem_cell);

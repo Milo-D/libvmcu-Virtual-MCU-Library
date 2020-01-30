@@ -80,8 +80,8 @@ void debug(Table *table) {
             case 12: load_eep_hex(dwin, &sys, cmd[1]); break;
             case 13: table->set_tip(0); break;
             case 14: /* here comes help output*/ break;
-            case 15: table->set_break(cmd[1]); break;
-            case 16: table->unset_break(cmd[1]); break;
+            case 15: set_breakpoint(dwin, table, cmd[1]); break;
+            case 16: remove_breakpoint(dwin, table, cmd[1]); break;
             case 17: table->define(cmd[1], cmd[2]); break;
             case 18: table->next_page(+1); break;
             case 19: table->next_page(-1); break;
