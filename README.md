@@ -109,7 +109,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | ep            | none          | Scrool to prev. EEPROM Cell |
 | xd            | address       | Examine Data Memory         |
 | xe            | address       | Examine EEPROM Memory       |
-| xec           | <addr> <range>| EEP. Mem. as char literal   |
+| xec           | start end     | EEP. Mem. as char literal   |
 | leep          | file.eep.hex  | Loading .eep.hex into MCU   |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
