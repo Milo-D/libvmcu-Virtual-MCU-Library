@@ -372,6 +372,24 @@ string ld_dy(int opcode) {
     return stream.str();
 }
 
+string ldd_yq(int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3);
+    disp += extract(opcode, 13, 14, 5);
+
+    stringstream stream;
+
+    stream << "ldd r" << dest << ", Y+" << disp;
+    stream << fill(stream.str().size());
+
+    stream << "; R" << dest << " <- DATA[Y+";
+    stream << disp << "]";
+
+    return stream.str();
+}
+
 string ld_z(int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -1062,7 +1080,7 @@ string bset(int opcode) {
 }
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ld_z, 
+                                                dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, ld_z, 
                                                 st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
                                                 swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                 clz, clh, clc, cli, cln, bclr, bset };
