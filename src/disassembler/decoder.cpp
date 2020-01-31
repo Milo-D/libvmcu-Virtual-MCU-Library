@@ -66,22 +66,13 @@ namespace {
 
             struct plain p;
 
-            int order[4] = { 2, 3, 0, 1 };
-            string current = "";
+            int instr, found;
+            string current = swap_bytes(hex_line, i);
 
-            for(int j = 0; j < 4; j++) {
+            if(current == "")
+                print_status("Invalid Byte Count.", true);
 
-                int index = (8 + (i * 4) + order[j]);
-
-                if(index >= hex_line.size())
-                    print_status("Invalid Byte Count.", true);
-
-                current += hex_line[index];     
-            }
-
-            int instr = hex_to_dec(current); int found;
-
-            if(instr < 0)
+            if((instr = hex_to_dec(current)) < 0)
                 print_status("Illegal symbols in Hex File.", true);
 
             if((found = get_key_from_op(instr)) < 0)
@@ -111,18 +102,20 @@ namespace {
         for(int i = 0; i < byte_count; i++) {
 
             struct data d;
+
+            int low_nibble = (8 + (i * 2) + 1);
+            int high_nibble = (8 + (i * 2) + 0);
+
+            if(low_nibble >= hex_line.size()) {
+
+                decrypt.clear();
+                return decrypt;
+            }
+
             string current = "";
 
-            for(int j = 0; j < 2; j++) {
-
-                if((8 + (i * 2) + j) >= hex_line.size()) {
-
-                    decrypt.clear();
-                    return decrypt;
-                }
-
-                current += hex_line[8 + (i * 2) + j];
-            }
+            current += hex_line[high_nibble];
+            current += hex_line[low_nibble];
 
             int eep_data = hex_to_dec(current);
 

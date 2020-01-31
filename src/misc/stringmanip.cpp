@@ -183,3 +183,21 @@ string get_hex(int8_t input) {
 
     return string(hex);
 }
+
+string swap_bytes(const string& hex, const int pos) {
+
+    string swapped = "";
+
+    if((8 + (pos * 4) + 3) >= hex.size())
+        return swapped;
+
+    const int order[4] = { 2, 3, 0, 1 };
+
+    for(int i = 0; i < 4; i++) {
+
+        int index = (8 + (pos * 4) + order[i]);
+        swapped += hex[index];
+    }
+
+    return swapped;
+}
