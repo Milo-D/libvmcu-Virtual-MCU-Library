@@ -129,3 +129,8 @@ void load_eep_hex(DebugWindow *dwin, Sys *sys, string file) {
 
     dwin->write(OUTPUT_PANEL, eep_success(file), G);
 }
+
+void clear_output(DebugWindow *dwin) {
+
+    dwin->clear_specific(OUTPUT_PANEL);
+}

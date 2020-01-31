@@ -24,18 +24,19 @@ public:
 
     std::string read_prompt(void);                                              // reading from prompt
 
-    void write(int ptype, const std::string& data, int color);                  // writing to specific panel
-    void clear(void);                                                           // clear non-static panels
+    void write(const int ptype, const std::string& data, const int color);      // writing to specific panel
+    void clear_specific(const int ptype);                                       // clear specific panel
+    void clear(void);                                                           // clear all non-static panels
 
-    void update(int ptype);                                                     // refresh a specific panel
+    void update(const int ptype);                                               // refresh a specific panel
     void update_all(void);                                                      // refresh all panels
 
-    int get_height(int ptype);                                                  // getting height of specific panel
-    int get_width(int ptype);                                                   // getting width of specific panel
-    int get_y(int ptype);                                                       // getting y position of specific panel
-    int get_x(int ptype);                                                       // getting x position of specific panel
+    int get_height(const int ptype);                                            // getting height of specific panel
+    int get_width(const int ptype);                                             // getting width of specific panel
+    int get_y(const int ptype);                                                 // getting y position of specific panel
+    int get_x(const int ptype);                                                 // getting x position of specific panel
 
-    void close_panel(int ptype);                                                // close a specific panel
+    void close_panel(const int ptype);                                          // close a specific panel
 
 private:
     Panel **panel;                                                              // Panels of DebugWindow

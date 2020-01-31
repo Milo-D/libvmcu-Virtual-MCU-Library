@@ -14,5 +14,6 @@ void examine_data(DebugWindow *dwin, Sys *sys, std::string mem_cell);
 void examine_eeprom(DebugWindow *dwin, Sys *sys, std::string mem_cell);
 void examine_eeprom_char(DebugWindow *dwin, Sys *sys, std::string mem_cell, std::string range);
 void load_eep_hex(DebugWindow *dwin, Sys *sys, std::string file);
+void clear_output(DebugWindow *dwin);
 
 #endif

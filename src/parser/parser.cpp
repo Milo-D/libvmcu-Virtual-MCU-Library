@@ -124,28 +124,28 @@ bool Parser::parse_debug(vector <string> cmd) {
 
         break;
 
-        case 13: case 14:
+        case 13: case 14: case 15:
 
             if(argc != 0)
                 return false;
 
         break;
 
-        case 15: case 16:
+        case 16: case 17:
         
             if(argc != 1 || to_dec(cmd[1]) < 0)
                 return false;
         
         break;
 
-        case 17:
+        case 18:
 
             if(argc != 2)
                 return false;
 
         break;
         
-        case 18: case 19:
+        case 19: case 20:
         
             if(argc != 0)
                 return false;

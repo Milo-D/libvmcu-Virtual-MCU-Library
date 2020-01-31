@@ -67,9 +67,14 @@ string DebugWindow::read_prompt(void) {
     return this->prompt->read();
 }
 
-void DebugWindow::write(int ptype, const std::string& data, int color) {
+void DebugWindow::write(const int ptype, const std::string& data, const int color) {
 
     this->panel[ptype]->write(data, color);
+}
+
+void DebugWindow::clear_specific(const int ptype) {
+
+    this->panel[ptype]->clear();
 }
 
 void DebugWindow::clear(void) {
@@ -80,7 +85,7 @@ void DebugWindow::clear(void) {
     this->panel[SIDE_PANEL]->clear();
 }
 
-void DebugWindow::update(int ptype) {
+void DebugWindow::update(const int ptype) {
 
     this->panel[ptype]->update();
 }
@@ -91,27 +96,27 @@ void DebugWindow::update_all(void) {
         this->panel[i]->update();
 }
 
-int DebugWindow::get_height(int ptype) {
+int DebugWindow::get_height(const int ptype) {
 
     return this->panel[ptype]->get_height();
 }
 
-int DebugWindow::get_width(int ptype) {
+int DebugWindow::get_width(const int ptype) {
 
     return this->panel[ptype]->get_width();
 }
 
-int DebugWindow::get_y(int ptype) {
+int DebugWindow::get_y(const int ptype) {
 
     return this->panel[ptype]->get_ypos();
 }
 
-int DebugWindow::get_x(int ptype) {
+int DebugWindow::get_x(const int ptype) {
 
     return this->panel[ptype]->get_xpos();
 }
 
-void DebugWindow::close_panel(int ptype) {
+void DebugWindow::close_panel(const int ptype) {
 
     this->panel[ptype]->destroy();
 }
