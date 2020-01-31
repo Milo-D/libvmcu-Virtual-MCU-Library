@@ -379,6 +379,21 @@ void ld_y(Sys *sys, int opcode) {
     sys->write_gpr(dest, data);
 }
 
+void ld_yi(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 9, 0);
+
+    uint8_t yl = sys->read_gpr(YL);
+    uint8_t yh = sys->read_gpr(YH);
+
+    int8_t data = sys->read_data((yh << 8) + yl);
+    int16_t post_y = ((yh << 8) + yl) + 0x01;
+
+    sys->write_gpr(dest, data);
+    sys->write_gpr(YL, (0x00ff & post_y));
+    sys->write_gpr(YH, (0xff00 & post_y) >> 8);
+}
+
 void ld_z(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -1001,7 +1016,7 @@ void bset(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_z, 
+                                                           dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_z, 
                                                            st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
                                                            swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                            clz, clh, clc, cli, cln, bclr, bset };
