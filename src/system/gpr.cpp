@@ -79,7 +79,7 @@ void Gpr::to_win(DebugWindow *dwin) {
         stream << "0x" << right << setw(2) << setfill('0');
         stream << get_hex(this->reg[start + i]);
 
-        stream << setfill(' ') << left << setw(4);
+        stream << setfill(' ') << left << setw(13);
         stream << "      ";
 
         dwin->write(GPR_PANEL, stream.str(), DEF);

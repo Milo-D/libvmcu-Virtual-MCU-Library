@@ -61,8 +61,8 @@ void Sreg::to_win(DebugWindow *dwin) {
         dwin->write(SREG_PANEL, flags[i], this->color[i]);
 
         stream << ": " << setfill(' ') << right << setw(2);
-        stream << " " << this->read(i);
-        stream << setfill(' ') << left << setw(4);
+        stream << " 0x0" << hex << this->read(i) << dec;
+        stream << setfill(' ') << left << setw(13);
         stream << "        ";
 
         dwin->write(SREG_PANEL, stream.str(), DEF);

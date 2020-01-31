@@ -43,4 +43,4 @@ nop                      ; no instruction
 .org 0x0000
 
 eep:
-.db "Hello World!"
+.db "hello world"
