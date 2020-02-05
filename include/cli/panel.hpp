@@ -11,7 +11,8 @@ public:
 
     void init(int h, int w, int y, int x);                                          // Panel Initialization
 
-    void write(const std::string & data, const int color);                          // write 'data' to Panel
+    void add(const std::string & data, const int color);                            // add string to Panel without updating
+    void write(const std::string & data, const int color);                          // add string to Panel and update
     void update(void);                                                              // refresh Panel
     void clear(void);                                                               // clearing content of Panel
 

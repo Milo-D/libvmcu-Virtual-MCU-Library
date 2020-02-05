@@ -77,7 +77,12 @@ string DebugWindow::read_prompt(void) {
     return this->prompt->read();
 }
 
-void DebugWindow::write(const int ptype, const std::string & data, const int color) {
+void DebugWindow::add(const int ptype, const string & data, const int color) {
+
+    this->panel[ptype]->add(data, color);
+}
+
+void DebugWindow::write(const int ptype, const string & data, const int color) {
 
     this->panel[ptype]->write(data, color);
 }

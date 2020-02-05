@@ -40,7 +40,7 @@ namespace {
 static void print_gpr(DebugWindow *dwin, Sys *sys) {
 
     stringstream stream;
-    dwin->write(GPR_PANEL, "Registers:\n\n", DEF);
+    dwin->add(GPR_PANEL, "Registers:\n\n", DEF);
 
     vector <int8_t> buffer;
     sys->dump_gpr(buffer);
@@ -53,15 +53,15 @@ static void print_gpr(DebugWindow *dwin, Sys *sys) {
     for(int i = 0; i < 8; i++) {
 
         if(i == 4)
-            dwin->write(GPR_PANEL, "\n", DEF);
+            dwin->add(GPR_PANEL, "\n", DEF);
 
         const int c = color(cells_of_interest[s + i]);
 
-        dwin->write(GPR_PANEL, "R" + to_string(s + i), c);
-        dwin->write(GPR_PANEL, ": ", DEF);
+        dwin->add(GPR_PANEL, "R" + to_string(s + i), c);
+        dwin->add(GPR_PANEL, ": ", DEF);
 
         if((s + i) < 10)
-            dwin->write(GPR_PANEL, " ", DEF);
+            dwin->add(GPR_PANEL, " ", DEF);
 
         stream << "0x" << right << setw(2) << setfill('0');
         stream << get_hex(buffer[s + i]);
@@ -69,17 +69,17 @@ static void print_gpr(DebugWindow *dwin, Sys *sys) {
         stream << setfill(' ') << left << setw(13);
         stream << "      ";
 
-        dwin->write(GPR_PANEL, stream.str(), DEF);
+        dwin->add(GPR_PANEL, stream.str(), DEF);
         stream.str(string());
     }
 
-    dwin->write(GPR_PANEL, "\n", DEF);
+    dwin->add(GPR_PANEL, "\n", DEF);
 }
 
 static void print_sreg(DebugWindow *dwin, Sys *sys) {
 
     stringstream stream;
-    dwin->write(SREG_PANEL, "Status-Register:\n\n", DEF);
+    dwin->add(SREG_PANEL, "Status-Register:\n\n", DEF);
 
     vector <int> cells_of_interest;
     sys->sreg_coi(cells_of_interest);
@@ -89,29 +89,29 @@ static void print_sreg(DebugWindow *dwin, Sys *sys) {
     for(int i = 0; i < SREG_SIZE; i++) {
 
         if(i == SREG_SIZE / 2)
-            dwin->write(SREG_PANEL, "\n", DEF);
+            dwin->add(SREG_PANEL, "\n", DEF);
 
         const int c = color(cells_of_interest[i]);
         const int val = ((status >> i) & 0x01);
 
-        dwin->write(SREG_PANEL, flags[i], c);
+        dwin->add(SREG_PANEL, flags[i], c);
 
         stream << ": " << setfill(' ') << right << setw(2);
         stream << " 0x0" << hex << val << dec;
         stream << setfill(' ') << left << setw(13);
         stream << "        ";
 
-        dwin->write(SREG_PANEL, stream.str(), DEF);
+        dwin->add(SREG_PANEL, stream.str(), DEF);
         stream.str(string());
     }
 
-    dwin->write(SREG_PANEL, "\n", DEF);
+    dwin->add(SREG_PANEL, "\n", DEF);
 }
 
 static void print_data(DebugWindow *dwin, Sys *sys) {
 
     stringstream stream;
-    dwin->write(DATA_PANEL, "Data Memory:\n\n", DEF);
+    dwin->add(DATA_PANEL, "Data Memory:\n\n", DEF);
 
     int cursor;
 
@@ -139,7 +139,7 @@ static void print_data(DebugWindow *dwin, Sys *sys) {
 
         if(i < 0 || i > RAM_END) {
 
-            dwin->write(DATA_PANEL, "\n", DEF);
+            dwin->add(DATA_PANEL, "\n", DEF);
             continue;
         }
 
@@ -152,13 +152,13 @@ static void print_data(DebugWindow *dwin, Sys *sys) {
         stream << "0x" << setfill('0') << setw(4);
         stream << hex << i << "      ";
 
-        dwin->write(DATA_PANEL, stream.str(), isp);
+        dwin->add(DATA_PANEL, stream.str(), isp);
         stream.str(string());
 
         stream << "0x" << setfill('0') << setw(2);
         stream << get_hex(buffer[i]);
 
-        dwin->write(DATA_PANEL, stream.str() + "\n", ism);
+        dwin->add(DATA_PANEL, stream.str() + "\n", ism);
         stream.str(string());
     }
 }
@@ -166,7 +166,7 @@ static void print_data(DebugWindow *dwin, Sys *sys) {
 static void print_eeprom(DebugWindow *dwin, Sys *sys) {
 
     stringstream stream;
-    dwin->write(EEPROM_PANEL, "EEPROM:\n\n", DEF);
+    dwin->add(EEPROM_PANEL, "EEPROM:\n\n", DEF);
 
     int cursor;
 
@@ -192,14 +192,14 @@ static void print_eeprom(DebugWindow *dwin, Sys *sys) {
 
         if(i < 0 || i > EEPROM_SIZE) {
 
-            dwin->write(EEPROM_PANEL, "\n", DEF);
+            dwin->add(EEPROM_PANEL, "\n", DEF);
             continue;
         }
 
         stream << "0x" << setfill('0') << setw(4);
         stream << hex << i << "      ";
 
-        dwin->write(EEPROM_PANEL, stream.str(), DEF);
+        dwin->add(EEPROM_PANEL, stream.str(), DEF);
         stream.str(string());
 
         if(i == get <0> (cell_of_interest))
@@ -208,7 +208,7 @@ static void print_eeprom(DebugWindow *dwin, Sys *sys) {
         stream << "0x" << setfill('0') << setw(2);
         stream << get_hex(buffer[i]);
         
-        dwin->write(EEPROM_PANEL, stream.str() + "\n", ism);
+        dwin->add(EEPROM_PANEL, stream.str() + "\n", ism);
         stream.str(string());
     }
 }
@@ -216,7 +216,7 @@ static void print_eeprom(DebugWindow *dwin, Sys *sys) {
 static void print_table(DebugWindow *dwin, Table *table) {
 
     stringstream stream;
-    dwin->write(CODE_PANEL, "Instructions:\n\n", DEF);
+    dwin->add(CODE_PANEL, "Instructions:\n\n", DEF);
 
     vector <string> content;
     table->dump_content(content);
@@ -232,7 +232,7 @@ static void print_table(DebugWindow *dwin, Table *table) {
 
         if(i < 0 || i > table->size() - 1) {
 
-            dwin->write(CODE_PANEL, "\n", DEF);
+            dwin->add(CODE_PANEL, "\n", DEF);
             continue;
         }
 
@@ -245,15 +245,15 @@ static void print_table(DebugWindow *dwin, Table *table) {
         stream << "0x" << setfill('0') << setw(4);
         stream << hex << i;
 
-        dwin->write(CODE_PANEL, stream.str(), isp);
+        dwin->add(CODE_PANEL, stream.str(), isp);
 
         if(breaks[i] == true)
-            dwin->write(CODE_PANEL, " [b+] ", R);
+            dwin->add(CODE_PANEL, " [b+] ", R);
         else
-            dwin->write(CODE_PANEL, "      ", DEF);
+            dwin->add(CODE_PANEL, "      ", DEF);
 
-        dwin->write(CODE_PANEL, content[i], isp);
-        dwin->write(CODE_PANEL, "\n", DEF);
+        dwin->add(CODE_PANEL, content[i], isp);
+        dwin->add(CODE_PANEL, "\n", DEF);
 
         stream.str(string());
     }
@@ -262,7 +262,7 @@ static void print_table(DebugWindow *dwin, Table *table) {
 static void print_side_table(DebugWindow *dwin, Table *table) {
 
     stringstream stream;
-    dwin->write(SIDE_PANEL, "Source Code:\n\n", DEF);
+    dwin->add(SIDE_PANEL, "Source Code:\n\n", DEF);
 
     vector <string> content;
     table->dump_content(content);
@@ -272,7 +272,7 @@ static void print_side_table(DebugWindow *dwin, Table *table) {
 
     if(table->size() == 0) {
 
-        dwin->write(SIDE_PANEL, "[ No Source available ]\n", DEF);
+        dwin->add(SIDE_PANEL, "[ No Source available ]\n", DEF);
         return;
     }
 
@@ -290,7 +290,7 @@ static void print_side_table(DebugWindow *dwin, Table *table) {
         if(i >= table->size()) {
 
             stream << to_string(i) << "\n";
-            dwin->write(SIDE_PANEL, stream.str(), DEF);
+            dwin->add(SIDE_PANEL, stream.str(), DEF);
             stream.str(string());
 
             continue;
@@ -301,15 +301,15 @@ static void print_side_table(DebugWindow *dwin, Table *table) {
 
         stream << to_string(i);
 
-        dwin->write(SIDE_PANEL, stream.str(), isp);
+        dwin->add(SIDE_PANEL, stream.str(), isp);
         stream.str(string());
 
         if(breaks[i] == true)
-            dwin->write(SIDE_PANEL, " [b+] ", R);
+            dwin->add(SIDE_PANEL, " [b+] ", R);
         else
-            dwin->write(SIDE_PANEL, "      ", DEF);
+            dwin->add(SIDE_PANEL, "      ", DEF);
 
-        dwin->write(SIDE_PANEL, content[i] + "\n", isp);
+        dwin->add(SIDE_PANEL, content[i] + "\n", isp);
     }
 }
 
@@ -324,4 +324,6 @@ extern void system_to_win(DebugWindow *dwin, Sys *sys, Table *table) {
 
     print_table(dwin, table);
     print_side_table(dwin, table);
+
+    dwin->update_all();
 }

@@ -47,7 +47,7 @@ void Panel::init(int h, int w, int y, int x) {
     this->update();
 }
 
-void Panel::write(const string & data, const int color) {
+void Panel::add(const string & data, const int color) {
 
     int y, x;
     getyx(this->win, y, x);
@@ -55,7 +55,11 @@ void Panel::write(const string & data, const int color) {
     wattron(this->win, COLOR_PAIR(color));
     mvwprintw(this->win, y, x + (x == 0), "%s", data.c_str());
     wattroff(this->win, COLOR_PAIR(color));
+}
 
+void Panel::write(const string & data, const int color) {
+
+    this->add(data, color);
     this->update();
 }
 

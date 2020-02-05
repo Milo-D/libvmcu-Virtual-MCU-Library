@@ -29,7 +29,8 @@ public:
 
     std::string read_prompt(void);                                              // reading from prompt
 
-    void write(const int ptype, const std::string & data, const int color);     // writing to specific panel
+    void add(const int ptype, const std::string & data, const int color);       // writing to specific panel without updating
+    void write(const int ptype, const std::string & data, const int color);     // writing to specific panel and updating
     void clear_specific(const int ptype);                                       // clear specific panel
     void clear(void);                                                           // clear all non-static panels
 
