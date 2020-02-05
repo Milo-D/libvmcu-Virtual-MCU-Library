@@ -3,6 +3,8 @@
 #ifndef SREG_HPP
 #define SREG_HPP
 
+// C++ Headers
+#include <vector>
 #include <inttypes.h>
 
 class DebugWindow;
@@ -10,18 +12,20 @@ class DebugWindow;
 class Sreg {
 
 public:
-    Sreg(void);                             // Constructor of SREG
+    Sreg(void);                                         // Constructor of SREG
 
-    void write(int flag, bool bit);         // setting 'bit' on 'flag'
-    bool read(int flag);                    // reading 'flag' from SREG
-    void clear(void);                       // clearing SREG
-    void to_win(DebugWindow *dwin);         // adding SREG Data to DebugWindow
+    void write(const int flag, const bool bit);         // setting 'bit' on 'flag'
+    bool read(const int flag);                          // reading 'flag' from SREG
+    void clear(void);                                   // clearing SREG
+
+    void get_coi(std::vector <int> & buffer);           // getting coi
+    uint8_t dump(void);                                 // dumping Status Register
 	
 private:
-    int8_t status;                          // 8 bit Status Register
-    int color[8];                           // SREG Color	
+    uint8_t status;                                     // 8 bit Status Register
+    std::vector <int> coi;                              // cells of interest
 
-    void clear_color(void);                 // setting color to DEFAULT
+    void clear_coi(void);                               // clearing focus
 };
 
 #endif

@@ -7,14 +7,11 @@
 #include <cstring>
 #include <vector>
 #include <tuple>
-#include <sstream>
 
 // Project Headers
 #include "system/eeprom.hpp"
 #include "system/mcu.hpp"
-#include "misc/stringmanip.hpp"
-#include "cli/debugwindow.hpp"
-#include "cli/style.hpp"
+#include "printer/memprop.hpp"
 
 using namespace std;
 
@@ -25,8 +22,7 @@ Eeprom::Eeprom(void) {
     this->memory = (int8_t*) malloc(EEPROM_SIZE * sizeof(int8_t));
     memset(this->memory, 0x00, EEPROM_SIZE * sizeof(int8_t));
 
-    this->cursor = (unsigned int) (EEPROM_SIZE / 2);
-    this->color = make_tuple(0x0000, DEF);
+    this->coi = make_tuple(0x0000, NONE);
 }
 
 Eeprom::~Eeprom(void) {
@@ -34,7 +30,7 @@ Eeprom::~Eeprom(void) {
     free(this->memory);
 }
 
-void Eeprom::write(int addr, int8_t value) {
+void Eeprom::write(const int addr, const int8_t value) {
 
     if(addr < 0x0000)
         return;
@@ -43,74 +39,45 @@ void Eeprom::write(int addr, int8_t value) {
         return;
 
     this->memory[addr] = value;
-
-    this->set_color(addr, G);
-    this->cursor = addr;
+    this->set_coi(addr, DEST);
 }
 
-int8_t Eeprom::read(int addr) {
+int8_t Eeprom::read(const int addr) {
 
-    this->set_color(addr, R);
-    this->cursor = addr;
+    if(addr < 0x0000)
+        return 0xff;
 
+    if(addr >= EEPROM_SIZE)
+        return 0xff;
+
+    this->set_coi(addr, SRC);
     return this->memory[addr];
 }
 
-void Eeprom::scale(int offs) {
+void Eeprom::get_coi(tuple <int, int> & buffer) {
 
-    if((this->cursor + offs) > EEPROM_SIZE)
-        return;
+    get <0> (buffer) = get <0> (this->coi);
+    get <1> (buffer) = get <1> (this->coi);
 
-    if((this->cursor + offs) < 0x0000)
-        return;
-
-    this->cursor += offs;
+    this->clear_coi();
 }
 
-void Eeprom::to_win(DebugWindow *dwin) {
+void Eeprom::dump(vector <int8_t> & buffer) {
 
-    stringstream stream;
-    dwin->write(EEPROM_PANEL, "EEPROM:\n\n", DEF);
-
-    for(int i = (this->cursor - 4); i <= (this->cursor + 4); i++) {
-
-        int ism = DEF;
-
-        if(i < 0 || i > EEPROM_SIZE) {
-
-            dwin->write(EEPROM_PANEL, "\n", DEF);
-            continue;
-        }
-
-        stream << "0x" << setfill('0') << setw(4);
-        stream << hex << i << "      ";
-
-        dwin->write(EEPROM_PANEL, stream.str(), DEF);
-        stream.str(string());
-
-        if(i == get <0> (this->color))
-            ism = get <1> (this->color);
-
-        stream << "0x" << setfill('0') << setw(2);
-        stream << get_hex(this->memory[i]);
-        
-        dwin->write(EEPROM_PANEL, stream.str() + "\n", ism);
-        stream.str(string());
-    }
-
-    this->clear_color();
+    for(int i = 0; i < EEPROM_SIZE; i++)
+        buffer.push_back(this->memory[i]);
 }
 
 /* --- Private --- */
 
-void Eeprom::set_color(int cell, int color) {
+void Eeprom::set_coi(const int cell, const int prop) {
 
-    get <0> (this->color) = cell;
-    get <1> (this->color) = color;
+    get <0> (this->coi) = cell;
+    get <1> (this->coi) = prop;
 }
 
-void Eeprom::clear_color(void) {
+void Eeprom::clear_coi(void) {
 
-    get <0> (this->color) = 0;
-    get <1> (this->color) = DEF;
+    get <0> (this->coi) = 0;
+    get <1> (this->coi) = NONE;
 }

@@ -3,6 +3,11 @@
 #ifndef DEBUGWINDOW_HPP
 #define DEBUGWINDOW_HPP
 
+#define R 1
+#define G 2
+#define B 3
+#define DEF 4
+
 #define GPR_PANEL 0
 #define SREG_PANEL 1
 #define CODE_PANEL 2
@@ -19,17 +24,21 @@ class Prompt;
 class DebugWindow {
 
 public:
-    DebugWindow(void);                                                          // DebugWindow Constructor
+    DebugWindow(const int table_size);                                          // DebugWindow Constructor
     ~DebugWindow(void);                                                         // DebugWindow Destructor
 
     std::string read_prompt(void);                                              // reading from prompt
 
-    void write(const int ptype, const std::string& data, const int color);      // writing to specific panel
+    void write(const int ptype, const std::string & data, const int color);     // writing to specific panel
     void clear_specific(const int ptype);                                       // clear specific panel
     void clear(void);                                                           // clear all non-static panels
 
     void update(const int ptype);                                               // refresh a specific panel
     void update_all(void);                                                      // refresh all panels
+
+    void move_cursor(const int ptype, const int offs);                          // moving cursor of Panel 'ptype'
+    void set_cursor(const int ptype, const int at);                             // setting cursor to 'at'
+    int cursor_of(const int ptype);                                             // returning current cursor of 'ptype'
 
     int get_height(const int ptype);                                            // getting height of specific panel
     int get_width(const int ptype);                                             // getting width of specific panel

@@ -3,16 +3,13 @@
 // C++ Headers
 #include <iostream>
 #include <iomanip>
-#include <string>
 #include <cstring>
-#include <sstream>
+#include <vector>
 
 // Project Headers
 #include "system/gpr.hpp"
 #include "system/mcu.hpp"
-#include "misc/stringmanip.hpp"
-#include "cli/debugwindow.hpp"
-#include "cli/style.hpp"
+#include "printer/memprop.hpp"
 
 using namespace std;
 
@@ -24,10 +21,9 @@ Gpr::Gpr(void) {
     memset(this->reg, 0x00, GPR_SIZE * sizeof(int8_t));
 
     for(int i = 0; i < GPR_SIZE; i++)
-        this->color.push_back(DEF);
+        this->coi.push_back(NONE);
 
     this->size = GPR_SIZE;
-    this->cursor = 0;
 }
 
 Gpr::~Gpr(void) {
@@ -35,67 +31,38 @@ Gpr::~Gpr(void) {
     free(this->reg);
 }
 
-void Gpr::write(int rx, int8_t data) {
+void Gpr::write(const int rx, const int8_t data) {
 
     this->reg[rx] = data;
-    this->color[rx] = G;
+    this->coi[rx] = DEST;
 }
 
-int8_t Gpr::read(int rx) {
+int8_t Gpr::read(const int rx) {
 
-    this->color[rx] = R;
+    this->coi[rx] = SRC;
     return this->reg[rx];
 }
 
-void Gpr::scale(int offs) {
+void Gpr::get_coi(vector <int> & buffer) {
 
-    if((this->cursor + offs) >= (GPR_SIZE / 8))
-        return;
+    for(int i = 0; i < this->size; i++)
+        buffer.push_back(this->coi[i]);
 
-    if((this->cursor + offs) < 0)
-        return;
-
-    this->cursor += offs;
+    this->clear_coi();
 }
 
-void Gpr::to_win(DebugWindow *dwin) {
+void Gpr::dump(vector <int8_t> & buffer) {
 
-	stringstream stream;	
-    int start = (this->cursor * 8);
-
-	dwin->write(GPR_PANEL, "Registers:\n\n", DEF);
-	
-    for(int i = 0; i < 8; i++) {
-
-        if(i == 4)
-            dwin->write(GPR_PANEL, "\n", DEF);
-
-        dwin->write(GPR_PANEL, "R" + to_string(start + i), this->color[start + i]);
-        dwin->write(GPR_PANEL, ": ", DEF);
-
-        if(start + i < 10)
-            dwin->write(GPR_PANEL, " ", DEF);
-
-        stream << "0x" << right << setw(2) << setfill('0');
-        stream << get_hex(this->reg[start + i]);
-
-        stream << setfill(' ') << left << setw(13);
-        stream << "      ";
-
-        dwin->write(GPR_PANEL, stream.str(), DEF);
-        stream.str(string());
-    }
-
-    dwin->write(GPR_PANEL, "\n", DEF);
-    this->clear_color();
+    for(int i = 0; i < this->size; i++)
+        buffer.push_back(this->reg[i]);
 }
 
 /* --- Private --- */
 
-void Gpr::clear_color(void) {
+void Gpr::clear_coi(void) {
 
     for(int i = 0; i < this->size; i++)
-        this->color[i] = DEF;
+        this->coi[i] = NONE;
 }
 
 

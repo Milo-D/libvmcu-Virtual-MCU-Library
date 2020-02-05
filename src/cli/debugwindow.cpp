@@ -10,10 +10,11 @@
 #include "cli/debugwindow.hpp"
 #include "cli/panel.hpp"
 #include "cli/prompt.hpp"
+#include "system/mcu.hpp"
 
 using namespace std;
 
-DebugWindow::DebugWindow(void) {
+DebugWindow::DebugWindow(const int table_size) {
 
     initscr();
     cbreak();
@@ -25,9 +26,9 @@ DebugWindow::DebugWindow(void) {
     int scr_y, scr_x;
     getmaxyx(stdscr, scr_y, scr_x);
 
-    int mx = (scr_x / 2);
-    int mmx = (mx - (mx / 2));
-    int gy = (scr_y - 40);
+    const int mx = (scr_x / 2);
+    const int mmx = (mx - (mx / 2));
+    const int gy = (scr_y - 40);
 
     this->panel = (Panel**) malloc(N_PANEL * sizeof(Panel*));
 
@@ -42,12 +43,21 @@ DebugWindow::DebugWindow(void) {
         { (scr_y - 3), (scr_x / 2), 0, mx }
     };
 
+    int n_pages = (table_size / (scr_y - 4));
+    n_pages += ((table_size % (scr_y - 4)) != 0);
+
+    const int cs[N_PANEL] = { 0, 0, 0, 0x0060, (EEPROM_SIZE / 2), 
+                              0, 0 };
+
+    const int cr[N_PANEL] = { (GPR_SIZE / 8), 0, 0, (RAM_END + 1), 
+                              (EEPROM_SIZE), 0, n_pages };
+
     for(int i = 0; i < N_PANEL; i++) {
 
         int h = dim[i][0]; int w = dim[i][1];
         int y = dim[i][2]; int x = dim[i][3];
 
-        this->panel[i] = new Panel(h, w, y, x);
+        this->panel[i] = new Panel(h, w, y, x, cs[i], cr[i]);
     }
 
     this->prompt = new Prompt(3, scr_x, (38 + gy - 1), 0);
@@ -67,7 +77,7 @@ string DebugWindow::read_prompt(void) {
     return this->prompt->read();
 }
 
-void DebugWindow::write(const int ptype, const std::string& data, const int color) {
+void DebugWindow::write(const int ptype, const std::string & data, const int color) {
 
     this->panel[ptype]->write(data, color);
 }
@@ -94,6 +104,21 @@ void DebugWindow::update_all(void) {
 
     for(int i = 0; i < N_PANEL; i++)
         this->panel[i]->update();
+}
+
+void DebugWindow::move_cursor(const int ptype, const int offs) {
+
+    this->panel[ptype]->move_cursor(offs);
+}
+
+void DebugWindow::set_cursor(const int ptype, const int at) {
+
+    this->panel[ptype]->set_cursor(at);
+}
+
+int DebugWindow::cursor_of(const int ptype) {
+
+    return this->panel[ptype]->get_cursor();
 }
 
 int DebugWindow::get_height(const int ptype) {

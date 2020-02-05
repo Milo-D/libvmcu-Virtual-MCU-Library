@@ -10,8 +10,7 @@
 // Project Headers
 #include "system/sreg.hpp"
 #include "system/mcu.hpp"
-#include "cli/debugwindow.hpp"
-#include "cli/style.hpp"
+#include "printer/memprop.hpp"
 
 using namespace std;
 
@@ -19,27 +18,35 @@ using namespace std;
 
 Sreg::Sreg(void) {
 
+    for(int i = 0; i < SREG_SIZE; i++)
+        this->coi.push_back(NONE);
+
     this->status = 0x00;
-    memset(this->color, DEF, SREG_SIZE * sizeof(int));
 }
 
-void Sreg::write(int flag, bool bit) {
+void Sreg::write(const int flag, const bool bit) {
+
+    if(flag < 0 || flag >= SREG_SIZE)
+        return;
 
     if(bit == true) {
 
         this->status |= (0x01 << flag);
-        this->color[flag] = G;
+        this->coi[flag] = DEST;
         
         return;
     }
 	
     this->status &= ~(0x01 << flag);
-    this->color[flag] = G;
+    this->coi[flag] = DEST;
 }
 
-bool Sreg::read(int flag) {
+bool Sreg::read(const int flag) {
 
-    this->color[flag] = R;
+    if(flag < 0 || flag >= SREG_SIZE)
+        return false;
+
+    this->coi[flag] = SRC;
     return ((this->status >> flag) & 0x01); 
 }
 
@@ -48,36 +55,24 @@ void Sreg::clear(void) {
     this->status = 0x00;
 }
 
-void Sreg::to_win(DebugWindow *dwin) {
+void Sreg::get_coi(vector <int> & buffer) {
 
-    stringstream stream;
-    dwin->write(SREG_PANEL, "Status-Register:\n\n", DEF);
+    for(int i = 0; i < SREG_SIZE; i++)
+        buffer.push_back(this->coi[i]);
 
-    for(int i = 0; i < SREG_SIZE; i++) {
+    this->clear_coi();
+}
 
-        if(i == SREG_SIZE / 2)
-            dwin->write(SREG_PANEL, "\n", DEF);
+uint8_t Sreg::dump(void) {
 
-        dwin->write(SREG_PANEL, flags[i], this->color[i]);
-
-        stream << ": " << setfill(' ') << right << setw(2);
-        stream << " 0x0" << hex << this->read(i) << dec;
-        stream << setfill(' ') << left << setw(13);
-        stream << "        ";
-
-        dwin->write(SREG_PANEL, stream.str(), DEF);
-        stream.str(string());
-    }
-
-    dwin->write(SREG_PANEL, "\n", DEF);
-    this->clear_color();
+    return this->status;
 }
 
 /* --- Private --- */
 
-void Sreg::clear_color(void) {
+void Sreg::clear_coi(void) {
 
     for(int i = 0; i < SREG_SIZE; i++)
-        this->color[i] = DEF;
+        this->coi[i] = NONE;
 }
 

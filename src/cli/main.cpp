@@ -34,16 +34,16 @@ int main(int argc, char **argv) {
     int fcursor = 0; int key, i;
     unsigned int file_no = debug_file.size();
 
-    Table *table = create_table(debug_file, file_no);
+    vector <Table> tables;
+    create_table(tables, debug_file);
 
     if(file_no > 4) {
 
         print_status(MAX_FILE_REACH, true);
-        delete table;
     }
 
     if(file_no == 1)
-        debug(&table[0]);
+        debug(&tables[0]);
 
     mwin = new MainWindow(debug_file);
 
@@ -54,14 +54,13 @@ int main(int argc, char **argv) {
             mwin->destroy();
 
             i = mwin->get_choice();
-            debug(&table[i]);
+            debug(&tables[i]);
             mwin->re_init();
         }
 
     } while(key != QUIT);
 
     delete mwin;
-    delete table;
 
     return EXIT_SUCCESS;
 }

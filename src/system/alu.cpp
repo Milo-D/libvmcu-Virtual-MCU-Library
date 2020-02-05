@@ -6,7 +6,6 @@
 #include <string>
 
 // Project Headers
-#include "cli/debugwindow.hpp"
 #include "system/alu.hpp"
 #include "system/sys.hpp"
 #include "system/flash.hpp"
@@ -60,47 +59,45 @@ void Alu::set_pc(int addr) {
     this->flash->pc_set(addr);
 }
 
-void Alu::write_gpr(int rx, int8_t data) {
+void Alu::write_gpr(const int rx, const int8_t data) {
 
     this->gpr->write(rx, data);
 }
 
-int8_t Alu::read_gpr(int rx) {
+int8_t Alu::read_gpr(const int rx) {
 
     return (this->gpr->read(rx));
 }
 
-void Alu::scale_gpr(int offs) {
+void Alu::gpr_coi(vector <int> & buffer) {
 
-    this->gpr->scale(offs);
+    this->gpr->get_coi(buffer);
 }
 
-void Alu::put_gpr(DebugWindow *dwin) {
+void Alu::dump_gpr(vector <int8_t> & buffer) {
 
-    this->gpr->to_win(dwin);
+    this->gpr->dump(buffer);
 }
 
-void Alu::write_sreg(int flag, bool bit) {
+void Alu::write_sreg(const int flag, const bool bit) {
 
     this->sreg->write(flag, bit);
 }
 
-bool Alu::read_sreg(int flag) {
+bool Alu::read_sreg(const int flag) {
 
     return (this->sreg->read(flag));		
 }
 
-void Alu::put_sreg(DebugWindow *dwin) {
+void Alu::sreg_coi(vector <int> & buffer) {
 
-    this->sreg->to_win(dwin);
+    this->sreg->get_coi(buffer);
 }
 
-void Alu::put_table(DebugWindow *dwin, bool full) {
+uint8_t Alu::dump_sreg(void) {
 
-    this->flash->put_table(dwin, full);
+    return this->sreg->dump();
 }
-
-
 
 
 

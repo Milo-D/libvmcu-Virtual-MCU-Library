@@ -14,23 +14,21 @@ class DebugWindow;
 class Gpr {
 
 public:
-    Gpr(void);                                  // gpr constructor
-    ~Gpr(void);                                 // default gpr destructor
+    Gpr(void);                                              // GPR constructor
+    ~Gpr(void);                                             // GPR destructor
 
-    int8_t read(int rx);                        // reading value from gpr 'rx'
-    void write(int rx, int8_t data);            // writing 'data' to gpr 'rx'
+    int8_t read(const int rx);                              // reading value from GPR 'rx'
+    void write(const int rx, const int8_t data);            // writing 'data' to GPR 'rx'
 
-    void scale(int offs);                       // scaling GPR file
-    void to_win(DebugWindow *dwin);             // putting GPR content onto the screen
+    void get_coi(std::vector <int> & buffer);               // get current cells of interest
+    void dump(std::vector <int8_t> & buffer);               // dumping GPR content into 'buffer'
 
 private:
-    int8_t *reg;                                // gpr file
-    unsigned int size;                          // total size of gpr file (size * 8-bit)
+    int8_t *reg;                                            // GPR file
+    int size;                                               // total size of GPR file (size * 8-bit)
+    std::vector <int> coi;                                  // cell of interests
 
-    int cursor;                                 // GPR file cursor
-    std::vector <int> color;                    // associated gpr colors
-
-    void clear_color(void);                     // clearing gpr output colors
+    void clear_coi(void);                                   // clearing coi
 };
 
 #endif

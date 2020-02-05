@@ -13,11 +13,11 @@
 // Project Headers
 #include "cli/debugcommands.hpp"
 #include "cli/debugwindow.hpp"
-#include "cli/style.hpp"
-#include "disassembler/decoder.hpp"
 #include "system/sys.hpp"
 #include "system/mcu.hpp"
 #include "table/table.hpp"
+#include "disassembler/decoder.hpp"
+#include "printer/systemprinter.hpp"
 #include "misc/stringmanip.hpp"
 #include "misc/filemanip.hpp"
 #include "misc/stdmsg.hpp"
@@ -33,7 +33,7 @@ void jump_forward(DebugWindow *dwin, Sys *sys, Table *table) {
         if(table->is_break() == true)
             break;
 
-        sys->put_sys(dwin);
+        system_to_win(dwin, sys, table);
         sys->step();
 
         sleep_for(milliseconds(100));
@@ -45,7 +45,7 @@ void jump_forward(DebugWindow *dwin, Sys *sys, Table *table) {
 
 void set_breakpoint(DebugWindow *dwin, Table *table, string bp) {
 
-    if(table->set_break(bp) < 0)
+    if(table->set_break((const string&) bp) < 0)
         return;
 
     dwin->write(OUTPUT_PANEL, break_set_success(bp), DEF);
@@ -53,7 +53,7 @@ void set_breakpoint(DebugWindow *dwin, Table *table, string bp) {
 
 void remove_breakpoint(DebugWindow *dwin, Table *table, string bp) {
 
-    if(table->unset_break(bp) < 0)
+    if(table->unset_break((const string&) bp) < 0)
         return;
 
     dwin->write(OUTPUT_PANEL, break_rem_success(bp), DEF);

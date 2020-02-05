@@ -11,15 +11,16 @@
 
 using namespace std;
 
-Panel::Panel(int height, int width, int y, int x) {
+Panel::Panel(int h, int w, int y, int x, int cs, int cr) {
 
-    this->init(height, width, y, x);
+    this->init(h, w, y, x);
     wmove(this->win, 1, 0);
 
-    this->cursor = 0;
+    this->cursor = cs;
+    this->range = cr;
 
-    this->height = height;
-    this->width = width;
+    this->height = h;
+    this->width = w;
     this->py = y;
     this->px = x;
 }
@@ -29,9 +30,9 @@ Panel::~Panel(void) {
     this->destroy();
 }
 
-void Panel::init(int height, int width, int y, int x) {
+void Panel::init(int h, int w, int y, int x) {
 
-    this->win = newwin(height, width, y, x);
+    this->win = newwin(h, w, y, x);
     wborder(this->win, 0, 0, 0, 0, 0, 0, 0, 0);
 
     init_pair(1, COLOR_RED, COLOR_BLACK);
@@ -46,7 +47,7 @@ void Panel::init(int height, int width, int y, int x) {
     this->update();
 }
 
-void Panel::write(const string& data, int color) {
+void Panel::write(const string & data, const int color) {
 
     int y, x;
     getyx(this->win, y, x);
@@ -72,6 +73,30 @@ void Panel::clear(void) {
     this->update();
 }
 
+void Panel::move_cursor(int offs) {
+
+    if((this->cursor + offs) < 0)
+        return;
+
+    if((this->cursor + offs) >= this->range)
+        return;
+
+    this->cursor += offs;
+}
+
+void Panel::set_cursor(int at) {
+
+    if(at < 0 || at >= this->range)
+        return;
+
+    this->cursor = at;
+}
+
+int Panel::get_cursor(void) {
+
+    return this->cursor;
+}
+
 int Panel::get_height(void) {
 
     return this->height;
@@ -94,6 +119,5 @@ int Panel::get_xpos(void) {
 
 void Panel::destroy(void) {
 
-    this->cursor = 0;
     delwin(this->win);
 }

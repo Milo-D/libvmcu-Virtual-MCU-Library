@@ -55,7 +55,7 @@ vector <string> get_files(int argc, char **argv) {
     vector <string> files;
 
     for(int i = 1; i < argc; i++)
-        files.push_back( (string) argv[i] );
+        files.push_back( string(argv[i]) );
 
     return files;
 }

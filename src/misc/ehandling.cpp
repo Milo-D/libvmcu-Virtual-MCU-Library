@@ -12,11 +12,10 @@
 
 // Project Headers
 #include "misc/ehandling.hpp"
-#include "cli/style.hpp"
 
 using namespace std;
 
-void print_status(const string &msg, bool fatal) {
+void print_status(const string & msg, bool fatal) {
 
     cout << "MDX: " << msg << endl;
 

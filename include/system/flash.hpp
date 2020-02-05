@@ -5,12 +5,9 @@
 
 // C++ Headers
 #include <vector>
-
-// C Headers
 #include <inttypes.h>
 
 class Table;
-class DebugWindow;
 
 class Flash {
 
@@ -22,11 +19,10 @@ public:
     int load_key(void);                                 // loading next key
     void pc_next(void);                                 // incrementing program counter
     int pc_get(void);                                   // getting program counter
-    void pc_set(int addr);                              // setting program counter on 'addr'
+    void pc_set(const int addr);                        // setting program counter on 'addr'
 
     int table_step(void);                               // single stepping through table
     bool table_is_sync(void);                           // returning true if table is synchronized
-    void put_table(DebugWindow *dwin, bool full);       // put Table data to DebugWindow
 
 private:
     int16_t *memory;                                    // FLASH Memory Block

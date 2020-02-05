@@ -6,31 +6,36 @@
 class Panel {
 
 public:
-    Panel(int height, int width, int y, int x);         // Panel Constructor
-    ~Panel(void);                                       // Panel Destructor
+    Panel(int h, int w, int y, int x, int cs, int cr);                              // Panel Constructor
+    ~Panel(void);                                                                   // Panel Destructor
 
-    void init(int height, int width, int y, int x);     // Panel Initialization
+    void init(int h, int w, int y, int x);                                          // Panel Initialization
 
-    void write(const std::string& data, int color);     // write 'data' to Panel
-    void update(void);                                  // refresh Panel
-    void clear(void);                                   // clearing content of Panel
+    void write(const std::string & data, const int color);                          // write 'data' to Panel
+    void update(void);                                                              // refresh Panel
+    void clear(void);                                                               // clearing content of Panel
 
-    int get_height(void);                               // get Panel height
-    int get_width(void);                                // get Panel width
-    int get_ypos(void);                                 // get Panel's y-Position
-    int get_xpos(void);                                 // get Panel's x-Position
+    void move_cursor(int offs);                                                     // moving Panel cursor
+    void set_cursor(int at);                                                        // setting Panel cursor
+    int get_cursor(void);                                                           // get Panel cursor
 
-    void destroy(void);                                 // destroy Panel Window
+    int get_height(void);                                                           // get Panel height
+    int get_width(void);                                                            // get Panel width
+    int get_ypos(void);                                                             // get Panel's y-Position
+    int get_xpos(void);                                                             // get Panel's x-Position
+
+    void destroy(void);                                                             // destroy Panel Window
 
 private:
-    WINDOW *win;                                        // Panel Window
+    WINDOW *win;                                                                    // Panel Window
 
-    int cursor;                                         // Panel's Cursor to track lines
+    int cursor;                                                                     // Panel's State Cursor
+    int range;                                                                      // Cursor Range
 
-    int height;                                         // Panel Height
-    int width;                                          // Panel Width
-    int py;                                             // Panel y-Position
-    int px;                                             // Panel x-Position
+    int height;                                                                     // Panel Height
+    int width;                                                                      // Panel Width
+    int py;                                                                         // Panel y-Position
+    int px;                                                                         // Panel x-Position
 };
 
 #endif

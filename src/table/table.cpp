@@ -15,10 +15,6 @@
 #include "table/table.hpp"
 #include "misc/stringmanip.hpp"
 #include "disassembler/disassembler.hpp"
-#include "cli/debugwindow.hpp"
-#include "cli/style.hpp"
-
-#define PGS 31
 
 using namespace std;
 
@@ -31,15 +27,9 @@ Table::Table(string hex_file) {
     for(int i = 0; i < this->content.size(); i++)
         this->breaks.push_back(false);
 
-    this->table_size = this->content.size();
-    this->page_size = this->table_size / PGS;
-
-    if(this->table_size % PGS != 0)
-        this->page_size += 1;
-
     this->tip = 0;
-    this->page = 0;
     this->source_file = hex_file;
+    this->table_size = this->content.size();
 }
 
 int Table::step(void) {
@@ -54,9 +44,9 @@ int Table::step(void) {
     return 0;
 }
 
-int Table::set_break(string point) {
+int Table::set_break(const string & point) {
 
-    int line = to_dec(point);
+    const int line = to_dec(point);
 
     if(line < 0 || line >= this->table_size)
         return -1;
@@ -70,9 +60,9 @@ int Table::set_break(string point) {
     return 0;
 }
 
-int Table::unset_break(string point) {
+int Table::unset_break(const string & point) {
 
-    int line = to_dec(point);
+    const int line = to_dec(point);
 	
     if(line < 0 || line >= this->table_size)
         return -1;
@@ -86,7 +76,7 @@ int Table::unset_break(string point) {
     return 0;
 }
 
-void Table::define(const string &alias, const string &seq) {
+void Table::define(const string & alias, const string & seq) {
 
     for(int i = 0; i < this->table_size; i++) {
 
@@ -109,7 +99,12 @@ void Table::define(const string &alias, const string &seq) {
     }
 }
 
-void Table::set_tip(int instr_line) {
+int Table::get_tip(void) {
+
+    return this->tip;
+}
+
+void Table::set_tip(const int instr_line) {
 
     if(instr_line >= this->table_size)
         return;
@@ -120,7 +115,7 @@ void Table::set_tip(int instr_line) {
     this->tip = instr_line;
 }
 
-void Table::jump(int exec_addr) {
+void Table::jump(const int exec_addr) {
 
     int i = 0;
 
@@ -154,10 +149,9 @@ bool Table::has_break(void) {
     return (this->break_counter > 0);
 }
 
-bool Table::is_sync(int hex_addr) {
+bool Table::is_sync(const int hex_addr) {
 
-    int match = get <1> (this->content[this->tip]);
-
+    const int match = get <1> (this->content[this->tip]);
     return (match == hex_addr);
 }
 
@@ -166,126 +160,29 @@ int Table::size(void) {
     return this->table_size;
 }
 
-void Table::next_page(int offs) {
-
-    if(this->page + offs < 0)
-        return;
-
-    if(this->table_size == 0)
-        return;
-
-    this->page = ((this->page + offs) % this->page_size);
-}
-
 string Table::src(void) {
 
     return this->source_file;
 }
 
-void Table::to_win(DebugWindow *dwin, bool full) {  
+void Table::dump_content(vector <string> & buffer) {
 
-    if(full == true) {
-
-        this->full_to_win(dwin);
-        return;
-    }
-
-    stringstream stream;
-    dwin->write(CODE_PANEL, "Instructions:\n\n", DEF); 
-
-    for(int i = (this->tip - 4); i <= (this->tip + 4); i++) {
-
-        int isp = DEF; int isb = DEF;
-
-        if(i < 0 || i > this->table_size - 1) {
-
-            dwin->write(CODE_PANEL, "\n", DEF);
-            continue;
-        }
-
-        if(i == this->tip)
-            isp = B;
-
-        if(this->breaks[i] == true)
-            isb = R;
-
-        stream << "0x" << setfill('0') << setw(4);
-        stream << hex << i;
-
-        dwin->write(CODE_PANEL, stream.str(), isp);
-
-        if(this->breaks[i] == true)
-            dwin->write(CODE_PANEL, " [b+] ", R);
-        else
-            dwin->write(CODE_PANEL, "      ", DEF);
-
-        dwin->write(CODE_PANEL, get <0> (this->content[i]), isp);
-        dwin->write(CODE_PANEL, "\n", DEF);
-
-        stream.str(string());
-    }
+    for(int i = 0; i < this->table_size; i++)
+        buffer.push_back(get <0> (this->content[i]));
 }
 
-/* --- Private --- */
+void Table::dump_breakpoints(vector <bool> & buffer) {
 
-void Table::full_to_win(DebugWindow *dwin) {
-
-    stringstream stream;
-    dwin->write(SIDE_PANEL, "Source Code:\n\n", DEF);   
-
-    if(this->table_size == 0) {
-
-        dwin->write(SIDE_PANEL, "[ No Source available ]\n", DEF);
-        return;
-    }
-
-    int page_start = (this->page * PGS);
-    int page_end = ((this->page * PGS) + PGS);
-
-    for(int i = page_start; i < page_end; i++) {
-
-        int isp = DEF;
-        stream << setw(3) << setfill(' ');
-
-        if(i >= this->table_size) {
-
-            stream << to_string(i) << "\n";
-            dwin->write(SIDE_PANEL, stream.str(), DEF);
-            stream.str(string());
-
-            continue;
-        }
-
-        if(i == this->tip)
-            isp = B;
-
-        stream << to_string(i);
-
-        dwin->write(SIDE_PANEL, stream.str(), isp);
-        stream.str(string());
-
-        if(this->breaks[i] == true)
-            dwin->write(SIDE_PANEL, " [b+] ", R);
-        else
-            dwin->write(SIDE_PANEL, "      ", DEF);
-
-        dwin->write(SIDE_PANEL, get <0> (this->content[i]) + "\n", isp);
-    }
+    for(int i = 0; i < this->table_size; i++)
+        buffer.push_back(this->breaks[i]);
 }
 
 /* --- Non Member --- */
 
-Table* create_table(vector <string> hex_file, int amount) {
+void create_table(vector <Table> & buffer, vector <string> hex_file) {
 
-    if(amount < 1)
-        return NULL;
-
-    Table *table = (Table*) malloc(amount * sizeof(Table));
-
-    for(int i = 0; i < amount; i++)
-        new (&table[i]) Table(hex_file[i]);
-
-    return table;
+    for(int i = 0; i < hex_file.size(); i++)
+        buffer.push_back(Table(hex_file[i]));
 }
 
 

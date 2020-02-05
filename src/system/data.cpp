@@ -11,9 +11,8 @@
 // Project Header
 #include "system/data.hpp"
 #include "system/mcu.hpp"
+#include "printer/memprop.hpp"
 #include "misc/stringmanip.hpp"
-#include "cli/debugwindow.hpp"
-#include "cli/style.hpp"
 
 #define sp(spl, sph) ((sph << 8) + spl)
 #define spl(sp) (((0x01 << 8) - 1) & sp)
@@ -28,8 +27,7 @@ Data::Data(void) {
     this->memory = (int8_t*) malloc((RAM_END + 1) * sizeof(int8_t));
     memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
-    this->cursor = SRAM_START;
-    this->color = make_tuple(0x0000, DEF);
+    this->coi = make_tuple(0x0000, NONE);
 }
 
 Data::~Data(void) {
@@ -37,7 +35,7 @@ Data::~Data(void) {
     free(this->memory);
 }
 
-void Data::push(int8_t value) {
+void Data::push(const int8_t value) {
 
     uint8_t spl = this->memory[SPL];
     uint8_t sph = this->memory[SPH];
@@ -48,12 +46,10 @@ void Data::push(int8_t value) {
         return;
 
     this->memory[sp--] = value;
-
     this->memory[SPL] = spl(sp);
     this->memory[SPH] = sph(sp);
 
-    this->set_color(sp + 1, G);
-    this->cursor = (sp + 1);
+    this->set_coi(sp + 1, DEST);
 }
 
 int8_t Data::pop(void) {
@@ -71,95 +67,53 @@ int8_t Data::pop(void) {
     this->memory[SPL] = spl(sp);
     this->memory[SPH] = sph(sp);
 
-    this->set_color(sp, R);
-    this->cursor = sp;
-
+    this->set_coi(sp, SRC);
     return value;
 }
 
-void Data::write(int addr, int8_t value) {
+void Data::write(const int addr, const int8_t value) {
 
     if(addr < 0 || addr > RAM_END)
         return;
 
     this->memory[addr] = value;
-
-    this->set_color(addr, G);
-    this->cursor = addr;
+    this->set_coi(addr, DEST);
 }
 
-int8_t Data::read(int addr) {
+int8_t Data::read(const int addr) {
 
     if(addr < 0 || addr > RAM_END)
         return 0xff;
 
-    this->set_color(addr, R);
-    this->cursor = addr;
-
+    this->set_coi(addr, SRC);
     return this->memory[addr];
 }
 
-void Data::scale(int offs) {
+void Data::get_coi(tuple <int, int> & buffer) {
 
-    if((this->cursor + offs) > RAM_END)
-        return;
+    get <0> (buffer) = get <0> (this->coi);
+    get <1> (buffer) = get <1> (this->coi);
 
-    if((this->cursor + offs) < 0x0000)
-        return;
-
-    this->cursor += offs;
+    this->clear_coi();
 }
 
-void Data::to_win(DebugWindow *dwin) {
+void Data::dump(vector <int8_t> & buffer) {
 
-    stringstream stream;
-    dwin->write(DATA_PANEL, "Data Memory:\n\n", DEF);
-
-    int16_t sp = sp(this->memory[SPL], this->memory[SPH]);
-
-    for(int i = (this->cursor - 4); i <= (this->cursor + 4); i++) {
-
-        int isp = DEF; int ism = DEF;
-
-        if(i < 0 || i > RAM_END) {
-
-            dwin->write(DATA_PANEL, "\n", DEF);
-            continue;
-        }
-
-        if(i == sp)
-            isp = B;
-
-        if(i == get <0> (this->color))
-            ism = get <1> (this->color);
-
-        stream << "0x" << setfill('0') << setw(4);
-        stream << hex << i << "      ";
-
-        dwin->write(DATA_PANEL, stream.str(), isp);
-        stream.str(string());
-
-        stream << "0x" << setfill('0') << setw(2);
-        stream << get_hex(this->memory[i]);
-
-        dwin->write(DATA_PANEL, stream.str() + "\n", ism);
-        stream.str(string());
-    }
-
-    this->clear_color();
+    for(int i = 0; i < (RAM_END + 1); i++)
+        buffer.push_back(this->memory[i]);
 }
 
 /* --- Private --- */
 
-void Data::set_color(int cell, int color) {
+void Data::set_coi(const int cell, const int prop) {
 
-    get <0> (this->color) = cell;
-    get <1> (this->color) = color;
+    get <0> (this->coi) = cell;
+    get <1> (this->coi) = prop;
 }
 
-void Data::clear_color(void) {
+void Data::clear_coi(void) {
 
-    get <0> (this->color) = 0x0000;
-    get <1> (this->color) = DEF;
+    get <0> (this->coi) = 0x0000;
+    get <1> (this->coi) = NONE;
 }
 

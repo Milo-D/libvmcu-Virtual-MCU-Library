@@ -10,17 +10,17 @@
 // Project Headers
 #include "system/flash.hpp"
 #include "system/mcu.hpp"
+#include "table/table.hpp"
+#include "disassembler/decoder.hpp"
 #include "misc/ehandling.hpp"
 #include "misc/stringmanip.hpp"
-#include "cli/debugwindow.hpp"
-#include "disassembler/decoder.hpp"
-#include "table/table.hpp"
 
 using namespace std;
 
 Flash::Flash(Table *table) {
 
     vector <struct plain> plain;
+    string hex = table->src();
 	decode_hex( table->src() ).swap(plain);
 
     this->memory = (int16_t*) malloc(FLASH_SIZE * sizeof(int16_t));
@@ -75,7 +75,7 @@ int Flash::pc_get(void) {
     return this->pc;
 }
 
-void Flash::pc_set(int addr) {
+void Flash::pc_set(const int addr) {
 
     if(addr >= FLASH_SIZE)
         return;
@@ -95,10 +95,5 @@ int Flash::table_step(void) {
 bool Flash::table_is_sync(void) {
 
     return this->table->is_sync(this->pc);
-}
-
-void Flash::put_table(DebugWindow *dwin, bool full) {
-
-    this->table->to_win(dwin, full);
 }
 

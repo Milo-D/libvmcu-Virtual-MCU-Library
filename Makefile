@@ -7,14 +7,15 @@ OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
 TARGET   := mdx
 INCLUDE  := -I include/
-SRC      :=                      	    \
-   $(wildcard src/cli/*.cpp) 			\
-   $(wildcard src/disassembler/*.cpp) 	\
-   $(wildcard src/instructions/*.cpp) 	\
-   $(wildcard src/misc/*.cpp)         	\
-   $(wildcard src/parser/*.cpp)	      	\
-   $(wildcard src/system/*.cpp)        	\
-   $(wildcard src/table/*.cpp)       	\
+SRC      :=                             \
+   $(wildcard src/cli/*.cpp)            \
+   $(wildcard src/disassembler/*.cpp)   \
+   $(wildcard src/instructions/*.cpp)   \
+   $(wildcard src/misc/*.cpp)           \
+   $(wildcard src/parser/*.cpp)         \
+   $(wildcard src/printer/*.cpp)        \
+   $(wildcard src/system/*.cpp)         \
+   $(wildcard src/table/*.cpp)          \
 
 OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
