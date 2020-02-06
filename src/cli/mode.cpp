@@ -101,7 +101,7 @@ static void mode_help(void) {
     cout << " rp            <blank>                   - Show prev. GPR Page\n";
     cout << " dn            <blank>                   - Next Data memory cell\n";
     cout << " dp            <blank>                   - Prev. Data memory cell\n";
-    cout << " jb            <blank>                   - Jump to next Breakpoint\n";
+    cout << " jb            <delay in ms>             - Jump to next Breakpoint\n";
     cout << " en            <blank>                   - Next EEPROM memory cell\n";
     cout << " ep            <blank>                   - Prev. EEPROM memory cell\n";
     cout << " q             <blank>                   - Leave / Open File Selector\n";

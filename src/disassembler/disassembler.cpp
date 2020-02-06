@@ -21,14 +21,21 @@ namespace {
 
     string replace_addr(string line, int lx) {
 
-        string mnemonic, trash, comment;
         int pos = line.find(" ");
+        string mnemonic, trash, comment, space, label;
 
         mnemonic = line.substr(0, pos);
         trash = line.substr(pos + 1, line.size());
         comment = trash.substr(trash.find(" ") + 1, line.size());
+        label = " L" + to_string(lx);
 
-        return (mnemonic + " L" + to_string(lx) + " " + comment);
+        int len = (line.size() - (mnemonic.size() + comment.size()));
+        len -= (label.size() - 1);
+
+        for(int i = 0; i < len - 1; i++)
+            space += " ";
+
+        return (mnemonic + label + space + comment);
     }
 
     vector < tuple <string, int> > add_labels(vector < tuple <string, int> > source) {
