@@ -104,7 +104,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | rp            | none          | Show prev. GPR Page         |
 | dn            | none          | Scroll to next Data Cell    |
 | dp            | none          | Scroll to prev. Data Cell   |
-| jb            | none          | Jump to next Breakpoint     |
+| jb            | delay in ms   | Jump to next Breakpoint     |
 | en            | none          | Scroll to next EEPROM Cell  |
 | ep            | none          | Scrool to prev. EEPROM Cell |
 | xd            | address       | Examine Data Memory         |

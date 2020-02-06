@@ -26,40 +26,50 @@ using namespace std;
 using namespace std::chrono;
 using namespace std::this_thread;
 
-void jump_forward(DebugWindow *dwin, Sys *sys, Table *table) {
+void jump_forward(DebugWindow *dwin, Sys *sys, Table *table, const int delay) {
+
+    if(delay < 0) {
+
+        dwin->write(OUTPUT_PANEL, INVALID_DELAY, DEF);
+        return;
+    }
+
+    dwin->write(OUTPUT_PANEL, JUMP_START, DEF);
 
     do {
 
         if(table->is_break() == true)
             break;
 
-        system_to_win(dwin, sys, table);
+        if(delay >= 10)
+            system_to_win(dwin, sys, table);
+
         sys->step();
 
-        sleep_for(milliseconds(100));
+        sleep_for(milliseconds(delay));
 
     } while(sys->is_terminated() == false);
 
     dwin->write(OUTPUT_PANEL, BREAK_REACHED, G);
 }
 
-void set_breakpoint(DebugWindow *dwin, Table *table, string bp) {
+void set_breakpoint(DebugWindow *dwin, Table *table, const string & bp) {
 
-    if(table->set_break((const string&) bp) < 0)
+    if(table->set_break(bp) < 0)
         return;
 
     dwin->write(OUTPUT_PANEL, break_set_success(bp), DEF);
 }
 
-void remove_breakpoint(DebugWindow *dwin, Table *table, string bp) {
+void remove_breakpoint(DebugWindow *dwin, Table *table, const string & bp) {
 
-    if(table->unset_break((const string&) bp) < 0)
+    if(table->unset_break(bp) < 0)
         return;
 
     dwin->write(OUTPUT_PANEL, break_rem_success(bp), DEF);
 }
 
-void examine_data(DebugWindow *dwin, Sys *sys, string mem_cell) {
+void examine_data(DebugWindow *dwin, Sys *sys, const string & mem_cell) {
 
     int cell = hex_to_dec(mem_cell);
 
@@ -73,7 +83,7 @@ void examine_data(DebugWindow *dwin, Sys *sys, string mem_cell) {
     dwin->write(OUTPUT_PANEL, val_of(mem_cell, get_hex(data)), DEF);
 }
 
-void examine_eeprom(DebugWindow *dwin, Sys *sys, string mem_cell) {
+void examine_eeprom(DebugWindow *dwin, Sys *sys, const string & mem_cell) {
 
     int cell = hex_to_dec(mem_cell);
 
@@ -87,7 +97,7 @@ void examine_eeprom(DebugWindow *dwin, Sys *sys, string mem_cell) {
     dwin->write(OUTPUT_PANEL, val_of(mem_cell, get_hex(data)), DEF);
 }
 
-void examine_eeprom_char(DebugWindow *dwin, Sys *sys, string mem_cell, string range) {
+void examine_eeprom_char(DebugWindow *dwin, Sys *sys, const string & mem_cell, const string & range) {
 
     int cell = hex_to_dec(mem_cell);
     int offs = to_dec(range);
@@ -106,7 +116,7 @@ void examine_eeprom_char(DebugWindow *dwin, Sys *sys, string mem_cell, string ra
     dwin->write(OUTPUT_PANEL, val_of_eep(mem_cell, range, ascii), DEF);
 }
 
-void load_eep_hex(DebugWindow *dwin, Sys *sys, string file) {
+void load_eep_hex(DebugWindow *dwin, Sys *sys, const string & file) {
 
     vector <struct data> d;
 

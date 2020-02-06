@@ -64,7 +64,7 @@ void debug(Table *table) {
             dwin->write(OUTPUT_PANEL, SYS_TERM, DEF);
 
         vector <string> cmd;
-        split(last_select, cmd).swap(cmd); 
+        split(last_select, cmd).swap(cmd);
 
         switch(parser.parseln(last_select)) {
 
@@ -74,7 +74,7 @@ void debug(Table *table) {
             case 3: dwin->move_cursor(GPR_PANEL, -1);                   break;
             case 4: dwin->move_cursor(DATA_PANEL, +1);                  break;
             case 5: dwin->move_cursor(DATA_PANEL, -1);                  break;
-            case 6: jump_forward(dwin, &sys, table);                    break;
+            case 6: jump_forward(dwin, &sys, table, to_dec(cmd[1]));    break;
             case 7: dwin->move_cursor(EEPROM_PANEL, +1);                break;
             case 8: dwin->move_cursor(EEPROM_PANEL, -1);                break;
             case 9: examine_data(dwin, &sys, cmd[1]);                   break;

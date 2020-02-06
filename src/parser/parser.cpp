@@ -83,9 +83,6 @@ bool Parser::parse_debug(vector <string> cmd) {
 	
     int index = this->cmap[cmd[0]];
     int argc = cmd.size() - 1;
-	
-    if(argc == 0 && index < 10)
-        return true;
 
     switch(index) {
 
@@ -96,7 +93,21 @@ bool Parser::parse_debug(vector <string> cmd) {
 
         break;
 
-        case 5: case 6: case 7: case 8:
+        case 5:
+
+            if(argc != 0)
+                return false;
+
+        break;
+
+        case 6:
+
+            if(argc != 1)
+                return false;
+
+        break;
+
+        case 7: case 8:
 
             if(argc != 0)
                 return false;
