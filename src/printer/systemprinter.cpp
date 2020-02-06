@@ -228,34 +228,27 @@ static void print_table(DebugWindow *dwin, Table *table) {
 
     for(int i = (tip - 4); i <= (tip + 4); i++) {
 
-        int isp = DEF; int isb = DEF;
-
         if(i < 0 || i > table->size() - 1) {
 
             dwin->add(CODE_PANEL, "\n", DEF);
             continue;
         }
 
-        if(i == tip)
-            isp = B;
-
-        if(breaks[i] == true)
-            isb = R;
-
         stream << "0x" << setfill('0') << setw(4);
         stream << hex << i;
 
-        dwin->add(CODE_PANEL, stream.str(), isp);
+        dwin->add(CODE_PANEL, stream.str(), DEF);
+        stream.str(string());
 
-        if(breaks[i] == true)
+        if(i == tip)
+            dwin->add(CODE_PANEL, " [->] ", B);
+        else if(breaks[i] == true)
             dwin->add(CODE_PANEL, " [b+] ", R);
         else
             dwin->add(CODE_PANEL, "      ", DEF);
 
-        dwin->add(CODE_PANEL, content[i], isp);
+        dwin->highlight(CODE_PANEL, content[i]);
         dwin->add(CODE_PANEL, "\n", DEF);
-
-        stream.str(string());
     }
 }
 
@@ -284,32 +277,28 @@ static void print_side_table(DebugWindow *dwin, Table *table) {
 
     for(int i = start; i < (start + height); i++) {
 
-        int isp = DEF;
-        stream << setw(3) << setfill(' ');
+        stream << setw(3) << setfill(' ') << to_string(i);
 
         if(i >= table->size()) {
 
-            stream << to_string(i) << "\n";
-            dwin->add(SIDE_PANEL, stream.str(), DEF);
+            dwin->add(SIDE_PANEL, stream.str() + "\n", DEF);
             stream.str(string());
 
             continue;
         }
 
-        if(i == tip)
-            isp = B;
-
-        stream << to_string(i);
-
-        dwin->add(SIDE_PANEL, stream.str(), isp);
+        dwin->add(SIDE_PANEL, stream.str(), DEF);
         stream.str(string());
 
-        if(breaks[i] == true)
+        if(i == tip)
+            dwin->add(SIDE_PANEL, " [->] ", B);
+        else if(breaks[i] == true)
             dwin->add(SIDE_PANEL, " [b+] ", R);
         else
             dwin->add(SIDE_PANEL, "      ", DEF);
 
-        dwin->add(SIDE_PANEL, content[i] + "\n", isp);
+        dwin->highlight(SIDE_PANEL, content[i]);
+        dwin->add(SIDE_PANEL, "\n", DEF);
     }
 }
 

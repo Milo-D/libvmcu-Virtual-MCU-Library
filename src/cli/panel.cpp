@@ -8,6 +8,7 @@
 
 // Project Headers
 #include "cli/panel.hpp"
+#include "cli/highlighter.hpp"
 
 using namespace std;
 
@@ -15,6 +16,8 @@ Panel::Panel(int h, int w, int y, int x, int cs, int cr) {
 
     this->init(h, w, y, x);
     wmove(this->win, 1, 0);
+
+    this->highlighter = new Highlighter;
 
     this->cursor = cs;
     this->range = cr;
@@ -38,7 +41,10 @@ void Panel::init(int h, int w, int y, int x) {
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
-    init_pair(4, COLOR_WHITE, COLOR_BLACK);
+    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(6, COLOR_CYAN, COLOR_BLACK);
+    init_pair(7, COLOR_WHITE, COLOR_BLACK);
 
     wbkgd(this->win, COLOR_PAIR(1));
     scrollok(this->win, true);
@@ -61,6 +67,11 @@ void Panel::write(const string & data, const int color) {
 
     this->add(data, color);
     this->update();
+}
+
+void Panel::highlight(const string & data) {
+
+    this->highlighter->paint(this, data);
 }
 
 void Panel::update(void) {

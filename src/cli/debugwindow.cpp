@@ -87,6 +87,11 @@ void DebugWindow::write(const int ptype, const string & data, const int color) {
     this->panel[ptype]->write(data, color);
 }
 
+void DebugWindow::highlight(const int ptype, const string & data) {
+
+    this->panel[ptype]->highlight(data);
+}
+
 void DebugWindow::clear_specific(const int ptype) {
 
     this->panel[ptype]->clear();

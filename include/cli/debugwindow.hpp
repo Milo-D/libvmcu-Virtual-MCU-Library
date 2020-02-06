@@ -3,10 +3,13 @@
 #ifndef DEBUGWINDOW_HPP
 #define DEBUGWINDOW_HPP
 
-#define R 1
-#define G 2
-#define B 3
-#define DEF 4
+#define R 0x01
+#define G 0x02
+#define B 0x03
+#define Y 0x04
+#define M 0x05
+#define C 0x06
+#define DEF 0x07
 
 #define GPR_PANEL 0
 #define SREG_PANEL 1
@@ -31,6 +34,7 @@ public:
 
     void add(const int ptype, const std::string & data, const int color);       // writing to specific panel without updating
     void write(const int ptype, const std::string & data, const int color);     // writing to specific panel and updating
+    void highlight(const int ptype, const std::string & data);                  // writing to specific panel using syntax highlighter
     void clear_specific(const int ptype);                                       // clear specific panel
     void clear(void);                                                           // clear all non-static panels
 

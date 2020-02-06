@@ -3,6 +3,8 @@
 #ifndef PANEL_HPP
 #define PANEL_HPP
 
+class Highlighter;
+
 class Panel {
 
 public:
@@ -13,6 +15,7 @@ public:
 
     void add(const std::string & data, const int color);                            // add string to Panel without updating
     void write(const std::string & data, const int color);                          // add string to Panel and update
+    void highlight(const std::string & data);                                       // add string to Panel using highlighter
     void update(void);                                                              // refresh Panel
     void clear(void);                                                               // clearing content of Panel
 
@@ -29,6 +32,7 @@ public:
 
 private:
     WINDOW *win;                                                                    // Panel Window
+    Highlighter *highlighter;                                                       // Syntax Highlighter
 
     int cursor;                                                                     // Panel's State Cursor
     int range;                                                                      // Cursor Range
