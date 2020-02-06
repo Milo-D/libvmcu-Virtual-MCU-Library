@@ -171,10 +171,10 @@ Currently MDX supports: ~ 65 Instructions. More Instructions are coming soon.
 By the way: You will find more Screenshots in the 'img' directory of this Repo.
 
 Interactive Debugger:
-![mdx_debug](https://user-images.githubusercontent.com/46600932/72665865-e7ba8280-3a0c-11ea-8b47-a80f315a1417.png)
+![mdx_debug](https://user-images.githubusercontent.com/46600932/73900886-5dd63a80-4891-11ea-8e89-114e67dfb1a3.png)
 
 File Selector:
-![mdx_file](https://user-images.githubusercontent.com/46600932/72665867-e7ba8280-3a0c-11ea-9259-78b1ddf9c793.png)
+![mdx_file](https://user-images.githubusercontent.com/46600932/73900923-77778200-4891-11ea-9e05-0dce09b05fbc.png)
 
 Disassembler:
 ![mdx_disassembler](https://user-images.githubusercontent.com/46600932/72665866-e7ba8280-3a0c-11ea-8bd5-24d1f4a1c3aa.png)
