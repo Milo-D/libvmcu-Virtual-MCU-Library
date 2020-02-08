@@ -110,8 +110,18 @@ void examine_eeprom_char(DebugWindow *dwin, Sys *sys, const string & mem_cell, c
 
     string ascii = "";
 
-    for(int i = cell; i < (cell + offs); i++)
-        ascii += (char) sys->read_eeprom(i);
+    for(int i = cell; i < (cell + offs); i++) {
+
+        uint8_t byte = (uint8_t) sys->read_eeprom(i);
+
+        if(byte == '\0') {
+
+            ascii += "\\0";
+            continue;
+        }
+
+        ascii += byte;
+    }
 
     dwin->write(OUTPUT_PANEL, val_of_eep(mem_cell, range, ascii), DEF);
 }
