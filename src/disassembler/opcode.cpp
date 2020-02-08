@@ -25,6 +25,7 @@ extern const int opcode[SET_SIZE][WORD] = {
 { 0, 0, 0, 0, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* ADD */
 { 0, 0, 0, 1, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* ADC */
 { 0, 0, 0, 1, 1, 0, R, D, D, D, D, D, R, R, R, R }, /* SUB */
+{ 0, 1, 0, 1, K, K, K, K, D, D, D, D, K, K, K, K }, /* SUBI */
 { 0, 0, 0, 0, 1, 0, R, D, D, D, D, D, R, R, R, R }, /* SBC */
 { 1, 0, 0, 1, 0, 0, 1, D, D, D, D, D, 1, 1, 1, 1 }, /* PUSH */
 { 1, 0, 0, 1, 0, 0, 0, D, D, D, D, D, 1, 1, 1, 1 }, /* POP */

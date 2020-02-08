@@ -211,6 +211,22 @@ string sub(int opcode) {
     return stream.str();
 }
 
+string subi(int opcode) {
+
+    int dest = extract(opcode, 4, 8, 0) + 16;
+    int value = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    stringstream stream;
+
+    stream << "subi r" << dest << ", 0x" << get_hex(value);
+    stream << fill(stream.str().size());
+
+    stream << "; R" << dest << " <- R" << dest;
+    stream << " - " << get_hex(value);
+
+    return stream.str();
+}
+
 string sbc(int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -1080,7 +1096,7 @@ string bset(int opcode) {
 }
 
 string (*mnemonics[INSTR_MAX]) (int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, ld_z, 
+                                                dec, inc, add, adc, sub, subi, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, ld_z, 
                                                 st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
                                                 swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                 clz, clh, clc, cli, cln, bclr, bset };

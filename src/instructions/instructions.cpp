@@ -243,6 +243,35 @@ void sub(Sys *sys, int opcode) {
     sys->write_gpr(dest, result);
 }
 
+void subi(Sys *sys, int opcode) {
+
+    int dest = extract(opcode, 4, 8, 0) + 16;
+    int8_t src_val = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    int8_t dest_val = sys->read_gpr(dest);
+    int8_t result = dest_val - src_val;
+
+    int8_t vf_res = bit(dest_val, 7) * ~bit(src_val, 7) * ~bit(result, 7);
+    vf_res += ~bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
+
+    int8_t cf_res = (~bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * ~bit(dest_val, 7));
+
+    int8_t hf_res = (~bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
+    hf_res += bit(result, 3) * ~bit(dest_val, 3);
+
+    int8_t nf_res = bit(result, 7);
+
+    sys->write_sreg(VF, vf_res);
+    sys->write_sreg(CF, cf_res);
+    sys->write_sreg(HF, hf_res);
+    sys->write_sreg(NF, nf_res);
+    sys->write_sreg(SF, nf_res ^ vf_res);
+    sys->write_sreg(ZF, (result == 0x00));
+
+    sys->write_gpr(dest, result);
+}
+
 void sbc(Sys *sys, int opcode) {
 
     int dest = extract(opcode, 4, 9, 0);
@@ -1045,7 +1074,7 @@ void bset(Sys *sys, int opcode) {
 }
 
 void (*instructions[INSTR_MAX]) (Sys *sys, int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                           dec, inc, add, adc, sub, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, ld_z, 
+                                                           dec, inc, add, adc, sub, subi, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, ld_z, 
                                                            st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
                                                            swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
                                                            clz, clh, clc, cli, cln, bclr, bset };
