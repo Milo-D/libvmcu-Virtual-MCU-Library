@@ -118,7 +118,7 @@ void dec(Sys *sys, int opcode) {
 
     int8_t result = value - 0x01;
 
-    int8_t vf_res = ~bit(result, 7) * bit(result, 6) * bit(result, 5) * bit(result, 4);
+    int8_t vf_res = !bit(result, 7) * bit(result, 6) * bit(result, 5) * bit(result, 4);
     vf_res *= bit(result, 3) * bit(result, 2) * bit(result, 1) * bit(result, 0);
 
     int8_t nf_res = bit(result, 7);
@@ -138,8 +138,8 @@ void inc(Sys *sys, int opcode) {
 
     int8_t result = value + 1;
 
-    int8_t vf_res = bit(result, 7) * ~bit(result, 6) * ~bit(result, 5) * ~bit(result, 4);
-    vf_res *= ~bit(result, 3) * ~bit(result, 2) * ~bit(result, 1) * ~bit(result, 0);
+    int8_t vf_res = bit(result, 7) * !bit(result, 6) * !bit(result, 5) * !bit(result, 4);
+    vf_res *= !bit(result, 3) * !bit(result, 2) * !bit(result, 1) * !bit(result, 0);
 
     int8_t nf_res = bit(result, 7);
 
@@ -160,14 +160,14 @@ void add(Sys *sys, int opcode) {
     int8_t src_val = sys->read_gpr(src);
     int8_t result = dest_val + src_val;
 
-    int8_t vf_res = bit(dest_val, 7) * bit(src_val, 7) * ~bit(result, 7);
-    vf_res += ~bit(dest_val, 7) * ~bit(src_val, 7) * bit(result, 7);
+    int8_t vf_res = bit(dest_val, 7) * bit(src_val, 7) * !bit(result, 7);
+    vf_res += !bit(dest_val, 7) * !bit(src_val, 7) * bit(result, 7);
 
-    int8_t cf_res = (bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * ~bit(result, 7));
-    cf_res += ~bit(result, 7) * bit(dest_val, 7);
+    int8_t cf_res = (bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * !bit(result, 7));
+    cf_res += !bit(result, 7) * bit(dest_val, 7);
 
-    int8_t hf_res = (bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * ~bit(result, 3));
-    cf_res += ~bit(result, 3) * bit(dest_val, 3);
+    int8_t hf_res = (bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * !bit(result, 3));
+    hf_res += !bit(result, 3) * bit(dest_val, 3);
 
     int8_t nf_res = bit(result, 7);
 
@@ -192,14 +192,14 @@ void adc(Sys *sys, int opcode) {
     bool carry = sys->read_sreg(CF);
     int8_t result = (dest_val + src_val + carry);
 
-    int8_t vf_res = bit(dest_val, 7) * bit(src_val, 7) * ~bit(result, 7);
-    vf_res += ~bit(dest_val, 7) * ~bit(src_val, 7) * bit(result, 7);
+    int8_t vf_res = bit(dest_val, 7) * bit(src_val, 7) * !bit(result, 7);
+    vf_res += !bit(dest_val, 7) * !bit(src_val, 7) * bit(result, 7);
 
-    int8_t cf_res = (bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * ~bit(result, 7));
-    cf_res += ~bit(result, 7) * bit(dest_val, 7);
+    int8_t cf_res = (bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * !bit(result, 7));
+    cf_res += !bit(result, 7) * bit(dest_val, 7);
 
-    int8_t hf_res = (bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * ~bit(result, 3));
-    cf_res += ~bit(result, 3) * bit(dest_val, 3);
+    int8_t hf_res = (bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * !bit(result, 3));
+    hf_res += !bit(result, 3) * bit(dest_val, 3);
 
     int8_t nf_res = bit(result, 7);
 
@@ -222,14 +222,14 @@ void sub(Sys *sys, int opcode) {
     int8_t src_val = sys->read_gpr(src);
     int8_t result = dest_val - src_val;
 
-    int8_t vf_res = bit(dest_val, 7) * ~bit(src_val, 7) * ~bit(result, 7);
-    vf_res += ~bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
+    int8_t vf_res = bit(dest_val, 7) * !bit(src_val, 7) * !bit(result, 7);
+    vf_res += !bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
 
-    int8_t cf_res = (~bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
-    cf_res += (bit(result, 7) * ~bit(dest_val, 7));
+    int8_t cf_res = (!bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * !bit(dest_val, 7));
 
-    int8_t hf_res = (~bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
-    hf_res += bit(result, 3) * ~bit(dest_val, 3);
+    int8_t hf_res = (!bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
+    hf_res += bit(result, 3) * !bit(dest_val, 3);
 
     int8_t nf_res = bit(result, 7);
 
@@ -251,14 +251,14 @@ void subi(Sys *sys, int opcode) {
     int8_t dest_val = sys->read_gpr(dest);
     int8_t result = dest_val - src_val;
 
-    int8_t vf_res = bit(dest_val, 7) * ~bit(src_val, 7) * ~bit(result, 7);
-    vf_res += ~bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
+    int8_t vf_res = bit(dest_val, 7) * !bit(src_val, 7) * !bit(result, 7);
+    vf_res += !bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
 
-    int8_t cf_res = (~bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
-    cf_res += (bit(result, 7) * ~bit(dest_val, 7));
+    int8_t cf_res = (!bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * !bit(dest_val, 7));
 
-    int8_t hf_res = (~bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
-    hf_res += bit(result, 3) * ~bit(dest_val, 3);
+    int8_t hf_res = (!bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
+    hf_res += bit(result, 3) * !bit(dest_val, 3);
 
     int8_t nf_res = bit(result, 7);
 
@@ -283,14 +283,14 @@ void sbc(Sys *sys, int opcode) {
     bool carry = sys->read_sreg(CF);
     int8_t result = (dest_val - src_val - carry);
 
-    int8_t vf_res = bit(dest_val, 7) * ~bit(src_val, 7) * ~bit(result, 7);
-    vf_res += ~bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
+    int8_t vf_res = bit(dest_val, 7) * !bit(src_val, 7) * !bit(result, 7);
+    vf_res += !bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
 
-    int8_t cf_res = (~bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
-    cf_res += (bit(result, 7) * ~bit(dest_val, 7));
+    int8_t cf_res = (!bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * !bit(dest_val, 7));
 
-    int8_t hf_res = (~bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
-    hf_res += bit(result, 3) * ~bit(dest_val, 3);
+    int8_t hf_res = (!bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
+    hf_res += bit(result, 3) * !bit(dest_val, 3);
 
     int8_t nf_res = bit(result, 7);
 
@@ -747,14 +747,14 @@ void cp(Sys *sys, int opcode) {
     int8_t comp = sys->read_gpr(src);
     int8_t result = value - comp; 
 
-    int8_t cf_res = (~(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
-    cf_res += (bit(result, 7) * ~bit(value, 7));
+    int8_t cf_res = (!(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * !bit(value, 7));
 
-    int8_t vf_res = (bit(value, 7) * ~bit(comp, 7) * ~bit(result, 7));
-    vf_res += (~bit(value, 7) * bit(comp, 7) * bit(result, 7));
+    int8_t vf_res = (bit(value, 7) * !bit(comp, 7) * !bit(result, 7));
+    vf_res += (!bit(value, 7) * bit(comp, 7) * bit(result, 7));
 
-    int8_t hf_res = (~bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
-    hf_res += (bit(result, 3) * ~bit(value, 3));
+    int8_t hf_res = (!bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
+    hf_res += (bit(result, 3) * !bit(value, 3));
 
     int8_t nf_res = bit(result, 7);
 
@@ -774,14 +774,14 @@ void cpi(Sys *sys, int opcode) {
     uint8_t value = sys->read_gpr(16 + reg);
     int8_t result = value - comp;
 
-    int8_t cf_res = (~(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
-    cf_res += (bit(result, 7) * ~bit(value, 7));
+    int8_t cf_res = (!(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * !bit(value, 7));
 
-    int8_t vf_res = (bit(value, 7) * ~bit(comp, 7) * ~bit(result, 7));
-    vf_res += (~bit(value, 7) * bit(comp, 7) * bit(result, 7));
+    int8_t vf_res = (bit(value, 7) * !bit(comp, 7) * !bit(result, 7));
+    vf_res += (!bit(value, 7) * bit(comp, 7) * bit(result, 7));
 
-    int8_t hf_res = (~bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
-    hf_res += (bit(result, 3) * ~bit(value, 3));
+    int8_t hf_res = (!bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
+    hf_res += (bit(result, 3) * !bit(value, 3));
 
     int8_t nf_res = bit(result, 7);
 
@@ -804,14 +804,14 @@ void cpc(Sys *sys, int opcode) {
 
     int8_t result = (value - comp - carry);
 
-    int8_t cf_res = (~(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
-    cf_res += (bit(result, 7) * ~bit(value, 7));
+    int8_t cf_res = (!(bit(value, 7)) * bit(comp, 7)) + (bit(comp, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * !bit(value, 7));
 
-    int8_t vf_res = (bit(value, 7) * ~bit(comp, 7) * ~bit(result, 7));
-    vf_res += (~bit(value, 7) * bit(comp, 7) * bit(result, 7));
+    int8_t vf_res = (bit(value, 7) * !bit(comp, 7) * !bit(result, 7));
+    vf_res += (!bit(value, 7) * bit(comp, 7) * bit(result, 7));
 
-    int8_t hf_res = (~bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
-    hf_res += (bit(result, 3) * ~bit(value, 3));
+    int8_t hf_res = (!bit(value, 3) * bit(comp, 3)) + (bit(comp, 3) * bit(result, 3));
+    hf_res += (bit(result, 3) * !bit(value, 3));
 
     int8_t nf_res = bit(result, 7);
     int8_t zf_res = (result == 0x00) ? sys->read_sreg(ZF) : 0x00;
