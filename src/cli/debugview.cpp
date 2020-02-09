@@ -79,16 +79,17 @@ void debug(Table *table) {
             case 8: dwin->move_cursor(EEPROM_PANEL, -1);                break;
             case 9: examine_data(dwin, &sys, cmd[1]);                   break;
             case 10: examine_eeprom(dwin, &sys, cmd[1]);                break;
-            case 11: examine_eeprom_char(dwin, &sys, cmd[1], cmd[2]);   break;
-            case 12: load_eep_hex(dwin, &sys, cmd[1]);                  break;
-            case 13: clear_output(dwin);                                break;
-            case 14: table->set_tip(0);                                 break;
-            case 15: /* here comes help output*/                        break;
-            case 16: set_breakpoint(dwin, table, cmd[1]);               break;
-            case 17: remove_breakpoint(dwin, table, cmd[1]);            break;
-            case 18: table->define(cmd[1], cmd[2]);                     break;
-            case 19: dwin->move_cursor(SIDE_PANEL, +1);                 break;
-            case 20: dwin->move_cursor(SIDE_PANEL, -1);                 break;
+            case 11: examine_data_char(dwin, &sys, cmd[1], cmd[2]);     break;
+            case 12: examine_eeprom_char(dwin, &sys, cmd[1], cmd[2]);   break;
+            case 13: load_eep_hex(dwin, &sys, cmd[1]);                  break;
+            case 14: clear_output(dwin);                                break;
+            case 15: table->set_tip(0);                                 break;
+            case 16: /* here comes help output*/                        break;
+            case 17: set_breakpoint(dwin, table, cmd[1]);               break;
+            case 18: remove_breakpoint(dwin, table, cmd[1]);            break;
+            case 19: table->define(cmd[1], cmd[2]);                     break;
+            case 20: dwin->move_cursor(SIDE_PANEL, +1);                 break;
+            case 21: dwin->move_cursor(SIDE_PANEL, -1);                 break;
 
             default: /* ignoring invalid input */                       break;
         } 

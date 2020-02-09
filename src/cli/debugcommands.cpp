@@ -87,7 +87,7 @@ void examine_eeprom(DebugWindow *dwin, Sys *sys, const string & mem_cell) {
 
     int cell = hex_to_dec(mem_cell);
 
-    if(cell < 0 || cell > EEPROM_SIZE - 1) {
+    if(cell < 0 || cell >= EEPROM_SIZE) {
 
         dwin->write(OUTPUT_PANEL, MEM_CELL_ERR, DEF);
         return;
@@ -97,14 +97,55 @@ void examine_eeprom(DebugWindow *dwin, Sys *sys, const string & mem_cell) {
     dwin->write(OUTPUT_PANEL, val_of(mem_cell, get_hex(data)), DEF);
 }
 
+void examine_data_char(DebugWindow *dwin, Sys *sys, const string & mem_cell, const string & range) {
+
+    int cell = hex_to_dec(mem_cell);
+    int offs = to_dec(range);
+
+    if((cell + offs) < 0 || (cell + offs) > RAM_END + 1) {
+
+        dwin->write(OUTPUT_PANEL, MEM_CELL_ERR, DEF);
+        return;
+    }
+
+    if(offs < 1) {
+
+        dwin->write(OUTPUT_PANEL, MEM_RANGE_ERR, DEF);
+        return;
+    }
+
+    string ascii = "";
+
+    for(int i = cell; i < (cell + offs); i++) {
+
+        uint8_t byte = (uint8_t) sys->read_data(i);
+
+        if(byte == '\0') {
+
+            ascii += "\\0";
+            continue;
+        }
+
+        ascii += byte;
+    }
+
+    dwin->write(OUTPUT_PANEL, val_of_data(mem_cell, range, ascii), DEF);
+}
+
 void examine_eeprom_char(DebugWindow *dwin, Sys *sys, const string & mem_cell, const string & range) {
 
     int cell = hex_to_dec(mem_cell);
     int offs = to_dec(range);
 
-    if(offs < 0 || (cell + offs) < 0 || (cell + offs) > EEPROM_SIZE - 1) {
+    if((cell + offs) < 0 || (cell + offs) >= EEPROM_SIZE + 1) {
 
         dwin->write(OUTPUT_PANEL, MEM_CELL_ERR, DEF);
+        return;
+    }
+
+    if(offs < 1) {
+
+        dwin->write(OUTPUT_PANEL, MEM_RANGE_ERR, DEF);
         return;
     }
 

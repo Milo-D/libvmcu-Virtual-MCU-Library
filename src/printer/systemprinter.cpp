@@ -190,7 +190,7 @@ static void print_eeprom(DebugWindow *dwin, Sys *sys) {
 
         int ism = DEF;
 
-        if(i < 0 || i > EEPROM_SIZE) {
+        if(i < 0 || i >= EEPROM_SIZE) {
 
             dwin->add(EEPROM_PANEL, "\n", DEF);
             continue;

@@ -8,9 +8,11 @@
 #define SYS_TERM "(mdx) System terminated. Simulation has stopped.\n"
 
 #define MEM_CELL_ERR "(mdx) Illegal memory cell.\n"
+#define MEM_RANGE_ERR "(mdx) Literal length must be > 0.\n"
 
 #define val_of(c, v) "(mdx) " + c + " ~> 0x" + v + "\n"
-#define val_of_eep(a, o, t) "(mdx) " + a + " [" + o + "] ~> \"" + t + "\"\n"
+#define val_of_eep(a, o, t) "(mdx) EEPROM[" + a + "][" + o + "] ~> \"" + t + "\"\n"
+#define val_of_data(a, o, t) "(mdx) DATA[" + a + "][" + o + "] ~> \"" + t + "\"\n"
 
 #define JUMP_START "(mdx) Jumping to next Breakpoint...\n"
 #define BREAK_REACHED "(mdx) <--- Breakpoint reached --->\n"
