@@ -106,11 +106,12 @@ Note: You may open multiple files in interactive Debugging Mode.
 | dp            | none          | Scroll to prev. Data Cell   |
 | jb            | delay in ms   | Jump to next Breakpoint     |
 | en            | none          | Scroll to next EEPROM Cell  |
-| ep            | none          | Scrool to prev. EEPROM Cell |
+| ep            | none          | Scroll to prev. EEPROM Cell |
 | xd            | address       | Examine Data Memory         |
 | xe            | address       | Examine EEPROM Memory       |
 | xec           | start end     | EEP. Mem. as char literal   |
-| leep          | file.eep.hex  | Loading .eep.hex into MCU   |
+| xdc           | start end     | Data Mem. as char literal   |
+| leep          | file.eep.hex  | Load .eep.hex into MCU      |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
 | ?             | none          | Show Help (in progress)     |
