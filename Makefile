@@ -1,6 +1,6 @@
-CXX      := -g++
+CXX      := -gcc
 CXXFLAGS := -g -D
-LDFLAGS  := -L /usr/lib -lstdc++ -lm -lncurses
+LDFLAGS  := -L /usr/lib -lm -lncurses
 MCU_ARCH := ATMEGA32 
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
@@ -8,20 +8,21 @@ APP_DIR  := $(BUILD)/apps
 TARGET   := mdx
 INCLUDE  := -I include/
 SRC      :=                             \
-   $(wildcard src/cli/*.cpp)            \
-   $(wildcard src/disassembler/*.cpp)   \
-   $(wildcard src/instructions/*.cpp)   \
-   $(wildcard src/misc/*.cpp)           \
-   $(wildcard src/parser/*.cpp)         \
-   $(wildcard src/printer/*.cpp)        \
-   $(wildcard src/system/*.cpp)         \
-   $(wildcard src/table/*.cpp)          \
+   $(wildcard src/cli/*.c)            \
+   $(wildcard src/collections/*.c)    \
+   $(wildcard src/disassembler/*.c)   \
+   $(wildcard src/instructions/*.c)   \
+   $(wildcard src/misc/*.c)           \
+   $(wildcard src/parser/*.c)         \
+   $(wildcard src/printer/*.c)        \
+   $(wildcard src/system/*.c)         \
+   $(wildcard src/table/*.c)          \
 
-OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 all: build $(APP_DIR)/$(TARGET)
 
-$(OBJ_DIR)/%.o: %.cpp
+$(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(MCU_ARCH) $(INCLUDE) -o $@ -c $<
 
