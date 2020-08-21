@@ -37,8 +37,6 @@ static void sig_handler(int signal);
 
 void debug(table_t *table) {
 
-    SIG_ON;
-
     size = table_size(table);
     window = dwin_ctor(size);
 
@@ -103,12 +101,9 @@ void debug(table_t *table) {
 		
     } while(strcmp(select, "q") != 0);
 
-    SIG_OFF;
-
     sys_dtor(sys);
     dwin_dtor(window);
     parser_dtor(parser);
-
     free(sim_status);
 }
 
