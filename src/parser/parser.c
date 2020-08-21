@@ -62,6 +62,9 @@ int parser_eval(const struct _parser *this, const char *cmd) {
     list_t *items = ls_ctor(NULL, NULL);
     split(cmd, ' ', items);
 
+    if(items->size == 0)
+        return -1;
+
     const char *keyword = (char*) ls_at(items, 0);
 
     if(map_get(this->p->map, keyword) < 0) {

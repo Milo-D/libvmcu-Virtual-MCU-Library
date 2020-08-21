@@ -62,10 +62,8 @@ void debug(table_t *table) {
         if(size <= 0)
             continue;
 
-        if(strcmp(select, "") == 0)
-            continue;
-
-        strncpy(last_select, select, 64);
+        if(strcmp(select, "") != 0)
+            strncpy(last_select, select, 64);
 
         if(sys_is_term(sys) == true)
             dwin_write(window, OPNL, SIM_TERM, D);
