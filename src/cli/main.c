@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
             i = mwin_get_choice(window);
 
             debug(tables[i]);
-            mwin_reinit(window);
+            mwin_reinit(&window);
         }
 
     } while(key != QUIT);

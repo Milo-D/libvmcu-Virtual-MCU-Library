@@ -109,9 +109,9 @@ void mwin_update(const struct _mainwindow *this) {
     wrefresh(this->p->win);
 }
 
-void mwin_reinit(struct _mainwindow *this) {
+void mwin_reinit(struct _mainwindow **this) {
 
-    init(this);
+    init(*this);
 }
 
 void mwin_destroy(struct _mainwindow *this) {

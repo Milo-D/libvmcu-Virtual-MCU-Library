@@ -26,8 +26,8 @@
 
 #define at(l, i) ls_at(l, i)
 
-static int size;
-static debugwindow_t *window;
+static int size = 0;
+static debugwindow_t *window = NULL;
 
 /* Forward Declarations of static Debug Functions */
 
@@ -62,8 +62,10 @@ void debug(table_t *table) {
         if(size <= 0)
             continue;
 
-        if(strcmp(select, "") != 0)
-            strncpy(last_select, select, 64);
+        if(strcmp(select, "") == 0)
+            continue;
+
+        strncpy(last_select, select, 64);
 
         if(sys_is_term(sys) == true)
             dwin_write(window, OPNL, SIM_TERM, D);
@@ -115,6 +117,9 @@ void debug(table_t *table) {
 /* --- Private --- */
 
 static void sig_handler(int signal) {
+
+    if(window == NULL)
+        return;
 
     dwin_dtor(window);
     window = dwin_ctor(size);

@@ -24,7 +24,7 @@ extern int mwin_read_key(const struct _mainwindow *this);       // reading user 
 extern int mwin_get_choice(const struct _mainwindow *this);     // getting last position of selector
 
 extern void mwin_update(const struct _mainwindow *this);        // refreshing MainWindow
-extern void mwin_reinit(struct _mainwindow *this);              // reinitializing MainWindow (no constructor)
+extern void mwin_reinit(struct _mainwindow **this);             // reinitializing MainWindow (no constructor)
 extern void mwin_destroy(struct _mainwindow *this);             // destroying MainWindow (no destructor)
 
 #endif
