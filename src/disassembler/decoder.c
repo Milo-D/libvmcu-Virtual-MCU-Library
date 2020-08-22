@@ -135,8 +135,6 @@ static int decode_hex_line(const char *line, array_t *buffer) {
     const int byte_count = htoi(bytes);
     const int s_addr = htoi(addr) / 2;
 
-    int n = 0;
-
     for(int i = 0; i < (byte_count / 2); i++) {
 
         int instr, found;
@@ -197,8 +195,6 @@ static int decode_eep_line(const char *line, array_t *buffer) {
 
     const int byte_count = htoi(bytes);
     const int s_addr = htoi(addr);
-
-    int n = 0;
 
     for(int i = 0; i < byte_count; i++) {
 
