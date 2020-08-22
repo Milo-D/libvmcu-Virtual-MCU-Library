@@ -17,12 +17,13 @@ struct _private {
 
     int cursor;
     int range;
-
-    int height;
-    int width;
-    int y;
-    int x;
 };
+
+/* Forward Declaration of static Functions */
+
+static void panel_init(struct _panel *this, int h, int w, int y, int x);
+
+/* --- Extern --- */
 
 struct _panel* panel_ctor(int h, int w, int y, int x, int cs, int cr) {
 
@@ -39,34 +40,6 @@ struct _panel* panel_ctor(int h, int w, int y, int x, int cs, int cr) {
 
     panel->p->hl = hl_ctor();
 
-    panel_init(panel, h, w, y, x, cs, cr);
-    wmove(panel->p->win, 1, 0);
-
-    panel->p->cursor = cs;
-    panel->p->range = cr;
-
-    panel->p->height = h;
-    panel->p->width = w;
-    panel->p->y = y;
-    panel->p->x = x;
-
-    return panel;
-}
-
-void panel_dtor(struct _panel *this) {
-
-    hl_dtor(this->p->hl);
-    panel_destroy(this);
-
-    free(this->p);
-    free(this);
-}
-
-void panel_init(struct _panel *this, int h, int w, int y, int x, int cs, int cr) {
-
-    this->p->win = newwin(h, w, y, x);
-    wborder(this->p->win, 0, 0, 0, 0, 0, 0, 0, 0);
-
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
@@ -75,11 +48,21 @@ void panel_init(struct _panel *this, int h, int w, int y, int x, int cs, int cr)
     init_pair(6, COLOR_CYAN, COLOR_BLACK);
     init_pair(7, COLOR_WHITE, COLOR_BLACK);
 
-    wbkgd(this->p->win, COLOR_PAIR(1));
-    scrollok(this->p->win, true);
-    nl();
+    panel_init(panel, h, w, y, x);
 
-    panel_update(this);
+    panel->p->cursor = cs;
+    panel->p->range = cr;
+
+    return panel;
+}
+
+void panel_dtor(struct _panel *this) {
+
+    delwin(this->p->win);
+    hl_dtor(this->p->hl);
+
+    free(this->p);
+    free(this);
 }
 
 void panel_add(struct _panel *this, const char *str, const COLOR col) {
@@ -92,7 +75,6 @@ void panel_add(struct _panel *this, const char *str, const COLOR col) {
     wattroff(this->p->win, COLOR_PAIR(col + 1));
 }
 
-
 void panel_write(struct _panel *this, const char *str, const COLOR col) {
 
     panel_add(this, str, col);
@@ -102,6 +84,12 @@ void panel_write(struct _panel *this, const char *str, const COLOR col) {
 void panel_highlight(struct _panel *this, const char *str) {
 
     hl_paint(this->p->hl, this, str);
+}
+
+void panel_resize(struct _panel *this, int h, int w, int y, int x) {
+
+    delwin(this->p->win);
+    panel_init(this, h, w, y, x);
 }
 
 void panel_update(struct _panel *this) {
@@ -142,27 +130,22 @@ int panel_get_curs(struct _panel *this) {
     return this->p->cursor;
 }
 
-int panel_height(struct _panel *this) {
+/* --- Static --- */
 
-    return this->p->height;
-}
+static void panel_init(struct _panel *this, int h, int w, int y, int x) {
 
-int panel_width(struct _panel *this) {
+    this->p->win = newwin(h, w, y, x);
+    wborder(this->p->win, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    return this->p->width;
-}
+    wbkgd(this->p->win, COLOR_PAIR(1));
+    scrollok(this->p->win, true);
+    nl();
 
-int panel_y(struct _panel *this) {
+    panel_update(this);
+    wmove(this->p->win, 1, 0);
 
-    return this->p->y;
-}
-
-int panel_x(struct _panel *this) {
-
-    return this->p->x;
-}
-
-void panel_destroy(struct _panel *this) {
-
-    delwin(this->p->win);
+    this->height = h;
+    this->width = w;
+    this->y = y;
+    this->x = x;
 }

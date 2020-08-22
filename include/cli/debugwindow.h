@@ -38,6 +38,8 @@ typedef struct _debugwindow {
 extern struct _debugwindow* dwin_ctor(const int size);
 extern void dwin_dtor(struct _debugwindow *this);
 
+extern void dwin_resize(struct _debugwindow *this);
+
 extern void dwin_read_prompt(const struct _debugwindow *this, char *buffer);
 extern void dwin_add(struct _debugwindow *this, const PANEL ptype, const char *str, const COLOR col);
 extern void dwin_write(struct _debugwindow *this, const PANEL ptype, const char *str, const COLOR col);
@@ -57,7 +59,5 @@ extern int dwin_height(struct _debugwindow *this, const PANEL ptype);
 extern int dwin_width(struct _debugwindow *this, const PANEL ptype);
 extern int dwin_y(struct _debugwindow *this, const PANEL ptype);
 extern int dwin_x(struct _debugwindow *this, const PANEL ptype);
-
-extern void dwin_close_panel(struct _debugwindow *this, const PANEL ptype);
 
 #endif

@@ -21,9 +21,6 @@
 #include "misc/memmanip.h"
 #include "collections/list.h"
 
-#define SIG_ON signal(SIGWINCH, sig_handler)
-#define SIG_OFF signal(SIGWINCH, SIG_DFL)
-
 #define at(l, i) ls_at(l, i)
 
 static int size = 0;
@@ -36,6 +33,8 @@ static void sig_handler(int signal);
 /* --- Public --- */
 
 void debug(table_t *table) {
+
+    signal(SIGWINCH, sig_handler);
 
     size = table_size(table);
     window = dwin_ctor(size);
@@ -101,6 +100,8 @@ void debug(table_t *table) {
 		
     } while(strcmp(select, "q") != 0);
 
+    signal(SIGWINCH, SIG_DFL);
+
     sys_dtor(sys);
     dwin_dtor(window);
     parser_dtor(parser);
@@ -114,8 +115,7 @@ static void sig_handler(int signal) {
     if(window == NULL)
         return;
 
-    dwin_dtor(window);
-    window = dwin_ctor(size);
+    dwin_resize(window);
 }
 
 

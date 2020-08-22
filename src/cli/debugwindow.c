@@ -18,6 +18,12 @@ struct _private {
     prompt_t *prompt;
 };
 
+/* Forward Declaration of static Functions */
+
+static void dwin_init(struct _debugwindow *this);
+
+/* --- Extern --- */
+
 struct _debugwindow* dwin_ctor(const int size) {
 
     struct _debugwindow *dwin;
@@ -32,13 +38,7 @@ struct _debugwindow* dwin_ctor(const int size) {
     }
 
     dwin->p->panel = malloc(N_PANEL * sizeof(panel_t*));
-
-    initscr();
-    cbreak();
-    refresh();
-    echo();
-    curs_set(0);
-    start_color();
+    dwin_init(dwin);
 
     int scr_y, scr_x;
     getmaxyx(stdscr, scr_y, scr_x);
@@ -47,7 +47,7 @@ struct _debugwindow* dwin_ctor(const int size) {
     const int mmx = (mx - (mx / 2));
     const int gy = (scr_y - 40);
 
-    const int dim[N_PANEL][4] = { 
+    const int dim[N_PANEL][4] = {
 
         { 6, mx, 0, 0                     },
         { 6, mx, 6, 0                     },
@@ -93,6 +93,40 @@ void dwin_dtor(struct _debugwindow *this) {
     endwin();
 }
 
+void dwin_resize(struct _debugwindow *this) {
+
+    endwin();
+    dwin_init(this);
+
+    int scr_y, scr_x;
+    getmaxyx(stdscr, scr_y, scr_x);
+
+    const int mx = (scr_x / 2);
+    const int mmx = (mx - (mx / 2));
+    const int gy = (scr_y - 40);
+
+    const int dim[N_PANEL][4] = {
+
+        { 6, mx, 0, 0                     },
+        { 6, mx, 6, 0                     },
+        { 13, mx, 12, 0                   },
+        { 13, (mx / 2), 25, 0             },  
+        { 13, mmx, 25, (mx / 2)           }, 
+        { (gy - 1), mx, 38, 0             },
+        { (scr_y - 3), (scr_x / 2), 0, mx }
+    };
+
+    for(int i = 0; i < N_PANEL; i++) {
+
+        int h = dim[i][0]; int w = dim[i][1];
+        int y = dim[i][2]; int x = dim[i][3];
+
+        panel_resize(this->p->panel[i], h, w, y, x);
+    }
+
+    prompt_resize(this->p->prompt, 3, scr_x, (38 + gy - 1), 0);
+}
+
 void dwin_read_prompt(const struct _debugwindow *this, char *buffer) {
 
     prompt_read(this->p->prompt, buffer);
@@ -126,7 +160,6 @@ void dwin_clr(struct _debugwindow *this) {
     panel_clear(this->p->panel[RPNL]);
 }
 
-
 void dwin_update(struct _debugwindow *this, const PANEL ptype) {
 
     panel_update(this->p->panel[ptype]);
@@ -155,25 +188,32 @@ int dwin_curs_of(struct _debugwindow *this, const PANEL ptype) {
 
 int dwin_height(struct _debugwindow *this, const PANEL ptype) {
 
-    return panel_height(this->p->panel[ptype]);
+    return this->p->panel[ptype]->height;
 }
 
 int dwin_width(struct _debugwindow *this, const PANEL ptype) {
 
-    return panel_width(this->p->panel[ptype]);
+    return this->p->panel[ptype]->width;
 }
 
 int dwin_y(struct _debugwindow *this, const PANEL ptype) {
 
-    return panel_y(this->p->panel[ptype]);
+    return this->p->panel[ptype]->y;
 }
 
 int dwin_x(struct _debugwindow *this, const PANEL ptype) {
 
-    return panel_x(this->p->panel[ptype]);
+    return this->p->panel[ptype]->x;
 }
 
-void dwin_close_panel(struct _debugwindow *this, const PANEL ptype) {
+/* --- Static --- */
 
-    panel_destroy(this->p->panel[ptype]);
+static void dwin_init(struct _debugwindow *this) {
+
+    initscr();
+    cbreak();
+    refresh();
+    echo();
+    curs_set(0);
+    start_color();
 }

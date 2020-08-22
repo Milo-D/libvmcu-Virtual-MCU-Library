@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <ncurses.h>
 
 // Project Headers
@@ -14,7 +15,11 @@ struct _private {
     WINDOW *win;
 };
 
-/* --- Public --- */
+/* Forward Declaration of static Functions */
+
+static void prompt_init(struct _prompt *this, int h, int w, int y, int x);
+
+/* --- Extern --- */
 
 struct _prompt* prompt_ctor(int h, int w, int y, int x) {
 
@@ -29,15 +34,9 @@ struct _prompt* prompt_ctor(int h, int w, int y, int x) {
         return NULL;
     }
 
-    prompt->p->win = newwin(3, w, y, x);
-
     init_pair(1, COLOR_RED, COLOR_BLACK);
-    wbkgd(prompt->p->win, COLOR_PAIR(1));
+    prompt_init(prompt, h, w, y, x);
 
-    curs_set(2);
-    scrollok(prompt->p->win, true);
-    prompt_update(prompt);
-    
     return prompt;
 }
 
@@ -65,8 +64,26 @@ void prompt_write(const struct _prompt *this, const char *str) {
     /* autocompletion in progress */
 }
 
+void prompt_resize(struct _prompt *this, int h, int w, int y, int x) {
+
+    delwin(this->p->win);
+    prompt_init(this, h, w, y, x);
+}
+
 void prompt_update(const struct _prompt *this) {
 
     wborder(this->p->win, 0, 0, 0, 0, 0, 0, 0, 0);
     wrefresh(this->p->win);
+}
+
+/* --- Static --- */
+
+static void prompt_init(struct _prompt *this, int h, int w, int y, int x) {
+
+    this->p->win = newwin(h, w, y, x);
+    wbkgd(this->p->win, COLOR_PAIR(1));
+
+    curs_set(2);
+    scrollok(this->p->win, true);
+    prompt_update(this);
 }
