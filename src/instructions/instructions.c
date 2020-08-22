@@ -555,7 +555,7 @@ void breq(system_t *sys, const int opcode) {
 
 void brge(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, NF) ^ sys_read_sreg(sys, VF) == 0x01)
+    if((sys_read_sreg(sys, NF) ^ sys_read_sreg(sys, VF)) == 0x01)
         return;
 
     int offs = extract(opcode, 3, 10, 0);
