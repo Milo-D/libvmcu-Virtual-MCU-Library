@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     table_t **tables;
     array_t *files = array_ctor(4, NULL, NULL);
 
-    int fcursor = 0; int key, i;
+    int key, x;
     get_files(argc, argv, files);
 
     if(files->top > 4) {
@@ -58,9 +58,9 @@ int main(int argc, char **argv) {
         if(((key = mwin_read_key(window)) == SELECT)) {
 
             mwin_destroy(window);
-            i = mwin_get_choice(window);
+            x = mwin_get_choice(window);
 
-            debug(tables[i]);
+            debug(tables[x]);
             mwin_reinit(&window);
         }
 
