@@ -50,6 +50,8 @@ extern struct _tuple* tuple_ctor(const int n, ...) {
     }
 
     tuple->size = n;
+    va_end(var);
+
     return tuple;
 }
 
