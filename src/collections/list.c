@@ -114,13 +114,18 @@ extern void* ls_pop(struct _list *this) {
     if((last = ls_iterate(this, this->size - 2)) == NULL)
         return NULL;
     
+    void *value;
     const size_t bytes = this->p->head->size;
-    void *value = malloc(bytes);
     
-    if(this->p->cfp != NULL)
+    if(this->p->cfp != NULL) {
+
         value = (void*) (*this->p->cfp)(this->p->head->value);
-    else
+
+    } else {
+
+        value = malloc(bytes);
         memcpy(value, this->p->head->value, bytes);
+    }
     
     node_dtor(this->p->head, this->p->ffp);
     this->p->head = last;
