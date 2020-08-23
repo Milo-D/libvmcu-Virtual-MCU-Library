@@ -16,7 +16,7 @@ struct _private {
 
     panel_t **panel;
     prompt_t *prompt;
-};
+};  
 
 /* Forward Declaration of static Functions */
 

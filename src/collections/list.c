@@ -220,14 +220,16 @@ static struct _node* node_ctor(void *data, const size_t size, void* (*cfp)(void 
 
     if((node = malloc(sizeof(struct _node))) == NULL)
         return NULL;
-
-    if((node->value = malloc(size)) == NULL)
-        return NULL;
     
-    if(cfp != NULL)
+    if(cfp != NULL) {
+
         node->value = (void*) (*cfp)(data);
-    else
+
+    } else {
+
+        node->value = malloc(size);
         memcpy(node->value, data, size);
+    }
     
     node->size = size;
     node->next = NULL;
