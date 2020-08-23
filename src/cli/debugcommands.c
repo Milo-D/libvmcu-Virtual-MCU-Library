@@ -40,7 +40,9 @@ void jump_forward(debugwindow_t *window, system_t *sys, table_t *table, const in
             system_to_win(window, sys, table);
 
         sys_step(sys);
-        usleep(delay * 1000);
+
+        if(delay != 0)
+            usleep(delay * 1000);
     }
 
     dwin_write(window, OPNL, BREAK_REACHED, G);
