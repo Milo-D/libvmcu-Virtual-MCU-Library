@@ -21,4 +21,6 @@ void nfree(const int n, ...) {
         if(p != NULL)
             free(p);
     }
+
+    va_end(var);
 }
