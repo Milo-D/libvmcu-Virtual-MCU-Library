@@ -240,18 +240,18 @@ void sub(system_t *sys, const int opcode) {
 void subi(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int8_t src_val = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
     const int8_t dest_val = sys_read_gpr(sys, dest);
-    const int8_t result = dest_val - src_val;
+    const int8_t result = dest_val - src;
 
-    int8_t vf_res = bit(dest_val, 7) * !bit(src_val, 7) * !bit(result, 7);
-    vf_res += !bit(dest_val, 7) * bit(src_val, 7) * bit(result, 7);
+    int8_t vf_res = bit(dest_val, 7) * !bit(src, 7) * !bit(result, 7);
+    vf_res += !bit(dest_val, 7) * bit(src, 7) * bit(result, 7);
 
-    int8_t cf_res = (!bit(dest_val, 7) * bit(src_val, 7)) + (bit(src_val, 7) * bit(result, 7));
+    int8_t cf_res = (!bit(dest_val, 7) * bit(src, 7)) + (bit(src, 7) * bit(result, 7));
     cf_res += (bit(result, 7) * !bit(dest_val, 7));
 
-    int8_t hf_res = (!bit(dest_val, 3) * bit(src_val, 3)) + (bit(src_val, 3) * bit(result, 3));
+    int8_t hf_res = (!bit(dest_val, 3) * bit(src, 3)) + (bit(src, 3) * bit(result, 3));
     hf_res += bit(result, 3) * !bit(dest_val, 3);
 
     const int8_t nf_res = bit(result, 7);
@@ -298,6 +298,30 @@ void sbc(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00) * zero);
 
     sys_write_gpr(sys, dest, result);
+}
+
+void sbiw(system_t *sys, const int opcode) {
+
+    const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
+    const uint8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
+
+    const int8_t rdl = sys_read_gpr(sys, dest);
+    const int8_t rdh = sys_read_gpr(sys, dest + 1);
+
+    const int16_t result = (rdl + (rdh << 8)) - src;
+
+    int8_t vf_res = bit(result, 15) * !bit(rdh, 7);
+    int8_t cf_res = bit(result, 15) * !bit(rdh, 7);
+    int8_t nf_res = bit(result, 15);
+
+    sys_write_sreg(sys, VF, vf_res);
+    sys_write_sreg(sys, CF, cf_res);
+    sys_write_sreg(sys, NF, nf_res);
+    sys_write_sreg(sys, SF, nf_res ^ vf_res);
+    sys_write_sreg(sys, ZF, (result == 0x0000));
+
+    sys_write_gpr(sys, dest, (result & 0x00ff));
+    sys_write_gpr(sys, dest + 1, (result & 0xff00) >> 8);
 }
 
 void push(system_t *sys, const int opcode) {
@@ -1075,11 +1099,17 @@ static int extract(const int opcode, int from, int to, int offs) {
     return res;
 }
 
-void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-                                                                      dec, inc, add, adc, sub, subi, sbc, push, pop, in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, ld_z, 
-                                                                      st_x, st_xi, sts, xch, brne, breq, brge, brpl, brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
-                                                                      swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
-                                                                      clz, clh, clc, cli, cln, bclr, bset };
+void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
+
+    nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
+    dec, inc, add, adc, sub, subi, sbc, sbiw, push, pop, 
+    in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
+    ld_z, st_x, st_xi, sts, xch, brne, breq, brge, brpl, 
+    brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
+    swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
+    set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
+    clz, clh, clc, cli, cln, bclr, bset
+};
 
 
 

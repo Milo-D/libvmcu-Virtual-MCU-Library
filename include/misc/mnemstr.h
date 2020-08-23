@@ -17,7 +17,7 @@
 #define N_LOGIC 8
 #define N_ACCESS 11
 #define N_STACKOP 2
-#define N_ARITHMETIC 12
+#define N_ARITHMETIC 13
 
 extern const char *mnemstr[N_MAPS][32];
 
