@@ -51,5 +51,42 @@
 
 #endif
 
+#ifdef ATTINY45
+
+    #define SYSTEM "ATtiny45"
+
+    #define GPR_SIZE 32
+    #define SREG_SIZE 8
+    #define SFR_SIZE 64
+    #define SRAM_SIZE 256
+    #define EEPROM_SIZE 256
+    #define FLASH_SIZE 2048
+    #define SRAM_START 0x0060
+    #define RAM_END 0x015f
+
+    #define SPL 0x003d
+    #define SPH 0x003e
+
+    #define PC_BIT 16 
+
+    #define IF 7
+    #define TF 6
+    #define HF 5
+    #define SF 4
+    #define VF 3
+    #define NF 2
+    #define ZF 1
+    #define CF 0
+
+    #define XL 26
+    #define XH 27
+    #define YL 28
+    #define YH 29
+    #define ZL 30
+    #define ZH 31
+
+    extern const char *flags[SREG_SIZE];
+
+#endif
 
 #endif
