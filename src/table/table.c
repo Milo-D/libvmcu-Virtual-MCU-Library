@@ -14,7 +14,6 @@
 #include "collections/tuple.h"
 
 struct _private {
-
     int tip;
     int size;
     int breakc;
@@ -188,14 +187,6 @@ void table_jmp(struct _table *this, const int exec_addr) {
             table_set_tip(this, -1);
             return;
         }
-    }
-
-    tuple_t *pre = array_at(this->p->file, i - 2);
-
-    if(*((int*) tuple_get(pre , 1)) < 0) {
-
-        table_set_tip(this, i - 2);
-        return;
     }
 
     table_set_tip(this, i - 1);

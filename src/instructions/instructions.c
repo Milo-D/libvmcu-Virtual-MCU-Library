@@ -207,6 +207,30 @@ void adc(system_t *sys, const int opcode) {
     sys_write_gpr(sys, dest, result);
 }
 
+void adiw(system_t *sys, const int opcode) {
+
+    const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
+    const uint8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
+
+    const uint8_t rdl = sys_read_gpr(sys, dest);
+    const uint8_t rdh = sys_read_gpr(sys, dest + 1);
+
+    const uint16_t result = (rdl + (rdh << 8)) + src;
+
+    int8_t vf_res = !bit(rdh, 7) * bit(result, 15);
+    int8_t cf_res = bit(rdh, 7) * !bit(result, 15);
+    int8_t nf_res = bit(result, 15);
+
+    sys_write_sreg(sys, VF, vf_res);
+    sys_write_sreg(sys, CF, cf_res);
+    sys_write_sreg(sys, NF, nf_res);
+    sys_write_sreg(sys, SF, nf_res ^ vf_res);
+    sys_write_sreg(sys, ZF, (result == 0x0000));
+
+    sys_write_gpr(sys, dest, (result & 0x00ff));
+    sys_write_gpr(sys, dest + 1, (result & 0xff00) >> 8);
+}
+
 void sub(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
@@ -305,10 +329,10 @@ void sbiw(system_t *sys, const int opcode) {
     const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
     const uint8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
 
-    const int8_t rdl = sys_read_gpr(sys, dest);
-    const int8_t rdh = sys_read_gpr(sys, dest + 1);
+    const uint8_t rdl = sys_read_gpr(sys, dest);
+    const uint8_t rdh = sys_read_gpr(sys, dest + 1);
 
-    const int16_t result = (rdl + (rdh << 8)) - src;
+    const uint16_t result = (rdl + (rdh << 8)) - src;
 
     int8_t vf_res = bit(result, 15) * !bit(rdh, 7);
     int8_t cf_res = bit(result, 15) * !bit(rdh, 7);
@@ -1102,7 +1126,7 @@ static int extract(const int opcode, int from, int to, int offs) {
 void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
 
     nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
-    dec, inc, add, adc, sub, subi, sbc, sbiw, push, pop, 
+    dec, inc, add, adc, adiw, sub, subi, sbc, sbiw, push, pop, 
     in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ld_z, st_x, st_xi, sts, xch, brne, breq, brge, brpl, 
     brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 

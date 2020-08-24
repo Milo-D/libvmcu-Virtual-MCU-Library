@@ -23,6 +23,7 @@ const int opcode[SET_SIZE][WORD] = {
 { 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 0, 0, 1, 1 }, /* INC */
 { 0, 0, 0, 0, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* ADD */
 { 0, 0, 0, 1, 1, 1, R, D, D, D, D, D, R, R, R, R }, /* ADC */
+{ 1, 0, 0, 1, 0, 1, 1, 0, K, K, D, D, K, K, K, K }, /* ADIW */
 { 0, 0, 0, 1, 1, 0, R, D, D, D, D, D, R, R, R, R }, /* SUB */
 { 0, 1, 0, 1, K, K, K, K, D, D, D, D, K, K, K, K }, /* SUBI */
 { 0, 0, 0, 0, 1, 0, R, D, D, D, D, D, R, R, R, R }, /* SBC */
