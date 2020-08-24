@@ -17,7 +17,7 @@ const char *mnemstr[N_MAPS][32] = {
     { "clr", "ori", "or", "and", "andi", "com", "asr", "lsr" },
 
     /* Access Mnemonics */
-    { "movw", "ldi", "mov", "in", "out", "ld", "ldd", "st", "sts", "xch", "swap" },
+    { "movw", "ldi", "mov", "in", "out", "ld", "ldd", "st", "sts", "xch", "swap", "std" },
 
     /* StackOp Mnemonics */
     { "push", "pop" },

@@ -533,6 +533,20 @@ void st_xi(system_t *sys, const int opcode) {
     sys_write_gpr(sys, XH, (0xff00 & post_x) >> 8);
 }
 
+void std_yq(system_t *sys, const int opcode) {
+
+    const int src = extract(opcode, 4, 9, 0);
+
+    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
+                   + extract(opcode, 13, 14, 5);
+
+    const uint8_t yl = sys_read_gpr(sys, YL);
+    const uint8_t yh = sys_read_gpr(sys, YH);
+
+    const int8_t value = sys_read_gpr(sys, src);
+    sys_write_data(sys, ((yh << 8) + yl) + disp, value);
+}
+
 void sts(system_t *sys, const int opcode) {
 
     const int src = extract(opcode, 4, 8, 0);
@@ -1128,7 +1142,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
     dec, inc, add, adc, adiw, sub, subi, sbc, sbiw, push, pop, 
     in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
-    ld_z, st_x, st_xi, sts, xch, brne, breq, brge, brpl, 
+    ld_z, st_x, st_xi, std_yq, sts, xch, brne, breq, brge, brpl, 
     brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
     swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
     set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
