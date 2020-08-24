@@ -25,7 +25,7 @@ struct _private {
 
 /* Forward Declaration of static DATA Functions */
 
-static void data_set_coi(const struct _data *this, const int cell, const int prop);
+static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop);
 static void data_clear_coi(const struct _data *this);
 
 /* --- Public --- */
@@ -46,7 +46,7 @@ struct _data* data_ctor(void) {
     data->p->memory = malloc((RAM_END + 1) * sizeof(int8_t));
     memset(data->p->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
-    data->p->coi = tuple_ctor(2, INT, INT);
+    data->p->coi = tuple_ctor(2, UINT16, INT);
     data_set_coi(data, 0x0000, NONE);
 
     data->size = (RAM_END + 1);
@@ -98,18 +98,18 @@ int8_t data_pop(const struct _data *this) {
     return value;
 }
 
-void data_write(struct _data *this, const int addr, const int8_t value) {
+void data_write(struct _data *this, const uint16_t addr, const int8_t value) {
 
-    if(addr < 0 || addr > RAM_END)
+    if(addr > RAM_END)
         return;
 
     this->p->memory[addr] = value;
     data_set_coi(this, addr, DEST);
 }
 
-int8_t data_read(const struct _data *this, const int addr) {
+int8_t data_read(const struct _data *this, const uint16_t addr) {
 
-    if(addr < 0 || addr > RAM_END)
+    if(addr > RAM_END)
         return 0xff;
 
     data_set_coi(this, addr, SRC);
@@ -118,10 +118,10 @@ int8_t data_read(const struct _data *this, const int addr) {
 
 void data_coi(const struct _data *this, tuple_t *buffer) {
 
-    const int cell = *((int*) tuple_get(this->p->coi, 0));
+    const int cell = *((uint16_t*) tuple_get(this->p->coi, 0));
     const int prop = *((int*) tuple_get(this->p->coi, 1));
 
-    tuple_set(buffer, (void*) &cell, sizeof(int), 0);
+    tuple_set(buffer, (void*) &cell, sizeof(uint16_t), 0);
     tuple_set(buffer, (void*) &prop, sizeof(int), 1);
 
     data_clear_coi(this);
@@ -135,9 +135,9 @@ void data_dump(const struct _data *this, array_t *buffer) {
 
 /* --- Private --- */
 
-static void data_set_coi(const struct _data *this, const int cell, const int prop) {
+static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop) {
 
-    tuple_set(this->p->coi, (void*) &cell, sizeof(int), 0);
+    tuple_set(this->p->coi, (void*) &cell, sizeof(uint16_t), 0);
     tuple_set(this->p->coi, (void*) &prop, sizeof(int), 1);
 }
 

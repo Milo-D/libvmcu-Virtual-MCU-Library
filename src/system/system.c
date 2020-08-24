@@ -182,12 +182,12 @@ int8_t sys_pop_stack(const struct _system *this) {
     return data_pop(this->p->data);
 }
 
-void sys_write_data(struct _system *this, const int addr, const int8_t value) {
+void sys_write_data(struct _system *this, const uint16_t addr, const int8_t value) {
 
     data_write(this->p->data, addr, value);
 }
 
-int8_t sys_read_data(const struct _system *this, const int addr) {
+int8_t sys_read_data(const struct _system *this, const uint16_t addr) {
 
     return data_read(this->p->data, addr);
 }
@@ -202,12 +202,12 @@ void sys_dump_data(const struct _system *this, array_t *buffer) {
     data_dump(this->p->data, buffer);
 }
 
-void sys_write_eeprom(struct _system *this, const int addr, const int8_t value) {
+void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {
 
     eeprom_write(this->p->eeprom, addr, value);
 }
 
-int8_t sys_read_eeprom(const struct _system *this, const int addr) {
+int8_t sys_read_eeprom(const struct _system *this, const uint16_t addr) {
 
     return eeprom_read(this->p->eeprom, addr);
 }

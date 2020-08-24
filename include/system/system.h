@@ -55,15 +55,15 @@ extern void sys_set_pc(struct _system *this, const int addr);
 
 extern void sys_push_stack(struct _system *this, const int8_t value);
 extern int8_t sys_pop_stack(const struct _system *this);
-extern void sys_write_data(struct _system *this, const int addr, const int8_t value);
-extern int8_t sys_read_data(const struct _system *this, const int addr);
+extern void sys_write_data(struct _system *this, const uint16_t addr, const int8_t value);
+extern int8_t sys_read_data(const struct _system *this, const uint16_t addr);
 extern void sys_data_coi(const struct _system *this, tuple_t *buffer);
 extern void sys_dump_data(const struct _system *this, array_t *buffer);
 
 /* EEPROM Operations */
 
-extern void sys_write_eeprom(struct _system *this, const int addr, const int8_t value);
-extern int8_t sys_read_eeprom(const struct _system *this, const int addr);
+extern void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value);
+extern int8_t sys_read_eeprom(const struct _system *this, const uint16_t addr);
 extern void sys_eeprom_coi(const struct _system *this, tuple_t *buffer);
 extern void sys_dump_eeprom(const struct _system *this, array_t *buffer);
 

@@ -143,19 +143,19 @@ static void print_data(debugwindow_t *window, system_t *sys) {
     array_t *buffer = array_ctor((RAM_END + 1), NULL, NULL);
     sys_dump_data(sys, buffer);
 
-    tuple_t *coi = tuple_ctor(2, INT, INT);
+    tuple_t *coi = tuple_ctor(2, UINT16, INT);
     sys_data_coi(sys, coi);
 
-    int cursor = dwin_curs_of(window, DPNL);
+    int16_t cursor = dwin_curs_of(window, DPNL);
 
     if(*((int*) tuple_get(coi, 1)) != NONE) {
 
-        cursor = *((int*) tuple_get(coi, 0));
+        cursor = *((int16_t*) tuple_get(coi, 0));
         dwin_set_curs(window, DPNL, cursor);
     }
 
-    const int8_t spl = *((int8_t*) array_at(buffer, SPL));
-    const int8_t sph = *((int8_t*) array_at(buffer, SPH));
+    const uint8_t spl = *((uint8_t*) array_at(buffer, SPL));
+    const uint8_t sph = *((uint8_t*) array_at(buffer, SPH));
 
     const uint16_t sp = ((sph << 8) + spl);
 
@@ -174,7 +174,7 @@ static void print_data(debugwindow_t *window, system_t *sys) {
         if(i == sp)
             isp = B;
 
-        if(i == *((int*) tuple_get(coi, 0)))
+        if(i == *((int16_t*) tuple_get(coi, 0)))
             ism = color(*((int*) tuple_get(coi, 1)));
 
         char vstr[3];
@@ -212,14 +212,14 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
     array_t *buffer = array_ctor(EEPROM_SIZE, NULL, NULL);
     sys_dump_eeprom(sys, buffer);
 
-    tuple_t *coi = tuple_ctor(2, INT, INT);
+    tuple_t *coi = tuple_ctor(2, UINT16, INT);
     sys_eeprom_coi(sys, coi);
 
-    int cursor = dwin_curs_of(window, EPNL);
+    int16_t cursor = dwin_curs_of(window, EPNL);
 
     if(*((int*) tuple_get(coi, 1)) != NONE) {
 
-        cursor = *((int*) tuple_get(coi, 0));
+        cursor = *((int16_t*) tuple_get(coi, 0));
         dwin_set_curs(window, EPNL, cursor);
     }
 
@@ -235,7 +235,7 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
             continue;
         }
 
-        if(i == *((int*) tuple_get(coi, 0)))
+        if(i == *((int16_t*) tuple_get(coi, 0)))
             ism = color(*((int*) tuple_get(coi, 1)));
 
         char vstr[3];

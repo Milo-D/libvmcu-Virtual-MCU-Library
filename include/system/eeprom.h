@@ -21,8 +21,8 @@ typedef struct _eeprom {
 extern struct _eeprom* eeprom_ctor(void);
 extern void eeprom_dtor(struct _eeprom *this);
 
-extern void eeprom_write(struct _eeprom *this, const int addr, const int8_t value);
-extern int8_t eeprom_read(const struct _eeprom *this, const int addr);
+extern void eeprom_write(struct _eeprom *this, const uint16_t addr, const int8_t value);
+extern int8_t eeprom_read(const struct _eeprom *this, const uint16_t addr);
 
 extern void eeprom_coi(const struct _eeprom *this, tuple_t *buffer);
 extern void eeprom_dump(const struct _eeprom *this, array_t *buffer);
