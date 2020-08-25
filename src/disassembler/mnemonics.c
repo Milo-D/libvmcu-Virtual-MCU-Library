@@ -207,7 +207,6 @@ char* mnem_mov(const int opcode) {
 char* mnem_dec(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -230,7 +229,6 @@ char* mnem_dec(const int opcode) {
 char* mnem_inc(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -438,7 +436,6 @@ char* mnem_sbiw(const int opcode) {
 char* mnem_push(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    
     char *sstr = get_str(src);
 
     queue_t *stream = queue_ctor();
@@ -460,7 +457,6 @@ char* mnem_push(const int opcode) {
 char* mnem_pop(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-        
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -534,7 +530,6 @@ char* mnem_out(const int opcode) {
 char* mnem_clr(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -557,7 +552,6 @@ char* mnem_clr(const int opcode) {
 char* mnem_ld_x(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -579,7 +573,6 @@ char* mnem_ld_x(const int opcode) {
 char* mnem_ld_xi(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -601,7 +594,6 @@ char* mnem_ld_xi(const int opcode) {
 char* mnem_ld_dx(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -623,7 +615,6 @@ char* mnem_ld_dx(const int opcode) {
 char* mnem_ld_y(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -645,7 +636,6 @@ char* mnem_ld_y(const int opcode) {
 char* mnem_ld_yi(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -667,7 +657,6 @@ char* mnem_ld_yi(const int opcode) {
 char* mnem_ld_dy(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -716,7 +705,6 @@ char* mnem_ldd_yq(const int opcode) {
 char* mnem_ld_z(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -738,7 +726,6 @@ char* mnem_ld_z(const int opcode) {
 char* mnem_st_x(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-
     char *sstr = get_str(src);
 
     queue_t *stream = queue_ctor();
@@ -760,7 +747,6 @@ char* mnem_st_x(const int opcode) {
 char* mnem_st_xi(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-
     char *sstr = get_str(src);
 
     queue_t *stream = queue_ctor();
@@ -836,7 +822,6 @@ char* mnem_sts(const int opcode) {
 char* mnem_xch(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-
     char *sstr = get_str(src);
 
     queue_t *stream = queue_ctor();
@@ -1249,7 +1234,6 @@ char* mnem_cpc(const int opcode) {
 char* mnem_lsr(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -1259,7 +1243,7 @@ char* mnem_lsr(const int opcode) {
 
     char *fill = strfill(' ', len, TAB);
     queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- R", dstr, " > 1");
+    queue_put(stream, 3, " <- R", dstr, " >> 1");
 
     char *mnemonic = queue_str(stream);
 
@@ -1271,8 +1255,7 @@ char* mnem_lsr(const int opcode) {
 
 char* mnem_asr(const int opcode) {
 
-    int dest = extract(opcode, 4, 9, 0);
-
+    const int dest = extract(opcode, 4, 9, 0);
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -1282,7 +1265,29 @@ char* mnem_asr(const int opcode) {
 
     char *fill = strfill(' ', len, TAB);
     queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- R", dstr, " > 1");
+    queue_put(stream, 3, " <- R", dstr, " >> 1");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(2, dstr, fill);
+
+    return mnemonic;
+}
+
+char* mnem_ror(const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+    char *dstr = get_str(dest);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 2, "ror r", dstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; R", dstr);
+    queue_put(stream, 3, " <- R", dstr, " >> 1");
 
     char *mnemonic = queue_str(stream);
 
@@ -1295,7 +1300,6 @@ char* mnem_asr(const int opcode) {
 char* mnem_swap(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -1423,7 +1427,6 @@ char* mnem_andi(const int opcode) {
 char* mnem_com(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-
     char *dstr = get_str(dest);
 
     queue_t *stream = queue_ctor();
@@ -1793,7 +1796,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_in, mnem_out, mnem_clr, mnem_ld_x, mnem_ld_xi, mnem_ld_dx, mnem_ld_y, mnem_ld_yi, mnem_ld_dy, mnem_ldd_yq, 
     mnem_ld_z, mnem_st_x, mnem_st_xi, mnem_std_yq, mnem_sts, mnem_xch, mnem_brne, mnem_breq, mnem_brge, mnem_brpl, 
     mnem_brlo, mnem_brlt, mnem_brcc, mnem_brcs, mnem_rcall, mnem_ret, mnem_cp, mnem_cpi, mnem_cpc, mnem_lsr, mnem_asr, 
-    mnem_swap, mnem_ori, mnem_or_asm, mnem_and_asm, mnem_andi, mnem_com, mnem_bld, mnem_bst, mnem_ses, 
+    mnem_ror, mnem_swap, mnem_ori, mnem_or_asm, mnem_and_asm, mnem_andi, mnem_com, mnem_bld, mnem_bst, mnem_ses, 
     mnem_set, mnem_sev, mnem_sez, mnem_seh, mnem_sec, mnem_sei, mnem_sen, mnem_cls, mnem_clt, mnem_clv, 
     mnem_clz, mnem_clh, mnem_clc, mnem_cli, mnem_cln, mnem_bclr, mnem_bset
 };

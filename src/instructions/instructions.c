@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 // Project Headers
 #include "instructions/instructions.h"
@@ -217,9 +218,9 @@ void adiw(system_t *sys, const int opcode) {
 
     const uint16_t result = (rdl + (rdh << 8)) + src;
 
-    int8_t vf_res = !bit(rdh, 7) * bit(result, 15);
-    int8_t cf_res = bit(rdh, 7) * !bit(result, 15);
-    int8_t nf_res = bit(result, 15);
+    const int8_t vf_res = !bit(rdh, 7) * bit(result, 15);
+    const int8_t cf_res = bit(rdh, 7) * !bit(result, 15);
+    const int8_t nf_res = bit(result, 15);
 
     sys_write_sreg(sys, VF, vf_res);
     sys_write_sreg(sys, CF, cf_res);
@@ -334,9 +335,9 @@ void sbiw(system_t *sys, const int opcode) {
 
     const uint16_t result = (rdl + (rdh << 8)) - src;
 
-    int8_t vf_res = bit(result, 15) * !bit(rdh, 7);
-    int8_t cf_res = bit(result, 15) * !bit(rdh, 7);
-    int8_t nf_res = bit(result, 15);
+    const int8_t vf_res = bit(result, 15) * !bit(rdh, 7);
+    const int8_t cf_res = bit(result, 15) * !bit(rdh, 7);
+    const int8_t nf_res = bit(result, 15);
 
     sys_write_sreg(sys, VF, vf_res);
     sys_write_sreg(sys, CF, cf_res);
@@ -878,7 +879,7 @@ void lsr(system_t *sys, const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
 
     const uint8_t value = sys_read_gpr(sys, dest);
-    const int8_t result = (value >> 1);
+    const uint8_t result = (value >> 1);
 
     const int8_t cf_res = bit(value, 0);
     const int8_t vf_res = cf_res ^ 0;
@@ -896,8 +897,8 @@ void asr(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
 
-    const int8_t value = sys_read_gpr(sys, dest);
-    const int8_t result = (value >> 1);
+    const uint8_t value = sys_read_gpr(sys, dest);
+    const uint8_t result = (value >> 1);
 
     const int8_t cf_res = bit(value, 0);
     const int8_t vf_res = cf_res ^ 0;
@@ -906,6 +907,28 @@ void asr(system_t *sys, const int opcode) {
     sys_write_sreg(sys, VF, vf_res);
     sys_write_sreg(sys, NF, 0x00);
     sys_write_sreg(sys, SF, vf_res ^ 0);
+    sys_write_sreg(sys, ZF, (result == 0x00));
+
+    sys_write_gpr(sys, dest, result);
+}
+
+void ror(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+
+    const uint8_t value = sys_read_gpr(sys, dest);
+    const bool carry = sys_read_sreg(sys, CF);
+    
+    const bool lsb = (value & 0x01);
+    const uint8_t result = ((value >> 1) | (carry << 7));
+
+    const bool nf_res = (result & (0x01 << 7));
+    const bool vf_res = (nf_res ^ lsb);
+
+    sys_write_sreg(sys, CF, lsb);
+    sys_write_sreg(sys, VF, vf_res);
+    sys_write_sreg(sys, NF, nf_res);
+    sys_write_sreg(sys, SF, nf_res ^ vf_res);
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
@@ -1143,8 +1166,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     dec, inc, add, adc, adiw, sub, subi, sbc, sbiw, push, pop, 
     in, out, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ld_z, st_x, st_xi, std_yq, sts, xch, brne, breq, brge, brpl, 
-    brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr, 
-    swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
+    brlo, brlt, brcc, brcs, rcall, ret, cp, cpi, cpc, lsr, asr,  
+    ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
     set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
     clz, clh, clc, cli, cln, bclr, bset
 };
