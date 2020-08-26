@@ -72,7 +72,7 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
         const int col = color(*((int*) array_at(coi, s + i)));
         const int8_t val = *((int8_t*) array_at(buffer, s + i));
 
-        dwin_add(window, GPNL, gprstr, col);
+        dwin_add(window, GPNL, gprstr, D);
         dwin_add(window, GPNL, ": ", D);
 
         if((s + i) < 10)
@@ -86,7 +86,7 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
         queue_put(stream, 1, "             ");
 
         char *out = queue_str(stream);
-        dwin_add(window, GPNL, out, D);
+        dwin_add(window, GPNL, out, col);
 
         queue_flush(stream);
         nfree(4, gprno, gprstr, zero, out);
@@ -118,13 +118,14 @@ static void print_sreg(debugwindow_t *window, system_t *sys) {
         const int col = color(*((int*) array_at(coi, i)));
         char *vstr = get_str((status >> i) & 0x01);
 
-        dwin_add(window, SPNL, flags[i], col);
+        dwin_add(window, SPNL, flags[i], D);
+        dwin_add(window, SPNL, ":  ", D);
 
-        char *fill = strfill(' ', 8, 13);
-        queue_put(stream, 4, ":  0x0", vstr, fill, "        ");
+        char *fill = strfill(' ', 8, 21);
+        queue_put(stream, 3, "0x0", vstr, fill);
 
         char *out = queue_str(stream);
-        dwin_add(window, SPNL, out, D);
+        dwin_add(window, SPNL, out, col);
 
         queue_flush(stream);
         nfree(3, vstr, fill, out);
