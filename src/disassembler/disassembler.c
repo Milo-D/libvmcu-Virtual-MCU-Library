@@ -49,8 +49,11 @@ int disassemble(const char *hex_file, array_t *buffer) {
         free(current);
     }
 
-    if(buffer->size == 0)
+    if(buffer->size == 0) {
+
+        array_dtor(dump);
         return -1;
+    }
 
     add_labels(buffer);
     array_dtor(dump);

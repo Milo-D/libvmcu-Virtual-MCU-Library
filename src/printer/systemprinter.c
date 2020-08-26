@@ -345,6 +345,10 @@ static void print_side_table(debugwindow_t *window, table_t *table) {
     if(size == 0) {
 
         dwin_add(window, RPNL, "[ No Source available ]\n", D);
+
+        array_dtor(content);
+        array_dtor(breakp);
+        
         return;
     }
 
