@@ -10,15 +10,10 @@
 #include "system/mcudef.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
+#include "misc/bitmanip.h"
 #include "collections/queue.h"
 
 #define TAB 26
-
-/* Forward Declaration of static Functions */
-
-static int extract(const int opcode, const int from, const int to, const int offs);
-
-/* Extern Mnemonic Functions */
 
 char* mnem_nop(const int opcode) {
 
@@ -154,9 +149,7 @@ char* mnem_rjmp(const int opcode) {
 
     if(((0x01 << 11) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 12) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 12);
         sign[0] = '-';
     }
 
@@ -848,9 +841,7 @@ char* mnem_brne(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -881,9 +872,7 @@ char* mnem_breq(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -914,9 +903,7 @@ char* mnem_brge(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -947,9 +934,7 @@ char* mnem_brpl(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -980,9 +965,7 @@ char* mnem_brlo(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -1013,9 +996,7 @@ char* mnem_brlt(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -1046,9 +1027,7 @@ char* mnem_brcc(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -1079,9 +1058,7 @@ char* mnem_brcs(const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sign[0] = '-';
     }
 
@@ -1112,9 +1089,7 @@ char* mnem_rcall(const int opcode) {
 
     if(((0x01 << 11) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 12) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 12);
         sign[0] = '-';
     }
 
@@ -1176,7 +1151,6 @@ char* mnem_cp(const int opcode) {
     nfree(3, dstr, sstr, fill);
 
     return mnemonic;
-
 }
 
 char* mnem_cpi(const int opcode) {
@@ -1772,21 +1746,6 @@ char* mnem_bset(const int opcode) {
     nfree(2, dstr, fill);
 
     return mnemonic;
-}
-
-/* Static Mnemonic Functions */
-
-static int extract(const int opcode, int from, int to, int offs) {
-
-    int res = 0;
-
-    for(int i = from; i < to; i++) {
-
-        const int bit = (((0x01 << i) & opcode) >> i);
-        res += (bit << (i - from) + offs);
-    }
-
-    return res;
 }
 
 char* (*mnemonics[INSTR_MAX]) (const int opcode) = { 

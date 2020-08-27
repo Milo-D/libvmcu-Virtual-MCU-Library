@@ -10,14 +10,7 @@
 #include "instructions/instructions.h"
 #include "system/mcudef.h"
 #include "system/system.h"
-
-#define bit(value, i) (((0x01 << i) & value) >> i)
-
-/* Forward Delaration of static Functions */
-
-static int extract(const int opcode, const int from, const int to, const int offs);
-
-/* Extern Assembly Instruction Functions */
+#include "misc/bitmanip.h"
 
 void nop(system_t *sys, const int opcode) {
 
@@ -87,10 +80,9 @@ void rjmp(system_t *sys, const int opcode) {
 
     if(((0x01 << 11) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 12) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 12);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -584,10 +576,9 @@ void brne(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -604,10 +595,9 @@ void breq(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -624,10 +614,9 @@ void brge(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -644,10 +633,9 @@ void brpl(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -664,10 +652,9 @@ void brlo(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -684,10 +671,9 @@ void brlt(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -704,10 +690,9 @@ void brcc(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -724,10 +709,9 @@ void brcs(system_t *sys, const int opcode) {
 
     if(((0x01 << 6) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 7) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 7);
         sys_set_pc(sys, prog_counter - offs + 1);
+
         return;
     }
 
@@ -755,10 +739,9 @@ void rcall(system_t *sys, const int opcode) {
 
     if(((0x01 << 11) & offs) != 0x00) {
 
-        offs ^= ((0x01 << 12) - 1);
-        offs += 0x01;
-
+        offs = comp(offs, 12);
         sys_set_pc(sys, pc - offs + 1);
+
         return;
     }
 
@@ -1141,21 +1124,6 @@ void bset(system_t *sys, const int opcode) {
 
     int s_bit = extract(opcode, 4, 7, 0);
     sys_write_sreg(sys, s_bit, 0x01);
-}
-
-/* Static Assembly Instruction Functions */
-
-static int extract(const int opcode, int from, int to, int offs) {
-
-    int res = 0;
-
-    for(int i = from; i < to; i++) {
-
-        const int bit = (((0x01 << i) & opcode) >> i);
-        res += (bit << (i - from) + offs);
-    }
-
-    return res;
 }
 
 void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
