@@ -371,7 +371,6 @@ void in(system_t *sys, const int opcode) {
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
 
     const int8_t val = sys_read_data(sys, src);
-
     sys_write_gpr(sys, dest, val);
 }
 
@@ -381,7 +380,6 @@ void out(system_t *sys, const int opcode) {
     const int src = extract(opcode, 4, 9, 0);
 
     const int8_t val = sys_read_gpr(sys, src);
-
     sys_write_data(sys, dest, val);
 }
 

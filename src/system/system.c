@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "system/system.h"
+#include "system/mcudef.h"
 #include "system/alu.h"
 #include "system/gpr.h"
 #include "system/data.h"
@@ -184,10 +185,19 @@ int8_t sys_pop_stack(const struct _system *this) {
 
 void sys_write_data(struct _system *this, const uint16_t addr, const int8_t value) {
 
+    if(addr < GPR_SIZE) {
+
+        alu_write_gpr(this->p->alu, addr, value);
+        return;
+    }
+
     data_write(this->p->data, addr, value);
 }
 
 int8_t sys_read_data(const struct _system *this, const uint16_t addr) {
+
+    if(addr < GPR_SIZE)
+        return alu_read_gpr(this->p->alu, addr);
 
     return data_read(this->p->data, addr);
 }
