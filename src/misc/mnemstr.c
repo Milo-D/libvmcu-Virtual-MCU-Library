@@ -7,7 +7,7 @@ const char *mnemstr[N_MAPS][32] = {
 
     /* Flow Mnemonics */
     { "rjmp", "brne", "breq", "brge", "brpl", "brlo", 
-      "brlt", "brcc", "brcs", "brvs", "rcall", "ret" },
+      "brlt", "brcc", "brcs", "brvs", "brmi", "rcall", "ret" },
 
     /* Misc Mnemonics */
     { "nop", "bld", "bst", "ses", "set", "sev", "sez", "seh", "sec", "sei", "sen", 
