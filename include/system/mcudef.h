@@ -16,8 +16,8 @@
     #define SRAM_START 0x0060
     #define RAM_END 0x085f
 
-    #define SPL 0x003d
-    #define SPH 0x003e
+    #define SPL 0x005d          /* using absolute SFR address */
+    #define SPH 0x005e
 
     #define PC_BIT 16
 
@@ -64,8 +64,8 @@
     #define SRAM_START 0x0060
     #define RAM_END 0x015f
 
-    #define SPL 0x003d
-    #define SPH 0x003e
+    #define SPL 0x005d
+    #define SPH 0x005e
 
     #define PC_BIT 16 
 
