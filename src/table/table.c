@@ -14,6 +14,7 @@
 #include "collections/tuple.h"
 
 struct _private {
+    
     int tip;
     int size;
     int breakc;

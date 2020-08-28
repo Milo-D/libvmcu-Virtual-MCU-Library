@@ -484,7 +484,7 @@ char* mnem_in(const int opcode) {
     const int len = queue_size(stream);
 
     char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[addr]");
+    queue_put(stream, 4, fill, "; R", dstr, " <- IO[addr]");
 
     char *mnemonic = queue_str(stream);
 
@@ -510,7 +510,34 @@ char* mnem_out(const int opcode) {
     const int len = queue_size(stream);
 
     char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[addr] <- R", sstr);
+    queue_put(stream, 3, fill, "; IO[addr] <- R", sstr);
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(2, sstr, fill);
+
+    return mnemonic;
+}
+
+char* mnem_sbis(const int opcode) {
+
+    const int dest = extract(opcode, 3, 8, 0);
+    const int bit = extract(opcode, 0, 3, 0);
+
+    char vstr[3];
+    to_hex(dest, vstr);
+
+    char *sstr = get_str(bit);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 4, "sbis 0x", vstr, ", ", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 4, fill, "; (IO[", vstr, ", ");
+    queue_put(stream, 2, sstr, "] = 1): PC <- PC + (2 | 3)");
 
     char *mnemonic = queue_str(stream);
 
@@ -1814,7 +1841,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
 
     mnem_nop, mnem_movw, mnem_muls, mnem_mulsu, mnem_fmul, mnem_ldi, mnem_rjmp, mnem_mov, 
     mnem_dec, mnem_inc, mnem_add, mnem_adc, mnem_adiw, mnem_sub, mnem_subi, mnem_sbc, mnem_sbiw, mnem_push, mnem_pop, 
-    mnem_in, mnem_out, mnem_clr, mnem_ld_x, mnem_ld_xi, mnem_ld_dx, mnem_ld_y, mnem_ld_yi, mnem_ld_dy, mnem_ldd_yq, 
+    mnem_in, mnem_out, mnem_sbis, mnem_clr, mnem_ld_x, mnem_ld_xi, mnem_ld_dx, mnem_ld_y, mnem_ld_yi, mnem_ld_dy, mnem_ldd_yq, 
     mnem_ld_z, mnem_st_x, mnem_st_xi, mnem_std_yq, mnem_sts, mnem_xch, mnem_brne, mnem_breq, mnem_brge, mnem_brpl, 
     mnem_brlo, mnem_brlt, mnem_brcc, mnem_brcs, mnem_brvs, mnem_brmi, mnem_rcall, mnem_ret, mnem_cp, mnem_cpi, mnem_cpc, mnem_lsr, 
     mnem_asr, mnem_ror, mnem_swap, mnem_ori, mnem_or_asm, mnem_and_asm, mnem_andi, mnem_com, mnem_bld, mnem_bst, mnem_ses, 
