@@ -165,7 +165,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [ ] Full Instruction Support
 
 # Instructions
-Currently MDX supports: ~ 70 Instructions. More Instructions are coming soon.
+Currently MDX supports: ~ 72 Instructions. More Instructions are coming soon.
 
 # Screenshots
 
