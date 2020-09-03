@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "table/table.h"
+#include "table/entry.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "disassembler/disassembler.h"
@@ -19,9 +20,8 @@ struct _private {
     int size;
     int breakc;
     char *source;
-    
-    array_t *file;
-    array_t *breakp;
+
+    entry_t *entry;
 };
 
 /* --- Public --- */
@@ -45,29 +45,39 @@ struct _table* table_ctor(const char *hex_file) {
     strncpy(table->p->source, hex_file, len);
     table->p->source[len] = '\0';
 
-    table->p->file = array_ctor(1, tuple_dtor, tuple_cpy);
-    disassemble(hex_file, table->p->file);
+    array_t *buffer = array_ctor(1, tuple_dtor, tuple_cpy);
+    disassemble(hex_file, buffer);
    
     table->p->tip = table->p->breakc = 0;
-    table->p->size = table->p->file->size;
+    table->p->size = buffer->size;
 
-    table->p->breakp = array_ctor(table->p->size, NULL, NULL);
+    table->p->entry = malloc(buffer->size * sizeof(entry_t));
   
     for(int i = 0; i < table->p->size; i++) {
-    
-        const bool init = false;
-        array_push(table->p->breakp, (void*) &init, sizeof(bool));
+
+        tuple_t *t = (tuple_t*) array_at(buffer, i);
+        
+        const char *content = (char*) tuple_get(t, 0);
+        const size_t bytes = strlen(content) * sizeof(char);
+
+        table->p->entry[i].ln = malloc(bytes + sizeof(char));
+        strncpy(table->p->entry[i].ln, content, strlen(content) + 1);
+
+        table->p->entry[i].addr = *((int*) tuple_get(t, 1));
+        table->p->entry[i].breakp = false;
     }
-    
+
+    array_dtor(buffer);
     return table;
 }
 
 void table_dtor(struct _table *this) {
 
-    array_dtor(this->p->file);
-    array_dtor(this->p->breakp);
+    for(int i = 0; i < this->p->size; i++)
+        free(this->p->entry[i].ln);
 
     free(this->p->source);
+    free(this->p->entry);
     free(this->p);
     free(this);
 }
@@ -91,11 +101,10 @@ int table_add_breakp(struct _table *this, const char *point) {
     if(line < 0 || line >= this->p->size)
         return -1;
 
-    if(*((bool*) array_at(this->p->breakp, line)) == true)
+    if(this->p->entry[line].breakp == true)
         return -1;
 
-    const bool set = true;
-    array_set(this->p->breakp, (void*) &set, sizeof(bool), line);
+    this->p->entry[line].breakp = true;
     this->p->breakc += 1;
 
     return 0;
@@ -108,11 +117,10 @@ int table_del_breakp(struct _table *this, const char *point) {
     if(line < 0 || line >= this->p->size)
         return -1;
 
-    if(*((bool*) array_at(this->p->breakp, line)) == false)
+    if(this->p->entry[line].breakp == false)
         return -1;
 
-    const bool unset = false;
-    array_set(this->p->breakp, (void*) &unset, sizeof(bool), line);
+    this->p->entry[line].breakp = false;
     this->p->breakc -= 1;
 
     return 0;
@@ -123,16 +131,17 @@ void table_define(struct _table *this, const char *alias, const char *seq) {
     for(int i = 0; i < this->p->size; i++) {
 
         int pos;
+        char *line = this->p->entry[i].ln;
 
-        tuple_t *entry = (tuple_t*) array_at(this->p->file, i);
-        char *line = (char*) tuple_get(entry, 0);
-
-        if(*((int*) tuple_get(entry, 1)) < 0) {
+        if(this->p->entry[i].addr < 0) {
 
             char *repl = strrepl(line, alias, seq);
-
             const int len = strlen(repl) + 1;
-            tuple_set(entry, (void*) repl, len * sizeof(char), 0);
+
+            free(this->p->entry[i].ln);
+
+            this->p->entry[i].ln = malloc(len * sizeof(char));
+            strncpy(this->p->entry[i].ln, repl, len);
             free(repl);
 
             continue;
@@ -148,7 +157,10 @@ void table_define(struct _table *this, const char *alias, const char *seq) {
         char *result = strxcat(repl, comment);
 
         const int len = strlen(result) + 1;
-        tuple_set(entry, (void*) result, len * sizeof(char), 0);
+
+        free(this->p->entry[i].ln);
+        this->p->entry[i].ln = malloc(len * sizeof(char));
+        strncpy(this->p->entry[i].ln, result, len);
 
         nfree(4, code, comment, repl, result);
     }
@@ -174,12 +186,7 @@ void table_jmp(struct _table *this, const int exec_addr) {
 
     int i = 0;
 
-    while(true) {
-
-        tuple_t *entry = (tuple_t*) array_at(this->p->file, i);
-
-        if(*((int*) tuple_get(entry, 1)) == exec_addr)
-            break;
+    while(this->p->entry[i].addr != exec_addr) {
 
         i += 1;
 
@@ -195,7 +202,7 @@ void table_jmp(struct _table *this, const int exec_addr) {
 
 bool table_is_breakp(const struct _table *this) {
 
-    return *((bool*) array_at(this->p->breakp, this->p->tip));
+    return this->p->entry[this->p->tip].breakp;
 }
 
 bool table_has_breakp(const struct _table *this) {
@@ -206,11 +213,7 @@ bool table_has_breakp(const struct _table *this) {
 bool table_is_sync(const struct _table *this, const int hex_addr) {
 
     const int tip = this->p->tip;
-
-    tuple_t *entry = (tuple_t*) array_at(this->p->file, tip);
-    const int match = *((int*) tuple_get(entry, 1));
-
-    return (match == hex_addr);
+    return (this->p->entry[tip].addr == hex_addr);
 }
 
 int table_size(const struct _table *this) {
@@ -227,12 +230,10 @@ void table_content(const struct _table *this, array_t *buffer) {
 
     for(int i = 0; i < this->p->size; i++) {
     
-        tuple_t *entry = (tuple_t*) array_at(this->p->file, i);
+        const char *ln = this->p->entry[i].ln;
+        const size_t bytes = strlen(ln) * sizeof(char);
 
-        const char *fcon = (char*) tuple_get(entry, 0);
-        const size_t len = strlen(fcon);
-        
-        array_push(buffer, (void*) fcon, (len + 1) * sizeof(char));
+        array_push(buffer, (void*) ln, bytes + sizeof(char));
     }
 }
 
@@ -240,8 +241,8 @@ void table_breakp(const struct _table *this, array_t *buffer) {
 
     for(int i = 0; i < this->p->size; i++) {
 
-        const bool brk = *((bool*) array_at(this->p->breakp, i));
-        array_push(buffer, (void*) &brk, sizeof(bool));
+        const bool breakp = this->p->entry[i].breakp;
+        array_push(buffer, (void*) &breakp, sizeof(bool));
     }
 }
 
