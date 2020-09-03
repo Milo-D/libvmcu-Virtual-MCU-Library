@@ -17,10 +17,6 @@
 struct _private {
     
     int tip;
-    int size;
-    int breakc;
-    char *source;
-
     entry_t *entry;
 };
 
@@ -41,19 +37,19 @@ struct _table* table_ctor(const char *hex_file) {
 
     const int len = strlen(hex_file);
     
-    table->p->source = malloc((len + 1) * sizeof(char));
-    strncpy(table->p->source, hex_file, len);
-    table->p->source[len] = '\0';
+    table->source = malloc((len + 1) * sizeof(char));
+    strncpy(table->source, hex_file, len);
+    table->source[len] = '\0';
 
     array_t *buffer = array_ctor(1, tuple_dtor, tuple_cpy);
     disassemble(hex_file, buffer);
    
-    table->p->tip = table->p->breakc = 0;
-    table->p->size = buffer->size;
+    table->p->tip = table->breakc = 0;
+    table->size = buffer->size;
 
     table->p->entry = malloc(buffer->size * sizeof(entry_t));
-  
-    for(int i = 0; i < table->p->size; i++) {
+
+    for(int i = 0; i < buffer->size; i++) {
 
         tuple_t *t = (tuple_t*) array_at(buffer, i);
         
@@ -73,18 +69,18 @@ struct _table* table_ctor(const char *hex_file) {
 
 void table_dtor(struct _table *this) {
 
-    for(int i = 0; i < this->p->size; i++)
+    for(int i = 0; i < this->size; i++)
         free(this->p->entry[i].ln);
 
-    free(this->p->source);
     free(this->p->entry);
+    free(this->source);
     free(this->p);
     free(this);
 }
 
 int table_step(struct _table *this) {
 
-    if(this->p->tip >= this->p->size - 1)
+    if(this->p->tip >= this->size - 1)
         return -1;
 
     if(this->p->tip < 0)
@@ -98,14 +94,14 @@ int table_add_breakp(struct _table *this, const char *point) {
 
     const int line = get_int(point);
 
-    if(line < 0 || line >= this->p->size)
+    if(line < 0 || line >= this->size)
         return -1;
 
     if(this->p->entry[line].breakp == true)
         return -1;
 
     this->p->entry[line].breakp = true;
-    this->p->breakc += 1;
+    this->breakc += 1;
 
     return 0;
 }
@@ -114,21 +110,21 @@ int table_del_breakp(struct _table *this, const char *point) {
 
     const int line = get_int(point);
 	
-    if(line < 0 || line >= this->p->size)
+    if(line < 0 || line >= this->size)
         return -1;
 
     if(this->p->entry[line].breakp == false)
         return -1;
 
     this->p->entry[line].breakp = false;
-    this->p->breakc -= 1;
+    this->breakc -= 1;
 
     return 0;
 }
 
 void table_define(struct _table *this, const char *alias, const char *seq) {
 
-    for(int i = 0; i < this->p->size; i++) {
+    for(int i = 0; i < this->size; i++) {
 
         int pos;
         char *line = this->p->entry[i].ln;
@@ -168,7 +164,7 @@ void table_define(struct _table *this, const char *alias, const char *seq) {
 
 void table_set_tip(struct _table *this, const int line) {
 
-    if(line >= this->p->size)
+    if(line >= this->size)
         return;
 
     if(line < 0)
@@ -190,7 +186,7 @@ void table_jmp(struct _table *this, const int exec_addr) {
 
         i += 1;
 
-        if(i >= this->p->size) {
+        if(i >= this->size) {
 
             table_set_tip(this, -1);
             return;
@@ -205,30 +201,15 @@ bool table_is_breakp(const struct _table *this) {
     return this->p->entry[this->p->tip].breakp;
 }
 
-bool table_has_breakp(const struct _table *this) {
-
-    return (this->p->breakc > 0);
-}
-
 bool table_is_sync(const struct _table *this, const int hex_addr) {
 
     const int tip = this->p->tip;
     return (this->p->entry[tip].addr == hex_addr);
 }
 
-int table_size(const struct _table *this) {
-
-    return this->p->size;
-}
-
-char* table_source(const struct _table *this) {
-
-    return this->p->source;
-}
-
 void table_content(const struct _table *this, array_t *buffer) {
 
-    for(int i = 0; i < this->p->size; i++) {
+    for(int i = 0; i < this->size; i++) {
     
         const char *ln = this->p->entry[i].ln;
         const size_t bytes = strlen(ln) * sizeof(char);
@@ -239,7 +220,7 @@ void table_content(const struct _table *this, array_t *buffer) {
 
 void table_breakp(const struct _table *this, array_t *buffer) {
 
-    for(int i = 0; i < this->p->size; i++) {
+    for(int i = 0; i < this->size; i++) {
 
         const bool breakp = this->p->entry[i].breakp;
         array_push(buffer, (void*) &breakp, sizeof(bool));

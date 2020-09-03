@@ -99,7 +99,7 @@ static void mode_headless(const char *hex_file) {
 
     table_t *table = table_ctor(hex_file);
 
-    if(table_size(table) <= 0)
+    if(table->size <= 0)
         return;
 
     system_t *sys = sys_ctor(table);

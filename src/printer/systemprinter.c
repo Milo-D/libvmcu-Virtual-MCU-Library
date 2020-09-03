@@ -272,7 +272,7 @@ static void print_table(debugwindow_t *window, table_t *table) {
     dwin_add(window, CPNL, "Instructions:\n\n", D);
 
     const int tip = table_get_tip(table);
-    const int size = table_size(table);
+    const int size = table->size;
 
     array_t *content = array_ctor(size, NULL, NULL);
     table_content(table, content);
@@ -330,7 +330,7 @@ static void print_side_table(debugwindow_t *window, table_t *table) {
     dwin_add(window, RPNL, "Source Code:\n\n", D);
 
     const int tip = table_get_tip(table);
-    const int size = table_size(table);
+    const int size = table->size;
 
     array_t *content = array_ctor(size, NULL, NULL);
     table_content(table, content);

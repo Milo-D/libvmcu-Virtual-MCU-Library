@@ -41,9 +41,7 @@ struct _flash* flash_ctor(table_t *table) {
     }
 
     array_t *buffer = array_ctor(1024, NULL, NULL);
-    char *file = table_source(table);
-    
-    decode_hex(file, buffer);
+    decode_hex(table->source, buffer);
 
     flash->p->keys = array_ctor(buffer->top, tuple_dtor, tuple_cpy);
     flash->p->mem_usage = buffer->top;

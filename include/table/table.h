@@ -11,6 +11,10 @@ struct _private;
 
 typedef struct _table {
 
+    int size;
+    int breakc;
+    char *source;
+
     struct _private *p;
 
 } table_t;
@@ -30,10 +34,7 @@ extern int table_get_tip(const struct _table *this);
 extern void table_jmp(struct _table *this, const int exec_addr);
 
 extern bool table_is_breakp(const struct _table *this);
-extern bool table_has_breakp(const struct _table *this);
 extern bool table_is_sync(const struct _table *this, const int hex_addr);
-extern int table_size(const struct _table *this);
-extern char* table_source(const struct _table *this);
 
 extern void table_content(const struct _table *this, array_t *buffer);
 extern void table_breakp(const struct _table *this, array_t *buffer);

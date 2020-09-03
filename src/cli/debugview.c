@@ -23,7 +23,6 @@
 
 #define at(l, i) ls_at(l, i)
 
-static int size = 0;
 static debugwindow_t *window = NULL;
 
 /* Forward Declarations of static Debug Functions */
@@ -35,15 +34,12 @@ static void sig_handler(int signal);
 void debug(table_t *table) {
 
     signal(SIGWINCH, sig_handler);
-
-    size = table_size(table);
-    window = dwin_ctor(size);
+    window = dwin_ctor(table->size);
 
     system_t *sys = sys_ctor(table);
     parser_t *parser = parser_ctor(DEBUG);
 
-    const char *path = table_source(table);
-    char *sim_status = sim_start(path);
+    char *sim_status = sim_start(table->source);
 
     dwin_write(window, OPNL, INIT_SUCCESS, D);
     dwin_write(window, OPNL, sim_status, D);
@@ -56,7 +52,7 @@ void debug(table_t *table) {
         system_to_win(window, sys, table);
         dwin_read_prompt(window, select);
 
-        if(size <= 0)
+        if(table->size <= 0)
             continue;
 
         if(strcmp(select, "") != 0)
