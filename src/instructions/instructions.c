@@ -398,6 +398,8 @@ void out(system_t *sys, const int opcode) {
 
     const int8_t val = sys_read_gpr(sys, src);
     sys_write_data(sys, GPR_SIZE + dest, val);
+
+    sys->cycles += 1;
 }
 
 void sbis(system_t *sys, const int opcode) {
@@ -407,10 +409,14 @@ void sbis(system_t *sys, const int opcode) {
 
     const uint8_t val = sys_read_data(sys, GPR_SIZE + dest);
 
-    if((val & (0x01 << bit)) == 0x00)
+    if((val & (0x01 << bit)) == 0x00) {
+
+        sys->cycles += 1;
         return;
+    }
 
     /* sys_skip */
+    sys->cycles += 2;
 }
 
 void clr(system_t *sys, const int opcode) {
@@ -427,6 +433,8 @@ void clr(system_t *sys, const int opcode) {
     sys_write_sreg(sys, VF, 0x00);
     sys_write_sreg(sys, NF, 0x00);
     sys_write_sreg(sys, ZF, 0x01);
+
+    sys->cycles += 1;
 }
 
 void ld_x(system_t *sys, const int opcode) {
@@ -438,6 +446,8 @@ void ld_x(system_t *sys, const int opcode) {
 
     const int8_t data = sys_read_data(sys, (xh << 8) + xl);
     sys_write_gpr(sys, dest, data);
+
+    sys->cycles += 1;
 }
 
 void ld_xi(system_t *sys, const int opcode) {
@@ -453,6 +463,8 @@ void ld_xi(system_t *sys, const int opcode) {
     sys_write_gpr(sys, dest, data);
     sys_write_gpr(sys, XL, (0x00ff & post_x));
     sys_write_gpr(sys, XH, (0xff00 & post_x) >> 8);
+
+    sys->cycles += 2;
 }
 
 void ld_dx(system_t *sys, const int opcode) {
@@ -468,6 +480,8 @@ void ld_dx(system_t *sys, const int opcode) {
     sys_write_gpr(sys, XL, (0x00ff & pre_x));
     sys_write_gpr(sys, XH, (0xff00 & pre_x) >> 8);
     sys_write_gpr(sys, dest, data);
+
+    sys->cycles += 3;
 }
 
 void ld_y(system_t *sys, const int opcode) {
@@ -479,6 +493,8 @@ void ld_y(system_t *sys, const int opcode) {
 
     const int8_t data = sys_read_data(sys, (yh << 8) + yl);
     sys_write_gpr(sys, dest, data);
+
+    sys->cycles += 1;
 }
 
 void ld_yi(system_t *sys, const int opcode) {
@@ -494,6 +510,8 @@ void ld_yi(system_t *sys, const int opcode) {
     sys_write_gpr(sys, dest, data);
     sys_write_gpr(sys, YL, (0x00ff & post_y));
     sys_write_gpr(sys, YH, (0xff00 & post_y) >> 8);
+
+    sys->cycles += 2;
 }
 
 void ld_dy(system_t *sys, const int opcode) {
@@ -509,6 +527,8 @@ void ld_dy(system_t *sys, const int opcode) {
     sys_write_gpr(sys, YL, (0x00ff & pre_y));
     sys_write_gpr(sys, YH, (0xff00 & pre_y) >> 8);
     sys_write_gpr(sys, dest, data);
+
+    sys->cycles += 3;
 }
 
 void ldd_yq(system_t *sys, const int opcode) {
@@ -523,6 +543,8 @@ void ldd_yq(system_t *sys, const int opcode) {
 
     const int8_t data = sys_read_data(sys, (yh << 8) + yl + disp);
     sys_write_gpr(sys, dest, data);
+
+    sys->cycles += 2;
 }
 
 void ld_z(system_t *sys, const int opcode) {
@@ -534,6 +556,8 @@ void ld_z(system_t *sys, const int opcode) {
 
     const int8_t data = sys_read_data(sys, (zh << 8) + zl);
     sys_write_gpr(sys, dest, data);
+
+    sys->cycles += 1;
 }
 
 void st_x(system_t *sys, const int opcode) {
@@ -545,6 +569,7 @@ void st_x(system_t *sys, const int opcode) {
     const int8_t value = sys_read_gpr(sys, src);
 
     sys_write_data(sys, (xh << 8) + xl, value);
+    sys->cycles += 1;
 }
 
 void st_xi(system_t *sys, const int opcode) {
@@ -560,6 +585,8 @@ void st_xi(system_t *sys, const int opcode) {
     sys_write_data(sys, (xh << 8) + xl, value);
     sys_write_gpr(sys, XL, (0x00ff & post_x));
     sys_write_gpr(sys, XH, (0xff00 & post_x) >> 8);
+
+    sys->cycles += 1;
 }
 
 void std_yq(system_t *sys, const int opcode) {
@@ -574,6 +601,8 @@ void std_yq(system_t *sys, const int opcode) {
 
     const int8_t value = sys_read_gpr(sys, src);
     sys_write_data(sys, ((yh << 8) + yl) + disp, value);
+
+    sys->cycles += 2;
 }
 
 void sts(system_t *sys, const int opcode) {
@@ -588,6 +617,7 @@ void sts(system_t *sys, const int opcode) {
                 ((0x0f & dest));
 
     sys_write_data(sys, addr, value);
+    sys->cycles += 1;
 }
 
 void xch(system_t *sys, const int opcode) {
@@ -602,12 +632,17 @@ void xch(system_t *sys, const int opcode) {
 
     sys_write_data(sys, (zh << 8) + zl, reg_val);
     sys_write_gpr(sys, src, data_val);
+
+    sys->cycles += 2;
 }
 
 void brne(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, ZF) == 0x01)
+    if(sys_read_sreg(sys, ZF) == 0x01) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -621,12 +656,16 @@ void brne(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void breq(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, ZF) == 0x00)
+    if(sys_read_sreg(sys, ZF) == 0x00) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -640,12 +679,16 @@ void breq(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brge(system_t *sys, const int opcode) {
 
-    if((sys_read_sreg(sys, NF) ^ sys_read_sreg(sys, VF)) == 0x01)
+    if((sys_read_sreg(sys, NF) ^ sys_read_sreg(sys, VF)) == 0x01) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -659,12 +702,16 @@ void brge(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brpl(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, NF) == 0x01)
+    if(sys_read_sreg(sys, NF) == 0x01) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -678,12 +725,16 @@ void brpl(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brlo(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, CF) == 0x00)
+    if(sys_read_sreg(sys, CF) == 0x00) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -697,12 +748,16 @@ void brlo(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brlt(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, SF) == 0x00)
+    if(sys_read_sreg(sys, SF) == 0x00) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -716,12 +771,16 @@ void brlt(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brcc(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, CF) == 0x01)
+    if(sys_read_sreg(sys, CF) == 0x01) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -735,12 +794,16 @@ void brcc(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brcs(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, CF) == 0x00)
+    if(sys_read_sreg(sys, CF) == 0x00) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -754,12 +817,16 @@ void brcs(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brvs(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, VF) == 0x00)
+    if(sys_read_sreg(sys, VF) == 0x00) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -773,12 +840,16 @@ void brvs(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void brmi(system_t *sys, const int opcode) {
 
-    if(sys_read_sreg(sys, NF) == 0x00)
+    if(sys_read_sreg(sys, NF) == 0x00) {
+
+        sys->cycles += 1;
         return;
+    }
 
     int offs = extract(opcode, 3, 10, 0);
     const int prog_counter = sys_get_pc(sys);
@@ -792,6 +863,7 @@ void brmi(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void rcall(system_t *sys, const int opcode) {
@@ -805,6 +877,8 @@ void rcall(system_t *sys, const int opcode) {
 
             sys_push_stack(sys, (pc + 1) & 0x00ff);
             sys_push_stack(sys, ((pc + 1) & 0xff00) >> 8);
+
+            sys->cycles += 3;
 
         break;
 
@@ -836,6 +910,7 @@ void ret(system_t *sys, const int opcode) {
             pcl = sys_pop_stack(sys);
 
             sys_set_pc(sys, (pch << 8) + pcl);
+            sys->cycles += 4;
 
         break;
 
@@ -871,6 +946,8 @@ void cp(system_t *sys, const int opcode) {
     sys_write_sreg(sys, NF, nf_res);
     sys_write_sreg(sys, SF, nf_res ^ vf_res);
     sys_write_sreg(sys, ZF, (result == 0x00));
+
+    sys->cycles += 1;
 }
 
 void cpi(system_t *sys, const int opcode) {
@@ -898,6 +975,8 @@ void cpi(system_t *sys, const int opcode) {
     sys_write_sreg(sys, NF, nf_res);
     sys_write_sreg(sys, SF, nf_res ^ vf_res);
     sys_write_sreg(sys, ZF, (result == 0x00));
+
+    sys->cycles += 1;
 }
 
 void cpc(system_t *sys, const int opcode) {
@@ -929,6 +1008,8 @@ void cpc(system_t *sys, const int opcode) {
     sys_write_sreg(sys, NF, nf_res);
     sys_write_sreg(sys, SF, nf_res ^ vf_res);
     sys_write_sreg(sys, ZF, zf_res);
+
+    sys->cycles += 1;
 }
 
 void lsr(system_t *sys, const int opcode) {
@@ -948,6 +1029,7 @@ void lsr(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void asr(system_t *sys, const int opcode) {
@@ -967,6 +1049,7 @@ void asr(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void ror(system_t *sys, const int opcode) {
@@ -989,6 +1072,7 @@ void ror(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void swap(system_t *sys, const int opcode) {
@@ -999,6 +1083,7 @@ void swap(system_t *sys, const int opcode) {
     const uint8_t result = ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void ori(system_t *sys, const int opcode) {
@@ -1017,6 +1102,7 @@ void ori(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, 16 + dest, result);
+    sys->cycles += 1;
 }
 
 void or_asm(system_t *sys, const int opcode) {
@@ -1028,6 +1114,7 @@ void or_asm(system_t *sys, const int opcode) {
     const int8_t src_val = sys_read_gpr(sys, src);
 
     sys_write_gpr(sys, dest, dest_val | src_val);
+    sys->cycles += 1;
 }
 
 void and_asm(system_t *sys, const int opcode) {
@@ -1047,6 +1134,7 @@ void and_asm(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void andi(system_t *sys, const int opcode) {
@@ -1065,6 +1153,7 @@ void andi(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void com(system_t *sys, const int opcode) {
@@ -1082,6 +1171,7 @@ void com(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void bld(system_t *sys, const int opcode) {
@@ -1095,10 +1185,13 @@ void bld(system_t *sys, const int opcode) {
     if(t_flag == 0x00) {
 
         sys_write_gpr(sys, dest, (val & ~(0x01 << bpos)));
+        sys->cycles += 1;
+
         return;
     }
 
     sys_write_gpr(sys, dest, (val | (0x01 << bpos)));
+    sys->cycles += 1;
 }
 
 void bst(system_t *sys, const int opcode) {
@@ -1108,98 +1201,120 @@ void bst(system_t *sys, const int opcode) {
 
     const int8_t val = sys_read_gpr(sys, dest);
     sys_write_sreg(sys, TF, ((0x01 << bpos) & val) >> bpos);
+
+    sys->cycles += 1;
 }
 
 void ses(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, SF, 0x01);
+    sys->cycles += 1;
 }
 
 void set(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, TF, 0x01);
+    sys->cycles += 1;
 }
 
 void sev(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, VF, 0x01);
+    sys->cycles += 1;
 }
 
 void sez(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, ZF, 0x01);
+    sys->cycles += 1;
 }
 
 void seh(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, HF, 0x01);
+    sys->cycles += 1;
 }
 
 void sec(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, CF, 0x01);
+    sys->cycles += 1;
 }
 
 void sei(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, IF, 0x01);
+    sys->cycles += 1;
 }
 
 void sen(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, NF, 0x01);
+    sys->cycles += 1;
 }
 
 void cls(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, SF, 0x00);
+    sys->cycles += 1;
 }
 
 void clt(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, TF, 0x00);
+    sys->cycles += 1;
 }
 
 void clv(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, VF, 0x00);
+    sys->cycles += 1;
 }
 
 void clz(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, ZF, 0x00);
+    sys->cycles += 1;
 }
 
 void clh(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, HF, 0x00);
+    sys->cycles += 1;
 }
 
 void clc(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, CF, 0x00);
+    sys->cycles += 1;
 }
 
 void cli(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, IF, 0x00);
+    sys->cycles += 1;
 }
 
 void cln(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, NF, 0x00);
+    sys->cycles += 1;
 }
 
 void bclr(system_t *sys, const int opcode) {
 
     int s_bit = extract(opcode, 4, 7, 0);
     sys_write_sreg(sys, s_bit, 0x00);
+
+    sys->cycles += 1;
 }
 
 void bset(system_t *sys, const int opcode) {
 
     int s_bit = extract(opcode, 4, 7, 0);
     sys_write_sreg(sys, s_bit, 0x01);
+
+    sys->cycles += 1;
 }
 
 void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
