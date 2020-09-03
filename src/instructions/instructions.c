@@ -27,6 +27,8 @@ void movw(system_t *sys, const int opcode) {
 
     sys_write_gpr(sys, dest, high);
     sys_write_gpr(sys, dest + 1, low);
+
+    sys->cycles += 1;
 }
 
 void muls(system_t *sys, const int opcode) {
@@ -41,6 +43,8 @@ void muls(system_t *sys, const int opcode) {
 
     sys_write_gpr(sys, 0, (result & 0x00ff));
     sys_write_gpr(sys, 1, (result & 0xff00) >> 8);
+
+    sys->cycles += 1;
 }
 
 void mulsu(system_t *sys, const int opcode) {
@@ -58,6 +62,8 @@ void mulsu(system_t *sys, const int opcode) {
 
     sys_write_gpr(sys, 0, (result & 0x00ff));
     sys_write_gpr(sys, 1, (result & 0xff00) >> 8);
+
+    sys->cycles += 2;
 }
 
 void fmul(system_t *sys, const int opcode) {
@@ -71,6 +77,7 @@ void ldi(system_t *sys, const int opcode) {
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
     sys_write_gpr(sys, dest + 16, src);
+    sys->cycles += 1;
 }
 
 void rjmp(system_t *sys, const int opcode) {
@@ -87,6 +94,7 @@ void rjmp(system_t *sys, const int opcode) {
     }
 
     sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
 }
 
 void mov(system_t *sys, const int opcode) {
@@ -96,6 +104,8 @@ void mov(system_t *sys, const int opcode) {
 
     const int8_t value = sys_read_gpr(sys, src);
     sys_write_gpr(sys, dest, value);
+
+    sys->cycles += 1;
 }
 
 void dec(system_t *sys, const int opcode) {
@@ -116,6 +126,7 @@ void dec(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void inc(system_t *sys, const int opcode) {
@@ -136,6 +147,7 @@ void inc(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void add(system_t *sys, const int opcode) {
@@ -166,6 +178,7 @@ void add(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void adc(system_t *sys, const int opcode) {
@@ -198,6 +211,7 @@ void adc(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void adiw(system_t *sys, const int opcode) {
@@ -222,6 +236,8 @@ void adiw(system_t *sys, const int opcode) {
 
     sys_write_gpr(sys, dest, (result & 0x00ff));
     sys_write_gpr(sys, dest + 1, (result & 0xff00) >> 8);
+
+    sys->cycles += 1;
 }
 
 void sub(system_t *sys, const int opcode) {
@@ -252,6 +268,7 @@ void sub(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void subi(system_t *sys, const int opcode) {
@@ -281,6 +298,7 @@ void subi(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00));
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void sbc(system_t *sys, const int opcode) {
@@ -315,6 +333,7 @@ void sbc(system_t *sys, const int opcode) {
     sys_write_sreg(sys, ZF, (result == 0x00) * zero);
 
     sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
 }
 
 void sbiw(system_t *sys, const int opcode) {
@@ -339,6 +358,8 @@ void sbiw(system_t *sys, const int opcode) {
 
     sys_write_gpr(sys, dest, (result & 0x00ff));
     sys_write_gpr(sys, dest + 1, (result & 0xff00) >> 8);
+
+    sys->cycles += 2;
 }
 
 void push(system_t *sys, const int opcode) {
@@ -347,6 +368,7 @@ void push(system_t *sys, const int opcode) {
     const int8_t val = sys_read_gpr(sys, src);
 
     sys_push_stack(sys, val);
+    sys->cycles += 2;
 }
 
 void pop(system_t *sys, const int opcode) {
@@ -355,6 +377,7 @@ void pop(system_t *sys, const int opcode) {
     const int8_t val = sys_pop_stack(sys);
 
     sys_write_gpr(sys, dest, val);
+    sys->cycles += 1;
 }
 
 void in(system_t *sys, const int opcode) {
@@ -364,6 +387,8 @@ void in(system_t *sys, const int opcode) {
 
     const int8_t val = sys_read_data(sys, GPR_SIZE + src);
     sys_write_gpr(sys, dest, val);
+
+    sys->cycles += 1;
 }
 
 void out(system_t *sys, const int opcode) {

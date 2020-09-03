@@ -58,6 +58,7 @@ struct _system* sys_ctor(table_t *table) {
         return NULL;
     }
 
+    sys->cycles = 0;
     sys->p->steps = 0;
     sys->p->terminated = false;
 

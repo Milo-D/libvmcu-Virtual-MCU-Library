@@ -15,6 +15,7 @@ struct _private;
 
 typedef struct _system {
 
+    uint64_t cycles;
     struct _private *p;
 
 } system_t;
