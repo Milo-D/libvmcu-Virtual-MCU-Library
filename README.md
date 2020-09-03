@@ -112,6 +112,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | xec           | start end     | EEP. Mem. as char literal   |
 | xdc           | start end     | Data Mem. as char literal   |
 | leep          | file.eep.hex  | Load .eep.hex into MCU      |
+| cycles        | none          | Show current Cycles         |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
 | ?             | none          | Show Help (in progress)     |
