@@ -207,7 +207,7 @@ static bool parser_parse_debug(const struct _parser *this, list_t *items) {
 
         break;
         
-        case 20: case 21:
+        case 20: case 21: case 22:
         
             if(argc != 0)
                 return false;

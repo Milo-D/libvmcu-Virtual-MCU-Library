@@ -216,3 +216,11 @@ void clear_output(debugwindow_t *window) {
 
     dwin_clr_specific(window, OPNL);
 }
+
+void show_cycles(debugwindow_t *window, system_t *sys) {
+
+    char cycles[64];
+
+    sprintf(cycles, "(mdx) Cycles: %ld\n", sys->cycles);
+    dwin_write(window, OPNL, cycles, D);
+}

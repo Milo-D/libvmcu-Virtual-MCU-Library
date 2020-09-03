@@ -4,7 +4,7 @@
 #define COMMANDS_H
 
 #define NCON 3
-#define NCOM 22
+#define NCOM 23
 
 extern const int ncmd[2];
 extern const char *commands[NCON][NCOM];
