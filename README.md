@@ -113,6 +113,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | xdc           | start end     | Data Mem. as char literal   |
 | leep          | file.eep.hex  | Load .eep.hex into MCU      |
 | cycles        | none          | Show current Cycles         |
+| clock         | none          | Show Clock Frequency        |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
 | ?             | none          | Show Help (in progress)     |
