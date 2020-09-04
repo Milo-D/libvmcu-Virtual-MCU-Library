@@ -547,6 +547,22 @@ void ldd_yq(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void ldd_zq(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+
+    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
+                   + extract(opcode, 13, 14, 5);
+
+    const uint8_t zl = sys_read_gpr(sys, ZL);
+    const uint8_t zh = sys_read_gpr(sys, ZH);
+
+    const int8_t data = sys_read_data(sys, (zh << 8) + zl + disp);
+    sys_write_gpr(sys, dest, data);
+
+    sys->cycles += 2;
+}
+
 void ld_z(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
@@ -1338,7 +1354,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
     dec, inc, add, adc, adiw, sub, subi, sbc, sbiw, push, pop, 
     in, out, sbis, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
-    ld_z, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, brpl, 
+    ldd_zq, ld_z, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, brpl, 
     brlo, brlt, brcc, brcs, brvs, brmi, rcall, ret, cp, cpi, cpc, lsr, 
     asr, ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
     set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
