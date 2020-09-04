@@ -231,7 +231,20 @@ void show_clock(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, OPNL, "(mdx) Clock: ", D);
     dwin_add(window, OPNL, freq, D);
-    dwin_write(window, OPNL, " Hz\n", D);
+    dwin_write(window, OPNL, " [Hz]\n", D);
 
     free(freq);
+}
+
+void show_time(debugwindow_t *window, system_t *sys) {
+
+    char tmstr[256];
+
+    const double c = sys->cycles;
+    const double f = sys->clock;
+
+    const double time = ((c / f) * 1000000);
+
+    sprintf(tmstr, "(mdx) Elapsed Time: %f [μs]\n", time);
+    dwin_write(window, OPNL, tmstr, D);
 }

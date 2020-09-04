@@ -90,6 +90,7 @@ void debug(table_t *table) {
             case 21: dwin_mv_curs(window, RPNL, -1);                              break;
             case 22: show_cycles(window, sys);                                    break;
             case 23: show_clock(window, sys);                                     break;
+            case 24: show_time(window, sys);                                      break;
 
             default: /* ignoring invalid input */                                 break;
         }
