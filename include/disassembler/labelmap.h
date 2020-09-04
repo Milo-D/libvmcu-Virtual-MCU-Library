@@ -18,6 +18,6 @@ extern void lmap_dtor(struct _lmap *this);
 
 extern int lmap_add(struct _lmap *this, const char *ln, const int i);
 extern void lmap_get(const struct _lmap *this, const int index, tuple_t *buffer);
-extern int lmap_sort(struct _lmap *this, const int l, const int h);
+extern void lmap_sort(struct _lmap *this, const int l, const int h);
 
 #endif

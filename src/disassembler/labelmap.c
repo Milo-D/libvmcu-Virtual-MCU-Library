@@ -139,7 +139,7 @@ void lmap_get(const struct _lmap *this, const int index, tuple_t *buffer) {
     tuple_set(buffer, (void*) label, (len + 1) * sizeof(char), 1); 
 }
 
-extern int lmap_sort(struct _lmap *this, const int l, const int h) {
+extern void lmap_sort(struct _lmap *this, const int l, const int h) {
 
     if(l < h) {
 
