@@ -110,6 +110,7 @@ int flash_pc_next(struct _flash *this) {
         return -1;
 
     this->p->pc += 1;
+    return 0;
 }
 
 int flash_pc_set(struct _flash *this, const int addr) {
@@ -119,6 +120,8 @@ int flash_pc_set(struct _flash *this, const int addr) {
 
     this->p->pc = addr - 1;
     table_jmp(this->p->table, addr);
+
+    return 0;
 }
 
 int flash_pc(const struct _flash *this) {
