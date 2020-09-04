@@ -224,3 +224,14 @@ void show_cycles(debugwindow_t *window, system_t *sys) {
     sprintf(cycles, "(mdx) Cycles: %ld\n", sys->cycles);
     dwin_write(window, OPNL, cycles, D);
 }
+
+void show_clock(debugwindow_t *window, system_t *sys) {
+
+    char *freq = nformat(sys->clock);
+
+    dwin_add(window, OPNL, "(mdx) Clock: ", D);
+    dwin_add(window, OPNL, freq, D);
+    dwin_write(window, OPNL, " Hz\n", D);
+
+    free(freq);
+}

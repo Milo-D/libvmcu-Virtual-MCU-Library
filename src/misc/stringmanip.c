@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 #include <math.h>
 
 // Project Header
@@ -231,6 +232,53 @@ char* get_str(const int num) {
 
     str[i] = '\0';
     return str;
+}
+
+char* nformat(uint64_t n) {
+    
+    int size = 0;
+    uint64_t k = n;
+    
+    while(k > 0) {
+    
+        k /= 1000u;
+        size += 1;
+    }
+    
+    char **str = malloc(size * sizeof(char*));
+    const int total = size;
+    
+    while(n > 0) {
+
+        const int i = n % 1000;        
+        
+        str[--size] = malloc(4 * sizeof(char));
+        
+        if(n >= 1000)
+            sprintf(str[size], "%03d", i);
+        else
+            sprintf(str[size], "%d", i);
+        
+        n /= 1000u;
+    }
+    
+    queue_t *q = queue_ctor();
+    
+    for(int i = 0; i < total; i++) {
+        
+        queue_put(q, 1, str[i]);
+        free(str[i]);
+        
+        if(i != total - 1)
+            queue_put(q, 1, ".");
+    }
+    
+    char *res = queue_str(q);
+    
+    free(str);
+    queue_dtor(q);
+    
+    return res;
 }
 
 int htoi(const char *input) {

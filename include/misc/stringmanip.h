@@ -18,6 +18,7 @@ extern char* strfill(const char fill, const int len, const int atl);
 extern void split(const char *str, const char at, list_t *buffer);
 extern int get_int(const char *str);
 extern char* get_str(const int num);
+extern char* nformat(uint64_t n);
 extern int htoi(const char *input);
 extern char* itoh(const int num);
 extern void to_hex(int8_t input, char *buffer);

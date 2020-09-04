@@ -17,5 +17,6 @@ extern void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char
 extern void load_eep_hex(debugwindow_t *window, system_t *sys, const char *file);
 extern void clear_output(debugwindow_t *window);
 extern void show_cycles(debugwindow_t *window, system_t *sys);
+extern void show_clock(debugwindow_t *window, system_t *sys);
 
 #endif
