@@ -459,7 +459,7 @@ void ld_xi(system_t *sys, const int opcode) {
     const uint8_t xh = sys_read_gpr(sys, XH);
 
     const int8_t data = sys_read_data(sys, (xh << 8) + xl);
-    const int16_t post_x = ((xh << 8) + xl) + 0x01;
+    const uint16_t post_x = ((xh << 8) + xl) + 0x01;
 
     sys_write_gpr(sys, dest, data);
     sys_write_gpr(sys, XL, (0x00ff & post_x));
@@ -475,7 +475,7 @@ void ld_dx(system_t *sys, const int opcode) {
     const uint8_t xl = sys_read_gpr(sys, XL);
     const uint8_t xh = sys_read_gpr(sys, XH);
 
-    const int16_t pre_x = ((xh << 8) + xl) - 0x01;
+    const uint16_t pre_x = ((xh << 8) + xl) - 0x01;
     const int8_t data = sys_read_data(sys, pre_x);
 
     sys_write_gpr(sys, XL, (0x00ff & pre_x));
@@ -506,7 +506,7 @@ void ld_yi(system_t *sys, const int opcode) {
     const uint8_t yh = sys_read_gpr(sys, YH);
 
     const int8_t data = sys_read_data(sys, (yh << 8) + yl);
-    const int16_t post_y = ((yh << 8) + yl) + 0x01;
+    const uint16_t post_y = ((yh << 8) + yl) + 0x01;
 
     sys_write_gpr(sys, dest, data);
     sys_write_gpr(sys, YL, (0x00ff & post_y));
@@ -522,7 +522,7 @@ void ld_dy(system_t *sys, const int opcode) {
     const uint8_t yl = sys_read_gpr(sys, YL);
     const uint8_t yh = sys_read_gpr(sys, YH);
 
-    const int16_t pre_y = ((yh << 8) + yl) - 0x01;
+    const uint16_t pre_y = ((yh << 8) + yl) - 0x01;
     const int8_t data = sys_read_data(sys, pre_y);
 
     sys_write_gpr(sys, YL, (0x00ff & pre_y));
@@ -575,6 +575,23 @@ void ld_z(system_t *sys, const int opcode) {
     sys_write_gpr(sys, dest, data);
 
     sys->cycles += 1;
+}
+
+void ld_zi(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+
+    const uint8_t zl = sys_read_gpr(sys, ZL);
+    const uint8_t zh = sys_read_gpr(sys, ZH);
+
+    const int8_t data = sys_read_data(sys, (zh << 8) + zl);
+    const uint16_t post_z = ((zh << 8) + zl) + 0x01;
+
+    sys_write_gpr(sys, dest, data);
+    sys_write_gpr(sys, ZL, (0x00ff & post_z));
+    sys_write_gpr(sys, ZH, (0xff00 & post_z) >> 8);
+
+    sys->cycles += 2;
 }
 
 void st_x(system_t *sys, const int opcode) {
@@ -1355,8 +1372,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     nop, movw, muls, mulsu, fmul, ldi, rjmp, mov, 
     dec, inc, add, adc, adiw, sub, subi, sbc, sbiw, push, pop, 
     in, out, sbis, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
-    ldd_zq, ld_z, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, brpl, 
-    brlo, brlt, brcc, brcs, brvs, brmi, rcall, ret, cp, cpi, cpc, lsr, 
+    ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, 
+    brpl, brlo, brlt, brcc, brcs, brvs, brmi, rcall, ret, cp, cpi, cpc, lsr, 
     asr, ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
     set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
     clz, clh, clc, cli, cln, bclr, bset
