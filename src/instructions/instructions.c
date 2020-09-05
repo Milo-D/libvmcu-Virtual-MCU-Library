@@ -14,6 +14,7 @@
 
 void nop(system_t *sys, const int opcode) {
 
+    sys->cycles += 1;
     return;
 }
 
