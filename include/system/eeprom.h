@@ -27,5 +27,7 @@ extern int8_t eeprom_read(const struct _eeprom *this, const uint16_t addr);
 extern void eeprom_coi(const struct _eeprom *this, tuple_t *buffer);
 extern void eeprom_dump(const struct _eeprom *this, array_t *buffer);
 
+extern void eeprom_reboot(const struct _eeprom *this);
+
 #endif
 

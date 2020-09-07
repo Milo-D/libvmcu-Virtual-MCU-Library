@@ -16,14 +16,16 @@ typedef struct _sreg {
 
 } sreg_t;
 
-extern struct _sreg* sreg_ctor(void);                                           // SREG ctor
-extern void sreg_dtor(struct _sreg *this);                                      // SREG dtor
+extern struct _sreg* sreg_ctor(void);
+extern void sreg_dtor(struct _sreg *this);
 
-extern void sreg_write(struct _sreg *this, const int flag, const bool bit);     // write to SREG
-extern bool sreg_read(const struct _sreg *this, const int flag);                // read from SREG
-extern void sreg_clr(struct _sreg *this);                                       // clear SREG
+extern void sreg_write(struct _sreg *this, const int flag, const bool bit);
+extern bool sreg_read(const struct _sreg *this, const int flag);
+extern void sreg_clear(const struct _sreg *this);
 
-extern void sreg_coi(const struct _sreg *this, array_t *buffer);                // get SREG coi
-extern uint8_t sreg_dump(const struct _sreg *this);                             // dump SREG
+extern void sreg_coi(const struct _sreg *this, array_t *buffer);
+extern uint8_t sreg_dump(const struct _sreg *this);
+
+extern void sreg_reboot(const struct _sreg *this);
 
 #endif

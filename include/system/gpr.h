@@ -15,13 +15,15 @@ typedef struct _gpr {
     
 } gpr_t;
 
-extern struct _gpr* gpr_ctor(void);                                              // GPR ctor
-extern void gpr_dtor(struct _gpr *this);                                         // GPR dtor
+extern struct _gpr* gpr_ctor(void);
+extern void gpr_dtor(struct _gpr *this);
 
-extern void gpr_write(struct _gpr *this, const int rx, const int8_t data);       // write to GPR File
-extern int8_t gpr_read(const struct _gpr *this, const int rx);                   // read from GPR File
+extern void gpr_write(struct _gpr *this, const int rx, const int8_t data);
+extern int8_t gpr_read(const struct _gpr *this, const int rx);
 
-extern void gpr_coi(const struct _gpr *this, array_t *buffer);                   // get GPR coi
-extern void gpr_dump(const struct _gpr *this, array_t *buffer);                  // dump GPR File to buffer
+extern void gpr_coi(const struct _gpr *this, array_t *buffer);
+extern void gpr_dump(const struct _gpr *this, array_t *buffer);
+
+extern void gpr_reboot(const struct _gpr *this);
 
 #endif

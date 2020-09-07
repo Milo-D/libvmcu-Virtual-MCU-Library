@@ -12,7 +12,6 @@
 #include "cli/stdmsg.h"
 #include "system/system.h"
 #include "system/mcudef.h"
-#include "table/table.h"
 #include "disassembler/decoder.h"
 #include "printer/systemprinter.h"
 #include "misc/stringmanip.h"
@@ -21,7 +20,7 @@
 #include "collections/array.h"
 #include "collections/list.h"
 
-void jump_forward(debugwindow_t *window, system_t *sys, table_t *table, const int delay) {
+void jump_forward(debugwindow_t *window, system_t *sys, const int delay) {
 
     if(delay < 0) {
 
@@ -33,11 +32,11 @@ void jump_forward(debugwindow_t *window, system_t *sys, table_t *table, const in
 
     while(sys_is_term(sys) == false) {
 
-        if(table_is_breakp(table) == true)
+        if(sys_on_breakp(sys) == true)
             break;
 
         if(delay >= 10)
-            system_to_win(window, sys, table);
+            system_to_win(window, sys);
 
         sys_step(sys);
 
@@ -48,9 +47,9 @@ void jump_forward(debugwindow_t *window, system_t *sys, table_t *table, const in
     dwin_write(window, OPNL, BREAK_REACHED, G);
 }
 
-void set_breakpoint(debugwindow_t *window, table_t *table, const char *bp) {
+void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
 
-    if(table_add_breakp(table, bp) < 0)
+    if(sys_add_breakp(sys, bp) < 0)
         return;
 
     char *msg = bp_set_success(bp);
@@ -59,9 +58,9 @@ void set_breakpoint(debugwindow_t *window, table_t *table, const char *bp) {
     free(msg);
 }
 
-void remove_breakpoint(debugwindow_t *window, table_t *table, const char *bp) {
+void remove_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
 
-    if(table_del_breakp(table, bp) < 0)
+    if(sys_del_breakp(sys, bp) < 0)
         return;
 
     char *msg = bp_del_success(bp);

@@ -13,7 +13,6 @@
 #include "misc/filemanip.h"
 #include "misc/jsonwriter.h"
 #include "disassembler/disassembler.h"
-#include "table/table.h"
 #include "system/system.h"
 #include "parser/parser.h"
 #include "collections/array.h"
@@ -97,12 +96,11 @@ static void mode_disassembler(const char *hex_file) {
 
 static void mode_headless(const char *hex_file) {
 
-    table_t *table = table_ctor(hex_file);
+    system_t *sys = sys_ctor(hex_file);
 
-    if(table->size <= 0)
+    if(sys_table_size(sys) <= 0)
         return;
 
-    system_t *sys = sys_ctor(table);
     clock_t timer = clock();
 
     do {
@@ -125,7 +123,6 @@ static void mode_headless(const char *hex_file) {
     free(json);
     
     sys_dtor(sys);
-    table_dtor(table);
     queue_dtor(stream);
 }
 

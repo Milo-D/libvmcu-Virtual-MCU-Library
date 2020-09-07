@@ -85,6 +85,12 @@ void gpr_dump(const struct _gpr *this, array_t *buffer) {
     }
 }
 
+void gpr_reboot(const struct _gpr *this) {
+
+    memset(this->p->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
+    memset(this->p->coi, NONE, GPR_SIZE * sizeof(int));
+}
+
 /* --- Private --- */
 
 static void gpr_clear_coi(const struct _gpr *this) {

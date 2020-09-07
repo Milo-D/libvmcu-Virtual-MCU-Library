@@ -27,7 +27,7 @@ struct _private {
     bool terminated;
 };
 
-struct _system* sys_ctor(table_t *table) {
+struct _system* sys_ctor(const char *file) {
 
     struct _system *sys;
     
@@ -40,7 +40,7 @@ struct _system* sys_ctor(table_t *table) {
         return NULL;
     }
     
-    if((sys->p->alu = alu_ctor(table)) == NULL) {
+    if((sys->p->alu = alu_ctor(file)) == NULL) {
     
         sys_dtor(sys);
         return NULL;
@@ -82,41 +82,41 @@ void sys_dtor(struct _system *this) {
     free(this);
 }
 
-void sys_step(struct _system *this) {
+int sys_step(struct _system *this) {
+
+    if(this->p->terminated == true)
+        return 0;
+
+    this->p->steps += 1;
+    return alu_fetch(this->p->alu, this);
+}
+
+void sys_backstep(struct _system *this) {
 
     if(this->p->terminated == true)
         return;
 
-    if(alu_fetch(this->p->alu, this) < 0)
-        sys_kill(this);
-
-    this->p->steps += 1;
-}
-
-void sys_backstep(struct _system **this, table_t *table) {
-
-    if((*this)->p->terminated == true)
-        return;
-
-    int counter = (*this)->p->steps - 1;
-    sys_reboot(this, table);
+    int counter = this->p->steps - 1;
+    sys_reboot(this);
 
     while(counter-- > 0)
-        sys_step(*this);
+        sys_step(this);
 }
 
-int sys_reboot(struct _system **this, table_t *table) {
+void sys_reboot(struct _system *this) {
 
-    sys_dtor(*this);
+    this->cycles = 0;
+    this->clock = CLOCK;
 
-    if((*this = sys_ctor(table)) == NULL)
-        return -1;
-    
-    table_set_tip(table, 0);
-    return 0;
+    this->p->steps = 0;
+    this->p->terminated = false;
+
+    alu_reboot(this->p->alu);
+    data_reboot(this->p->data);
+    eeprom_reboot(this->p->eeprom);
 }
 
-void sys_kill(struct _system *this) {
+void sys_kill(const struct _system *this) {
 
     this->p->terminated = true;
 }
@@ -235,3 +235,37 @@ void sys_dump_eeprom(const struct _system *this, array_t *buffer) {
     eeprom_dump(this->p->eeprom, buffer);
 }
 
+int sys_add_breakp(const struct _system *this, const char *point) {
+
+    return alu_add_breakp(this->p->alu, point);
+}
+
+int sys_del_breakp(const struct _system *this, const char *point) {
+
+    return alu_del_breakp(this->p->alu, point);
+}
+
+void sys_set_tip(const struct _system *this, const int line) {
+
+    alu_set_tip(this->p->alu, line);
+}
+
+int sys_get_tip(const struct _system *this) {
+
+    return alu_get_tip(this->p->alu);
+}
+
+bool sys_on_breakp(const struct _system *this) {
+
+    return alu_on_breakp(this->p->alu);
+}
+
+int sys_table_size(const struct _system *this) {
+
+    return alu_table_size(this->p->alu);
+}
+
+entry_t* sys_dump_table(const struct _system *this) {
+
+    return alu_dump_table(this->p->alu);
+}

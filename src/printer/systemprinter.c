@@ -11,7 +11,6 @@
 #include "system/system.h"
 #include "system/mcudef.h"
 #include "cli/debugwindow.h"
-#include "table/table.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "collections/array.h"
@@ -24,14 +23,14 @@ static void print_gpr(debugwindow_t *window, system_t *sys);
 static void print_sreg(debugwindow_t *window, system_t *sys);
 static void print_data(debugwindow_t *window, system_t *sys);
 static void print_eeprom(debugwindow_t *window, system_t *sys);
-static void print_table(debugwindow_t *window, table_t *table);
-static void print_side_table(debugwindow_t *window, table_t *table);
+static void print_flash(debugwindow_t *window, system_t *sys);
+static void print_side_table(debugwindow_t *window, system_t *sys);
 
 static int color(const int mem_prop); 
 
 /* Extern Systemprinter Functions */
 
-extern void system_to_win(debugwindow_t *window, system_t *sys, table_t *table) {
+extern void system_to_win(debugwindow_t *window, system_t *sys) {
 
     dwin_clr(window);
 
@@ -40,8 +39,8 @@ extern void system_to_win(debugwindow_t *window, system_t *sys, table_t *table) 
     print_data(window, sys);
     print_eeprom(window, sys);
 
-    print_table(window, table);
-    print_side_table(window, table);
+    print_flash(window, sys);
+    print_side_table(window, sys);
 
     dwin_update_all(window);
 }
@@ -267,19 +266,14 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
     array_dtor(buffer);
 }
 
-static void print_table(debugwindow_t *window, table_t *table) {
+static void print_flash(debugwindow_t *window, system_t *sys) {
 
-    dwin_add(window, CPNL, "Instructions:\n\n", D);
+    dwin_add(window, CPNL, "Flash:\n\n", D);
 
-    const int tip = table_get_tip(table);
-    const int size = table->size;
+    const int tip = sys_get_tip(sys);
+    const int size = sys_table_size(sys);
 
-    array_t *content = array_ctor(size, NULL, NULL);
-    table_content(table, content);
-
-    array_t *breakp = array_ctor(size, NULL, NULL);
-    table_breakp(table, breakp);
-
+    entry_t *entry = sys_dump_table(sys);
     queue_t *stream = queue_ctor();
 
     for(int i = (tip - 4); i <= (tip + 4); i++) {
@@ -290,19 +284,28 @@ static void print_table(debugwindow_t *window, table_t *table) {
             continue;
         }
 
-        char *addr = itoh(i);
+        if(entry[i].addr >= 0) {
 
-        char *fill = strfill('0', strlen(addr), 4);
-        queue_put(stream, 3, "0x", fill, addr);
+            char *addr = itoh(entry[i].addr);
 
-        char *out = queue_str(stream);
-        dwin_add(window, CPNL, out, D);
+            char *fill = strfill('0', strlen(addr), 4);
+            queue_put(stream, 3, "0x", fill, addr);
+
+            char *out = queue_str(stream);
+            dwin_add(window, CPNL, out, D);
+
+            nfree(3, addr, fill, out);
+
+        } else {
+
+            dwin_add(window, CPNL, "      ", D);
+        }
 
         if(i == tip) {
 
             dwin_add(window, CPNL, " [->] ", B);
 
-        } else if(*((bool*) array_at(breakp, i)) == true) {
+        } else if(entry[i].breakp == true) {
 
             dwin_add(window, CPNL, " [b+] ", R);
 
@@ -311,32 +314,21 @@ static void print_table(debugwindow_t *window, table_t *table) {
             dwin_add(window, CPNL, "      ", D);
         }
 
-        char *line = (char*) array_at(content, i);
-        dwin_highlight(window, CPNL, line);
-
+        dwin_highlight(window, CPNL, entry[i].ln);
         dwin_add(window, CPNL, "\n", D);
 
         queue_flush(stream);
-        nfree(3, addr, fill, out);
     }
 
     queue_dtor(stream);
-    array_dtor(content);
-    array_dtor(breakp);
 }
 
-static void print_side_table(debugwindow_t *window, table_t *table) {
+static void print_side_table(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, RPNL, "Source Code:\n\n", D);
 
-    const int tip = table_get_tip(table);
-    const int size = table->size;
-
-    array_t *content = array_ctor(size, NULL, NULL);
-    table_content(table, content);
-
-    array_t *breakp = array_ctor(size, NULL, NULL);
-    table_breakp(table, breakp);
+    const int tip = sys_get_tip(sys);
+    const int size = sys_table_size(sys);
 
     const int cursor = dwin_curs_of(window, RPNL);
     const int height = dwin_height(window, RPNL) - 4;
@@ -345,14 +337,11 @@ static void print_side_table(debugwindow_t *window, table_t *table) {
 
     if(size == 0) {
 
-        dwin_add(window, RPNL, "[ No Source available ]\n", D);
-
-        array_dtor(content);
-        array_dtor(breakp);
-        
+        dwin_add(window, RPNL, "[ No Source available ]\n", D);        
         return;
     }
 
+    entry_t *entry = sys_dump_table(sys);
     queue_t *stream = queue_ctor();
 
     for(int i = start; i < (start + height); i++) {
@@ -382,7 +371,7 @@ static void print_side_table(debugwindow_t *window, table_t *table) {
           
             dwin_add(window, RPNL, " [->] ", B);
 
-        } else if(*((bool*) array_at(breakp, i)) == true) {
+        } else if(entry[i].breakp == true) {
 
             dwin_add(window, RPNL, " [b+] ", R);
 
@@ -391,9 +380,7 @@ static void print_side_table(debugwindow_t *window, table_t *table) {
             dwin_add(window, RPNL, "      ", D);
         }
 
-        char *line = (char*) array_at(content, i);
-        dwin_highlight(window, RPNL, line);
-
+        dwin_highlight(window, RPNL, entry[i].ln);
         dwin_add(window, RPNL, "\n", D);
 
         queue_flush(stream);
@@ -401,8 +388,6 @@ static void print_side_table(debugwindow_t *window, table_t *table) {
     }
 
     queue_dtor(stream);
-    array_dtor(content);
-    array_dtor(breakp);
 }
 
 static int color(const int mem_prop) {

@@ -30,4 +30,6 @@ extern int8_t data_read(const struct _data *this, const uint16_t addr);
 extern void data_coi(const struct _data *this, tuple_t *buffer);
 extern void data_dump(const struct _data *this, array_t *buffer);
 
+extern void data_reboot(const struct _data *this);
+
 #endif

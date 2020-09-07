@@ -95,6 +95,12 @@ void eeprom_dump(const struct _eeprom *this, array_t *buffer) {
     }
 }
 
+void eeprom_reboot(const struct _eeprom *this) {
+
+    memset(this->p->memory, 0x00, EEPROM_SIZE * sizeof(int8_t));
+    eeprom_set_coi(this, 0x0000, NONE);
+}
+
 /* --- Private --- */
 
 static void eeprom_set_coi(const struct _eeprom *this, const uint16_t cell, const int prop) {

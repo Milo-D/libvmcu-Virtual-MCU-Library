@@ -7,6 +7,9 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
+// Project Headers
+#include "table/entry.h"
+
 typedef struct _table table_t;
 typedef struct _array array_t;
 typedef struct _tuple tuple_t;
@@ -24,15 +27,15 @@ typedef struct _system {
 
 /* System Constructor + Destructor */
 
-extern struct _system* sys_ctor(table_t *table);
+extern struct _system* sys_ctor(const char *file);
 extern void sys_dtor(struct _system *this);
 
 /* General System Functions */
 
-extern void sys_step(struct _system *this);
-extern void sys_backstep(struct _system **this, table_t *table);
-extern int sys_reboot(struct _system **this, table_t *table);
-extern void sys_kill(struct _system *this);
+extern int sys_step(struct _system *this);
+extern void sys_backstep(struct _system *this);
+extern void sys_reboot(struct _system *this);
+extern void sys_kill(const struct _system *this);
 extern bool sys_is_term(const struct _system *this);
 
 /* GPR Operations */
@@ -69,5 +72,15 @@ extern void sys_write_eeprom(struct _system *this, const uint16_t addr, const in
 extern int8_t sys_read_eeprom(const struct _system *this, const uint16_t addr);
 extern void sys_eeprom_coi(const struct _system *this, tuple_t *buffer);
 extern void sys_dump_eeprom(const struct _system *this, array_t *buffer);
+
+/* Table Operations */
+
+extern int sys_add_breakp(const struct _system *this, const char *point);
+extern int sys_del_breakp(const struct _system *this, const char *point);
+extern void sys_set_tip(const struct _system *this, const int line);
+extern int sys_get_tip(const struct _system *this);
+extern bool sys_on_breakp(const struct _system *this);
+extern int sys_table_size(const struct _system *this);
+extern entry_t* sys_dump_table(const struct _system *this);
 
 #endif

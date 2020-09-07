@@ -75,7 +75,7 @@ bool sreg_read(const struct _sreg *this, const int flag) {
     return ((this->p->status >> flag) & 0x01); 
 }
 
-void sreg_clr(struct _sreg *this) {
+void sreg_clear(const struct _sreg *this) {
 
     this->p->status = 0x00;
 }
@@ -94,6 +94,12 @@ void sreg_coi(const struct _sreg *this, array_t *buffer) {
 uint8_t sreg_dump(const struct _sreg *this) {
 
     return this->p->status;
+}
+
+void sreg_reboot(const struct _sreg *this) {
+
+    this->p->status = 0x00;
+    memset(this->p->coi, NONE, SREG_SIZE * sizeof(int));
 }
 
 /* --- Private --- */

@@ -196,7 +196,7 @@ void table_jmp(struct _table *this, const int exec_addr) {
     table_set_tip(this, i - 1);
 }
 
-bool table_is_breakp(const struct _table *this) {
+bool table_on_breakp(const struct _table *this) {
 
     return this->p->entry[this->p->tip].breakp;
 }
@@ -207,24 +207,8 @@ bool table_is_sync(const struct _table *this, const int hex_addr) {
     return (this->p->entry[tip].addr == hex_addr);
 }
 
-void table_content(const struct _table *this, array_t *buffer) {
+entry_t* table_dump(const struct _table *this) {
 
-    for(int i = 0; i < this->size; i++) {
-    
-        const char *ln = this->p->entry[i].ln;
-        const size_t bytes = strlen(ln) * sizeof(char);
-
-        array_push(buffer, (void*) ln, bytes + sizeof(char));
-    }
+    return this->p->entry;
 }
-
-void table_breakp(const struct _table *this, array_t *buffer) {
-
-    for(int i = 0; i < this->size; i++) {
-
-        const bool breakp = this->p->entry[i].breakp;
-        array_push(buffer, (void*) &breakp, sizeof(bool));
-    }
-}
-
 

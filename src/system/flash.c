@@ -27,7 +27,7 @@ struct _private {
 
 /* --- Public --- */
 
-struct _flash* flash_ctor(table_t *table) {
+struct _flash* flash_ctor(const char *file) {
 
     struct _flash *flash;
 
@@ -40,8 +40,10 @@ struct _flash* flash_ctor(table_t *table) {
         return NULL;
     }
 
+    flash->p->table = table_ctor(file);
+
     array_t *buffer = array_ctor(1024, NULL, NULL);
-    decode_hex(table->source, buffer);
+    decode_hex(file, buffer);
 
     flash->p->keys = array_ctor(buffer->top, tuple_dtor, tuple_cpy);
     flash->p->mem_usage = buffer->top;
@@ -64,14 +66,14 @@ struct _flash* flash_ctor(table_t *table) {
     }
 
     flash->p->pc = 0x0000;
-    flash->p->table = table;
-
     array_dtor(buffer);
+
     return flash;
 }
 
 void flash_dtor(struct _flash *this) {
 
+    table_dtor(this->p->table);
     array_dtor(this->p->keys);
 
     free(this->p->memory);
@@ -89,7 +91,7 @@ int flash_fetch(const struct _flash *this, tuple_t *buffer) {
         tuple_t *t = (tuple_t*) array_at(this->p->keys, i);
         const int addr = *((int*) tuple_get(t, 0));
 
-        if(addr == this->p->pc) {
+        if(this->p->pc == addr) {
 
             const int key = *((int*) tuple_get(t, 1));
             tuple_set(buffer, (void*) &key, sizeof(int), 1);
@@ -101,10 +103,10 @@ int flash_fetch(const struct _flash *this, tuple_t *buffer) {
     const int err = -1;
     tuple_set(buffer, (void*) &err, sizeof(int), 1);
 
-    return err;
+    return -1;
 }
 
-int flash_pc_next(struct _flash *this) {
+int flash_move_pc(struct _flash *this) {
 
     if(this->p->pc == FLASH_SIZE - 1)
         return -1;
@@ -113,7 +115,7 @@ int flash_pc_next(struct _flash *this) {
     return 0;
 }
 
-int flash_pc_set(struct _flash *this, const int addr) {
+int flash_set_pc(struct _flash *this, const int addr) {
 
     if(addr < 0 || addr >= FLASH_SIZE)
         return -1;
@@ -124,9 +126,15 @@ int flash_pc_set(struct _flash *this, const int addr) {
     return 0;
 }
 
-int flash_pc(const struct _flash *this) {
+int flash_get_pc(const struct _flash *this) {
 
     return this->p->pc;
+}
+
+void flash_reboot(const struct _flash *this) {
+
+    this->p->pc = 0x0000;
+    table_set_tip(this->p->table, 0);
 }
 
 int flash_table_step(const struct _flash *this) {
@@ -134,8 +142,42 @@ int flash_table_step(const struct _flash *this) {
     return table_step(this->p->table);
 }
 
-bool flash_table_is_sync(const struct _flash *this) {
+bool flash_is_sync(const struct _flash *this) {
 
     return table_is_sync(this->p->table, this->p->pc);
 }
 
+int flash_add_breakp(const struct _flash *this, const char *point) {
+
+    return table_add_breakp(this->p->table, point);
+}
+
+int flash_del_breakp(const struct _flash *this, const char *point) {
+
+    return table_del_breakp(this->p->table, point);
+}
+
+void flash_set_tip(const struct _flash *this, const int line) {
+
+    table_set_tip(this->p->table, line);
+}
+
+int flash_get_tip(const struct _flash *this) {
+
+    return table_get_tip(this->p->table);
+}
+
+bool flash_on_breakp(const struct _flash *this) {
+
+    return table_on_breakp(this->p->table);
+}
+
+int flash_table_size(const struct _flash *this) {
+
+    return this->p->table->size;
+}
+
+entry_t* flash_dump_table(const struct _flash *this) {
+
+    return table_dump(this->p->table);
+}

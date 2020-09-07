@@ -9,13 +9,9 @@
 #include "system/data.h"
 #include "system/mcudef.h"
 #include "printer/memprop.h"
-#include "misc/stringmanip.h"
 #include "collections/array.h"
 #include "collections/tuple.h"
-
-#define sp(spl, sph) ((sph << 8) + spl)
-#define spl(sp) (((0x01 << 8) - 1) & sp)
-#define sph(sp) (((((0x01 << 8) - 1) << 8) & sp) >> 8)
+#include "misc/bitmanip.h"
 
 struct _private {
 
@@ -131,6 +127,12 @@ void data_dump(const struct _data *this, array_t *buffer) {
 
     for(int i = 0; i < (RAM_END + 1); i++)
         array_push(buffer, (void*) &this->p->memory[i], sizeof(int8_t));
+}
+
+void data_reboot(const struct _data *this) {
+
+    memset(this->p->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
+    data_set_coi(this, 0x0000, NONE);
 }
 
 /* --- Private --- */
