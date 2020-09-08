@@ -218,32 +218,29 @@ void clear_output(debugwindow_t *window) {
 
 void show_cycles(debugwindow_t *window, system_t *sys) {
 
-    char cycles[64];
+    char *cycles_str = get_cycles(sys->cycles);
+    dwin_write(window, OPNL, cycles_str, D);
 
-    sprintf(cycles, "(mdx) Cycles: %ld\n", sys->cycles);
-    dwin_write(window, OPNL, cycles, D);
+    free(cycles_str);
 }
 
 void show_clock(debugwindow_t *window, system_t *sys) {
 
-    char *freq = nformat(sys->clock);
+    char *clock_str = get_clock(sys->clock);
+    dwin_write(window, OPNL, clock_str, D);
 
-    dwin_add(window, OPNL, "(mdx) Clock: ", D);
-    dwin_add(window, OPNL, freq, D);
-    dwin_write(window, OPNL, " [Hz]\n", D);
-
-    free(freq);
+    free(clock_str);
 }
 
 void show_time(debugwindow_t *window, system_t *sys) {
-
-    char tmstr[256];
 
     const double c = sys->cycles;
     const double f = sys->clock;
 
     const double time = ((c / f) * 1000000);
 
-    sprintf(tmstr, "(mdx) Elapsed Time: %f [μs]\n", time);
-    dwin_write(window, OPNL, tmstr, D);
+    char *time_str = get_time(time);
+    dwin_write(window, OPNL, time_str, D);
+
+    free(time_str);
 }

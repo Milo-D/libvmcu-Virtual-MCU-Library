@@ -3,6 +3,9 @@
 #ifndef STDMSG_H
 #define STDMSG_H
 
+// C Headers
+#include <inttypes.h>
+
 #define MAX_FILE_REACH "Can not open more than 4 files."
 #define SYS_INIT_ERR "Could not initialize System."
 
@@ -32,5 +35,9 @@ extern char* bp_del_success(const char *line);
 
 extern char* eep_success(const char *file);
 extern char* file_err(const char *file);
+
+extern char* get_cycles(const uint64_t cycles);
+extern char* get_clock(const uint32_t clock);
+extern char* get_time(const double time);
 
 #endif

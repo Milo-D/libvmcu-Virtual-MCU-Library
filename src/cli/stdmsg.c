@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "cli/stdmsg.h"
+#include "misc/stringmanip.h"
 #include "collections/queue.h"
 
 char* sim_start(const char *file) {
@@ -99,6 +100,38 @@ char* file_err(const char *file) {
 
     char *out = queue_str(stream);
     queue_dtor(stream);
+
+    return out;
+}
+
+char* get_cycles(const uint64_t cycles) {
+
+    char *out = malloc(64 * sizeof(char));
+    sprintf(out, "(mdx) Cycles: %ld\n", cycles);
+
+    return out;
+}
+
+char* get_clock(const uint32_t clock) {
+
+    char *frequency = nformat(clock);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "(mdx) Clock: ");
+    queue_put(stream, 2, frequency, " [Hz]\n");
+
+    char *out = queue_str(stream);
+
+    free(frequency);
+    queue_dtor(stream);
+
+    return out;
+}
+
+char* get_time(const double time) {
+
+    char *out = malloc(256 * sizeof(char));
+    sprintf(out, "(mdx) Elapsed Time: %f [μs]\n", time);
 
     return out;
 }
