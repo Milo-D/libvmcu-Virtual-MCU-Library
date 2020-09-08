@@ -157,6 +157,9 @@ static void mode_help(void) {
     printf(" xe            <address>                 - Examine EEPROM Memory at 'address'\n");
     printf(" xec           <addr> <range>            - Examine EEPROM Memory as char literal\n");
     printf(" leep          <eep.hex>                 - Load an .eep.hex file into the EEPROM\n");
+    printf(" cycles        <none>                    - Show current Cycles\n");
+    printf(" clock         <none>                    - Show Clock Frequency\n");
+    printf(" time          <none>                    - Show elapsed Time\n");
 
     printf("\nGITHUB\n");
     printf(" https://github.com/Milo-D/MDX-Assembly-Debugger/\n");
