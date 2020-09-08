@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.0.1] - 2020-09-08
+## [v.0.0.1] - 2020-09-08
 
 - Refactor: Table is now member of system
 - Refactor: Minor changes in system class
