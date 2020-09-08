@@ -89,7 +89,9 @@ void rjmp(system_t *sys, const int opcode) {
     if(((0x01 << 11) & offs) != 0x00) {
 
         offs = comp(offs, 12);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -700,7 +702,9 @@ void brne(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -723,7 +727,9 @@ void breq(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -746,7 +752,9 @@ void brge(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -769,7 +777,9 @@ void brpl(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -792,7 +802,9 @@ void brlo(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -815,7 +827,9 @@ void brlt(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -838,7 +852,9 @@ void brcc(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -861,7 +877,9 @@ void brcs(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -884,7 +902,9 @@ void brvs(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -907,7 +927,9 @@ void brmi(system_t *sys, const int opcode) {
     if(((0x01 << 6) & offs) != 0x00) {
 
         offs = comp(offs, 7);
+
         sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
 
         return;
     }
@@ -941,7 +963,7 @@ void rcall(system_t *sys, const int opcode) {
 
         offs = comp(offs, 12);
         sys_set_pc(sys, pc - offs + 1);
-
+        
         return;
     }
 
