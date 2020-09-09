@@ -54,6 +54,9 @@ struct _lmap* lmap_ctor(void) {
         if(strcmp(instr, "ret") == 0)
             continue;
 
+        if(strcmp(instr, "icall") == 0)
+            continue;
+
         strmap_put(lmap->p->map, mnemstr[FLOW][i]);
     }
 

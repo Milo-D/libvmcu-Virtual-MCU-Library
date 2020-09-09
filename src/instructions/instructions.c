@@ -992,6 +992,33 @@ void ret(system_t *sys, const int opcode) {
     }
 }
 
+void icall(system_t *sys, const int opcode) {
+
+    const int pc = sys_get_pc(sys);
+
+    switch(PC_BIT) {
+
+        case 16:
+
+            sys_push_stack(sys, (pc + 1) & 0x00ff);
+            sys_push_stack(sys, ((pc + 1) & 0xff00) >> 8);
+
+            sys->cycles += 3;
+
+        break;
+
+        case 22: /* currently not supported */ break;
+
+        default: return;
+    }
+
+    const uint8_t zl = sys_read_data(sys, ZL);
+    const uint8_t zh = sys_read_data(sys, ZH);
+
+    const uint16_t addr = ((zh << 8) + zl);
+    sys_set_pc(sys, addr);
+}
+
 void cp(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
@@ -1395,8 +1422,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     dec, inc, add, adc, adiw, sub, subi, sbc, sbiw, push, pop, 
     in, out, sbis, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, 
-    brpl, brlo, brlt, brcc, brcs, brvs, brmi, rcall, ret, cp, cpi, cpc, lsr, 
-    asr, ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
+    brpl, brlo, brlt, brcc, brcs, brvs, brmi, rcall, ret, icall, cp, cpi, cpc, 
+    lsr, asr, ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
     set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
     clz, clh, clc, cli, cln, bclr, bset
 };
