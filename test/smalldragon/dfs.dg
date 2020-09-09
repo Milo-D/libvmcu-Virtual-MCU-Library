@@ -1,0 +1,52 @@
+struct Node {
+	Int value,
+	Node left,
+	Node right,
+	Bool hasLeft,
+	Bool hasRight
+}
+fn check7(Node node) -> Bool {
+	
+	return node.value == 7;
+}
+fn makeNode(Int v) -> Node {
+	Node res = newNode();
+	res.value = v;
+	res.hasLeft = false;
+	res.hasRight = false;
+	return res;
+}
+fn makeBinTree() -> Node {
+
+	root = makeNode(6);
+	n7 = makeNode(7);
+
+	root.right = n7;
+	root.hasRight = true;
+
+	n7.left = makeNode(8);
+	n7.hasLeft = true;
+
+	n7.right = makeNode(9);
+	n7.hasRight = true;
+
+	return root;
+}
+fn traverse(Node tree, ((Node)->Bool) checker) -> Bool {
+
+	if checker(tree) { return true; }
+
+	found = false;
+
+	if tree.hasLeft { found = traverse(tree.left, checker); }
+	if tree.hasRight { found = found || traverse(tree.right, checker); }
+
+	return found;
+}
+fn main () ~> Int {
+	bintree = makeBinTree();
+	found = traverse(bintree, check7);
+	k = 0;
+	if found { k = 10; }
+	return 0;
+}
