@@ -77,8 +77,6 @@ extern void sys_dump_eeprom(const struct _system *this, array_t *buffer);
 
 extern int sys_add_breakp(const struct _system *this, const char *point);
 extern int sys_del_breakp(const struct _system *this, const char *point);
-extern void sys_set_tip(const struct _system *this, const int line);
-extern int sys_get_tip(const struct _system *this);
 extern bool sys_on_breakp(const struct _system *this);
 extern int sys_table_size(const struct _system *this);
 extern entry_t* sys_dump_table(const struct _system *this);

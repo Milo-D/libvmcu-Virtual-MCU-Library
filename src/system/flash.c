@@ -107,9 +107,12 @@ int flash_fetch(const struct _flash *this, tuple_t *buffer) {
 }
 
 int flash_move_pc(struct _flash *this) {
+    
+    if(this->p->pc == FLASH_SIZE - 1) {
 
-    if(this->p->pc == FLASH_SIZE - 1)
+        this->p->pc = 0x0000;
         return -1;
+    }
 
     this->p->pc += 1;
     return 0;
@@ -121,8 +124,6 @@ int flash_set_pc(struct _flash *this, const int addr) {
         return -1;
 
     this->p->pc = addr - 1;
-    table_jmp(this->p->table, addr);
-
     return 0;
 }
 
@@ -134,17 +135,6 @@ int flash_get_pc(const struct _flash *this) {
 void flash_reboot(const struct _flash *this) {
 
     this->p->pc = 0x0000;
-    table_set_tip(this->p->table, 0);
-}
-
-int flash_table_step(const struct _flash *this) {
-
-    return table_step(this->p->table);
-}
-
-bool flash_is_sync(const struct _flash *this) {
-
-    return table_is_sync(this->p->table, this->p->pc);
 }
 
 int flash_add_breakp(const struct _flash *this, const char *point) {
@@ -157,19 +147,9 @@ int flash_del_breakp(const struct _flash *this, const char *point) {
     return table_del_breakp(this->p->table, point);
 }
 
-void flash_set_tip(const struct _flash *this, const int line) {
-
-    table_set_tip(this->p->table, line);
-}
-
-int flash_get_tip(const struct _flash *this) {
-
-    return table_get_tip(this->p->table);
-}
-
 bool flash_on_breakp(const struct _flash *this) {
 
-    return table_on_breakp(this->p->table);
+    return table_on_breakp(this->p->table, this->p->pc);
 }
 
 int flash_table_size(const struct _flash *this) {

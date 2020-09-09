@@ -55,8 +55,6 @@ extern uint8_t alu_dump_sreg(const struct _alu *this);
 
 extern int alu_add_breakp(const struct _alu *this, const char *point);
 extern int alu_del_breakp(const struct _alu *this, const char *point);
-extern void alu_set_tip(const struct _alu *this, const int line);
-extern int alu_get_tip(const struct _alu *this);
 extern bool alu_on_breakp(const struct _alu *this);
 extern int alu_table_size(const struct _alu *this);
 extern entry_t* alu_dump_table(const struct _alu *this);

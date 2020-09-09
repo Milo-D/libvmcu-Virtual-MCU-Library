@@ -245,16 +245,6 @@ int sys_del_breakp(const struct _system *this, const char *point) {
     return alu_del_breakp(this->p->alu, point);
 }
 
-void sys_set_tip(const struct _system *this, const int line) {
-
-    alu_set_tip(this->p->alu, line);
-}
-
-int sys_get_tip(const struct _system *this) {
-
-    return alu_get_tip(this->p->alu);
-}
-
 bool sys_on_breakp(const struct _system *this) {
 
     return alu_on_breakp(this->p->alu);

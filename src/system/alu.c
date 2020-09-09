@@ -90,14 +90,8 @@ int alu_fetch(struct _alu *this, system_t *sys) {
         return -1;
     }
 
-    if(flash_is_sync(this->p->flash) == true) {
-
-        (*instructions[key])(sys, opcode);
-        flash_move_pc(this->p->flash);
-    }
-
-    if(flash_table_step(this->p->flash) < 0)
-        sys_kill(sys);
+    (*instructions[key])(sys, opcode);
+    flash_move_pc(this->p->flash);
 
     tuple_dtor(buffer);
     return 0;
@@ -168,16 +162,6 @@ int alu_add_breakp(const struct _alu *this, const char *point) {
 int alu_del_breakp(const struct _alu *this, const char *point) {
 
     return flash_del_breakp(this->p->flash, point);
-}
-
-void alu_set_tip(const struct _alu *this, const int line) {
-
-    flash_set_tip(this->p->flash, line);
-}
-
-int alu_get_tip(const struct _alu *this) {
-
-    return flash_get_tip(this->p->flash);
 }
 
 bool alu_on_breakp(const struct _alu *this) {

@@ -270,13 +270,21 @@ static void print_flash(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, CPNL, "Flash:\n\n", D);
 
-    const int tip = sys_get_tip(sys);
+    const int pc = sys_get_pc(sys);
     const int size = sys_table_size(sys);
 
     entry_t *entry = sys_dump_table(sys);
     queue_t *stream = queue_ctor();
 
-    for(int i = (tip - 4); i <= (tip + 4); i++) {
+    int k;
+
+    for(k = 0; k < size; k++) {
+
+        if(entry[k].addr == pc)
+            break;
+    }
+
+    for(int i = (k - 4); i <= (k + 4); i++) {
 
         if(i < 0 || i > size - 1) {
 
@@ -301,7 +309,7 @@ static void print_flash(debugwindow_t *window, system_t *sys) {
             dwin_add(window, CPNL, "      ", D);
         }
 
-        if(i == tip) {
+        if(i == k) {
 
             dwin_add(window, CPNL, " [->] ", B);
 
@@ -327,7 +335,7 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, RPNL, "Source Code:\n\n", D);
 
-    const int tip = sys_get_tip(sys);
+    const int pc = sys_get_pc(sys);
     const int size = sys_table_size(sys);
 
     const int cursor = dwin_curs_of(window, RPNL);
@@ -367,7 +375,7 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
         char *out = queue_str(stream);
         dwin_add(window, RPNL, out, D);
 
-        if(i == tip) {
+        if(entry[i].addr == pc) {
           
             dwin_add(window, RPNL, " [->] ", B);
 

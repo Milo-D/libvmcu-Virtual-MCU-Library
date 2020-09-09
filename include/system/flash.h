@@ -35,12 +35,8 @@ extern void flash_reboot(const struct _flash *this);
 
 /* Table Operations */
 
-extern int flash_table_step(const struct _flash *this);
-extern bool flash_is_sync(const struct _flash *this);
 extern int flash_add_breakp(const struct _flash *this, const char *point);
 extern int flash_del_breakp(const struct _flash *this, const char *point);
-extern void flash_set_tip(const struct _flash *this, const int line);
-extern int flash_get_tip(const struct _flash *this);
 extern bool flash_on_breakp(const struct _flash *this);
 extern int flash_table_size(const struct _flash *this);
 extern entry_t* flash_dump_table(const struct _flash *this);

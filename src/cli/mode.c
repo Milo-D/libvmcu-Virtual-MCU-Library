@@ -110,7 +110,8 @@ static void mode_headless(const char *hex_file) {
         if((now / CLOCKS_PER_SEC) > TIMEOUT)
             break;
 
-        sys_step(sys);
+        if(sys_step(sys) < 0)
+            sys_kill(sys);
 
     } while(sys_is_term(sys) == false);
 

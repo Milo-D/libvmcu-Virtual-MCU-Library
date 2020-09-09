@@ -16,7 +16,6 @@
 
 struct _private {
     
-    int tip;
     entry_t *entry;
 };
 
@@ -44,7 +43,7 @@ struct _table* table_ctor(const char *hex_file) {
     array_t *buffer = array_ctor(1, tuple_dtor, tuple_cpy);
     disassemble(hex_file, buffer);
    
-    table->p->tip = table->breakc = 0;
+    table->breakc = 0;
     table->size = buffer->size;
 
     table->p->entry = malloc(buffer->size * sizeof(entry_t));
@@ -78,18 +77,6 @@ void table_dtor(struct _table *this) {
     free(this);
 }
 
-int table_step(struct _table *this) {
-
-    if(this->p->tip >= this->size - 1)
-        return -1;
-
-    if(this->p->tip < 0)
-        return -1;
-
-    this->p->tip += 1;
-    return 0;
-}
-
 int table_add_breakp(struct _table *this, const char *point) {
 
     const int line = get_int(point);
@@ -98,6 +85,9 @@ int table_add_breakp(struct _table *this, const char *point) {
         return -1;
 
     if(this->p->entry[line].breakp == true)
+        return -1;
+
+    if(this->p->entry[line].addr < 0)
         return -1;
 
     this->p->entry[line].breakp = true;
@@ -114,6 +104,9 @@ int table_del_breakp(struct _table *this, const char *point) {
         return -1;
 
     if(this->p->entry[line].breakp == false)
+        return -1;
+
+    if(this->p->entry[line].addr < 0)
         return -1;
 
     this->p->entry[line].breakp = false;
@@ -162,49 +155,15 @@ void table_define(struct _table *this, const char *alias, const char *seq) {
     }
 }
 
-void table_set_tip(struct _table *this, const int line) {
+bool table_on_breakp(const struct _table *this, const int pc) {
 
-    if(line >= this->size)
-        return;
+    for(int i = 0; i < this->size; i++) {
 
-    if(line < 0)
-        return;
-
-    this->p->tip = line;
-}
-
-int table_get_tip(const struct _table *this) {
-
-    return this->p->tip;
-}
-
-void table_jmp(struct _table *this, const int exec_addr) {
-
-    int i = 0;
-
-    while(this->p->entry[i].addr != exec_addr) {
-
-        i += 1;
-
-        if(i >= this->size) {
-
-            table_set_tip(this, -1);
-            return;
-        }
+        if(this->p->entry[i].addr == pc)
+            return this->p->entry[i].breakp;
     }
 
-    table_set_tip(this, i - 1);
-}
-
-bool table_on_breakp(const struct _table *this) {
-
-    return this->p->entry[this->p->tip].breakp;
-}
-
-bool table_is_sync(const struct _table *this, const int hex_addr) {
-
-    const int tip = this->p->tip;
-    return (this->p->entry[tip].addr == hex_addr);
+    return false;
 }
 
 entry_t* table_dump(const struct _table *this) {
