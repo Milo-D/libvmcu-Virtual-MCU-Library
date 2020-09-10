@@ -49,8 +49,14 @@ void jump_forward(debugwindow_t *window, system_t *sys, const int delay) {
 
 void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
 
-    if(sys_add_breakp(sys, bp) < 0)
+    if(sys_add_breakp(sys, bp) < 0) {
+
+        char *msg = bp_set_failure(bp);
+        dwin_write(window, OPNL, msg, D);
+
+        free(msg);
         return;
+    }
 
     char *msg = bp_set_success(bp);
     dwin_write(window, OPNL, msg, D);
@@ -60,8 +66,14 @@ void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
 
 void remove_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
 
-    if(sys_del_breakp(sys, bp) < 0)
+    if(sys_del_breakp(sys, bp) < 0) {
+
+        char *msg = bp_del_failure(bp);
+        dwin_write(window, OPNL, msg, D);
+
+        free(msg);
         return;
+    }
 
     char *msg = bp_del_success(bp);
     dwin_write(window, OPNL, msg, D);

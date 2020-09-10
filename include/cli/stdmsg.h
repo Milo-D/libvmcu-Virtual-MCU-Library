@@ -31,7 +31,10 @@ extern char* val_of_eep(const char *addr, const char *range, const char *value);
 extern char* val_of_data(const char *addr, const char *range, const char *value);
 
 extern char* bp_set_success(const char *line);
+extern char* bp_set_failure(const char *line);
+
 extern char* bp_del_success(const char *line);
+extern char* bp_del_failure(const char *line);
 
 extern char* eep_success(const char *file);
 extern char* file_err(const char *file);

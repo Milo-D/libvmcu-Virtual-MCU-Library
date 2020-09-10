@@ -71,10 +71,32 @@ char* bp_set_success(const char *line) {
     return out;
 }
 
+char* bp_set_failure(const char *line) {
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "(mdx) Could not set Breakpoint at line ", line, ".\n");
+
+    char *out = queue_str(stream);
+    queue_dtor(stream);
+
+    return out;
+}
+
 char* bp_del_success(const char *line) {
 
     queue_t *stream = queue_ctor();
     queue_put(stream, 3, "(mdx) Removing Breakpoint at line ", line, ".\n");
+
+    char *out = queue_str(stream);
+    queue_dtor(stream);
+
+    return out;
+}
+
+char* bp_del_failure(const char *line) {
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "(mdx) Could not remove Breakpoint at line ", line, ".\n");
 
     char *out = queue_str(stream);
     queue_dtor(stream);
