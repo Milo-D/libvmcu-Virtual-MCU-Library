@@ -431,7 +431,14 @@ void sbis(system_t *sys, const int opcode) {
         return;
     }
 
-    /* sys_skip */
+    /* Temporary implementation, this wont work with
+    *  32-bit instruction. After adding 32-bit support
+    *  to the decoder, this function will be rewritten. 
+    **/
+
+    const int pc = sys_get_pc(sys);
+    sys_set_pc(sys, pc + 2);
+
     sys->cycles += 2;
 }
 
