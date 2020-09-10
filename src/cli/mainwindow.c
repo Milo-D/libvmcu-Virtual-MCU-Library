@@ -141,7 +141,7 @@ static void init(struct _mainwindow *this) {
     this->p->win = newwin(6, 42, y, x);
     wborder(this->p->win, 0, 0, 0, 0, 0, 0, 0, 0);
 
-    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(1, COLOR_BLUE, COLOR_BLACK);
 
     wbkgd(this->p->win, COLOR_PAIR(1));
     scrollok(this->p->win, true);

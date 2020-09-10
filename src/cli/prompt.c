@@ -34,7 +34,7 @@ struct _prompt* prompt_ctor(int h, int w, int y, int x) {
         return NULL;
     }
 
-    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(1, COLOR_BLUE, COLOR_BLACK);
     prompt_init(prompt, h, w, y, x);
 
     return prompt;

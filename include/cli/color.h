@@ -17,6 +17,6 @@ Colors:
 
 ******************************************************/
 
-typedef enum { R, G, B, Y, M, C, D } COLOR;
+typedef enum { B, G, R, Y, M, C, D } COLOR;
 
 #endif
