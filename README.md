@@ -181,7 +181,7 @@ File Selector:
 ![mdx_file](https://user-images.githubusercontent.com/46600932/73900923-77778200-4891-11ea-9e05-0dce09b05fbc.png)
 
 Disassembler:
-![mdx_disassembler](https://user-images.githubusercontent.com/46600932/72665866-e7ba8280-3a0c-11ea-8bd5-24d1f4a1c3aa.png)
+![mdx_disassembler](https://user-images.githubusercontent.com/46600932/92750758-aefa5f80-f387-11ea-9c2f-23b040b2b161.png)
 
 Headless Mode:
 ![mdx_headless](https://user-images.githubusercontent.com/46600932/72665868-e7ba8280-3a0c-11ea-9c0a-5482cd337d63.png)
