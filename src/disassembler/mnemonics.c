@@ -171,6 +171,21 @@ char* mnem_rjmp(const int opcode) {
     nfree(3, offstr, hexoffs, fill);
 
     return mnemonic;
+}
+
+char* mnem_ijmp(const int opcode) {
+
+    queue_t *stream = queue_ctor();
+
+    char *fill = strfill(' ', 4, TAB);
+    queue_put(stream, 3, "ijmp", fill, "; PC <- ZH:ZL");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    free(fill);
+
+    return mnemonic;
 } 
 
 char* mnem_mov(const int opcode) {
@@ -1928,7 +1943,7 @@ char* mnem_bset(const int opcode) {
 
 char* (*mnemonics[INSTR_MAX]) (const int opcode) = { 
 
-    mnem_nop, mnem_movw, mnem_muls, mnem_mulsu, mnem_fmul, mnem_ldi, mnem_rjmp, mnem_mov, 
+    mnem_nop, mnem_movw, mnem_muls, mnem_mulsu, mnem_fmul, mnem_ldi, mnem_rjmp, mnem_ijmp, mnem_mov, 
     mnem_dec, mnem_inc, mnem_add, mnem_adc, mnem_adiw, mnem_sub, mnem_subi, mnem_sbc, mnem_sbiw, mnem_push, mnem_pop, 
     mnem_in, mnem_out, mnem_sbis, mnem_clr, mnem_ld_x, mnem_ld_xi, mnem_ld_dx, mnem_ld_y, mnem_ld_yi, mnem_ld_dy, mnem_ldd_yq, 
     mnem_ldd_zq, mnem_ld_z, mnem_ld_zi, mnem_st_x, mnem_st_xi, mnem_std_yq, mnem_std_zq, mnem_sts, mnem_xch, mnem_brne, mnem_breq, mnem_brge, 

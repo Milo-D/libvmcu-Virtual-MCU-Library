@@ -47,16 +47,11 @@ struct _lmap* lmap_ctor(void) {
     lmap->p->labels = array_ctor(256, tuple_dtor, tuple_cpy);
     lmap->p->map = strmap_ctor(N_FLOW);
 
-    for(int i = 0; i < N_FLOW; i++) {
+    for(int i = 0; i < N_FLOW - 3; i++) {
+
+        /* (N_FLOW - 3) excludes indirect jumps */
 
         const char *instr = mnemstr[FLOW][i];
-
-        if(strcmp(instr, "ret") == 0)
-            continue;
-
-        if(strcmp(instr, "icall") == 0)
-            continue;
-
         strmap_put(lmap->p->map, mnemstr[FLOW][i]);
     }
 
