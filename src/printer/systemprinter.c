@@ -32,8 +32,6 @@ static int color(const int mem_prop);
 
 extern void system_to_win(debugwindow_t *window, system_t *sys) {
 
-    dwin_clr(window);
-
     print_gpr(window, sys);
     print_sreg(window, sys);
     print_data(window, sys);
