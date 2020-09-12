@@ -352,6 +352,39 @@ void sbc(system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
+void sbci(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 8, 0) + 16;
+    const int8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+
+    const bool carry = sys_read_sreg(sys, CF);
+    const bool zero = sys_read_sreg(sys, ZF);
+
+    const int8_t dest_val = sys_read_gpr(sys, dest);
+    const int8_t result = (dest_val - src - carry);
+
+    int8_t vf_res = bit(dest_val, 7) * !bit(src, 7) * !bit(result, 7);
+    vf_res += !bit(dest_val, 7) * bit(src, 7) * bit(result, 7);
+
+    int8_t cf_res = (!bit(dest_val, 7) * bit(src, 7)) + (bit(src, 7) * bit(result, 7));
+    cf_res += (bit(result, 7) * !bit(dest_val, 7));
+
+    int8_t hf_res = (!bit(dest_val, 3) * bit(src, 3)) + (bit(src, 3) * bit(result, 3));
+    hf_res += bit(result, 3) * !bit(dest_val, 3);
+
+    const int8_t nf_res = bit(result, 7);
+
+    sys_write_sreg(sys, VF, vf_res);
+    sys_write_sreg(sys, CF, cf_res);
+    sys_write_sreg(sys, HF, hf_res);
+    sys_write_sreg(sys, NF, nf_res);
+    sys_write_sreg(sys, SF, nf_res ^ vf_res);
+    sys_write_sreg(sys, ZF, (result == 0x00) * zero);
+
+    sys_write_gpr(sys, dest, result);
+    sys->cycles += 1;
+}
+
 void sbiw(system_t *sys, const int opcode) {
 
     const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
@@ -1439,7 +1472,7 @@ void bset(system_t *sys, const int opcode) {
 void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
 
     nop, movw, muls, mulsu, fmul, ldi, rjmp, ijmp, mov, 
-    dec, inc, add, adc, adiw, sub, subi, sbc, sbiw, push, pop, 
+    dec, inc, add, adc, adiw, sub, subi, sbc, sbci, sbiw, push, pop, 
     in, out, sbis, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, 
     brpl, brlo, brlt, brcc, brcs, brvs, brmi, rcall, ret, icall, cp, cpi, cpc, 
