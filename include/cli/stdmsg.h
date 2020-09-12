@@ -27,6 +27,7 @@
 extern char* sim_start(const char *file);
 
 extern char* val_of(const char *cell, const char *value);
+extern char* bit_val_of(const char *cell, const char *value);
 extern char* val_of_eep(const char *addr, const char *range, const char *value);
 extern char* val_of_data(const char *addr, const char *range, const char *value);
 

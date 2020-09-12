@@ -1,7 +1,6 @@
 /* Debug Commands Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -15,6 +14,7 @@
 #include "disassembler/decoder.h"
 #include "printer/systemprinter.h"
 #include "misc/stringmanip.h"
+#include "misc/bitmanip.h"
 #include "misc/filemanip.h"
 #include "misc/memmanip.h"
 #include "collections/array.h"
@@ -255,4 +255,33 @@ void show_time(debugwindow_t *window, system_t *sys) {
     dwin_write(window, OPNL, time_str, D);
 
     free(time_str);
+}
+
+void examine_data_byte(debugwindow_t *window, system_t *sys, const char *mem_cell) {
+
+    const int cell = htoi(mem_cell);
+
+    if(cell < 0 || cell > RAM_END) {
+
+        dwin_write(window, OPNL, MEM_CELL_ERR, D);
+        return;
+    }
+
+    const uint8_t data = sys_read_data(sys, cell);
+
+    char byte[10];
+
+    byte[4] = ' ';
+    byte[9] = '\0';
+
+    for(int i = 0; i < 4; i++)
+        byte[i] = bit(data, 7 - i) + 48;
+
+    for(int i = 4; i < 8; i++)
+        byte[i + 1] = bit(data, 7 - i) + 48;
+
+    char *msg = bit_val_of(mem_cell, byte);
+    dwin_write(window, OPNL, msg, D);
+
+    free(msg);   
 }

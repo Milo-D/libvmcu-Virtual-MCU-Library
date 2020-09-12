@@ -135,84 +135,28 @@ static bool parser_parse_debug(const struct _parser *this, list_t *items) {
     switch(index) {
 
         case 0: case 1: case 2: case 3: case 4:
-
-            if(argc != 0)
-                return false;
-
-        break;
-
-        case 5:
-
-            if(argc != 0)
-                return false;
-
-        break;
-
-        case 6:
-
-            if(argc != 1)
-                return false;
-
-        break;
-
-        case 7: case 8:
-
-            if(argc != 0)
-                return false;
-
-        break;
-        
-        case 9: case 10:
-
-            if(argc != 1)
-                return false;
-
-        break;
-
-        case 11: case 12:
-
-            if(argc != 2)
-                return false;
-
-        break;
-
-        case 13:
-
-            if(argc != 1)
-                return false;
-
-        break;
-
-        case 14: case 15: case 16:
-
-            if(argc != 0)
-                return false;
-
-        break;
-
-        case 17: case 18:
-        
-            if(argc != 1)
-                return false;
-
-            if(get_int((char*) ls_at(items, 1)) < 0)
-                return false;
-        
-        break;
-
-        case 19:
-
-            if(argc != 2)
-                return false;
-
-        break;
-        
-        case 20: case 21: case 22: case 23:
+        case 5: case 7: case 8: case 14: case 15:
+        case 16: case 20: case 21: case 22: case 23:
         case 24:
-        
+
             if(argc != 0)
                 return false;
-        
+
+        break;
+
+        case 6: case 9: case 10: case 13: case 17:
+        case 18: case 25:
+
+            if(argc != 1)
+                return false;
+
+        break;
+
+        case 11: case 12: case 19:
+
+            if(argc != 2)
+                return false;
+
         break;
         
         default: print_status("Could not parse line.", true); break;

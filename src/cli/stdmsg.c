@@ -34,6 +34,17 @@ char* val_of(const char *cell, const char *value) {
     return msg;
 }
 
+char* bit_val_of(const char *cell, const char *value) {
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 5, "(mdx) ", cell, " ~> ", value, "\n");
+
+    char *msg = queue_str(stream);
+    queue_dtor(stream);
+
+    return msg;
+}
+
 char* val_of_eep(const char *addr, const char *range, const char *value) {
 
     queue_t *stream = queue_ctor();
