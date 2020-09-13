@@ -966,6 +966,31 @@ void brvs(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void brts(system_t *sys, const int opcode) {
+
+    if(sys_read_sreg(sys, TF) == 0x00) {
+
+        sys->cycles += 1;
+        return;
+    }
+
+    int offs = extract(opcode, 3, 10, 0);
+    const int prog_counter = sys_get_pc(sys);
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+
+        sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
+
+        return;
+    }
+
+    sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
+}
+
 void brmi(system_t *sys, const int opcode) {
 
     if(sys_read_sreg(sys, NF) == 0x00) {
@@ -1475,8 +1500,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     dec, inc, add, adc, adiw, sub, subi, sbc, sbci, sbiw, push, pop, 
     in, out, sbis, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, 
-    brpl, brlo, brlt, brcc, brcs, brvs, brmi, rcall, ret, icall, cp, cpi, cpc, 
-    lsr, asr, ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
+    brpl, brlo, brlt, brcc, brcs, brvs, brts, brmi, rcall, ret, icall, cp, cpi, 
+    cpc, lsr, asr, ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
     set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
     clz, clh, clc, cli, cln, bclr, bset
 };
