@@ -45,8 +45,8 @@ extern void dwin_add(struct _debugwindow *this, const PANEL ptype, const char *s
 extern void dwin_write(struct _debugwindow *this, const PANEL ptype, const char *str, const COLOR col);
 extern void dwin_highlight(struct _debugwindow *this, const PANEL ptype, const char *str);
 
-extern void dwin_clr_specific(struct _debugwindow *this, const PANEL ptype);
-extern void dwin_clr(struct _debugwindow *this);
+extern void dwin_clear_panel(struct _debugwindow *this, const PANEL ptype);
+extern void dwin_clear(struct _debugwindow *this);
 
 extern void dwin_update(struct _debugwindow *this, const PANEL ptype);
 extern void dwin_update_all(struct _debugwindow *this);

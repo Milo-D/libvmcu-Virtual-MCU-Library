@@ -147,12 +147,12 @@ void dwin_highlight(struct _debugwindow *this, const PANEL ptype, const char *st
     panel_highlight(this->p->panel[ptype], str);
 }
 
-void dwin_clr_specific(struct _debugwindow *this, const PANEL ptype) {
+void dwin_clear_panel(struct _debugwindow *this, const PANEL ptype) {
 
     panel_clear(this->p->panel[ptype]);
 }
 
-void dwin_clr(struct _debugwindow *this) {
+void dwin_clear(struct _debugwindow *this) {
 
     for(int i = 0; i < 5; i++)
         panel_clear(this->p->panel[i]);

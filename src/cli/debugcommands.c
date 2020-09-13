@@ -225,7 +225,7 @@ void load_eep_hex(debugwindow_t *window, system_t *sys, const char *file) {
 
 void clear_output(debugwindow_t *window) {
 
-    dwin_clr_specific(window, OPNL);
+    dwin_clear_panel(window, OPNL);
 }
 
 void show_cycles(debugwindow_t *window, system_t *sys) {

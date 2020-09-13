@@ -343,7 +343,11 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
 
     if(size == 0) {
 
-        dwin_add(window, RPNL, "[ No Source available ]\n", D);        
+        dwin_clear_panel(window, RPNL);
+
+        dwin_add(window, RPNL, "Source Code:\n\n", D);
+        dwin_add(window, RPNL, "[ No Source available ]\n", D); 
+
         return;
     }
 
