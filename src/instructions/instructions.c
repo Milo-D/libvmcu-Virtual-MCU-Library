@@ -458,7 +458,31 @@ void sbis(system_t *sys, const int opcode) {
 
     const uint8_t val = sys_read_data(sys, GPR_SIZE + dest);
 
-    if((val & (0x01 << bit)) == 0x00) {
+    if(bit(val, bit) == 0x00) {
+
+        sys->cycles += 1;
+        return;
+    }
+
+    /* Temporary implementation, this wont work with
+    *  32-bit instruction. After adding 32-bit support
+    *  to the decoder, this function will be rewritten. 
+    **/
+
+    const int pc = sys_get_pc(sys);
+    sys_set_pc(sys, pc + 2);
+
+    sys->cycles += 2;
+}
+
+void sbrc(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+    const int bit = extract(opcode, 0, 3, 0);
+
+    const uint8_t val = sys_read_gpr(sys, dest);
+
+    if(bit(val, bit) == 0x01) {
 
         sys->cycles += 1;
         return;
@@ -1523,7 +1547,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
 
     nop, movw, muls, mulsu, fmul, ldi, rjmp, ijmp, mov, 
     dec, inc, add, adc, adiw, sub, subi, sbc, sbci, sbiw, push, pop, 
-    in, out, sbis, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
+    in, out, sbis, sbrc, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, 
     brpl, brlo, brlt, brcc, brcs, brvs, brts, brtc, brmi, rcall, ret, icall, cp, cpi, 
     cpc, lsr, asr, ror, swap, ori, or_asm, and_asm, andi, com, bld, bst, ses, 
