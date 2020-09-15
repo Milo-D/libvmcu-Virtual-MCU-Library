@@ -10,6 +10,7 @@
 #include "system/mcudef.h"
 #include "table/table.h"
 #include "disassembler/decoder.h"
+#include "disassembler/plain.h"
 #include "misc/ehandling.h"
 #include "misc/stringmanip.h"
 #include "collections/array.h"
@@ -21,7 +22,7 @@ struct _private {
     int16_t *memory;
     unsigned int mem_usage;
 
-    array_t *keys;
+    array_t *plain;
     table_t *table;
 };
 
@@ -40,41 +41,41 @@ struct _flash* flash_ctor(const char *file) {
         return NULL;
     }
 
-    flash->p->table = table_ctor(file);
-
-    array_t *buffer = array_ctor(1024, NULL, NULL);
-    decode_hex(file, buffer);
-
-    flash->p->keys = array_ctor(buffer->top, tuple_dtor, tuple_cpy);
-    flash->p->mem_usage = buffer->top;
-
     flash->p->memory = malloc(FLASH_SIZE * sizeof(int16_t));
     memset(flash->p->memory, 0x0000, FLASH_SIZE * sizeof(int16_t));
 
-    for(int i = 0; i < buffer->top; i++) {
+    flash->p->plain = array_ctor(1, NULL, NULL);
+    flash->p->table = table_ctor(file);
 
-        plain_t *plain = (plain_t*) array_at(buffer, i);
-        flash->p->memory[ plain->addr ] = plain->opcode;
+    decode_hex(file, flash->p->plain);
+    flash->p->mem_usage = flash->p->plain->top;
 
-        tuple_t *key = tuple_ctor(2, INT, INT);
+    for(int i = 0; i < flash->p->mem_usage; i++) {
 
-        tuple_set(key, (void*) &plain->addr, sizeof(int), 0);
-        tuple_set(key, (void*) &plain->key, sizeof(int), 1);
+        plain_t *p = (plain_t*) array_at(flash->p->plain, i);
 
-        array_push(flash->p->keys, (void*) key, sizeof(tuple_t));
-        tuple_dtor(key);
+        if(p->dword == true) {
+
+            const uint16_t opch = ((p->opcode & 0xffff0000) >> 16);
+            const uint16_t opcl = ((p->opcode & 0x0000ffff));
+
+            flash->p->memory[ p->addr ] = opch;
+            flash->p->memory[ p->addr + 0x01 ] = opcl;
+
+            continue;
+        }
+
+        flash->p->memory[ p->addr ] = p->opcode;
     }
 
     flash->p->pc = 0x0000;
-    array_dtor(buffer);
-
     return flash;
 }
 
 void flash_dtor(struct _flash *this) {
 
     table_dtor(this->p->table);
-    array_dtor(this->p->keys);
+    array_dtor(this->p->plain);
 
     free(this->p->memory);
     free(this->p);
@@ -83,24 +84,23 @@ void flash_dtor(struct _flash *this) {
 
 int flash_fetch(const struct _flash *this, tuple_t *buffer) {
 
-    const int16_t value = this->p->memory[this->p->pc];
-    tuple_set(buffer, (void*) &value, sizeof(int16_t), 0);
-
     for(int i = 0; i < this->p->mem_usage; i++) {
 
-        tuple_t *t = (tuple_t*) array_at(this->p->keys, i);
-        const int addr = *((int*) tuple_get(t, 0));
+        plain_t *p = (plain_t*) array_at(this->p->plain, i);
 
-        if(this->p->pc == addr) {
+        if(p->addr == this->p->pc) {
 
-            const int key = *((int*) tuple_get(t, 1));
-            tuple_set(buffer, (void*) &key, sizeof(int), 1);
+            tuple_set(buffer, (void*) &p->opcode, sizeof(int), 0);
+            tuple_set(buffer, (void*) &p->key, sizeof(int), 1);
 
             return 0;
         }
     }
 
     const int err = -1;
+    const int16_t value = this->p->memory[this->p->pc];
+
+    tuple_set(buffer, (void*) &value, sizeof(int16_t), 0);
     tuple_set(buffer, (void*) &err, sizeof(int), 1);
 
     return -1;

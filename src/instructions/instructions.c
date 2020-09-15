@@ -100,6 +100,15 @@ void rjmp(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void jmp(system_t *sys, const int opcode) {
+
+    const int addr = (opcode & 0x1ffff) 
+                   + (opcode & 0x1f00000);
+
+    sys_set_pc(sys, addr);
+    sys->cycles += 3;
+}
+
 void ijmp(system_t *sys, const int opcode) {
 
     const int pc = sys_get_pc(sys);
@@ -1569,7 +1578,7 @@ void bset(system_t *sys, const int opcode) {
 
 void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
 
-    nop, movw, muls, mulsu, fmul, ldi, rjmp, ijmp, mov, 
+    nop, movw, muls, mulsu, fmul, ldi, rjmp, jmp, ijmp, mov, 
     dec, inc, add, adc, adiw, sub, subi, sbc, sbci, sbiw, push, pop, 
     in, out, sbis, sbrc, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, xch, brne, breq, brge, 

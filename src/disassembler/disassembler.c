@@ -11,8 +11,8 @@
 #include "disassembler/decoder.h"
 #include "disassembler/mnemonics.h"
 #include "disassembler/labelmap.h"
+#include "disassembler/plain.h"
 #include "collections/array.h"
-#include "collections/tuple.h"
 #include "collections/queue.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
@@ -21,43 +21,26 @@
 /* Forward Declarations of private Functions */
 
 static void add_labels(array_t *buffer);
+
+static int translate_addr(array_t *buffer, const int addr);
 static char* replace_addr(const char *line, const int lx);
 
 /* --- Public --- */
 
 int disassemble(const char *hex_file, array_t *buffer) {
+    
+    decode_hex(hex_file, buffer);
 
-    array_t *dump = array_ctor(1024, NULL, NULL);
-    decode_hex(hex_file, dump);
+    for(int i = 0; i < buffer->size; i++) {
 
-    buffer->size = dump->top;
-
-    for(int i = 0; i < dump->top; i++) {
-
-        plain_t *p = (plain_t*) array_at(dump, i);
-
-        char *current = (*mnemonics[p->key])(p->opcode);
-        const int len = strlen(current);
-
-        tuple_t *t = tuple_ctor(2, STR, INT);
-        tuple_set(t, (void*) current, (len + 1) * sizeof(char), 0);
-        tuple_set(t, (void*) &p->addr, sizeof(int), 1);
-
-        array_push(buffer, (void*) t, sizeof(tuple_t));
-
-        tuple_dtor(t);
-        free(current);
+        plain_t *p = (plain_t*) array_at(buffer, i);
+        p->mnem = (*mnemonics[p->key])(p->opcode);
     }
 
-    if(buffer->size == 0) {
-
-        array_dtor(dump);
+    if(buffer->top == 0)
         return -1;
-    }
 
     add_labels(buffer);
-    array_dtor(dump);
-
     return 0;
 }
 
@@ -69,73 +52,75 @@ static void add_labels(array_t *buffer) {
 
     for(int i = 0; i < buffer->size; i++) {
 
-        tuple_t *t = array_at(buffer, i);
+        plain_t *p = (plain_t*) array_at(buffer, i);
 
-        const char *line = tuple_get(t, 0);
-        const int lx = lmap_add(lmap, line, i);
+        const int addr = (!p->dword) ? p->addr : -1; 
+        const int lx = lmap_add(lmap, p->mnem, addr);
 
         if(lx >= 0) {
 
-            char *repl = replace_addr(line, lx);
-            const int len = strlen(repl);
+            char *temp = p->mnem;
+            p->mnem = replace_addr(p->mnem, lx);
 
-            tuple_set(t, (void*) repl, (len + 1) * sizeof(char), 0);
-            free(repl);
+            free(temp);
         }
     }
 
-    lmap_sort(lmap, 0, lmap->size - 1);
     buffer->size += ((lmap->size * 2) + 1);
 
     for(int i = 0; i < lmap->size; i++) {
 
-        tuple_t *t = tuple_ctor(2, INT, STR);
-        lmap_get(lmap, i, t);
+        plain_t label; int offs = 0;
 
-        const int t_addr = *((int*) tuple_get(t, 0));
-        char *t_label = (char*) tuple_get(t, 1);
+        const int addr = lmap_get(lmap, i, &label);
+        const int index = translate_addr(buffer, addr);
 
-        if(t_addr + offs >= buffer->size || t_addr + offs < 0) {
+        if(index < 0 || index >= buffer->size) {
 
-            tuple_dtor(t);
+            free(label.mnem);
             continue;
         }
 
-        const int undef = -1;
-        const int len = strlen(t_label);
+        if(index > 0) {
 
-        tuple_t *label = tuple_ctor(2, STR, INT);
+            plain_t blank = {
 
-        tuple_set(label, (void*) t_label, (len + 1) * sizeof(char), 0);
-        tuple_set(label, (void*) &undef, sizeof(int), 1);
+                .opcode = 0x0000,
+                .addr = -1,
+                .key = 0,
 
-        if(t_addr > 0) {
+                .mnem = "",
+                .exec = false,
+                .dword = false
+            };
 
-            char empty[2] = "";
-            tuple_t *blank = tuple_ctor(2, STR, INT);
-
-            tuple_set(blank, (void*) empty, 2 * sizeof(char), 0);
-            tuple_set(blank, (void*) &undef, sizeof(int), 1);
-
-            array_insert(buffer, (void*) blank, sizeof(tuple_t), t_addr + offs);
+            array_insert(buffer, (void*) &blank, sizeof(plain_t), index);
 
             offs += 1;
             buffer->top += 1;
-
-            tuple_dtor(blank);
         }
 
-        array_insert(buffer, (void*) label, sizeof(tuple_t), t_addr + offs);
-        
-        offs += 1;
+        array_insert(buffer, (void*) &label, sizeof(plain_t), index + offs);
         buffer->top += 1;
 
-        tuple_dtor(t);
-        tuple_dtor(label);
+        free(label.mnem);
     }
 
     buffer->size = buffer->top;
     lmap_dtor(lmap);
+}
+
+static int translate_addr(array_t *buffer, const int addr) {
+
+    for(int i = 0; i < buffer->top; i++) {
+
+        plain_t *p = (plain_t*) array_at(buffer, i);
+
+        if(addr == p->addr)
+            return i;
+    }
+
+    return -1;
 }
 
 static char* replace_addr(const char *line, const int lx) {

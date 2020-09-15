@@ -11,8 +11,8 @@
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "disassembler/disassembler.h"
+#include "disassembler/plain.h"
 #include "collections/array.h"
-#include "collections/tuple.h"
 
 struct _private {
     
@@ -40,7 +40,7 @@ struct _table* table_ctor(const char *hex_file) {
     strncpy(table->source, hex_file, len);
     table->source[len] = '\0';
 
-    array_t *buffer = array_ctor(1, tuple_dtor, tuple_cpy);
+    array_t *buffer = array_ctor(1, plain_dtor, plain_cpy);
     disassemble(hex_file, buffer);
    
     table->breakc = 0;
@@ -50,15 +50,13 @@ struct _table* table_ctor(const char *hex_file) {
 
     for(int i = 0; i < buffer->size; i++) {
 
-        tuple_t *t = (tuple_t*) array_at(buffer, i);
+        plain_t *p = (plain_t*) array_at(buffer, i);
         
-        const char *content = (char*) tuple_get(t, 0);
-        const size_t bytes = strlen(content) * sizeof(char);
+        const size_t len = strlen(p->mnem) + 1;
+        table->p->entry[i].ln = malloc(len * sizeof(char));
+        strncpy(table->p->entry[i].ln, p->mnem, len);
 
-        table->p->entry[i].ln = malloc(bytes + sizeof(char));
-        strncpy(table->p->entry[i].ln, content, strlen(content) + 1);
-
-        table->p->entry[i].addr = *((int*) tuple_get(t, 1));
+        table->p->entry[i].addr = p->addr;
         table->p->entry[i].breakp = false;
     }
 

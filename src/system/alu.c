@@ -76,7 +76,7 @@ void alu_dtor(struct _alu *this) {
 
 int alu_fetch(struct _alu *this, system_t *sys) {
 
-    tuple_t *buffer = tuple_ctor(2, INT16, INT);
+    tuple_t *buffer = tuple_ctor(2, INT32, INT);
     flash_fetch(this->p->flash, buffer);
 
     const int opcode = *((int*) tuple_get(buffer, 0));

@@ -13,6 +13,7 @@
 #include "misc/filemanip.h"
 #include "misc/jsonwriter.h"
 #include "disassembler/disassembler.h"
+#include "disassembler/plain.h"
 #include "system/system.h"
 #include "parser/parser.h"
 #include "collections/array.h"
@@ -80,15 +81,13 @@ int call_mode(int argc, char **argv) {
 
 static void mode_disassembler(const char *hex_file) {
 
-    array_t *source = array_ctor(1, tuple_dtor, tuple_cpy);
+    array_t *source = array_ctor(1, plain_dtor, plain_cpy);
     disassemble(hex_file, source);
 
     for(int i = 0; i < source->size; i++) {
 
-        tuple_t *t = (tuple_t*) array_at(source, i);
-        const char *ln = ((char*) tuple_get(t, 0));
-
-        printf("%s\n", ln);
+        plain_t *p = (plain_t*) array_at(source, i);
+        printf("%s\n", p->mnem);
     }
 
     array_dtor(source);

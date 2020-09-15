@@ -11,6 +11,22 @@
 #include "misc/stringmanip.h"
 #include "collections/array.h"
 
+long fbytes(const char *file) {
+
+    FILE *fp = fopen(file, "r");
+
+    if(fp == NULL)
+        return -1;
+
+    fseek(fp, 0, SEEK_END);
+    const long bytes = ftell(fp);
+
+    fseek(fp, 0, SEEK_SET);
+    fclose(fp);
+
+    return bytes;
+}
+
 bool file_exists(const char *file) {
 
     FILE *check = fopen(file, "r");

@@ -9,8 +9,11 @@
 // Project Headers
 #include "disassembler/decoder.h"
 #include "disassembler/opcode.h"
+#include "disassembler/plain.h"
 #include "misc/ehandling.h"
 #include "misc/stringmanip.h"
+#include "misc/bitmanip.h"
+#include "misc/filemanip.h"
 #include "collections/array.h"
 
 #define FILE_INVALID_ERR "Could not open Hex File."
@@ -18,39 +21,63 @@
 #define HEX_DATA_ERR "Could not manipulate Hex Data."
 #define BYTE_INVALID_ERR "Found invalid Byte Count."
 #define ILLEGAL_SYM_ERR "Found illegal symbols in Hex File."
+#define DWORD_MISSING_ERR "Detected 32-bit opcode but found 16-bit."
+
+#define RECORD 8
+#define DATA_RECORD '0'
 
 /* Forward Declaration of Private Decoder Functions */
 
-static int get_key_from_op(const int hex);
-static int decode_hex_line(const char *line, array_t *buffer);
+static int preprocess(const char *hex_file, array_t *buffer);
+static int preprocess_line(const char *line, array_t *buffer);
 static int decode_eep_line(const char *line, array_t *buffer);
+
+static int get_opc_key(const int hex);
+static bool is_dword(const int opcode);
 static int validate_hex(const char *line);
+static char* create_err(const int opcode);
 
 /* Public Functions of Decoder */
 
 int decode_hex(const char *hex_file, array_t *buffer) {
 
-    FILE *file;
+    long bytes;
 
-    if((file = fopen(hex_file, "r")) == NULL)
+    if((bytes = fbytes(hex_file)) < 0)
         print_status(FILE_INVALID_ERR, true);
 
-    size_t len;
-    ssize_t bytes_read;
+    array_t *temp = array_ctor((bytes / 4), NULL, NULL);
 
-    char *line = NULL;
+    if(preprocess(hex_file, temp) < 0)
+        print_status(WRONG_FORM_ERR, true);
 
-    while((bytes_read = getline(&line, &len, file)) != -1) {
+    for(int i = 0; i < (buffer->size = temp->top); i++) {
 
-        if(validate_hex(line) < 0)
-            print_status(WRONG_FORM_ERR, true);
+        plain_t *p = (plain_t*) array_at(temp, i);
+        p->dword = is_dword(p->opcode);
 
-        decode_hex_line(line, buffer);
+        if((p->key = get_opc_key(p->opcode)) < 0) {
+
+            char *err = create_err(p->opcode);
+            print_status(err, true);
+        }
+
+        if((p->dword == true) && (i == temp->top - 1))
+            print_status(DWORD_MISSING_ERR, true);
+
+        if(p->dword == true) {
+
+            plain_t *post = (plain_t*) array_at(temp, ++i);
+            p->opcode = ((p->opcode << 16) | post->opcode);
+        }
+
+        p->exec = true;
+        array_push(buffer, (void*) p, sizeof(plain_t));
     }
 
-    free(line);
-    fclose(file);
-
+    buffer->size = buffer->top;
+    array_dtor(temp);
+    
     return 0;
 }
 
@@ -71,6 +98,9 @@ int decode_eep(const char *hex_file, array_t *buffer) {
         if(validate_hex(line) < 0)
             return -1;
 
+        if(line[RECORD] != DATA_RECORD)
+            continue;
+
         decode_eep_line(line, buffer);
     }
 
@@ -82,43 +112,31 @@ int decode_eep(const char *hex_file, array_t *buffer) {
 
 /* Private Functions of Decoder */
 
-static int get_key_from_op(const int hex) {
+static int preprocess(const char *hex_file, array_t *buffer) {
 
-    for(int i = 0; i < SET_SIZE; i++) {
+    size_t len;
+    ssize_t bytes_read;
 
-        int match = 0;
+    char *line = NULL;
 
-        for(int j = 0; j < WORD; j++) {
+    FILE *file = fopen(hex_file, "r");
 
-            const int binary = ((0x01 << (WORD - j - 1)) & hex) >> (WORD - j - 1);
+    while((bytes_read = getline(&line, &len, file)) != -1) {
 
-            if(!(opcode[i][j] == 0 || opcode[i][j] == 1)) {
+        if(validate_hex(line) < 0)
+            print_status(WRONG_FORM_ERR, true);
 
-                match += 1;
+        if(line[RECORD] != DATA_RECORD)
+            continue;
 
-                if(match == WORD)
-                    return i;
-
-                continue;
-            }
-
-            if(binary != opcode[i][j])
-                break;
-            else
-                match += 1;
-
-            if(match == WORD)
-                return i;
-        }
+        preprocess_line(line, buffer);
     }
 
-    return -1;
+    free(line);
+    fclose(file);
 }
 
-static int decode_hex_line(const char *line, array_t *buffer) {
-
-    if(line[8] != '0')
-        return -1;
+static int preprocess_line(const char *line, array_t *buffer) {
 
     char *hex_line; char *bytes; char *addr;
     const int hex_len = strlen(line);
@@ -137,9 +155,7 @@ static int decode_hex_line(const char *line, array_t *buffer) {
 
     for(int i = 0; i < (byte_count / 2); i++) {
 
-        int instr, found;
-
-        char current[5];
+        char current[5]; int instr;
         swap_bytes(current, hex_line, i);
 
         if(strcmp(current, "") == 0)
@@ -148,22 +164,15 @@ static int decode_hex_line(const char *line, array_t *buffer) {
         if((instr = htoi(current)) < 0)
             print_status(ILLEGAL_SYM_ERR, true);
 
-        if((found = get_key_from_op(instr)) < 0) {
-
-            char err[19 + 5] = "Could not decode 0x";
-            strncat(err, current, 4);
-
-            print_status(err, true);
-        }
-
-        if(buffer->top == buffer->size)
-            buffer->size *= 2;
-
         struct _plain p = {
 
             .opcode = instr,
-            .key = found,
-            .addr = (s_addr + i)
+            .addr = (s_addr + i),
+            .key = 0,
+
+            .mnem = NULL,
+            .exec = false,
+            .dword = false
         };
 
         array_push(buffer, (void*) &p, sizeof(plain_t));
@@ -177,9 +186,6 @@ static int decode_hex_line(const char *line, array_t *buffer) {
 }
 
 static int decode_eep_line(const char *line, array_t *buffer) {
-
-    if(line[8] != '0')
-        return -1;
 
     char *hex_line; char *bytes; char *addr;
     const int hex_len = strlen(line);
@@ -234,6 +240,47 @@ static int decode_eep_line(const char *line, array_t *buffer) {
     return 0;
 }
 
+static int get_opc_key(const int hex) {
+
+    for(int i = 0; i < SET_SIZE; i++) {
+
+        int match = 0;
+
+        for(int j = 0; j < WORD; j++) {
+
+            const int binary = bit(hex, (WORD - j - 1));
+
+            if(!(opcode[i][j] == 0 || opcode[i][j] == 1)) {
+
+                match += 1;
+
+                if(match == WORD)
+                    return i;
+
+                continue;
+            }
+
+            if(binary != opcode[i][j])
+                break;
+            else
+                match += 1;
+
+            if(match == WORD)
+                return i;
+        }
+    }
+
+    return -1;
+}
+
+static bool is_dword(const int opcode) {
+
+    if((opcode & 0xfe0e) == 0x940c)
+        return true;
+
+    return false;
+}
+
 static int validate_hex(const char *line) {
 
     char *c;
@@ -245,4 +292,18 @@ static int validate_hex(const char *line) {
         return -1;
 
     return 0;
+}
+
+static char* create_err(const int opcode) {
+
+    char high[3];
+    to_hex((opcode & 0x00ff), high);
+
+    char low[3];
+    to_hex(((opcode & 0xff00) >> 8), low);
+
+    char *err = malloc((19 + 5) * sizeof(char));
+    sprintf(err, "Could not decode 0x%s%s", high, low);
+
+    return err;
 }

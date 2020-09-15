@@ -8,6 +8,7 @@
 
 // Project Headers
 #include "disassembler/labelmap.h"
+#include "disassembler/plain.h"
 #include "collections/array.h"
 #include "collections/tuple.h"
 #include "collections/strmap.h"
@@ -27,7 +28,6 @@ struct _private {
 static int find_addr(const char *ln);
 static int label_exists(array_t *labels, const int addr);
 static char* create_label(const int lno);
-static int partition(array_t *a, const int l, const int h);
 
 /* --- Public --- */
 
@@ -44,7 +44,7 @@ struct _lmap* lmap_ctor(void) {
         return NULL;
     }
 
-    lmap->p->labels = array_ctor(256, tuple_dtor, tuple_cpy);
+    lmap->p->labels = array_ctor(256, NULL, NULL);
     lmap->p->map = strmap_ctor(N_FLOW);
 
     for(int i = 0; i < N_FLOW - 3; i++) {
@@ -60,6 +60,12 @@ struct _lmap* lmap_ctor(void) {
 }
 
 void lmap_dtor(struct _lmap *this) {
+
+    for(int i = 0; i < this->p->labels->top; i++) {
+
+        plain_t *p = (plain_t*) array_at(this->p->labels, i);
+        free(p->mnem);
+    }
 
     array_dtor(this->p->labels);
     strmap_dtor(this->p->map);
@@ -94,57 +100,47 @@ int lmap_add(struct _lmap *this, const char *ln, const int i) {
     if(this->size + 1 > this->p->labels->size)
         this->p->labels->size *= 2;
 
-    char *label = create_label(this->size);
-    const int len = strlen(label);
+    plain_t label = {
 
-    tuple_t *t = tuple_ctor(2, INT, STR);
+        .opcode = 0x0000,
+        .addr = addr,
+        .key = 0,
 
-    tuple_set(t, (void*) &addr, sizeof(int), 0);
-    tuple_set(t, (void*) label, (len + 1) * sizeof(char), 1);
+        .exec = false,
+        .dword = false
+    };
 
-    array_push(this->p->labels, (void*) t, sizeof(tuple_t));
+    label.mnem = create_label(this->size);
+
+    array_push(this->p->labels, (void*) &label, sizeof(plain_t));
     this->size += 1;
 
-    tuple_dtor(t);
-    nfree(2, sub, label);
-
+    free(sub);
     return this->size - 1;
 }
 
-void lmap_get(const struct _lmap *this, const int index, tuple_t *buffer) {
+int lmap_get(const struct _lmap *this, const int index, plain_t *buffer) {
 
-    if(index < 0 || index > this->size - 1) {
+    buffer->opcode = 0x0000;
+    buffer->addr = -1;
+    buffer->key = 0;
 
-        char *empty = "";
+    buffer->mnem = NULL;
+    buffer->exec = false;
+    buffer->dword = false;
 
-        const int undef = -1;
-        const int len = strlen(empty);
+    if(index < 0 || index > this->size - 1)
+        return -1;
 
-        tuple_set(buffer, (void*) &undef, sizeof(int), 0);
-        tuple_set(buffer, (void*) empty, (len + 1) * sizeof(char), 1);
+    plain_t *p = array_at(this->p->labels, index);
 
-        return;
-    }
+    const int len = strlen(p->mnem);
+    buffer->mnem = malloc((len + 1) * sizeof(char));
 
-    tuple_t *entry = array_at(this->p->labels, index);
+    strncpy(buffer->mnem, p->mnem, strlen(p->mnem));
+    buffer->mnem[len] = '\0';
 
-    const int addr = *((int*) tuple_get(entry, 0));
-    char *label = (char*) tuple_get(entry, 1);
-    
-    const int len = strlen(label);
-
-    tuple_set(buffer, (void*) &addr, sizeof(int), 0);
-    tuple_set(buffer, (void*) label, (len + 1) * sizeof(char), 1); 
-}
-
-extern void lmap_sort(struct _lmap *this, const int l, const int h) {
-
-    if(l < h) {
-
-        const int p = partition(this->p->labels, l, h);
-        lmap_sort(this, l, p - 1);
-        lmap_sort(this, p + 1, h);
-    }
+    return p->addr;
 }
 
 /* --- Private --- */
@@ -174,14 +170,12 @@ static int label_exists(array_t *labels, const int addr) {
 
     for(int i = 0; i < labels->top; i++) {
 
-        tuple_t *t = (tuple_t*) array_at(labels, i);
+        plain_t *p = (plain_t*) array_at(labels, i);
 
-        if(*((int*) tuple_get(t, 0)) == addr) {
+        if(p->addr == addr) {
 
-            char *label = (char*) tuple_get(t, 1);
-
-            const int pos = strpos(label, ":");
-            char *sub = substr(label, 1, pos - 1);
+            const int pos = strpos(p->mnem, ":");
+            char *sub = substr(p->mnem, 1, pos - 1);
 
             const int lx = get_int(sub);
             free(sub);
@@ -206,24 +200,4 @@ static char* create_label(const int lno) {
     free(id);
 
     return label;
-}
-
-static int partition(array_t *a, const int l, const int h) {
-
-    tuple_t *piv = (tuple_t*) array_at(a, h);
-
-    const int x = *((int*) tuple_get(piv, 0));
-    int i = (l - 1);
-
-    for(int j = l; j <= h - 1; j++) {
-
-        tuple_t *t = (tuple_t*) array_at(a, j);
-        const int y = *((int*) tuple_get(t, 0));
-
-        if(y <= x)
-            array_swap(a, ++i, j);
-    }
-
-    array_swap(a, i + 1, h);
-    return (i + 1);
 }
