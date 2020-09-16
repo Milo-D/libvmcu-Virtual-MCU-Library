@@ -34,8 +34,9 @@ extern void alu_reboot(const struct _alu *this);
 
 /* FLASH Operations */
 
-extern int alu_get_pc(const struct _alu *this);
+extern int alu_move_pc(const struct _alu *this, const int inc);
 extern void alu_set_pc(struct _alu *this, const int addr);
+extern int alu_get_pc(const struct _alu *this);
 
 /* GPR Operations */
 

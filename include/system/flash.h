@@ -9,7 +9,7 @@
 
 typedef struct _table table_t;
 typedef struct _entry entry_t;
-typedef struct _tuple tuple_t;
+typedef struct _plain plain_t;
 typedef struct _array array_t;
 
 struct _private;
@@ -27,10 +27,12 @@ extern void flash_dtor(struct _flash *this);
 
 /* General FLASH Functions */
 
-extern int flash_fetch(const struct _flash *this, tuple_t *buffer);
-extern int flash_move_pc(struct _flash *this);
+extern plain_t* flash_fetch(const struct _flash *this);
+
+extern int flash_move_pc(const struct _flash *this, const int inc);
 extern int flash_set_pc(struct _flash *this, const int addr);
 extern int flash_get_pc(const struct _flash *this);
+
 extern void flash_reboot(const struct _flash *this);
 
 /* Table Operations */

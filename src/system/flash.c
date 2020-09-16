@@ -1,9 +1,9 @@
 /* AVR FLASH Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 // Project Headers
 #include "system/flash.h"
@@ -82,40 +82,25 @@ void flash_dtor(struct _flash *this) {
     free(this);
 }
 
-int flash_fetch(const struct _flash *this, tuple_t *buffer) {
+plain_t* flash_fetch(const struct _flash *this) {
 
     for(int i = 0; i < this->p->mem_usage; i++) {
 
         plain_t *p = (plain_t*) array_at(this->p->plain, i);
 
-        if(p->addr == this->p->pc) {
-
-            tuple_set(buffer, (void*) &p->opcode, sizeof(int), 0);
-            tuple_set(buffer, (void*) &p->key, sizeof(int), 1);
-
-            return 0;
-        }
+        if(p->addr == this->p->pc)
+            return p;
     }
 
-    const int err = -1;
-    const int16_t value = this->p->memory[this->p->pc];
-
-    tuple_set(buffer, (void*) &value, sizeof(int16_t), 0);
-    tuple_set(buffer, (void*) &err, sizeof(int), 1);
-
-    return -1;
+    return NULL;
 }
 
-int flash_move_pc(struct _flash *this) {
-    
-    if(this->p->pc == FLASH_SIZE - 1) {
+int flash_move_pc(const struct _flash *this, const int inc) {
 
-        this->p->pc = 0x0000;
-        return -1;
-    }
+    const bool ret = ((this->p->pc + inc) >= FLASH_SIZE);
+    this->p->pc = ((this->p->pc + inc) % FLASH_SIZE);
 
-    this->p->pc += 1;
-    return 0;
+    return ret;
 }
 
 int flash_set_pc(struct _flash *this, const int addr) {
@@ -123,7 +108,7 @@ int flash_set_pc(struct _flash *this, const int addr) {
     if(addr < 0 || addr >= FLASH_SIZE)
         return -1;
 
-    this->p->pc = addr - 1;
+    this->p->pc = addr;
     return 0;
 }
 

@@ -12,6 +12,7 @@
 #include "system/gpr.h"
 #include "system/sreg.h"
 #include "system/system.h"
+#include "disassembler/plain.h"
 #include "instructions/instructions.h"
 #include "collections/array.h"
 #include "collections/tuple.h"
@@ -76,24 +77,15 @@ void alu_dtor(struct _alu *this) {
 
 int alu_fetch(struct _alu *this, system_t *sys) {
 
-    tuple_t *buffer = tuple_ctor(2, INT32, INT);
-    flash_fetch(this->p->flash, buffer);
+    plain_t *p = flash_fetch(this->p->flash);
 
-    const int opcode = *((int*) tuple_get(buffer, 0));
-    const int key = *((int*) tuple_get(buffer, 1));
+    if(p == NULL) {
 
-    if(key < 0) {
-
-        flash_move_pc(this->p->flash);
-        tuple_dtor(buffer);
-        
+        flash_move_pc(this->p->flash, 1); 
         return -1;
     }
 
-    (*instructions[key])(sys, opcode);
-    flash_move_pc(this->p->flash);
-
-    tuple_dtor(buffer);
+    (*instructions[p->key])(sys, p->opcode);
     return 0;
 }
 
@@ -104,14 +96,19 @@ void alu_reboot(const struct _alu *this) {
     gpr_reboot(this->p->gpr);
 }
 
-int alu_get_pc(const struct _alu *this) {
+int alu_move_pc(const struct _alu *this, const int inc) {
 
-    return flash_get_pc(this->p->flash);
+    return flash_move_pc(this->p->flash, inc);
 }
 
 void alu_set_pc(struct _alu *this, const int addr) {
 
     flash_set_pc(this->p->flash, addr);
+}
+
+int alu_get_pc(const struct _alu *this) {
+
+    return flash_get_pc(this->p->flash);
 }
 
 void alu_write_gpr(struct _alu *this, const int rx, const int8_t data) {

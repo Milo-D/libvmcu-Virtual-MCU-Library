@@ -166,14 +166,19 @@ uint8_t sys_dump_sreg(const struct _system *this) {
     return alu_dump_sreg(this->p->alu);
 }
 
-int sys_get_pc(const struct _system *this) {
+int sys_move_pc(const struct _system *this, const int inc) {
 
-    return alu_get_pc(this->p->alu);
+    return alu_move_pc(this->p->alu, inc);
 }
 
 void sys_set_pc(struct _system *this, const int addr) {
 
     alu_set_pc(this->p->alu, addr);
+}
+
+int sys_get_pc(const struct _system *this) {
+
+    return alu_get_pc(this->p->alu);
 }
 
 void sys_push_stack(struct _system *this, const int8_t value) {

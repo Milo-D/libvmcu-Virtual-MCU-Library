@@ -278,6 +278,9 @@ static bool is_dword(const int opcode) {
     if((opcode & 0xfe0e) == 0x940c)
         return true;
 
+    if((opcode & 0xfe0e) == 0x9200)
+        return true;
+
     return false;
 }
 
