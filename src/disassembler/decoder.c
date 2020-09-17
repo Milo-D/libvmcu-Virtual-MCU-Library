@@ -123,8 +123,13 @@ static int preprocess(const char *hex_file, array_t *buffer) {
 
     while((bytes_read = getline(&line, &len, file)) != -1) {
 
-        if(validate_hex(line) < 0)
-            print_status(WRONG_FORM_ERR, true);
+        if(validate_hex(line) < 0) {
+
+            fclose(file);
+            free(line);
+
+            return -1;
+        }
 
         if(line[RECORD] != DATA_RECORD)
             continue;
@@ -134,6 +139,8 @@ static int preprocess(const char *hex_file, array_t *buffer) {
 
     free(line);
     fclose(file);
+
+    return 0;
 }
 
 static int preprocess_line(const char *line, array_t *buffer) {
