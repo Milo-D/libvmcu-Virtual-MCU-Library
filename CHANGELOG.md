@@ -1,6 +1,25 @@
 # Changelog
 
-## [v.0.0.1] - 2020-09-08
+## v.0.0.2 - 2020-09-17
+
+- 32-bit Decoder: 32-bit opcodes are now supported
+- Memory usage of MDX reduced by one third
+- Slight performance ehancement (Disassembler)
+- Major CLI performance enhancement when stepping through code
+- Now supporting .org directive
+- New debugcommand: 'xdb' - examine byte in dataspace as bitfield
+- Refactored ALU class
+- New colorscheme
+- Bugfix: Labels are now generated correctly even when using .org
+- Added: FLASH visualization with correct flash addresses
+- Added: Testfiles including functional programming and memory allocation in avr-asssembly 
+- Added: jmp assembly instruction
+- Added: sts (32-bit) assembly instruction
+- Added: ijmp assembly instruction
+- Added: sbci assembly instruction
+- Added: sbrs assembly instruction
+
+## v.0.0.1 - 2020-09-08
 
 - Refactor: Table is now member of system
 - Refactor: Minor changes in system class
