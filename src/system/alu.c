@@ -96,6 +96,11 @@ void alu_reboot(const struct _alu *this) {
     gpr_reboot(this->p->gpr);
 }
 
+uint16_t alu_read_flash(const struct _alu *this, const int addr) {
+
+    return flash_read(this->p->flash, addr);
+}
+
 int alu_move_pc(const struct _alu *this, const int inc) {
 
     return flash_move_pc(this->p->flash, inc);

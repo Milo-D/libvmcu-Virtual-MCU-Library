@@ -18,7 +18,8 @@ const char *mnemstr[N_MAPS][32] = {
       "neg" },
 
     /* Access Mnemonics */
-    { "movw", "ldi", "mov", "in", "out", "ld", "ldd", "st", "sts", "xch", "swap", "std" },
+    { "movw", "ldi", "mov", "in", "out", "ld", "ldd", "st", "sts", "xch", "swap", "std",
+      "lpm" },
 
     /* StackOp Mnemonics */
     { "push", "pop" },

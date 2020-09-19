@@ -95,6 +95,11 @@ plain_t* flash_fetch(const struct _flash *this) {
     return NULL;
 }
 
+uint16_t flash_read(const struct _flash *this, const int addr) {
+
+    return this->p->memory[addr];
+}
+
 int flash_move_pc(const struct _flash *this, const int inc) {
 
     const bool ret = ((this->p->pc + inc) >= FLASH_SIZE);
