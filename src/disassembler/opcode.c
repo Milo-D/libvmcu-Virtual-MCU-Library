@@ -15,7 +15,6 @@ const int opcode[SET_SIZE][WORD] = {
 { 0, 0, 0, 0, 0, 0, 0, 1, D, D, D, D, R, R, R, R }, /* MOVW */
 { 0, 0, 0, 0, 0, 0, 1, 0, D, D, D, D, R, R, R, R }, /* MULS */
 { 0, 0, 0, 0, 0, 0, 1, 1, 0, D, D, D, 0, R, R, R }, /* MULSU */
-{ 0, 0, 0, 0, 0, 0, 1, 1, 0, D, D, D, 1, R, R, R }, /* FMUL */
 { 1, 1, 1, 0, K, K, K, K, D, D, D, D, K, K, K, K }, /* LDI */
 { 1, 1, 0, 0, K, K, K, K, K, K, K, K, K, K, K, K }, /* RJMP */
 { 1, 0, 0, 1, 0, 1, 0, K, K, K, K, K, 1, 1, 0, K }, /* JMP */

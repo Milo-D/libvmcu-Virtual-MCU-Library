@@ -15,7 +15,7 @@ void plain_dtor(struct _plain *this) {
     free(this);
 }
 
-extern struct _plain* plain_cpy(const struct _plain *src) {
+struct _plain* plain_cpy(const struct _plain *src) {
 
     struct _plain *dest = malloc(sizeof(struct _plain));
 
