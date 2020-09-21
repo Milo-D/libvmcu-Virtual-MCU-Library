@@ -81,6 +81,7 @@ const int opcode[SET_SIZE][WORD] = {
 { 0, 0, 1, 0, 1, 0, R, D, D, D, D, D, R, R, R, R }, /* OR */
 { 0, 0, 1, 0, 0, 0, R, D, D, D, D, D, R, R, R, R }, /* AND */
 { 0, 1, 1, 1, K, K, K, K, D, D, D, D, K, K, K, K }, /* ANDI */
+{ 1, 0, 0, 1, 0, 0, 1, R, R, R, R, R, 0, 1, 0, 1 }, /* LAS */
 { 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 0, 0, 0, 0 }, /* COM */
 { 1, 0, 0, 1, 0, 1, 0, D, D, D, D, D, 0, 0, 0, 1 }, /* NEG */
 { 1, 1, 1, 1, 1, 0, 0, D, D, D, D, D, 0, B, B, B }, /* BLD */

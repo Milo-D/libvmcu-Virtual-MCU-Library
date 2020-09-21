@@ -1522,6 +1522,26 @@ void andi(system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
+void las(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+    const uint8_t value = sys_read_gpr(sys, dest);
+
+    const uint8_t zl = sys_read_gpr(sys, ZL);
+    const uint8_t zh = sys_read_gpr(sys, ZH);
+
+    const uint16_t addr = ((zh << 8) + zl);
+    const uint8_t data = sys_read_data(sys, addr);
+
+    const uint8_t result = (value | data);
+
+    sys_write_data(sys, addr, result);
+    sys_write_gpr(sys, dest, result);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void com(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
@@ -1774,8 +1794,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     in, out, sbis, sbrc, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, sts32, xch, brne, breq, 
     brge, brpl, brlo, brlt, brcc, brcs, brvs, brts, brtc, brmi, rcall, ret, icall, call,
-    cp, cpi, cpc, lsr, asr, ror, swap, ori, or_asm, and_asm, andi, com, neg, bld, bst, 
-    lpm, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
+    cp, cpi, cpc, lsr, asr, ror, swap, ori, or_asm, and_asm, andi, las, com, neg, bld, 
+    bst, lpm, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
     clz, clh, clc, cli, cln, bclr, bset
 };
 
