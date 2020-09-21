@@ -39,7 +39,9 @@ happens in the program.
 
 [VII Instruction Set](#Instructions)
 
-[VIII Screenshots](#Screenshots)
+[VIII Contributing](#Contributing)
+
+[IX Screenshots](#Screenshots)
 
 # How MDX works
 MDX accepts AVR Hex Files as input and decodes them. Then, a readable
@@ -171,6 +173,12 @@ Note: You may open multiple files in interactive Debugging Mode.
 
 # Instructions
 Currently MDX supports: ~ 72 Instructions. More Instructions are coming soon.
+
+# Contributing
+
+Currently I wont merge Pull-Requests. This will change once I've organized the
+basic structure and architecture of this Project. But still bug reports (or any other report of an issue) 
+are welcome and if you have some changes/wishes in mind, do not hesitate to contact me.
 
 # Screenshots
 
