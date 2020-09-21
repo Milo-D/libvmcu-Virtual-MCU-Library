@@ -282,11 +282,14 @@ static int get_opc_key(const int hex) {
 
 static bool is_dword(const int opcode) {
 
-    if((opcode & 0xfe0e) == 0x940c)
-        return true;
+    switch(opcode & 0xfe0e) {
 
-    if((opcode & 0xfe0e) == 0x9200)
-        return true;
+        case 0x940c: return true;
+        case 0x9200: return true;
+        case 0x940e: return true;
+
+        default: /* not 32-bit */ break;
+    }
 
     return false;
 }
