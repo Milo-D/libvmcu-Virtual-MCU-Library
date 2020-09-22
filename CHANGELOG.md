@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Added new assembly instructions:
+    - lpm(R0) (load program memory)
+    - call (32-bit call)
+    - las (load and set byte in data space)
+    - lac (load and clear byte in data space)
+    - fmul (fractional multiply unsigned)
+
+- Bug fix for the preprocessor
+
 ## v.0.0.2 - 2020-09-17
 
 - 32-bit Decoder: 32-bit opcodes are now supported
