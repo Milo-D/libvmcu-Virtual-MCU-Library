@@ -72,6 +72,29 @@ void mulsu(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void fmul(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 7, 0) + 16;
+    const int src = extract(opcode, 0, 3, 0) + 16;
+
+    const uint8_t dest_val = sys_read_gpr(sys, dest);
+    const uint8_t src_val = sys_read_gpr(sys, src);
+
+    const uint16_t result = (dest_val * src_val);
+
+    const uint8_t rl = (result << 1) & 0x0f;
+    const uint8_t rh = (result >> 7) & 0x0f;
+
+    sys_write_sreg(sys, CF, bit(result, 15));
+    sys_write_sreg(sys, ZF, (result == 0x0000));
+
+    sys_write_gpr(sys, 0, rl);
+    sys_write_gpr(sys, 1, rh);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void ldi(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 8, 0);
@@ -1809,7 +1832,7 @@ void bset(system_t *sys, const int opcode) {
 
 void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
 
-    nop, movw, muls, mulsu, ldi, rjmp, jmp, ijmp, mov, 
+    nop, movw, muls, mulsu, fmul, ldi, rjmp, jmp, ijmp, mov, 
     dec, inc, add, adc, adiw, sub, subi, sbc, sbci, sbiw, push, pop, 
     in, out, sbis, sbrc, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, sts32, xch, brne, breq, 

@@ -100,7 +100,31 @@ char* mnem_mulsu(const int opcode) {
     const int len = queue_size(stream);
 
     char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R1:R0 <- ", dstr, " * R", sstr);
+    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, dstr, sstr, fill);
+
+    return mnemonic;
+}
+
+char* mnem_fmul(const int opcode) {
+
+    const int dest = extract(opcode, 4, 7, 0);
+    const int src = extract(opcode, 0, 3, 0);
+
+    char *dstr = get_str(dest + 16);
+    char *sstr = get_str(src + 16);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 4, "fmul r", dstr, ", r", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
 
     char *mnemonic = queue_str(stream);
 
@@ -2209,7 +2233,7 @@ char* mnem_bset(const int opcode) {
 
 char* (*mnemonics[INSTR_MAX]) (const int opcode) = { 
 
-    mnem_nop, mnem_movw, mnem_muls, mnem_mulsu, mnem_ldi, mnem_rjmp, mnem_jmp, mnem_ijmp, mnem_mov, 
+    mnem_nop, mnem_movw, mnem_muls, mnem_mulsu, mnem_fmul, mnem_ldi, mnem_rjmp, mnem_jmp, mnem_ijmp, mnem_mov, 
     mnem_dec, mnem_inc, mnem_add, mnem_adc, mnem_adiw, mnem_sub, mnem_subi, mnem_sbc, mnem_sbci, mnem_sbiw, mnem_push, mnem_pop, 
     mnem_in, mnem_out, mnem_sbis, mnem_sbrc, mnem_clr, mnem_ld_x, mnem_ld_xi, mnem_ld_dx, mnem_ld_y, mnem_ld_yi, mnem_ld_dy, mnem_ldd_yq, 
     mnem_ldd_zq, mnem_ld_z, mnem_ld_zi, mnem_st_x, mnem_st_xi, mnem_std_yq, mnem_std_zq, mnem_sts, mnem_sts32, mnem_xch, mnem_brne, mnem_breq, 
