@@ -166,14 +166,19 @@ uint8_t sys_dump_sreg(const struct _system *this) {
     return alu_dump_sreg(this->p->alu);
 }
 
+plain_t* sys_read_instr(const struct _system *this, const int addr) {
+
+    return alu_read_instr(this->p->alu, addr);
+}
+
 uint16_t sys_read_flash(const struct _system *this, const int addr) {
 
     return alu_read_flash(this->p->alu, addr);
 }
 
-int sys_move_pc(const struct _system *this, const int inc) {
+void sys_move_pc(const struct _system *this, const int inc) {
 
-    return alu_move_pc(this->p->alu, inc);
+    alu_move_pc(this->p->alu, inc);
 }
 
 void sys_set_pc(struct _system *this, const int addr) {

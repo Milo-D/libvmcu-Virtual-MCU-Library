@@ -8,6 +8,7 @@
 
 // Project Headers
 #include "instructions/instructions.h"
+#include "disassembler/plain.h"
 #include "system/mcudef.h"
 #include "system/system.h"
 #include "misc/bitmanip.h"
@@ -525,15 +526,11 @@ void sbis(system_t *sys, const int opcode) {
         return;
     }
 
-    /* Temporary implementation, this wont work with
-    *  32-bit instruction. After adding 32-bit support
-    *  to the decoder, this function will be rewritten. 
-    **/
-
     const int pc = sys_get_pc(sys);
-    sys_set_pc(sys, pc + 2);
+    plain_t *p = sys_read_instr(sys, pc + 1);
 
-    sys->cycles += 2;
+    sys_set_pc(sys, pc + 2 + p->dword);
+    sys->cycles += (2 + p->dword);
 }
 
 void sbrc(system_t *sys, const int opcode) {
@@ -551,15 +548,11 @@ void sbrc(system_t *sys, const int opcode) {
         return;
     }
 
-    /* Temporary implementation, this wont work with
-    *  32-bit instruction. After adding 32-bit support
-    *  to the decoder, this function will be rewritten. 
-    **/
-
     const int pc = sys_get_pc(sys);
-    sys_set_pc(sys, pc + 2);
+    plain_t *p = sys_read_instr(sys, pc + 1);
 
-    sys->cycles += 2;
+    sys_set_pc(sys, pc + 2 + p->dword);
+    sys->cycles += (2 + p->dword);
 }
 
 void clr(system_t *sys, const int opcode) {

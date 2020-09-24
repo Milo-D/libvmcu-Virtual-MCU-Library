@@ -11,6 +11,7 @@ typedef struct _gpr gpr_t;
 typedef struct _sreg sregt_t;
 typedef struct _system system_t;
 typedef struct _table table_t;
+typedef struct _plain plain_t;
 typedef struct _entry entry_t;
 typedef struct _array array_t;
 
@@ -34,9 +35,10 @@ extern void alu_reboot(const struct _alu *this);
 
 /* FLASH Operations */
 
+extern plain_t* alu_read_instr(const struct _alu *this, const int addr);
 extern uint16_t alu_read_flash(const struct _alu *this, const int addr);
 
-extern int alu_move_pc(const struct _alu *this, const int inc);
+extern void alu_move_pc(const struct _alu *this, const int inc);
 extern void alu_set_pc(struct _alu *this, const int addr);
 extern int alu_get_pc(const struct _alu *this);
 

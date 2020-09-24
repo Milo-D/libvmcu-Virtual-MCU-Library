@@ -11,6 +11,7 @@
 #include "table/entry.h"
 
 typedef struct _table table_t;
+typedef struct _plain plain_t;
 typedef struct _array array_t;
 typedef struct _tuple tuple_t;
 
@@ -54,8 +55,9 @@ extern uint8_t sys_dump_sreg(const struct _system *this);
 
 /* FLASH Operations */
 
+extern plain_t* sys_read_instr(const struct _system *this, const int addr);
 extern uint16_t sys_read_flash(const struct _system *this, const int addr);
-extern int sys_move_pc(const struct _system *this, const int inc);
+extern void sys_move_pc(const struct _system *this, const int inc);
 extern void sys_set_pc(struct _system *this, const int addr);
 extern int sys_get_pc(const struct _system *this);
 

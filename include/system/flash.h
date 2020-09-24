@@ -28,10 +28,12 @@ extern void flash_dtor(struct _flash *this);
 /* General FLASH Functions */
 
 extern plain_t* flash_fetch(const struct _flash *this);
+
+extern plain_t* flash_read_instr(const struct _flash *this, const int addr);
 extern uint16_t flash_read(const struct _flash *this, const int addr);
 
-extern int flash_move_pc(const struct _flash *this, const int inc);
-extern int flash_set_pc(struct _flash *this, const int addr);
+extern void flash_move_pc(const struct _flash *this, const int inc);
+extern void flash_set_pc(struct _flash *this, const int addr);
 extern int flash_get_pc(const struct _flash *this);
 
 extern void flash_reboot(const struct _flash *this);

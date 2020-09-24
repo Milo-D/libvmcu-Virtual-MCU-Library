@@ -84,11 +84,18 @@ void flash_dtor(struct _flash *this) {
 
 plain_t* flash_fetch(const struct _flash *this) {
 
+    return flash_read_instr(this, this->p->pc);
+}
+
+plain_t* flash_read_instr(const struct _flash *this, const int addr) {
+
+    const int tar = (addr % FLASH_SIZE);
+
     for(int i = 0; i < this->p->mem_usage; i++) {
 
         plain_t *p = (plain_t*) array_at(this->p->plain, i);
 
-        if(p->addr == this->p->pc)
+        if(p->addr == tar)
             return p;
     }
 
@@ -97,24 +104,17 @@ plain_t* flash_fetch(const struct _flash *this) {
 
 uint16_t flash_read(const struct _flash *this, const int addr) {
 
-    return this->p->memory[addr];
+    return this->p->memory[addr % FLASH_SIZE];
 }
 
-int flash_move_pc(const struct _flash *this, const int inc) {
+void flash_move_pc(const struct _flash *this, const int inc) {
 
-    const bool ret = ((this->p->pc + inc) >= FLASH_SIZE);
     this->p->pc = ((this->p->pc + inc) % FLASH_SIZE);
-
-    return ret;
 }
 
-int flash_set_pc(struct _flash *this, const int addr) {
+void flash_set_pc(struct _flash *this, const int addr) {
 
-    if(addr < 0 || addr >= FLASH_SIZE)
-        return -1;
-
-    this->p->pc = addr;
-    return 0;
+    this->p->pc = (addr % FLASH_SIZE);
 }
 
 int flash_get_pc(const struct _flash *this) {
