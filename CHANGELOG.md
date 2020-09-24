@@ -4,12 +4,15 @@
 
 - Added new assembly instructions:
     - lpm(R0) (load program memory)
+    - lpm(Z) (load program memory)
     - call (32-bit call)
     - las (load and set byte in data space)
     - lac (load and clear byte in data space)
     - fmul (fractional multiply unsigned)
 
 - Bug fix for the preprocessor
+- Skip instructions are now compatible with 32-bit opcode
+- Jumps, skips, etc. are now able to wrap around FLASH memory
 
 ## v.0.0.2 - 2020-09-17
 
