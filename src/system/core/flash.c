@@ -6,7 +6,7 @@
 #include <stdbool.h>
 
 // Project Headers
-#include "system/flash.h"
+#include "system/core/flash.h"
 #include "system/mcudef.h"
 #include "table/table.h"
 #include "disassembler/decoder.h"

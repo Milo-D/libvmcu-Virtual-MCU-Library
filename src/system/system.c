@@ -8,11 +8,11 @@
 // Project Headers
 #include "system/system.h"
 #include "system/mcudef.h"
-#include "system/alu.h"
-#include "system/gpr.h"
-#include "system/data.h"
-#include "system/flash.h"
-#include "system/eeprom.h"
+#include "system/core/alu.h"
+#include "system/core/gpr.h"
+#include "system/core/data.h"
+#include "system/core/flash.h"
+#include "system/core/eeprom.h"
 #include "table/table.h"
 #include "collections/array.h"
 #include "collections/tuple.h"
@@ -26,6 +26,13 @@ struct _private {
     int steps;
     bool terminated;
 };
+
+/* --- Forward Declarations of static Functions --- */
+
+static void sys_update_peripherals(const struct _system *this, const uint64_t oc);
+static void sys_check_interrupts(const struct _system *this);
+
+/* --- Extern --- */
 
 struct _system* sys_ctor(const char *file) {
 
@@ -87,8 +94,18 @@ int sys_step(struct _system *this) {
     if(this->p->terminated == true)
         return 0;
 
+    const uint64_t old_cycles = this->cycles;
+    const int err = alu_fetch(this->p->alu, this);
+
+    sys_update_peripherals(this, old_cycles);
+
+    const uint8_t sreg = alu_dump_sreg(this->p->alu);
     this->p->steps += 1;
-    return alu_fetch(this->p->alu, this);
+
+    if((sreg & (1 << IF)) == 1)
+        sys_check_interrupts(this);
+
+    return err;
 }
 
 void sys_backstep(struct _system *this) {
@@ -273,4 +290,16 @@ int sys_table_size(const struct _system *this) {
 entry_t* sys_dump_table(const struct _system *this) {
 
     return alu_dump_table(this->p->alu);
+}
+
+/* --- Static --- */
+
+static void sys_update_peripherals(const struct _system *this, const uint64_t oc) {
+
+    data_update_timer(this->p->data, this->clock, (this->cycles - oc));
+}
+
+static void sys_check_interrupts(const struct _system *this) {
+
+    /* not yet implemented */
 }

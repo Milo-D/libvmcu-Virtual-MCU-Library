@@ -6,7 +6,8 @@
 #include <string.h>
 
 // Project Headers
-#include "system/data.h"
+#include "system/core/data.h"
+#include "system/peripherals/timer8.h"
 #include "system/mcudef.h"
 #include "printer/memprop.h"
 #include "collections/array.h"
@@ -17,10 +18,15 @@ struct _private {
 
     int8_t *memory;
     tuple_t *coi;
+
+    /* Peripherals */
+
+    timer8_t *timer0;
 };
 
 /* Forward Declaration of static DATA Functions */
 
+static void setup_peripherals(const struct _data *this);
 static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop);
 static void data_clear_coi(const struct _data *this);
 
@@ -45,12 +51,15 @@ struct _data* data_ctor(void) {
     data->p->coi = tuple_ctor(2, UINT16, INT);
     data_set_coi(data, 0x0000, NONE);
 
+    data->p->timer0 = timer8_ctor(TC0, data->p->memory);
     data->size = (RAM_END + 1);
+
     return data;
 }
 
 void data_dtor(struct _data *this) {
 
+    timer8_dtor(this->p->timer0);
     tuple_dtor(this->p->coi);
 
     free(this->p->memory);
@@ -133,6 +142,11 @@ void data_reboot(const struct _data *this) {
 
     memset(this->p->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
     data_set_coi(this, 0x0000, NONE);
+}
+
+void data_update_timer(const struct _data *this, const uint32_t clock, const uint64_t dc) {
+
+    timer8_tick(this->p->timer0, clock, dc);
 }
 
 /* --- Private --- */

@@ -7,7 +7,7 @@
 
     #define SYSTEM "ATmega32"
 
-    #define CLOCK 1000000u
+    #define CLOCK 1000000U
 
     #define GPR_SIZE 32
     #define SREG_SIZE 8
@@ -40,6 +40,29 @@
     #define ZH 31
 
     extern const char *flags[SREG_SIZE];
+
+    /* Timer (General) */
+
+    #define TIMSK 0x0059
+    #define TIFR  0x0058
+
+    /* Timer0 (8-bit) */
+
+    #define TCNT0 0x0052
+    #define TCCR0 0x0053
+    #define OCR0  0x005C
+
+    #define TOV0 0
+    #define OCF0 1
+
+    /* Timer2 (8-bit) */
+
+    #define TCNT2 0x0044
+    #define TCCR2 0x0045
+    #define OCR2  0x0043
+
+    #define TOV2 6
+    #define OCF2 7
 
 #endif
 
