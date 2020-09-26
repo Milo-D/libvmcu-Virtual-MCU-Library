@@ -26,7 +26,6 @@ struct _private {
 
 /* Forward Declaration of static DATA Functions */
 
-static void setup_peripherals(const struct _data *this);
 static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop);
 static void data_clear_coi(const struct _data *this);
 
