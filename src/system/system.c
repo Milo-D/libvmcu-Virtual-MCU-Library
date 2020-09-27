@@ -8,11 +8,11 @@
 // Project Headers
 #include "system/system.h"
 #include "system/mcudef.h"
-#include "system/alu.h"
-#include "system/gpr.h"
-#include "system/data.h"
-#include "system/flash.h"
-#include "system/eeprom.h"
+#include "system/core/alu.h"
+#include "system/core/gpr.h"
+#include "system/core/data.h"
+#include "system/core/flash.h"
+#include "system/core/eeprom.h"
 #include "table/table.h"
 #include "collections/array.h"
 #include "collections/tuple.h"
@@ -26,6 +26,12 @@ struct _private {
     int steps;
     bool terminated;
 };
+
+/* Forward Declaration of static Functions */
+
+static void sys_exec_irs(struct _system *this, const int isr);
+
+/* --- Extern --- */
 
 struct _system* sys_ctor(const char *file) {
 
@@ -87,8 +93,25 @@ int sys_step(struct _system *this) {
     if(this->p->terminated == true)
         return 0;
 
+    const uint64_t old_cycles = this->cycles;
+    const int err = alu_fetch(this->p->alu, this);
+
+    const uint8_t sreg = alu_dump_sreg(this->p->alu);
     this->p->steps += 1;
-    return alu_fetch(this->p->alu, this);
+
+    sys_update_io(this, old_cycles);
+
+    if((sreg & (0x01 << IF)) != 0x00) {
+
+        int isr;
+
+        if((isr = data_check_irq(this->p->data)) < 0)
+            return err;
+
+        sys_exec_irs(this, isr);
+    }
+
+    return err;
 }
 
 void sys_backstep(struct _system *this) {
@@ -230,6 +253,11 @@ void sys_dump_data(const struct _system *this, array_t *buffer) {
     data_dump(this->p->data, buffer);
 }
 
+void sys_update_io(const struct _system *this, const uint64_t oldc) {
+
+    data_update_io(this->p->data, this->clock, (this->cycles - oldc));
+}
+
 void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {
 
     eeprom_write(this->p->eeprom, addr, value);
@@ -273,4 +301,21 @@ int sys_table_size(const struct _system *this) {
 entry_t* sys_dump_table(const struct _system *this) {
 
     return alu_dump_table(this->p->alu);
+}
+
+/* --- Static --- */
+
+static void sys_exec_irs(struct _system *this, const int isr) {
+
+    const uint64_t old_cycles = this->cycles;
+    const int pc = alu_get_pc(this->p->alu);
+
+    data_push(this->p->data, pc & 0x00ff);
+    data_push(this->p->data, (pc & 0xff00) >> 8);
+
+    alu_write_sreg(this->p->alu, IF, 0x00);
+    this->cycles += 4;
+
+    sys_update_io(this, old_cycles);
+    alu_set_pc(this->p->alu, isr);
 }

@@ -6,7 +6,7 @@
 #include <string.h>
 
 // Project Headers
-#include "system/eeprom.h"
+#include "system/core/eeprom.h"
 #include "system/mcudef.h"
 #include "printer/memprop.h"
 #include "collections/array.h"

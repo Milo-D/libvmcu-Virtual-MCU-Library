@@ -153,26 +153,31 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [ ] ...
 
 # Features
-- [x] Debugging Assembly
-- [x] Advanced Disassembler, recovering Labels
 - [x] Backwards Stepping
-- [x] Simple and fancy Commandline Design
-- [x] GPR Visualization
-- [x] SRAM Visualization
-- [x] Loading .eep.hex into the Microcontroller
-- [ ] EEPROM Visualization
-- [x] SREG Visualization
-- [ ] FLASH Visualization
-- [ ] Relation between Code Segments
-- [ ] I/O Support
-- [ ] Seperate I/O Pin View
+- [x] Advanced Disassembler, recovering Labels
+- [x] Syntax Highlight for the disassembled Sourcecode
+- [x] Interrupts supported
 - [x] Open and debug more than one file in the same session
-- [x] Fast and easy to use
-- [x] Short CLI Commands to debug faster
-- [ ] Full Instruction Support
+- [ ] Currently supporting ~ 93 assembly instructions
+
+- [x] Breakpoints
+- [ ] Watchpoints
+- [x] Examine Memory
+
+- [x] Interactive Mode
+- [x] Disassembler Mode
+- [x] Headless Mode
+
+- [ ] Peripherals
+    - [x] 8-bit Timer (partial)
+    - [ ] 16-bit Timer
+    - [ ] EEPROM
+    - [ ] UART
+    - [ ] SPI
+    - [ ] ...
 
 # Instructions
-Currently MDX supports: ~ 72 Instructions. More Instructions are coming soon.
+Currently MDX supports: ~ 93 Instructions. More Instructions are coming soon.
 
 # Contributing
 

@@ -7,10 +7,10 @@
 #include <stdbool.h>
 
 // Project Headers
-#include "system/alu.h"
-#include "system/flash.h"
-#include "system/gpr.h"
-#include "system/sreg.h"
+#include "system/core/alu.h"
+#include "system/core/flash.h"
+#include "system/core/gpr.h"
+#include "system/core/sreg.h"
 #include "system/system.h"
 #include "disassembler/plain.h"
 #include "instructions/instructions.h"

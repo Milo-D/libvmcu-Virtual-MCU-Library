@@ -6,7 +6,7 @@
 #include <string.h>
 
 // Project Headers
-#include "system/gpr.h"
+#include "system/core/gpr.h"
 #include "system/mcudef.h"
 #include "printer/memprop.h"
 #include "collections/array.h"

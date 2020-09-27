@@ -1490,6 +1490,21 @@ char* mnem_ret(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_reti(const int opcode) {
+
+    queue_t *stream = queue_ctor();
+
+    char *fill = strfill(' ', 4, TAB);
+    queue_put(stream, 3, "reti", fill, "; PC <- DATA[SP]");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    free(fill);
+
+    return mnemonic;
+}
+
 char* mnem_icall(const int opcode) {
 
     queue_t *stream = queue_ctor();
@@ -2258,8 +2273,8 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_dec, mnem_inc, mnem_add, mnem_adc, mnem_adiw, mnem_sub, mnem_subi, mnem_sbc, mnem_sbci, mnem_sbiw, mnem_push, mnem_pop, 
     mnem_in, mnem_out, mnem_sbis, mnem_sbrc, mnem_clr, mnem_ld_x, mnem_ld_xi, mnem_ld_dx, mnem_ld_y, mnem_ld_yi, mnem_ld_dy, mnem_ldd_yq, 
     mnem_ldd_zq, mnem_ld_z, mnem_ld_zi, mnem_st_x, mnem_st_xi, mnem_std_yq, mnem_std_zq, mnem_sts, mnem_sts32, mnem_xch, mnem_brne, mnem_breq, 
-    mnem_brge, mnem_brpl, mnem_brlo, mnem_brlt, mnem_brcc, mnem_brcs, mnem_brvs, mnem_brts, mnem_brtc, mnem_brmi, mnem_rcall, mnem_ret, mnem_icall, mnem_call,
-    mnem_cp, mnem_cpi, mnem_cpc, mnem_lsr, mnem_asr, mnem_ror, mnem_swap, mnem_ori, mnem_or_asm, mnem_and_asm, mnem_andi, mnem_las, mnem_lac, mnem_com, mnem_neg, 
+    mnem_brge, mnem_brpl, mnem_brlo, mnem_brlt, mnem_brcc, mnem_brcs, mnem_brvs, mnem_brts, mnem_brtc, mnem_brmi, mnem_rcall, mnem_ret, mnem_reti, mnem_icall, 
+    mnem_call, mnem_cp, mnem_cpi, mnem_cpc, mnem_lsr, mnem_asr, mnem_ror, mnem_swap, mnem_ori, mnem_or_asm, mnem_and_asm, mnem_andi, mnem_las, mnem_lac, mnem_com, mnem_neg, 
     mnem_bld, mnem_bst, mnem_lpm, mnem_lpm_z, mnem_ses, mnem_set, mnem_sev, mnem_sez, mnem_seh, mnem_sec, mnem_sei, mnem_sen, mnem_cls, mnem_clt, mnem_clv, 
     mnem_clz, mnem_clh, mnem_clc, mnem_cli, mnem_cln, mnem_bclr, mnem_bset
 };
