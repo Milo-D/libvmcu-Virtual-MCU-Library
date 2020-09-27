@@ -84,12 +84,9 @@ void timer8_dtor(struct _timer8 *this) {
 
 void timer8_tick(struct _timer8 *this, const uint32_t cpu_clk, const uint64_t dc) {
 
-    double tclk;
-
-    if((tclk = prescale(cpu_clk, *(this->tccr))) == 0)
-        return;
-
+    const double tclk = prescale(cpu_clk, *(this->tccr));
     const double dtc = (((dc * 1.0) / (cpu_clk * 1.0)) * tclk) + this->borrow;
+
     this->borrow = dtc - ((long) dtc);
 
     const uint16_t value = *(this->tcnt);
@@ -99,13 +96,18 @@ void timer8_tick(struct _timer8 *this, const uint32_t cpu_clk, const uint64_t dc
         *(this->tifr) |= (0x01 << this->tov);
 }
 
+void timer8_reboot(struct _timer8 *this) {
+
+    this->borrow = 0.00;
+}
+
 /* --- Static --- */
 
 static double prescale(const uint32_t clock, const uint8_t tccr) {
 
     /* Clock Source (CSx2, CSx1, CSx0) */
 
-    switch(tccr & 0x07) {
+    switch(tccr & CSX_MASK) {
 
         case 0x00: return 0;
         case 0x01: return clock;

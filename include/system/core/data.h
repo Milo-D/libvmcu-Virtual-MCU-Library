@@ -31,8 +31,8 @@ extern void data_coi(const struct _data *this, tuple_t *buffer);
 extern void data_dump(const struct _data *this, array_t *buffer);
 extern void data_reboot(const struct _data *this);
 
-/* Peripheral Operations */
+/* IO Operations */
 
-extern void data_update_timer(const struct _data *this, const uint32_t clock, const uint64_t dc);
+extern void data_update_io(const struct _data *this, const uint32_t clock, const uint64_t dc);
 
 #endif

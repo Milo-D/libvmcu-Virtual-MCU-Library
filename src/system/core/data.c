@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "system/core/data.h"
-#include "system/peripherals/timer8.h"
+#include "system/core/io.h"
 #include "system/mcudef.h"
 #include "printer/memprop.h"
 #include "collections/array.h"
@@ -16,12 +16,10 @@
 
 struct _private {
 
+    io_t *io;
+
     int8_t *memory;
     tuple_t *coi;
-
-    /* Peripherals */
-
-    timer8_t *timer0;
 };
 
 /* Forward Declaration of static DATA Functions */
@@ -50,7 +48,7 @@ struct _data* data_ctor(void) {
     data->p->coi = tuple_ctor(2, UINT16, INT);
     data_set_coi(data, 0x0000, NONE);
 
-    data->p->timer0 = timer8_ctor(TC0, data->p->memory);
+    data->p->io = io_ctor(&data->p->memory[GPR_SIZE]);
     data->size = (RAM_END + 1);
 
     return data;
@@ -58,7 +56,7 @@ struct _data* data_ctor(void) {
 
 void data_dtor(struct _data *this) {
 
-    timer8_dtor(this->p->timer0);
+    io_dtor(this->p->io);
     tuple_dtor(this->p->coi);
 
     free(this->p->memory);
@@ -139,13 +137,15 @@ void data_dump(const struct _data *this, array_t *buffer) {
 
 void data_reboot(const struct _data *this) {
 
+    io_reboot(this->p->io);
+
     memset(this->p->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
     data_set_coi(this, 0x0000, NONE);
 }
 
-void data_update_timer(const struct _data *this, const uint32_t clock, const uint64_t dc) {
+void data_update_io(const struct _data *this, const uint32_t clock, const uint64_t dc) {
 
-    timer8_tick(this->p->timer0, clock, dc);
+    io_update(this->p->io, clock, dc);
 }
 
 /* --- Private --- */

@@ -27,13 +27,6 @@ struct _private {
     bool terminated;
 };
 
-/* --- Forward Declarations of static Functions --- */
-
-static void sys_update_peripherals(const struct _system *this, const uint64_t oc);
-static void sys_check_interrupts(const struct _system *this);
-
-/* --- Extern --- */
-
 struct _system* sys_ctor(const char *file) {
 
     struct _system *sys;
@@ -97,13 +90,15 @@ int sys_step(struct _system *this) {
     const uint64_t old_cycles = this->cycles;
     const int err = alu_fetch(this->p->alu, this);
 
-    sys_update_peripherals(this, old_cycles);
-
     const uint8_t sreg = alu_dump_sreg(this->p->alu);
     this->p->steps += 1;
 
-    if((sreg & (1 << IF)) == 1)
-        sys_check_interrupts(this);
+    sys_update_io(this, old_cycles);
+
+    if((sreg & (1 << IF)) == 1) {
+
+        // manage interrupts
+    }
 
     return err;
 }
@@ -247,6 +242,11 @@ void sys_dump_data(const struct _system *this, array_t *buffer) {
     data_dump(this->p->data, buffer);
 }
 
+void sys_update_io(const struct _system *this, const uint64_t oldc) {
+
+    data_update_io(this->p->data, this->clock, (this->cycles - oldc));
+}
+
 void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {
 
     eeprom_write(this->p->eeprom, addr, value);
@@ -290,16 +290,4 @@ int sys_table_size(const struct _system *this) {
 entry_t* sys_dump_table(const struct _system *this) {
 
     return alu_dump_table(this->p->alu);
-}
-
-/* --- Static --- */
-
-static void sys_update_peripherals(const struct _system *this, const uint64_t oc) {
-
-    data_update_timer(this->p->data, this->clock, (this->cycles - oc));
-}
-
-static void sys_check_interrupts(const struct _system *this) {
-
-    /* not yet implemented */
 }
