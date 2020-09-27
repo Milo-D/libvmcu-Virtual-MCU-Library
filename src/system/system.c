@@ -95,9 +95,14 @@ int sys_step(struct _system *this) {
 
     sys_update_io(this, old_cycles);
 
-    if((sreg & (1 << IF)) == 1) {
+    if((sreg & (0x01 << IF)) == 0x01) {
 
-        // manage interrupts
+        int isr;
+
+        if((isr = data_check_irq(this->p->data)) < 0)
+            return err;
+
+        sys_exec_irs(this, isr);
     }
 
     return err;
@@ -245,6 +250,17 @@ void sys_dump_data(const struct _system *this, array_t *buffer) {
 void sys_update_io(const struct _system *this, const uint64_t oldc) {
 
     data_update_io(this->p->data, this->clock, (this->cycles - oldc));
+}
+
+void sys_exec_irs(struct _system *this, const int isr) {
+
+    const uint64_t old_cycles = this->cycles;
+    this->cycles += 4;
+
+    alu_write_sreg(this->p->alu, IF, 0);
+    sys_update_io(this, old_cycles);
+
+    alu_set_pc(this->p->alu, isr);
 }
 
 void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {

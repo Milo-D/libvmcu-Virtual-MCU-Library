@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "system/peripherals/timer8.h"
+#include "system/core/irq.h"
 #include "system/mcudef.h"
 
 /*
@@ -48,6 +49,8 @@ struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory) {
 
         case TC0:
 
+            timer->timsk = &memory[TIMSK];
+
             timer->tcnt = &memory[TCNT0];
             timer->tccr = &memory[TCCR0];
             timer->tifr = &memory[TIFR];
@@ -59,6 +62,8 @@ struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory) {
         break;
 
         case TC2: 
+
+            timer->timsk = &memory[TIMSK];
 
             timer->tcnt = &memory[TCNT2];
             timer->tccr = &memory[TCCR2];
@@ -82,7 +87,7 @@ void timer8_dtor(struct _timer8 *this) {
     free(this);
 }
 
-void timer8_tick(struct _timer8 *this, const uint32_t cpu_clk, const uint64_t dc) {
+void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const uint64_t dc) {
 
     const double tclk = prescale(cpu_clk, *(this->tccr));
     const double dtc = (((dc * 1.0) / (cpu_clk * 1.0)) * tclk) + this->borrow;
@@ -92,8 +97,13 @@ void timer8_tick(struct _timer8 *this, const uint32_t cpu_clk, const uint64_t dc
     const uint16_t value = *(this->tcnt);
     *(this->tcnt) += dtc;
 
-    if((value + dtc) > 0xff)
+    if((value + dtc) > 0xff) {
+
         *(this->tifr) |= (0x01 << this->tov);
+
+        if(((0x01 << this->tov) & *(this->timsk)))
+            irq_enable(irq, OVF0_VECT);
+    }
 }
 
 void timer8_reboot(struct _timer8 *this) {

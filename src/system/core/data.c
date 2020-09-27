@@ -148,6 +148,11 @@ void data_update_io(const struct _data *this, const uint32_t clock, const uint64
     io_update(this->p->io, clock, dc);
 }
 
+int data_check_irq(const struct _data *this) {
+
+    return io_check_irq(this->p->io);
+}
+
 /* --- Private --- */
 
 static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop) {

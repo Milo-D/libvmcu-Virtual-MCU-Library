@@ -73,6 +73,7 @@ extern void sys_dump_data(const struct _system *this, array_t *buffer);
 /* IO Operations */
 
 extern void sys_update_io(const struct _system *this, const uint64_t oldc);
+extern void sys_exec_irs(struct _system *this, const int isr);
 
 /* EEPROM Operations */
 

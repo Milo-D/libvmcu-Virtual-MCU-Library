@@ -66,6 +66,32 @@
     #define TOV2 6
     #define OCF2 7
 
+    /* ISR Vector Table */
+
+    #define NVECT 21
+
+    #define RST_VECT  0x0000
+    #define INT0_VECT 0x0002
+    #define INT1_VECT 0x0004
+    #define INT2_VECT 0x0006
+    #define OC2_VECT  0x0008
+    #define OVF2_VECT 0x000a
+    #define ICP1_VECT 0x000c
+    #define OC1A_VECT 0x000e
+    #define OC1B_VECT 0x0010
+    #define OVF1_VECT 0x0012
+    #define OC0_VECT  0x0014
+    #define OVF0_VECT 0x0016
+    #define SPI_VECT  0x0018
+    #define URXC_VECT 0x001a
+    #define UDRE_VECT 0x001c
+    #define UTXC_VECT 0x001e
+    #define ADCC_VECT 0x0020
+    #define ERDY_VECT 0x0022
+    #define ACI_VECT  0x0024
+    #define TWI_VECT  0x0026
+    #define SPMR_VECT 0x0028
+
 #endif
 
 #ifdef ATMEGA16
@@ -96,7 +122,7 @@
     #define SPL 0x005d
     #define SPH 0x005e
 
-    #define PC_BIT 16 
+    #define PC_BIT 16
 
     #define IF 7
     #define TF 6
