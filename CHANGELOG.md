@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Peripheral: Timer0 (8-bit) is now supported.
+    - Supported Prescaling: 1/8/64/256/1024
+    - Supported Mode: Normal Mode
+    - Currently not supported: PWM and external clock select  
+
+- Timer interrupts are now available.
+
 - Added new assembly instructions:
     - lpm(R0) (load program memory)
     - lpm(Z) (load program memory)
@@ -9,10 +16,15 @@
     - las (load and set byte in data space)
     - lac (load and clear byte in data space)
     - fmul (fractional multiply unsigned)
+    - reti (return from interrupt)
 
 - Bug fix for the preprocessor
 - Skip instructions are now compatible with 32-bit opcode
 - Jumps, skips, etc. are now able to wrap around FLASH memory
+
+- Refactored System class (Core / Peripherals)
+- Seperate IO space class
+- IRQ Handler
 
 ## v.0.0.2 - 2020-09-17
 

@@ -27,6 +27,12 @@ struct _private {
     bool terminated;
 };
 
+/* Forward Declaration of static Functions */
+
+static void sys_exec_irs(struct _system *this, const int isr);
+
+/* --- Extern --- */
+
 struct _system* sys_ctor(const char *file) {
 
     struct _system *sys;
@@ -95,7 +101,7 @@ int sys_step(struct _system *this) {
 
     sys_update_io(this, old_cycles);
 
-    if((sreg & (0x01 << IF)) == 0x01) {
+    if((sreg & (0x01 << IF)) != 0x00) {
 
         int isr;
 
@@ -252,17 +258,6 @@ void sys_update_io(const struct _system *this, const uint64_t oldc) {
     data_update_io(this->p->data, this->clock, (this->cycles - oldc));
 }
 
-void sys_exec_irs(struct _system *this, const int isr) {
-
-    const uint64_t old_cycles = this->cycles;
-    this->cycles += 4;
-
-    alu_write_sreg(this->p->alu, IF, 0);
-    sys_update_io(this, old_cycles);
-
-    alu_set_pc(this->p->alu, isr);
-}
-
 void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {
 
     eeprom_write(this->p->eeprom, addr, value);
@@ -306,4 +301,21 @@ int sys_table_size(const struct _system *this) {
 entry_t* sys_dump_table(const struct _system *this) {
 
     return alu_dump_table(this->p->alu);
+}
+
+/* --- Static --- */
+
+static void sys_exec_irs(struct _system *this, const int isr) {
+
+    const uint64_t old_cycles = this->cycles;
+    const int pc = alu_get_pc(this->p->alu);
+
+    data_push(this->p->data, pc & 0x00ff);
+    data_push(this->p->data, (pc & 0xff00) >> 8);
+
+    alu_write_sreg(this->p->alu, IF, 0x00);
+    this->cycles += 4;
+
+    sys_update_io(this, old_cycles);
+    alu_set_pc(this->p->alu, isr);
 }
