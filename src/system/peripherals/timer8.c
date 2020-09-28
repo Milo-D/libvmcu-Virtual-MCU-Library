@@ -87,10 +87,10 @@ void timer8_dtor(struct _timer8 *this) {
     free(this);
 }
 
-void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const uint64_t dc) {
+void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
 
     const double tclk = prescale(cpu_clk, *(this->tccr));
-    const double dtc = (((dc * 1.0) / (cpu_clk * 1.0)) * tclk) + this->borrow;
+    const double dtc = ((dt * tclk) + this->borrow);
 
     this->borrow = dtc - ((long) dtc);
 

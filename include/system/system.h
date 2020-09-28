@@ -70,10 +70,6 @@ extern int8_t sys_read_data(const struct _system *this, const uint16_t addr);
 extern void sys_data_coi(const struct _system *this, tuple_t *buffer);
 extern void sys_dump_data(const struct _system *this, array_t *buffer);
 
-/* IO Operations */
-
-extern void sys_update_io(const struct _system *this, const uint64_t oldc);
-
 /* EEPROM Operations */
 
 extern void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value);

@@ -29,6 +29,7 @@ struct _private {
 
 /* Forward Declaration of static Functions */
 
+static void sys_update_io(const struct _system *this, const uint64_t dc);
 static void sys_exec_irs(struct _system *this, const int isr);
 
 /* --- Extern --- */
@@ -97,9 +98,9 @@ int sys_step(struct _system *this) {
     const int err = alu_fetch(this->p->alu, this);
 
     const uint8_t sreg = alu_dump_sreg(this->p->alu);
-    this->p->steps += 1;
+    sys_update_io(this, (this->cycles - old_cycles));
 
-    sys_update_io(this, old_cycles);
+    this->p->steps += 1;
 
     if((sreg & (0x01 << IF)) != 0x00) {
 
@@ -253,11 +254,6 @@ void sys_dump_data(const struct _system *this, array_t *buffer) {
     data_dump(this->p->data, buffer);
 }
 
-void sys_update_io(const struct _system *this, const uint64_t oldc) {
-
-    data_update_io(this->p->data, this->clock, (this->cycles - oldc));
-}
-
 void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {
 
     eeprom_write(this->p->eeprom, addr, value);
@@ -305,9 +301,14 @@ entry_t* sys_dump_table(const struct _system *this) {
 
 /* --- Static --- */
 
+static void sys_update_io(const struct _system *this, const uint64_t dc) {
+
+    const double time = ((dc * 1.0) / (this->clock * 1.0));
+    data_update_io(this->p->data, this->clock, time);
+}
+
 static void sys_exec_irs(struct _system *this, const int isr) {
 
-    const uint64_t old_cycles = this->cycles;
     const int pc = alu_get_pc(this->p->alu);
 
     data_push(this->p->data, pc & 0x00ff);
@@ -316,6 +317,6 @@ static void sys_exec_irs(struct _system *this, const int isr) {
     alu_write_sreg(this->p->alu, IF, 0x00);
     this->cycles += 4;
 
-    sys_update_io(this, old_cycles);
+    sys_update_io(this, 4);
     alu_set_pc(this->p->alu, isr);
 }
