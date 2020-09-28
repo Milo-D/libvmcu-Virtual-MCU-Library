@@ -41,6 +41,8 @@ happens in the program.
 
 [VIII Contributing](#Contributing)
 
+[IX Credits](#Credits)
+
 [IX Screenshots](#Screenshots)
 
 # How MDX works
@@ -184,6 +186,10 @@ Currently MDX supports: ~ 93 Instructions. More Instructions are coming soon.
 Currently I wont merge Pull-Requests. This will change once I've organized the
 basic structure and architecture of this Project. But still bug reports (or any other report of an issue) 
 are welcome and if you have some changes/wishes in mind, do not hesitate to contact me.
+
+# Credits
+
+1) Huge thanks to <a href="https://alexander-hansen.dev">Alexander Hansen</a> for the new Logo :)
 
 # Screenshots
 
