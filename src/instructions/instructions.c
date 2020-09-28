@@ -1720,6 +1720,29 @@ void lpm_z(system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
+void lpm_zi(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+
+    const uint8_t zl = sys_read_gpr(sys, ZL);
+    const uint8_t zh = sys_read_gpr(sys, ZH);
+
+    const uint16_t addr = ((zh << 8) + zl);
+    const uint16_t word = sys_read_flash(sys, addr >> 1);
+
+    const uint8_t lsb = (addr & 0x01) ? 8 : 0;
+    const uint8_t byte = (word >> lsb) & 0xff;
+
+    const uint16_t post_z = ((zh << 8) + zl) + 0x01;
+
+    sys_write_gpr(sys, dest, byte);
+    sys_write_gpr(sys, ZL, (0x00ff & post_z));
+    sys_write_gpr(sys, ZH, (0xff00 & post_z) >> 8);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 3;
+}
+
 void ses(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, SF, 0x01);
@@ -1874,7 +1897,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, sts32, xch, brne, breq, 
     brge, brpl, brlo, brlt, brcc, brcs, brvs, brts, brtc, brmi, rcall, ret, reti, icall, 
     call, cp, cpi, cpc, lsr, asr, ror, swap, ori, or_asm, and_asm, andi, las, lac, com, neg, 
-    bld, bst, lpm, lpm_z, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
+    bld, bst, lpm, lpm_z, lpm_zi, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
     clz, clh, clc, cli, cln, bclr, bset
 };
 
