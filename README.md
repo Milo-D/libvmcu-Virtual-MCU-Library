@@ -43,7 +43,7 @@ happens in the program.
 
 [IX Credits](#Credits)
 
-[IX Screenshots](#Screenshots)
+[X Screenshots](#Screenshots)
 
 # How MDX works
 MDX accepts AVR Hex Files as input and decodes them. Then, a readable
