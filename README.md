@@ -198,16 +198,20 @@ are welcome and if you have some changes/wishes in mind, do not hesitate to cont
 By the way: You will find more Screenshots in the 'img' directory of this Repo.
 
 Interactive Debugger:
+
 <img src="https://user-images.githubusercontent.com/46600932/92971591-0b8d7580-f481-11ea-96e0-4e8191679f15.png" width="50%">
 
 File Selector:
-![mdx_file](https://user-images.githubusercontent.com/46600932/92972200-1eed1080-f482-11ea-92cb-8cee66b31dfb.png)
+
+<img src="https://user-images.githubusercontent.com/46600932/92972200-1eed1080-f482-11ea-92cb-8cee66b31dfb.png" width="50%">
 
 Disassembler:
-![mdx_disassembler](https://user-images.githubusercontent.com/46600932/92750758-aefa5f80-f387-11ea-9c2f-23b040b2b161.png)
+
+<img src="https://user-images.githubusercontent.com/46600932/92750758-aefa5f80-f387-11ea-9c2f-23b040b2b161.png" width="50%">
 
 Headless Mode:
-![mdx_headless](https://user-images.githubusercontent.com/46600932/72665868-e7ba8280-3a0c-11ea-9c0a-5482cd337d63.png)
+
+<img src="https://user-images.githubusercontent.com/46600932/72665868-e7ba8280-3a0c-11ea-9c0a-5482cd337d63.png" width="50%">
 
 # Wiki
 
