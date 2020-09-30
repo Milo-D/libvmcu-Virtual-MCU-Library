@@ -45,6 +45,8 @@ happens in the program.
 
 [X Screenshots](#Screenshots)
 
+[XI Wiki](#Wiki)
+
 # How MDX works
 MDX accepts AVR Hex Files as input and decodes them. Then, a readable
 Assembly Source File is reconstructed from the decoded Hexdump.
@@ -196,7 +198,7 @@ are welcome and if you have some changes/wishes in mind, do not hesitate to cont
 By the way: You will find more Screenshots in the 'img' directory of this Repo.
 
 Interactive Debugger:
-![mdx_debug](https://user-images.githubusercontent.com/46600932/92971591-0b8d7580-f481-11ea-96e0-4e8191679f15.png)
+<img src="https://user-images.githubusercontent.com/46600932/92971591-0b8d7580-f481-11ea-96e0-4e8191679f15.png" width="50%">
 
 File Selector:
 ![mdx_file](https://user-images.githubusercontent.com/46600932/92972200-1eed1080-f482-11ea-92cb-8cee66b31dfb.png)
@@ -206,3 +208,7 @@ Disassembler:
 
 Headless Mode:
 ![mdx_headless](https://user-images.githubusercontent.com/46600932/72665868-e7ba8280-3a0c-11ea-9c0a-5482cd337d63.png)
+
+# Wiki
+
+For more details and information on MDX, see https://github.com/Milo-D/MDX-Assembly-Debugger/wiki

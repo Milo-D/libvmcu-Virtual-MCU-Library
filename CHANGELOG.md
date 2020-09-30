@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v.0.1.1 - 2020-09-30
+
 - Added new assembly instructions:
     - lpm(Z+) (load program memory)
     - lds(32-bit) (load data memory)
