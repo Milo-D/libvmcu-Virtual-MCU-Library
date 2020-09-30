@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Added new assembly instructions:
+    - lpm(Z+) (load program memory)
+    - lds(32-bit) (load data memory)
+    - cpse (compare skip if equal)
+
+- Now passing ∆t instead of ∆c to update_io function
+
+## v.0.1.0 - 2020-09-28
+
 - Peripheral: Timer0 (8-bit) is now supported.
     - Supported Prescaling: 1/8/64/256/1024
     - Supported Mode: Normal Mode

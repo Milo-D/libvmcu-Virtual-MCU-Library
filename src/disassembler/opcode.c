@@ -37,6 +37,7 @@ const int opcode[SET_SIZE][WORD] = {
 { 1, 0, 1, 1, 1, A, A, R, R, R, R, R, A, A, A, A }, /* OUT */
 { 1, 0, 0, 1, 1, 0, 1, 1, A, A, A, A, A, S, S, S }, /* SBIS */
 { 1, 1, 1, 1, 1, 1, 0, R, R, R, R, R, 0, B, B, B }, /* SBRC */
+{ 0, 0, 0, 1, 0, 0, R, D, D, D, D, D, R, R, R, R }, /* CPSE */
 { 0, 0, 1, 0, 0, 1, D, D, D, D, D, D, D, D, D, D }, /* CLR */
 { 1, 0, 0, 1, 0, 0, 0, D, D, D, D, D, 1, 1, 0, 0 }, /* LD(X) */
 { 1, 0, 0, 1, 0, 0, 0, D, D, D, D, D, 1, 1, 0, 1 }, /* LD(X+) */

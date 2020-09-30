@@ -555,6 +555,29 @@ void sbrc(system_t *sys, const int opcode) {
     sys->cycles += (2 + p->dword);
 }
 
+void cpse(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    const int8_t dest_val = sys_read_gpr(sys, dest);
+    const int8_t src_val = sys_read_gpr(sys, src);
+
+    if(dest_val != src_val) {
+
+        sys_move_pc(sys, 1);
+        sys->cycles += 1;
+
+        return;
+    }
+
+    const int pc = sys_get_pc(sys);
+    plain_t *p = sys_read_instr(sys, pc + 1);
+
+    sys_set_pc(sys, pc + 2 + p->dword);
+    sys->cycles += (2 + p->dword);
+}
+
 void clr(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
@@ -1905,7 +1928,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
 
     nop, movw, muls, mulsu, fmul, ldi, rjmp, jmp, ijmp, mov, 
     dec, inc, add, adc, adiw, sub, subi, sbc, sbci, sbiw, push, pop, 
-    in, out, sbis, sbrc, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
+    in, out, sbis, sbrc, cpse, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
     ldd_zq, ld_z, ld_zi, st_x, st_xi, std_yq, std_zq, sts, sts32, lds32, xch, brne, breq, 
     brge, brpl, brlo, brlt, brcc, brcs, brvs, brts, brtc, brmi, rcall, ret, reti, icall, 
     call, cp, cpi, cpc, lsr, asr, ror, swap, ori, or_asm, and_asm, andi, las, lac, com, neg, 
