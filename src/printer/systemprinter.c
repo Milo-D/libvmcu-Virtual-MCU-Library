@@ -183,10 +183,18 @@ static void print_data(debugwindow_t *window, system_t *sys) {
         queue_flush(stream);
 
         char *right = strfill('0', strlen(vstr), 2);
-        queue_put(stream, 4, "0x", right, vstr, "\n");
+        queue_put(stream, 3, "0x", right, vstr);
 
         char *val_out = queue_str(stream);
         dwin_add(window, DPNL, val_out, ism);
+
+        if(i >= SFR_START && i <= SFR_END) {
+
+            dwin_add(window, DPNL, "      @", Y);
+            dwin_add(window, DPNL, sfreg[i - GPR_SIZE], D);
+        }
+        
+        dwin_add(window, DPNL, "\n", D);
 
         queue_flush(stream);
         nfree(5, addr, left, addr_out, right, val_out);

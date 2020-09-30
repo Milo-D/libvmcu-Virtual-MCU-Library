@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added annotations for special function registers
+
 ## v.0.1.1 - 2020-09-30
 
 - Added new assembly instructions:

@@ -15,11 +15,15 @@
     #define SRAM_SIZE 2048
     #define EEPROM_SIZE 1024
     #define FLASH_SIZE 16384    /* 16384 x 16-bit */
+
+    #define SFR_START 0x0020
+    #define SFR_END 0x005f
+
     #define SRAM_START 0x0060
     #define RAM_END 0x085f
 
     #define SPL 0x005d          /* using absolute SFR address */
-    #define SPH 0x005e
+    #define SPH 0x005e          /* using absolute SFR address */
 
     #define PC_BIT 16
 
@@ -40,6 +44,7 @@
     #define ZH 31
 
     extern const char *flags[SREG_SIZE];
+    extern const char *sfreg[SFR_SIZE];
 
     /* Timer (General) */
 
@@ -96,15 +101,19 @@
 
 #ifdef ATMEGA16
 
+/* currently not supported */
 
 #endif
 
 #ifdef ATMEGA8
 
+/* currently not supported */
 
 #endif
 
 #ifdef ATTINY45
+
+    /* Warning: experimental Architecture */
 
     #define SYSTEM "ATtiny45"
 
