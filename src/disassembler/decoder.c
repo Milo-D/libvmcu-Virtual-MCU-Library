@@ -284,11 +284,18 @@ static bool is_dword(const int opcode) {
 
     switch(opcode & 0xfe0e) {
 
-        case 0x940c: return true;
-        case 0x9200: return true;
-        case 0x940e: return true;
+        case 0x940c: return true;   /* 32-bit jmp*/
+        case 0x940e: return true;   /* 32-bit call */
 
-        default: /* not 32-bit */ break;
+        default: break;
+    }
+
+    switch(opcode & 0xfe0f) {
+
+        case 0x9200: return true;   /* 32-bit sts */
+        case 0x9000: return true;   /* 32-bit lds */
+
+        default: break;
     }
 
     return false;
