@@ -9,7 +9,7 @@ An easy and fast CLI Assembly Debugger and Disassembler for 8-bit Atmel AVR
 Microcontrollers.
 
 # Overview
-![mdx_debug](https://user-images.githubusercontent.com/46600932/92971591-0b8d7580-f481-11ea-96e0-4e8191679f15.png)
+![mdx_debug0](https://user-images.githubusercontent.com/46600932/94741870-1a2ac680-0375-11eb-95b8-987bc10eae3b.png)
 
 MDX is an easy and fast CLI Debugger for AVR Assembly Programs.
 
