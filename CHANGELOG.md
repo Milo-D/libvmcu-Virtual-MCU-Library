@@ -9,6 +9,7 @@
     - sbrs (skip if bit in register is set)
     - st(-X) (store to dataspace with pre-decrement)
 
+- Improved memory usage of interactive mode
 - Now passing ∆t instead of ∆c to update_io function
 
 ## v.0.1.0 - 2020-09-28

@@ -10,7 +10,6 @@
 #include "system/core/io.h"
 #include "system/mcudef.h"
 #include "printer/memprop.h"
-#include "collections/array.h"
 #include "collections/tuple.h"
 #include "misc/bitmanip.h"
 
@@ -129,10 +128,9 @@ void data_coi(const struct _data *this, tuple_t *buffer) {
     data_clear_coi(this);
 }
 
-void data_dump(const struct _data *this, array_t *buffer) {
+int8_t* data_dump(const struct _data *this) {
 
-    for(int i = 0; i < (RAM_END + 1); i++)
-        array_push(buffer, (void*) &this->p->memory[i], sizeof(int8_t));
+    return this->p->memory;
 }
 
 void data_reboot(const struct _data *this) {

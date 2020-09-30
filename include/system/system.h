@@ -44,7 +44,7 @@ extern bool sys_is_term(const struct _system *this);
 extern void sys_write_gpr(struct _system *this, const int rx, const int8_t data);
 extern int8_t sys_read_gpr(const struct _system *this, const int rx);
 extern void sys_gpr_coi(const struct _system *this, array_t *buffer);
-extern void sys_dump_gpr(const struct _system *this, array_t *buffer);
+extern int8_t* sys_dump_gpr(const struct _system *this);
 
 /* SREG Operations */
 
@@ -68,14 +68,14 @@ extern int8_t sys_pop_stack(const struct _system *this);
 extern void sys_write_data(struct _system *this, const uint16_t addr, const int8_t value);
 extern int8_t sys_read_data(const struct _system *this, const uint16_t addr);
 extern void sys_data_coi(const struct _system *this, tuple_t *buffer);
-extern void sys_dump_data(const struct _system *this, array_t *buffer);
+extern int8_t* sys_dump_data(const struct _system *this);
 
 /* EEPROM Operations */
 
 extern void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value);
 extern int8_t sys_read_eeprom(const struct _system *this, const uint16_t addr);
 extern void sys_eeprom_coi(const struct _system *this, tuple_t *buffer);
-extern void sys_dump_eeprom(const struct _system *this, array_t *buffer);
+extern int8_t* sys_dump_eeprom(const struct _system *this);
 
 /* Table Operations */
 

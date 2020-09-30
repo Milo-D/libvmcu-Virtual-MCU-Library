@@ -136,9 +136,9 @@ void alu_gpr_coi(const struct _alu *this, array_t *buffer) {
     gpr_coi(this->p->gpr, buffer);
 }
 
-void alu_dump_gpr(const struct _alu *this, array_t *buffer) {
+int8_t* alu_dump_gpr(const struct _alu *this) {
 
-    gpr_dump(this->p->gpr, buffer);
+    return gpr_dump(this->p->gpr);
 }
 
 void alu_write_sreg(struct _alu *this, const int flag, const bool bit) {

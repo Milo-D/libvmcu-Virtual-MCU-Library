@@ -76,13 +76,9 @@ void gpr_coi(const struct _gpr *this, array_t *buffer) {
     gpr_clear_coi(this);
 }
 
-void gpr_dump(const struct _gpr *this, array_t *buffer) {
+int8_t* gpr_dump(const struct _gpr *this) {
 
-    for(int i = 0; i < GPR_SIZE; i++) {
-	
-        const int8_t data = this->p->regfile[i];
-        array_push(buffer, (void*) &data, sizeof(int8_t));
-    }
+    return this->p->regfile;
 }
 
 void gpr_reboot(const struct _gpr *this) {
@@ -98,6 +94,4 @@ static void gpr_clear_coi(const struct _gpr *this) {
     for(int i = 0; i < GPR_SIZE; i++)
         this->p->coi[i] = NONE;
 }
-
-
 

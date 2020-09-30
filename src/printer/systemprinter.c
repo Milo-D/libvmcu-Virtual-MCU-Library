@@ -49,11 +49,10 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, GPNL, "Registers:\n\n", D);
 
-    array_t *buffer = array_ctor(GPR_SIZE, NULL, NULL);
-    sys_dump_gpr(sys, buffer);
-
     array_t *coi = array_ctor(GPR_SIZE, NULL, NULL);
     sys_gpr_coi(sys, coi);
+
+    int8_t *regfile = sys_dump_gpr(sys);
 
     const int s = dwin_curs_of(window, GPNL) * 8;
     queue_t *stream = queue_ctor();
@@ -67,7 +66,6 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
         char *gprstr = strxcat("R", gprno);
 
         const int col = color(*((int*) array_at(coi, s + i)));
-        const int8_t val = *((int8_t*) array_at(buffer, s + i));
 
         dwin_add(window, GPNL, gprstr, D);
         dwin_add(window, GPNL, ": ", D);
@@ -76,7 +74,7 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
             dwin_add(window, GPNL, " ", D);
 
         char vstr[3];
-        to_hex(val, vstr);
+        to_hex(regfile[s + i], vstr);
         
         char *zero = strfill('0', strlen(vstr), 2);
         queue_put(stream, 3, "0x", zero, vstr);
@@ -92,7 +90,6 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
     dwin_add(window, GPNL, "\n", D);
 
     queue_dtor(stream);
-    array_dtor(buffer);
     array_dtor(coi);
 }
 
@@ -100,11 +97,10 @@ static void print_sreg(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, SPNL, "Status-Register:\n\n", D);
 
-    const uint8_t status = sys_dump_sreg(sys);
-
     array_t *coi = array_ctor(SREG_SIZE, NULL, NULL);
     sys_sreg_coi(sys, coi);
 
+    const uint8_t status = sys_dump_sreg(sys);
     queue_t *stream = queue_ctor();
 
     for(int i = 0; i < SREG_SIZE; i++) {
@@ -138,12 +134,10 @@ static void print_data(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, DPNL, "Data Memory:\n\n", D);
 
-    array_t *buffer = array_ctor((RAM_END + 1), NULL, NULL);
-    sys_dump_data(sys, buffer);
-
     tuple_t *coi = tuple_ctor(2, UINT16, INT);
     sys_data_coi(sys, coi);
 
+    int8_t *data = sys_dump_data(sys);
     int16_t cursor = dwin_curs_of(window, DPNL);
 
     if(*((int*) tuple_get(coi, 1)) != NONE) {
@@ -152,8 +146,8 @@ static void print_data(debugwindow_t *window, system_t *sys) {
         dwin_set_curs(window, DPNL, cursor);
     }
 
-    const uint8_t spl = *((uint8_t*) array_at(buffer, SPL));
-    const uint8_t sph = *((uint8_t*) array_at(buffer, SPH));
+    const uint8_t spl = (uint8_t) data[SPL];
+    const uint8_t sph = (uint8_t) data[SPH];
 
     const uint16_t sp = ((sph << 8) + spl);
 
@@ -176,7 +170,7 @@ static void print_data(debugwindow_t *window, system_t *sys) {
             ism = color(*((int*) tuple_get(coi, 1)));
 
         char vstr[3];
-        to_hex(*((int8_t*) array_at(buffer, i)), vstr);
+        to_hex(data[i], vstr);
 
         char *addr = itoh(i);
 
@@ -200,19 +194,16 @@ static void print_data(debugwindow_t *window, system_t *sys) {
 
     queue_dtor(stream);
     tuple_dtor(coi);
-    array_dtor(buffer);
 }
 
 static void print_eeprom(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, EPNL, "EEPROM:\n\n", D);
 
-    array_t *buffer = array_ctor(EEPROM_SIZE, NULL, NULL);
-    sys_dump_eeprom(sys, buffer);
-
     tuple_t *coi = tuple_ctor(2, UINT16, INT);
     sys_eeprom_coi(sys, coi);
 
+    int8_t *eeprom = sys_dump_eeprom(sys);
     int16_t cursor = dwin_curs_of(window, EPNL);
 
     if(*((int*) tuple_get(coi, 1)) != NONE) {
@@ -237,7 +228,7 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
             ism = color(*((int*) tuple_get(coi, 1)));
 
         char vstr[3];
-        to_hex(*((int8_t*) array_at(buffer, i)), vstr);
+        to_hex(eeprom[i], vstr);
 
         char *addr = itoh(i);
 
@@ -261,7 +252,6 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
 
     queue_dtor(stream);
     tuple_dtor(coi);
-    array_dtor(buffer);
 }
 
 static void print_flash(debugwindow_t *window, system_t *sys) {

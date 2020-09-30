@@ -86,13 +86,9 @@ void eeprom_coi(const struct _eeprom *this, tuple_t *buffer) {
     eeprom_clear_coi(this);
 }
 
-void eeprom_dump(const struct _eeprom *this, array_t *buffer) {
+int8_t* eeprom_dump(const struct _eeprom *this) {
 
-    for(int i = 0; i < EEPROM_SIZE; i++) {
-    
-        const int8_t value = this->p->memory[i];
-        array_push(buffer, (void*) &value, sizeof(int8_t));
-    }
+    return this->p->memory;
 }
 
 void eeprom_reboot(const struct _eeprom *this) {

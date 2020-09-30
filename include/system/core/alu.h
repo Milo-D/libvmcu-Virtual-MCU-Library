@@ -47,7 +47,7 @@ extern int alu_get_pc(const struct _alu *this);
 extern void alu_write_gpr(struct _alu *this, const int rx, const int8_t data);
 extern int8_t alu_read_gpr(const struct _alu *this, const int rx);
 extern void alu_gpr_coi(const struct _alu *this, array_t *buffer);
-extern void alu_dump_gpr(const struct _alu *this, array_t *buffer);
+extern int8_t* alu_dump_gpr(const struct _alu *this);
 
 /* SREG Operations */
 

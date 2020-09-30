@@ -22,7 +22,7 @@ extern void gpr_write(struct _gpr *this, const int rx, const int8_t data);
 extern int8_t gpr_read(const struct _gpr *this, const int rx);
 
 extern void gpr_coi(const struct _gpr *this, array_t *buffer);
-extern void gpr_dump(const struct _gpr *this, array_t *buffer);
+extern int8_t* gpr_dump(const struct _gpr *this);
 
 extern void gpr_reboot(const struct _gpr *this);
 

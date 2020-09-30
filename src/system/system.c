@@ -165,9 +165,9 @@ void sys_gpr_coi(const struct _system *this, array_t *buffer) {
     alu_gpr_coi(this->p->alu, buffer);
 }
 
-void sys_dump_gpr(const struct _system *this, array_t *buffer) {
+int8_t* sys_dump_gpr(const struct _system *this) {
 
-    alu_dump_gpr(this->p->alu, buffer);
+    return alu_dump_gpr(this->p->alu);
 }
 
 void sys_write_sreg(struct _system *this, const int flag, const bool bit) {
@@ -249,9 +249,9 @@ void sys_data_coi(const struct _system *this, tuple_t *buffer) {
     data_coi(this->p->data, buffer);
 }
 
-void sys_dump_data(const struct _system *this, array_t *buffer) {
+int8_t* sys_dump_data(const struct _system *this) {
 
-    data_dump(this->p->data, buffer);
+    return data_dump(this->p->data);
 }
 
 void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {
@@ -269,9 +269,9 @@ void sys_eeprom_coi(const struct _system *this, tuple_t *buffer) {
     eeprom_coi(this->p->eeprom, buffer);
 }
 
-void sys_dump_eeprom(const struct _system *this, array_t *buffer) {
+int8_t* sys_dump_eeprom(const struct _system *this) {
 
-    eeprom_dump(this->p->eeprom, buffer);
+    return eeprom_dump(this->p->eeprom);
 }
 
 int sys_add_breakp(const struct _system *this, const char *point) {
