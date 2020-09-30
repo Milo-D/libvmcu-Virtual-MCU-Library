@@ -6,6 +6,7 @@
     - lpm(Z+) (load program memory)
     - lds(32-bit) (load data memory)
     - cpse (compare skip if equal)
+    - sbrs (skip if bit in register is set)
 
 - Now passing ∆t instead of ∆c to update_io function
 
