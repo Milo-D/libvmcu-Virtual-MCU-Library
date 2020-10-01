@@ -7,7 +7,6 @@
 #include <inttypes.h>
 
 typedef struct _tuple tuple_t;
-typedef struct _array array_t;
 
 struct _private;
 

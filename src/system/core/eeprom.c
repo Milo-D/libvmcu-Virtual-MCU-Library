@@ -9,7 +9,6 @@
 #include "system/core/eeprom.h"
 #include "system/mcudef.h"
 #include "printer/memprop.h"
-#include "collections/array.h"
 #include "collections/tuple.h"
 
 struct _private {
