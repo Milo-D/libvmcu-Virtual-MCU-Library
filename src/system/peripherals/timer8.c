@@ -92,12 +92,12 @@ void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const
     const double tclk = prescale(cpu_clk, *(this->tccr));
     const double dtc = ((dt * tclk) + this->borrow);
 
+    const uint8_t tcnt_prev = *(this->tcnt);
+
+    *(this->tcnt) += (uint8_t) dtc;
     this->borrow = dtc - ((long) dtc);
 
-    const uint16_t value = *(this->tcnt);
-    *(this->tcnt) += dtc;
-
-    if((value + dtc) > 0xff) {
+    if(*(this->tcnt) < tcnt_prev) {
 
         *(this->tifr) |= (0x01 << this->tov);
 

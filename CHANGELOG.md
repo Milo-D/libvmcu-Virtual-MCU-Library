@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Minor bug fix for the 8-bit timer0 
 - Added annotations for special function registers
 
 ## v.0.1.1 - 2020-09-30
