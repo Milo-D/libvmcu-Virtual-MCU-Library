@@ -7,7 +7,7 @@
 #include <ncurses.h>
 
 // Project Headers
-#include "cli/mainwindow.h"
+#include "cli/main/mainwindow.h"
 #include "collections/array.h"
 
 struct _private {

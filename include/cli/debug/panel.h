@@ -4,7 +4,7 @@
 #define PANEL_H
 
 // Project Headers
-#include "cli/color.h"
+#include "cli/debug/color.h"
 
 struct _private;
 

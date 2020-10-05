@@ -1,4 +1,4 @@
-/* Implementation of DebugView */
+/* Implementation of DebugState */
 
 // C Headers
 #include <stdio.h>
@@ -7,10 +7,10 @@
 #include <signal.h>
 
 // Project Headers
-#include "cli/debugview.h"
-#include "cli/debugwindow.h"
-#include "cli/debugcommands.h"
-#include "cli/stdmsg.h"
+#include "state/debug/debugstate.h"
+#include "state/debug/debugcommands.h"
+#include "state/debug/stdmsg.h"
+#include "cli/debug/debugwindow.h"
 #include "system/mcudef.h"
 #include "system/system.h"
 #include "parser/parser.h"

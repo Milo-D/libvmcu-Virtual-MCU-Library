@@ -7,18 +7,21 @@ OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
 TARGET   := mdx
 INCLUDE  := -I include/
-SRC      :=                                \
-   $(wildcard src/cli/*.c)                 \
-   $(wildcard src/collections/*.c)         \
-   $(wildcard src/disassembler/*.c)        \
-   $(wildcard src/instructions/*.c)        \
-   $(wildcard src/misc/*.c)                \
-   $(wildcard src/parser/*.c)              \
-   $(wildcard src/printer/*.c)             \
-   $(wildcard src/system/*.c)              \
-   $(wildcard src/system/core/*.c)         \
-   $(wildcard src/system/peripherals/*.c)  \
-   $(wildcard src/table/*.c)               \
+SRC      :=                                	\
+	$(wildcard src/cli/main/*.c)		\
+   	$(wildcard src/cli/debug/*.c)           \
+   	$(wildcard src/collections/*.c)         \
+   	$(wildcard src/disassembler/*.c)        \
+   	$(wildcard src/instructions/*.c)        \
+   	$(wildcard src/misc/*.c)                \
+   	$(wildcard src/parser/*.c)              \
+   	$(wildcard src/printer/*.c)             \
+   	$(wildcard src/state/main/*.c)		\
+   	$(wildcard src/state/debug/*.c)	\
+   	$(wildcard src/system/*.c)              \
+   	$(wildcard src/system/core/*.c)         \
+   	$(wildcard src/system/peripherals/*.c)  \
+   	$(wildcard src/table/*.c)               \
 
 OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)
 

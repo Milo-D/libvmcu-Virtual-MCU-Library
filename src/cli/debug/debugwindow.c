@@ -7,9 +7,9 @@
 #include <ncurses.h>
 
 // Project Headers
-#include "cli/debugwindow.h"
-#include "cli/panel.h"
-#include "cli/prompt.h"
+#include "cli/debug/debugwindow.h"
+#include "cli/debug/panel.h"
+#include "cli/debug/prompt.h"
 #include "system/mcudef.h"
 
 struct _private {

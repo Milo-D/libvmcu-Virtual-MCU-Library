@@ -7,9 +7,9 @@
 #include <unistd.h>
 
 // Project Headers
-#include "cli/highlighter.h"
-#include "cli/debugwindow.h"
-#include "cli/panel.h"
+#include "cli/debug/highlighter.h"
+#include "cli/debug/debugwindow.h"
+#include "cli/debug/panel.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "misc/mnemstr.h"

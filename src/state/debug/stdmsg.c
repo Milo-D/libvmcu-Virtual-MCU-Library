@@ -6,7 +6,7 @@
 #include <string.h>
 
 // Project Headers
-#include "cli/stdmsg.h"
+#include "state/debug/stdmsg.h"
 #include "misc/stringmanip.h"
 #include "collections/queue.h"
 

@@ -1,4 +1,4 @@
-/* Entry Point */
+/* MainState */
 
 // C Headers
 #include <stdio.h>
@@ -6,16 +6,18 @@
 #include <string.h>
 
 // Project Headers
-#include "cli/mainwindow.h"
-#include "cli/mode.h"
-#include "cli/debugview.h"
-#include "cli/stdmsg.h"
+#include "state/main/mode.h"
+#include "state/debug/debugstate.h"
+#include "cli/main/mainwindow.h"
 #include "system/system.h"
 #include "misc/ehandling.h"
 #include "misc/stringmanip.h"
 #include "misc/filemanip.h"
 #include "parser/parser.h"
 #include "collections/array.h"
+
+#define MAX_FILE_REACH "Can not open more than 4 files."
+#define SYS_INIT_ERR "Could not initialize System."
 
 static mainwindow_t *window;
 

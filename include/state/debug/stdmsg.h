@@ -6,9 +6,6 @@
 // C Headers
 #include <inttypes.h>
 
-#define MAX_FILE_REACH "Can not open more than 4 files."
-#define SYS_INIT_ERR "Could not initialize System."
-
 #define INIT_SUCCESS "(mdx) DebugWindow successfully initialized.\n"
 #define ILLEGAL_OPC "(mdx) Warning: Executing illegal opcode.\n"
 #define SIM_TERM "(mdx) System terminated. Simulation has stopped.\n"

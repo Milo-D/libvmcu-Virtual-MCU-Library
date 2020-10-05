@@ -8,7 +8,7 @@
 #include <ncurses.h>
 
 // Project Headers
-#include "cli/prompt.h"
+#include "cli/debug/prompt.h"
 
 struct _private {
 

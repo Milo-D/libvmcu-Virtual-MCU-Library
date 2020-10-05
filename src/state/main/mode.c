@@ -7,8 +7,8 @@
 #include <time.h>
 
 // Project Headers
-#include "cli/mode.h"
-#include "cli/stdmsg.h"
+#include "state/main/mode.h"
+#include "state/debug/stdmsg.h"
 #include "misc/ehandling.h"
 #include "misc/filemanip.h"
 #include "misc/jsonwriter.h"

@@ -1,14 +1,13 @@
 /* Panel Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
 
 // Project Headers
-#include "cli/panel.h"
-#include "cli/highlighter.h"
+#include "cli/debug/panel.h"
+#include "cli/debug/highlighter.h"
 
 struct _private {
 

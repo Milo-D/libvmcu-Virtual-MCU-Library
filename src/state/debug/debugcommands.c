@@ -6,9 +6,9 @@
 #include <unistd.h>
 
 // Project Headers
-#include "cli/debugcommands.h"
-#include "cli/debugwindow.h"
-#include "cli/stdmsg.h"
+#include "state/debug/debugcommands.h"
+#include "state/debug/stdmsg.h"
+#include "cli/debug/debugwindow.h"
 #include "system/system.h"
 #include "system/mcudef.h"
 #include "disassembler/decoder.h"

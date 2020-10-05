@@ -8,9 +8,9 @@
 // Project Headers
 #include "printer/systemprinter.h"
 #include "printer/memprop.h"
+#include "cli/debug/debugwindow.h"
 #include "system/system.h"
 #include "system/mcudef.h"
-#include "cli/debugwindow.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "collections/array.h"
