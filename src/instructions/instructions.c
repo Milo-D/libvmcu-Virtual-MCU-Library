@@ -835,6 +835,20 @@ void st_dx(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void st_y(system_t *sys, const int opcode) {
+
+    const int src = extract(opcode, 4, 9, 0);
+
+    const uint8_t yl = sys_read_gpr(sys, YL);
+    const uint8_t yh = sys_read_gpr(sys, YH);
+
+    const int8_t value = sys_read_gpr(sys, src);
+    sys_write_data(sys, (yh << 8) + yl, value);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void std_yq(system_t *sys, const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
@@ -1966,14 +1980,110 @@ void bset(system_t *sys, const int opcode) {
 
 void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = { 
 
-    nop, movw, muls, mulsu, fmul, ldi, rjmp, jmp, ijmp, mov, 
-    dec, inc, add, adc, adiw, sub, subi, sbc, sbci, sbiw, push, pop, 
-    in, out, sbis, sbrc, sbrs, cpse, clr, ld_x, ld_xi, ld_dx, ld_y, ld_yi, ld_dy, ldd_yq, 
-    ldd_zq, ld_z, ld_zi, st_x, st_xi, st_dx, std_yq, std_zq, sts, sts32, lds32, xch, brne, breq, 
-    brge, brpl, brlo, brlt, brcc, brcs, brvs, brts, brtc, brmi, rcall, ret, reti, icall, 
-    call, cp, cpi, cpc, lsr, asr, ror, swap, ori, or_asm, and_asm, andi, las, lac, com, neg, 
-    bld, bst, lpm, lpm_z, lpm_zi, ses, set, sev, sez, seh, sec, sei, sen, cls, clt, clv, 
-    clz, clh, clc, cli, cln, bclr, bset
+    nop, 
+    movw, 
+    muls, 
+    mulsu, 
+    fmul, 
+    ldi, 
+    rjmp, 
+    jmp, 
+    ijmp, 
+    mov, 
+    dec, 
+    inc, 
+    add, 
+    adc, 
+    adiw, 
+    sub, 
+    subi, 
+    sbc, 
+    sbci, 
+    sbiw, 
+    push, 
+    pop, 
+    in, 
+    out, 
+    sbis, 
+    sbrc, 
+    sbrs, 
+    cpse, 
+    clr, 
+    ld_x, 
+    ld_xi, 
+    ld_dx, 
+    ld_y, 
+    ld_yi, 
+    ld_dy, 
+    ldd_yq, 
+    ldd_zq, 
+    ld_z, 
+    ld_zi, 
+    st_x, 
+    st_xi, 
+    st_dx, 
+    st_y, 
+    std_yq, 
+    std_zq, 
+    sts, 
+    sts32, 
+    lds32, 
+    xch, 
+    brne, 
+    breq, 
+    brge, 
+    brpl, 
+    brlo, 
+    brlt, 
+    brcc, 
+    brcs, 
+    brvs, 
+    brts, 
+    brtc, 
+    brmi, 
+    rcall, 
+    ret, 
+    reti, 
+    icall, 
+    call, 
+    cp, 
+    cpi, 
+    cpc, 
+    lsr, 
+    asr, 
+    ror, 
+    swap, 
+    ori, 
+    or_asm, 
+    and_asm, 
+    andi, 
+    las, 
+    lac, 
+    com, 
+    neg, 
+    bld, 
+    bst, 
+    lpm, 
+    lpm_z, 
+    lpm_zi, 
+    ses, 
+    set, 
+    sev, 
+    sez, 
+    seh, 
+    sec, 
+    sei, 
+    sen, 
+    cls, 
+    clt, 
+    clv, 
+    clz, 
+    clh, 
+    clc, 
+    cli, 
+    cln, 
+    bclr, 
+    bset
 };
 
 
