@@ -916,6 +916,24 @@ void st_z(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void st_zi(system_t *sys, const int opcode) {
+
+    const int src = extract(opcode, 4, 9, 0);
+
+    const uint8_t zl = sys_read_gpr(sys, ZL);
+    const uint8_t zh = sys_read_gpr(sys, ZH);
+
+    const int8_t value = sys_read_gpr(sys, src);
+    const uint16_t post_z = ((zh << 8) + zl) + 0x01;
+
+    sys_write_data(sys, (zh << 8) + zl, value);
+    sys_write_gpr(sys, ZL, (0x00ff & post_z));
+    sys_write_gpr(sys, ZH, (0xff00 & post_z) >> 8);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void std_zq(system_t *sys, const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
@@ -2077,6 +2095,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     st_dy,
     std_yq, 
     st_z,
+    st_zi,
     std_zq, 
     sts, 
     sts32, 
