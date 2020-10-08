@@ -4,8 +4,11 @@
 
 - Added new assembly instructions:
     - st(Y) (indirect store using Y pointer)
-    - st(Y+) (indirect store using Y pointer + post increment)
-    - st(-Y) (indirect store using Y pointer + pre decrement)
+    - st(Y+) (indirect store using Y pointer + post-increment)
+    - st(-Y) (indirect store using Y pointer + pre-decrement)
+    - st(Z) (indirect store using Z pointer)
+    - st(Z+) (indirect store using Z pointer + post-increment)
+    - st(-Z) (indirect store using Z pointer + pre-decrement)
 
 - Minor bug fix for the 8-bit timer0 
 - Added annotations for special function registers
