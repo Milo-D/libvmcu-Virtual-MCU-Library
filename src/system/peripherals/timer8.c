@@ -10,6 +10,8 @@
 #include "system/core/irq.h"
 #include "system/mcudef.h"
 
+#define NMOD 4
+
 /*
 *
 *   c   := cycles
@@ -35,6 +37,12 @@
 /* Forward Declarations of static Functions */
 
 static double prescale(const uint32_t clock, const uint8_t tccr);
+static void timer8_tick_normal(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt);
+static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt);
+
+/* Forward Declarations of static Members */
+
+static void (*tick[NMOD]) (struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt);
 
 /* --- Extern --- */
 
@@ -88,6 +96,42 @@ void timer8_dtor(struct _timer8 *this) {
 }
 
 void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
+ 
+    const int mode = wgmtc8(*(this->tccr));
+    (*tick[mode])(this, irq, cpu_clk, dt);
+}
+
+void timer8_reboot(struct _timer8 *this) {
+
+    this->borrow = 0.00;
+}
+
+/* --- Static --- */
+
+static double prescale(const uint32_t clock, const uint8_t tccr) {
+
+    /* Clock Source (CSx2, CSx1, CSx0) */
+
+    switch(tccr & CSX_MSK) {
+
+        case 0x00: return 0;
+        case 0x01: return clock;
+
+        case 0x02: return (clock / 8.0);
+        case 0x03: return (clock / 64.0);
+        case 0x04: return (clock / 256.0);
+        case 0x05: return (clock / 1024.0);
+
+        case 0x06: return 0; /* not supported */
+        case 0x07: return 0; /* not supported */
+
+        default: /* not possible */ break;
+    }
+
+    return 0;
+}
+
+static void timer8_tick_normal(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
 
     const double tclk = prescale(cpu_clk, *(this->tccr));
     const double dtc = ((dt * tclk) + this->borrow);
@@ -106,32 +150,41 @@ void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const
     }
 }
 
-void timer8_reboot(struct _timer8 *this) {
+static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
 
-    this->borrow = 0.00;
-}
+    const double tclk = prescale(cpu_clk, *(this->tccr));
+    const double dtc = ((dt * tclk) + this->borrow);
 
-/* --- Static --- */
+    *(this->tcnt) += (uint8_t) dtc;
+    this->borrow = dtc - ((long) dtc);
 
-static double prescale(const uint32_t clock, const uint8_t tccr) {
+    if(*(this->tcnt) >= *(this->ocr)) {
 
-    /* Clock Source (CSx2, CSx1, CSx0) */
+        *(this->tifr) |= (0x01 << this->ocf);
 
-    switch(tccr & CSX_MASK) {
+        if(((0x01 << this->ocf) & *(this->timsk)))
+            irq_enable(irq, OC0_VECT);
 
-        case 0x00: return 0;
-        case 0x01: return clock;
-
-        case 0x02: return (clock / 8.0);
-        case 0x03: return (clock / 64.0);
-        case 0x04: return (clock / 256.0);
-        case 0x05: return (clock / 1024.0);
-
-        case 0x06: return 0; /* not supported */
-        case 0x07: return 0; /* not supported */
-
-        default: /* not possible */ break;
+        *(this->tcnt) = 0;
     }
-
-    return 0;
 }
+
+static void timer8_tick_pwm_correct(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
+
+    /* in progress */
+    return;
+}
+
+static void timer8_tick_pwm_fast(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
+
+    /* in progress */
+    return;
+}
+
+static void (*tick[NMOD]) (struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) = {
+
+    timer8_tick_normal,
+    timer8_tick_ctc,
+    timer8_tick_pwm_correct,
+    timer8_tick_pwm_fast
+};

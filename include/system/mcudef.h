@@ -51,7 +51,7 @@
     #define TIMSK 0x0039
     #define TIFR  0x0038
 
-    #define CSX_MASK 0x07
+    #define CSX_MSK 0x07
 
     /* Timer0 (8-bit) */
 
@@ -62,6 +62,12 @@
     #define TOV0 0
     #define OCF0 1
 
+    #define WGM00 6
+    #define WGM01 3
+
+    #define WGM00_MSK (0x01 << WGM00)
+    #define WGM01_MSK (0x01 << WGM01)
+
     /* Timer2 (8-bit) */
 
     #define TCNT2 0x0024
@@ -70,6 +76,17 @@
 
     #define TOV2 6
     #define OCF2 7
+
+    #define WGM20 6
+    #define WGM21 3
+
+    #define WGM20_MSK (0x01 << WGM20)
+    #define WGM21_MSK (0x01 << WGM21)
+
+    /* Timer0 and Timer2 */
+
+    #define wgmtc8(tccr) ((tccr & WGM00_MSK) >> WGM00 - 1) | \
+                         ((tccr & WGM01_MSK) >> WGM01)       \
 
     /* ISR Vector Table */
 
