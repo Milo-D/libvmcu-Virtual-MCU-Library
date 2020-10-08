@@ -867,6 +867,24 @@ void st_yi(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void st_dy(system_t *sys, const int opcode) {
+
+    const int src = extract(opcode, 4, 9, 0);
+
+    const uint8_t yl = sys_read_gpr(sys, YL);
+    const uint8_t yh = sys_read_gpr(sys, YH);
+
+    const uint16_t pre_y = ((yh << 8) + yl) - 0x01;
+    const int8_t value = sys_read_gpr(sys, src);
+
+    sys_write_data(sys, pre_y, value);
+    sys_write_gpr(sys, YL, (0x00ff & pre_y));
+    sys_write_gpr(sys, YH, (0xff00 & pre_y) >> 8);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void std_yq(system_t *sys, const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
@@ -2042,6 +2060,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     st_dx, 
     st_y,
     st_yi, 
+    st_dy,
     std_yq, 
     std_zq, 
     sts, 

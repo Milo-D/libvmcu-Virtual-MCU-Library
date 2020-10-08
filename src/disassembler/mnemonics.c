@@ -1055,6 +1055,27 @@ char* mnem_st_yi(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_st_dy(const int opcode) {
+
+    const int src = extract(opcode, 4, 9, 0);
+    char *sstr = get_str(src);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 2, "st -Y, r", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; DATA[-Y] <- R", sstr);
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(2, sstr, fill);
+
+    return mnemonic;
+}
+
 char* mnem_std_yq(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
@@ -2474,7 +2495,8 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_st_xi, 
     mnem_st_dx, 
     mnem_st_y,
-    mnem_st_yi, 
+    mnem_st_yi,
+    mnem_st_dy, 
     mnem_std_yq, 
     mnem_std_zq, 
     mnem_sts, 
