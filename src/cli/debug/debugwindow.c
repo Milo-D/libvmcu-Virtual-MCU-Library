@@ -58,8 +58,8 @@ struct _debugwindow* dwin_ctor(const int size) {
         { (scr_y - 3), (scr_x / 2), 0, mx }
     };
 
-    int n_pages = (size / (scr_y - 4));
-    n_pages += ((size % (scr_y - 4)) != 0);
+    int n_pages = (size / (scr_y - 7));
+    n_pages += ((size % (scr_y - 7)) != 0);
 
     const int cs[N_PANEL] = { 0, 0, 0, 0x0060, (EEPROM_SIZE / 2), 
                               0, 0 };
