@@ -902,6 +902,20 @@ void std_yq(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void st_z(system_t *sys, const int opcode) {
+
+    const int src = extract(opcode, 4, 9, 0);
+
+    const uint8_t zl = sys_read_gpr(sys, ZL);
+    const uint8_t zh = sys_read_gpr(sys, ZH);
+
+    const int8_t value = sys_read_gpr(sys, src);
+    sys_write_data(sys, (zh << 8) + zl, value);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void std_zq(system_t *sys, const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
@@ -2062,6 +2076,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     st_yi, 
     st_dy,
     std_yq, 
+    st_z,
     std_zq, 
     sts, 
     sts32, 
