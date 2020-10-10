@@ -10,8 +10,6 @@
 #include "system/core/irq.h"
 #include "system/mcudef.h"
 
-#define NMOD 4
-
 /*
 *
 *   c   := cycles
@@ -42,7 +40,7 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq, const uint32_t cpu
 
 /* Forward Declarations of static Members */
 
-static void (*tick[NMOD]) (struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt);
+static void (*tick[NMODT8]) (struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt);
 
 /* --- Extern --- */
 
@@ -96,9 +94,8 @@ void timer8_dtor(struct _timer8 *this) {
 }
 
 void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
- 
-    const int mode = wgmtc8(*(this->tccr));
-    (*tick[mode])(this, irq, cpu_clk, dt);
+
+    (*tick[ wgmtc8(*(this->tccr)) ])(this, irq, cpu_clk, dt);
 }
 
 void timer8_reboot(struct _timer8 *this) {
@@ -137,6 +134,7 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq, const uint32_t 
     const double dtc = ((dt * tclk) + this->borrow);
 
     const uint8_t tcnt_prev = *(this->tcnt);
+    const uint8_t ts = (tcnt_prev == 0) ? 0 : tcnt_prev + 1;
 
     *(this->tcnt) += (uint8_t) dtc;
     this->borrow = dtc - ((long) dtc);
@@ -148,6 +146,27 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq, const uint32_t 
         if(((0x01 << this->tov) & *(this->timsk)))
             irq_enable(irq, OVF0_VECT);
     }
+
+    if(ts <= *(this->tcnt)) {
+
+        if(*(this->ocr) >= ts && *(this->ocr) <= *(this->tcnt)) {
+
+            *(this->tifr) |= (0x01 << this->ocf);
+
+            if(((0x01 << this->ocf) & *(this->timsk)))
+                irq_enable(irq, OC0_VECT);
+        }
+
+    } else {
+
+        if(*(this->ocr) >= ts || *(this->ocr) <= *(this->tcnt)) {
+
+            *(this->tifr) |= (0x01 << this->ocf);
+
+            if(((0x01 << this->ocf) & *(this->timsk)))
+                irq_enable(irq, OC0_VECT);   
+        }
+    }
 }
 
 static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) {
@@ -155,17 +174,41 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq, const uint32_t cpu
     const double tclk = prescale(cpu_clk, *(this->tccr));
     const double dtc = ((dt * tclk) + this->borrow);
 
+    const uint8_t tcnt_prev = *(this->tcnt);
+    const uint8_t ts = (tcnt_prev == 0) ? 0 : tcnt_prev + 1;
+
     *(this->tcnt) += (uint8_t) dtc;
     this->borrow = dtc - ((long) dtc);
 
-    if(*(this->tcnt) >= *(this->ocr)) {
+    if(*(this->tcnt) < tcnt_prev) {
 
-        *(this->tifr) |= (0x01 << this->ocf);
+        *(this->tifr) |= (0x01 << this->tov);
 
-        if(((0x01 << this->ocf) & *(this->timsk)))
-            irq_enable(irq, OC0_VECT);
+        if(((0x01 << this->tov) & *(this->timsk)))
+            irq_enable(irq, OVF0_VECT);
+    }
 
-        *(this->tcnt) = 0;
+    if(ts <= *(this->tcnt)) {
+
+        if(*(this->ocr) >= ts && *(this->ocr) <= *(this->tcnt)) {
+
+            *(this->tifr) |= (0x01 << this->ocf);
+            *(this->tcnt) = 0x00;
+
+            if(((0x01 << this->ocf) & *(this->timsk)))
+                irq_enable(irq, OC0_VECT);
+        }
+
+    } else {
+
+        if(*(this->ocr) >= ts || *(this->ocr) <= *(this->tcnt)) {
+
+            *(this->tifr) |= (0x01 << this->ocf);
+            *(this->tcnt) = 0x00;
+
+            if(((0x01 << this->ocf) & *(this->timsk)))
+                irq_enable(irq, OC0_VECT);   
+        }
     }
 }
 
@@ -181,7 +224,7 @@ static void timer8_tick_pwm_fast(struct _timer8 *this, irq_t *irq, const uint32_
     return;
 }
 
-static void (*tick[NMOD]) (struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) = {
+static void (*tick[NMODT8]) (struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt) = {
 
     timer8_tick_normal,
     timer8_tick_ctc,

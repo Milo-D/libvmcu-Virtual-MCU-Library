@@ -53,6 +53,9 @@
 
     #define CSX_MSK 0x07
 
+    #define NMODT8 4
+    #define NMODT16 16
+
     /* Timer0 (8-bit) */
 
     #define TCNT0 0x0032

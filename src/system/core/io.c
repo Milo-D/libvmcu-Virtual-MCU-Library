@@ -77,7 +77,7 @@ int io_check_irq(const struct _io *this) {
         case OC1A_VECT: /* not yet implemented */           break;
         case OC1B_VECT: /* not yet implemented */           break;
         case OVF1_VECT: /* not yet implemented */           break;
-        case OC0_VECT:  /* not yet implemented */           break;
+        case OC0_VECT:  clear(this->p->memory[TIFR], OCF0); break;
         case OVF0_VECT: clear(this->p->memory[TIFR], TOV0); break;
         case SPI_VECT:  /* not yet implemented */           break;
         case URXC_VECT: /* not yet implemented */           break;

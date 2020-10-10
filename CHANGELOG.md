@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Now supporting CTC Mode for Timer0
 - Added new assembly instructions:
     - st(Y) (indirect store using Y pointer)
     - st(Y+) (indirect store using Y pointer + post-increment)
