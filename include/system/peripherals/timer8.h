@@ -20,14 +20,15 @@ typedef struct _timer8 {
     uint8_t tov;
     uint8_t ocf;
 
-    double borrow;
+    uint16_t prescaler;
+    uint16_t countdown;
 
 } timer8_t;
 
 extern struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory);
 extern void timer8_dtor(struct _timer8 *this);
 
-extern void timer8_tick(struct _timer8 *this, irq_t *irq, const uint32_t cpu_clk, const double dt);
+extern void timer8_tick(struct _timer8 *this, irq_t *irq);
 extern void timer8_reboot(struct _timer8 *this);
 
 #endif

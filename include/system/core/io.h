@@ -17,7 +17,7 @@ typedef struct _io {
 extern struct _io* io_ctor(int8_t *io_start);
 extern void io_dtor(struct _io *this);
 
-extern void io_update(struct _io *this, const uint32_t clock, const double dt);
+extern void io_update(struct _io *this);
 extern int io_check_irq(const struct _io *this);
  
 extern void io_reboot(const struct _io *this);

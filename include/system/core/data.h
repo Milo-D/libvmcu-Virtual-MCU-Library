@@ -32,7 +32,7 @@ extern void data_reboot(const struct _data *this);
 
 /* IO Operations */
 
-extern void data_update_io(const struct _data *this, const uint32_t clock, const double dt);
+extern void data_update_io(const struct _data *this);
 extern int data_check_irq(const struct _data *this);
 
 #endif

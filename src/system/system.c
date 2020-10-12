@@ -29,7 +29,7 @@ struct _private {
 
 /* Forward Declaration of static Functions */
 
-static void sys_update_io(const struct _system *this, const uint64_t dc);
+static void sys_update_io(struct _system *this, const uint64_t dc);
 static void sys_exec_irs(struct _system *this, const int isr);
 
 /* --- Extern --- */
@@ -101,17 +101,6 @@ int sys_step(struct _system *this) {
     sys_update_io(this, (this->cycles - old_cycles));
 
     this->p->steps += 1;
-
-    if((sreg & (0x01 << IF)) != 0x00) {
-
-        int isr;
-
-        if((isr = data_check_irq(this->p->data)) < 0)
-            return err;
-
-        sys_exec_irs(this, isr);
-    }
-
     return err;
 }
 
@@ -301,10 +290,27 @@ entry_t* sys_dump_table(const struct _system *this) {
 
 /* --- Static --- */
 
-static void sys_update_io(const struct _system *this, const uint64_t dc) {
+static void sys_update_io(struct _system *this, const uint64_t dc) {
 
-    const double time = ((dc * 1.0) / (this->clock * 1.0));
-    data_update_io(this->p->data, this->clock, time);
+    const uint8_t sreg = alu_dump_sreg(this->p->alu);
+    const bool iflag = ((sreg & (0x01 << IF)) >> IF);
+
+    if(iflag == 0x00) {
+
+        for(int i = 0; i < dc; i++)
+            data_update_io(this->p->data);
+
+        return;
+    }
+
+    for(int i = 0; i < dc; i++) {
+
+        int isr;
+        data_update_io(this->p->data);
+
+        if((isr = data_check_irq(this->p->data)) >= 0)
+            sys_exec_irs(this, isr);
+    }
 }
 
 static void sys_exec_irs(struct _system *this, const int isr) {
