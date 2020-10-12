@@ -51,10 +51,10 @@ void io_dtor(struct _io *this) {
     free(this);
 }
 
-void io_update(struct _io *this) {
+void io_update(struct _io *this, const uint64_t dc) {
 
     if((this->p->memory[TCCR0] & CSX_MSK) != 0x00)
-        timer8_tick(this->p->timer0, this->p->irq);
+        timer8_tick(this->p->timer0, this->p->irq, dc);
 }
 
 int io_check_irq(const struct _io *this) {

@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## v.0.2.1 - 2020-10-12
+
+- Bugfix for the CTC Mode
+- Simulation now cycle based
+
+## v.0.2.0 - 2020-10-10
 
 - Now supporting CTC Mode for Timer0
 - Added new assembly instructions:

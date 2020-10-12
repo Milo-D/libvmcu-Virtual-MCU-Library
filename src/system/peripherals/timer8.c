@@ -98,9 +98,12 @@ void timer8_dtor(struct _timer8 *this) {
     free(this);
 }
 
-void timer8_tick(struct _timer8 *this, irq_t *irq) {
+void timer8_tick(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
 
     const uint16_t csx = prescale(*(this->tccr));
+
+    if(csx == 0)
+        return;
 
     if(csx != this->prescaler) {
 
@@ -108,7 +111,10 @@ void timer8_tick(struct _timer8 *this, irq_t *irq) {
         this->countdown = csx;
     }
 
-    if(--(this->countdown) == 0) {
+    for(int i = 0; i < dc; i++) {
+
+        if(--(this->countdown) > 0)
+            continue;
 
         (*tick[ wgmtc8(*(this->tccr)) ])(this, irq);
         this->countdown = this->prescaler;
@@ -156,9 +162,6 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
             irq_enable(irq, OVF0_VECT);
     }
 
-    if(this->countdown != 0)
-        return;
-
     if(*(this->tcnt) == *(this->ocr)) {
 
         *(this->tifr) |= (0x01 << this->ocf);
@@ -177,9 +180,6 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
         if(((0x01 << this->tov) & *(this->timsk)))
             irq_enable(irq, OVF0_VECT);
     }
-
-    if(this->countdown != 0)
-        return;
 
     if(*(this->tcnt) == *(this->ocr)) {
 

@@ -30,7 +30,7 @@ struct _private {
 /* Forward Declaration of static Functions */
 
 static void sys_update_io(struct _system *this, const uint64_t dc);
-static void sys_exec_irs(struct _system *this, const int isr);
+static void sys_exec_isr(struct _system *this, const int isr);
 
 /* --- Extern --- */
 
@@ -295,25 +295,18 @@ static void sys_update_io(struct _system *this, const uint64_t dc) {
     const uint8_t sreg = alu_dump_sreg(this->p->alu);
     const bool iflag = ((sreg & (0x01 << IF)) >> IF);
 
-    if(iflag == 0x00) {
+    data_update_io(this->p->data, dc);
 
-        for(int i = 0; i < dc; i++)
-            data_update_io(this->p->data);
+    if(iflag == true) {
 
-        return;
-    }
-
-    for(int i = 0; i < dc; i++) {
-
-        int isr;
-        data_update_io(this->p->data);
-
-        if((isr = data_check_irq(this->p->data)) >= 0)
-            sys_exec_irs(this, isr);
+        const int isr = data_check_irq(this->p->data);
+        
+        if(isr >= 0)
+            sys_exec_isr(this, isr);
     }
 }
 
-static void sys_exec_irs(struct _system *this, const int isr) {
+static void sys_exec_isr(struct _system *this, const int isr) {
 
     const int pc = alu_get_pc(this->p->alu);
 

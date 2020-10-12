@@ -141,9 +141,9 @@ void data_reboot(const struct _data *this) {
     data_set_coi(this, 0x0000, NONE);
 }
 
-void data_update_io(const struct _data *this) {
+void data_update_io(const struct _data *this, const uint64_t dc) {
 
-    io_update(this->p->io);
+    io_update(this->p->io, dc);
 }
 
 int data_check_irq(const struct _data *this) {
