@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added special behaviour for registers located in IO-Space.
+
 ## v.0.2.1 - 2020-10-12
 
 - Bugfix for the CTC Mode

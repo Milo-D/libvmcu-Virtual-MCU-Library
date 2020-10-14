@@ -60,7 +60,7 @@ void data_dtor(struct _data *this) {
 
     free(this->p->memory);
     free(this->p);
-    free(this);    
+    free(this);
 }
 
 void data_push(struct _data *this, const int8_t value) {
@@ -104,6 +104,14 @@ void data_write(struct _data *this, const uint16_t addr, const int8_t value) {
     if(addr > RAM_END)
         return;
 
+    if(addr >= SFR_START && addr <= SFR_END) {
+
+        (*io_write[addr - GPR_SIZE])(this->p->io, value);
+        data_set_coi(this, addr, DEST);
+
+        return;        
+    }
+
     this->p->memory[addr] = value;
     data_set_coi(this, addr, DEST);
 }
@@ -112,6 +120,12 @@ int8_t data_read(const struct _data *this, const uint16_t addr) {
 
     if(addr > RAM_END)
         return 0xff;
+
+    if(addr >= SFR_START && addr <= SFR_END) {
+
+        data_set_coi(this, addr, SRC);
+        return (*io_read[addr - GPR_SIZE])(this->p->io);        
+    }
 
     data_set_coi(this, addr, SRC);
     return this->p->memory[addr];
