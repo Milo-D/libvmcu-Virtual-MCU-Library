@@ -46,6 +46,110 @@
     extern const char *flags[SREG_SIZE];
     extern const char *sfreg[SFR_SIZE];
 
+    /* PIN/PORT A */
+
+    #define PINA 0x0019
+
+    #define PINA0 0
+    #define PINA1 1
+    #define PINA2 2
+    #define PINA3 3
+    #define PINA4 4
+    #define PINA5 5
+    #define PINA6 6
+    #define PINA7 7
+
+    #define PORTA 0x001b
+
+    #define PORTA0 0
+    #define PORTA1 1
+    #define PORTA2 2
+    #define PORTA3 3
+    #define PORTA4 4
+    #define PORTA5 5
+    #define PORTA6 6
+    #define PORTA7 7
+
+    #define DDRA 0x001a                         
+
+    /* PIN/PORT B */
+
+    #define PINB 0x0016
+
+    #define PINB0 0
+    #define PINB1 1
+    #define PINB2 2
+    #define PINB3 3
+    #define PINB4 4
+    #define PINB5 5
+    #define PINB6 6
+    #define PINB7 7
+
+    #define PORTB 0x0018
+
+    #define PORTB0 0
+    #define PORTB1 1
+    #define PORTB2 2
+    #define PORTB3 3
+    #define PORTB4 4
+    #define PORTB5 5
+    #define PORTB6 6
+    #define PORTB7 7
+
+    #define DDRB 0x0017
+
+    /* PIN/PORT C */
+
+    #define PINC 0x0013
+
+    #define PINC0 0
+    #define PINC1 1
+    #define PINC2 2
+    #define PINC3 3
+    #define PINC4 4
+    #define PINC5 5
+    #define PINC6 6
+    #define PINC7 7
+
+    #define PORTC 0x0015
+
+    #define PORTC0 0
+    #define PORTC1 1
+    #define PORTC2 2
+    #define PORTC3 3
+    #define PORTC4 4
+    #define PORTC5 5
+    #define PORTC6 6
+    #define PORTC7 7
+
+    #define DDRC 0x0014
+
+    /* PIN/PORT D */
+
+    #define PIND 0x0010
+
+    #define PIND0 0
+    #define PIND1 1
+    #define PIND2 2
+    #define PIND3 3
+    #define PIND4 4
+    #define PIND5 5
+    #define PIND6 6
+    #define PIND7 7
+
+    #define PORTD 0x0012
+
+    #define PORTD0 0
+    #define PORTD1 1
+    #define PORTD2 2
+    #define PORTD3 3
+    #define PORTD4 4
+    #define PORTD5 5
+    #define PORTD6 6
+    #define PORTD7 7
+
+    #define DDRD 0x0011
+
     /* Timer (General) */
 
     #define TIMSK 0x0039
@@ -67,9 +171,18 @@
 
     #define WGM00 6
     #define WGM01 3
+    #define COM00 4
+    #define COM01 5
+
+    #define OC0DDR DDRB
+    #define OC0P PORTB
+    #define OC0 3
 
     #define WGM00_MSK (0x01 << WGM00)
     #define WGM01_MSK (0x01 << WGM01)
+
+    #define COM00_MSK (0x01 << COM00)
+    #define COM01_MSK (0x01 << COM01)
 
     /* Timer2 (8-bit) */
 
@@ -82,14 +195,26 @@
 
     #define WGM20 6
     #define WGM21 3
+    #define COM20 4
+    #define COM21 5
+
+    #define OC2DDR DDRD
+    #define OC2P PORTD 
+    #define OC2 7
 
     #define WGM20_MSK (0x01 << WGM20)
     #define WGM21_MSK (0x01 << WGM21)
+
+    #define COM20_MSK (0x01 << COM20)
+    #define COM21_MSK (0x01 << COM21)
 
     /* Timer0 and Timer2 */
 
     #define wgmtc8(tccr) ((tccr & WGM00_MSK) >> WGM00 - 1) | \
                          ((tccr & WGM01_MSK) >> WGM01)       \
+
+    #define comtc8(tccr) ((tccr & COM01_MSK) >> COM01 - 1) | \
+                         ((tccr & COM00_MSK) >> COM00)       \
 
     /* ISR Vector Table */
 

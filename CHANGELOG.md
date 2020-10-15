@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Added special behaviour for registers located in IO-Space.
+- Timer0: Wave Generation using COM-bits in non-PWM Mode is now supported
+- Added: special behaviour for registers located in IO-Space.
 
 ## v.0.2.1 - 2020-10-12
 

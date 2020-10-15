@@ -11,17 +11,21 @@ typedef enum { TC0, TC2 } TCX;
 
 typedef struct _timer8 {
 
-    uint8_t *tcnt;
-    uint8_t *tccr;
-    uint8_t *tifr;
-    uint8_t *ocr;
-    uint8_t *timsk;
+    uint8_t *tcnt;			/* Timer/Counter */
+    uint8_t *tccr;			/* Control Register */
+    uint8_t *tifr;			/* Timer Interrupt Flags */
+    uint8_t *timsk;			/* Timer Interrupt Mask */
+    uint8_t *ocr;			/* Output Compare Register */
 
-    uint8_t tov;
-    uint8_t ocf;
+    uint8_t *oc;			/* Output Compare Pin */
+    uint8_t *ddr;			/* Data Direction Register (OC) */
 
-    uint16_t prescaler;
-    uint16_t countdown;
+    uint8_t tov;			/* Timer Overflow Flag (Bitposition) */
+    uint8_t ocf;			/* Output Compare Flag (Bitposition) */
+    uint8_t ocx; 			/* Output Compare Pin  (Bitposition) */
+
+    uint16_t prescaler;		/* Clocksource's Prescaler */
+    uint16_t countdown;		/* Timer Countdown */
 
 } timer8_t;
 
