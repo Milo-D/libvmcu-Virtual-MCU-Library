@@ -133,6 +133,19 @@ void timer8_tick(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
     }
 }
 
+void timer8_force_oc(struct _timer8 *this) {
+
+    switch( wgmtc8(*(this->tccr)) ) {
+
+        case 0x02: return;
+        case 0x03: return;
+
+        default: /* non-PWM mode */ break;
+    }
+
+    trigger_oc(this);
+}
+
 void timer8_reboot(struct _timer8 *this) {
 
     this->prescaler = 0;

@@ -173,6 +173,7 @@
     #define WGM01 3
     #define COM00 4
     #define COM01 5
+    #define FOC0  7
 
     #define OC0DDR DDRB
     #define OC0P PORTB
@@ -197,6 +198,7 @@
     #define WGM21 3
     #define COM20 4
     #define COM21 5
+    #define FOC2  7
 
     #define OC2DDR DDRD
     #define OC2P PORTD 

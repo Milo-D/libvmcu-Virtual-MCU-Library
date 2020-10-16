@@ -361,7 +361,10 @@ static void write_tcnt0(struct _io *this, const int8_t value) {
 
 static void write_tccr0(struct _io *this, const int8_t value) {
 
-    this->p->memory[0x33] = value;
+    this->p->memory[0x33] = (value & 0x7f);
+
+    if((value & (0x01 << FOC0)) != 0x00)
+        timer8_force_oc(this->p->timer0);
 }
 
 static void write_mcucsr(struct _io *this, const int8_t value) {
