@@ -11,7 +11,7 @@
 #define B 7
 #define Q 8
 
-#define SET_SIZE 111
+#define SET_SIZE 130
 #define WORD 16
 
 extern const int opcode[SET_SIZE][WORD];

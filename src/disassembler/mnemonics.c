@@ -2177,6 +2177,33 @@ char* mnem_bst(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_sbi(const int opcode) {
+
+    const int dest = extract(opcode, 3, 8, 0);
+    const int bpos = extract(opcode, 0, 3, 0);
+
+    char vstr[3];
+    to_hex(dest, vstr);
+
+    char *sstr = get_str(bpos);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 4, "sbi 0x", vstr, ", ", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 4, fill, "; IO[", vstr, ", "); 
+    queue_put(stream, 2, sstr, "] <- 0x01");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(2, sstr, fill);
+
+    return mnemonic;
+}
+
 char* mnem_lpm(const int opcode) {
 
     queue_t *stream = queue_ctor();
@@ -2603,6 +2630,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_neg, 
     mnem_bld, 
     mnem_bst, 
+    mnem_sbi,
     mnem_lpm, 
     mnem_lpm_z, 
     mnem_lpm_zi, 

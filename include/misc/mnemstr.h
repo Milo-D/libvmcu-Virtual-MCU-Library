@@ -14,7 +14,7 @@
 
 #define N_FLOW 20
 #define N_MISC 21
-#define N_LOGIC 15
+#define N_LOGIC 16
 #define N_ACCESS 14
 #define N_STACKOP 2
 #define N_ARITHMETIC 17
