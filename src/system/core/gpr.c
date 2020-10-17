@@ -11,12 +11,6 @@
 #include "printer/memprop.h"
 #include "collections/array.h"
 
-struct _private {
-
-    int8_t *regfile;
-    int *coi;
-};
-
 /* Forward Declaration of static GPR Functions */
 
 static void gpr_clear_coi(const struct _gpr *this);
@@ -30,46 +24,39 @@ struct _gpr* gpr_ctor(void) {
     if((gpr = malloc(sizeof(struct _gpr))) == NULL)
         return NULL;
     
-    if((gpr->p = malloc(sizeof(struct _private))) == NULL) {
-     
-        free(gpr);
-        return NULL;
-    }
+    gpr->regfile = malloc(GPR_SIZE * sizeof(int8_t));
+    memset(gpr->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
     
-    gpr->p->regfile = malloc(GPR_SIZE * sizeof(int8_t));
-    memset(gpr->p->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
-    
-    gpr->p->coi = malloc(GPR_SIZE * sizeof(int));
-    memset(gpr->p->coi, NONE, GPR_SIZE * sizeof(int));
+    gpr->coi = malloc(GPR_SIZE * sizeof(int));
+    memset(gpr->coi, NONE, GPR_SIZE * sizeof(int));
 	
     return gpr;
 }
 
 void gpr_dtor(struct _gpr *this) {
 
-    free(this->p->regfile);
-    free(this->p->coi);
-    free(this->p);
+    free(this->regfile);
+    free(this->coi);
     free(this);
 }
 
 void gpr_write(struct _gpr *this, const int rx, const int8_t data) {
 
-    this->p->coi[rx] = DEST;
-    this->p->regfile[rx] = data;
+    this->coi[rx] = DEST;
+    this->regfile[rx] = data;
 }
 
 int8_t gpr_read(const struct _gpr *this, const int rx) {
 
-    this->p->coi[rx] = SRC;
-    return this->p->regfile[rx];
+    this->coi[rx] = SRC;
+    return this->regfile[rx];
 }
 
 void gpr_coi(const struct _gpr *this, array_t *buffer) {
 
     for(int i = 0; i < GPR_SIZE; i++) {
 	
-        const int prop = this->p->coi[i];
+        const int prop = this->coi[i];
         array_push(buffer, (void*) &prop, sizeof(int));
     }
 
@@ -78,13 +65,13 @@ void gpr_coi(const struct _gpr *this, array_t *buffer) {
 
 int8_t* gpr_dump(const struct _gpr *this) {
 
-    return this->p->regfile;
+    return this->regfile;
 }
 
 void gpr_reboot(const struct _gpr *this) {
 
-    memset(this->p->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
-    memset(this->p->coi, NONE, GPR_SIZE * sizeof(int));
+    memset(this->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
+    memset(this->coi, NONE, GPR_SIZE * sizeof(int));
 }
 
 /* --- Private --- */
@@ -92,6 +79,6 @@ void gpr_reboot(const struct _gpr *this) {
 static void gpr_clear_coi(const struct _gpr *this) {
 
     for(int i = 0; i < GPR_SIZE; i++)
-        this->p->coi[i] = NONE;
+        this->coi[i] = NONE;
 }
 

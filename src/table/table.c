@@ -14,11 +14,6 @@
 #include "disassembler/plain.h"
 #include "collections/array.h"
 
-struct _private {
-    
-    entry_t *entry;
-};
-
 /* --- Public --- */
 
 struct _table* table_ctor(const char *hex_file) {
@@ -27,12 +22,6 @@ struct _table* table_ctor(const char *hex_file) {
     
     if((table = malloc(sizeof(struct _table))) == NULL)
         return NULL;
-        
-    if((table->p = malloc(sizeof(struct _private))) == NULL) {
-    
-        free(table);
-        return NULL;
-    }
 
     const int len = strlen(hex_file);
     
@@ -46,18 +35,18 @@ struct _table* table_ctor(const char *hex_file) {
     table->breakc = 0;
     table->size = buffer->size;
 
-    table->p->entry = malloc(buffer->size * sizeof(entry_t));
+    table->entry = malloc(buffer->size * sizeof(entry_t));
 
     for(int i = 0; i < buffer->size; i++) {
 
         plain_t *p = (plain_t*) array_at(buffer, i);
         
         const size_t len = strlen(p->mnem) + 1;
-        table->p->entry[i].ln = malloc(len * sizeof(char));
-        strncpy(table->p->entry[i].ln, p->mnem, len);
+        table->entry[i].ln = malloc(len * sizeof(char));
+        strncpy(table->entry[i].ln, p->mnem, len);
 
-        table->p->entry[i].addr = p->addr;
-        table->p->entry[i].breakp = false;
+        table->entry[i].addr = p->addr;
+        table->entry[i].breakp = false;
     }
 
     array_dtor(buffer);
@@ -67,11 +56,10 @@ struct _table* table_ctor(const char *hex_file) {
 void table_dtor(struct _table *this) {
 
     for(int i = 0; i < this->size; i++)
-        free(this->p->entry[i].ln);
+        free(this->entry[i].ln);
 
-    free(this->p->entry);
+    free(this->entry);
     free(this->source);
-    free(this->p);
     free(this);
 }
 
@@ -82,13 +70,13 @@ int table_add_breakp(struct _table *this, const char *point) {
     if(line < 0 || line >= this->size)
         return -1;
 
-    if(this->p->entry[line].breakp == true)
+    if(this->entry[line].breakp == true)
         return -1;
 
-    if(this->p->entry[line].addr < 0)
+    if(this->entry[line].addr < 0)
         return -1;
 
-    this->p->entry[line].breakp = true;
+    this->entry[line].breakp = true;
     this->breakc += 1;
 
     return 0;
@@ -101,13 +89,13 @@ int table_del_breakp(struct _table *this, const char *point) {
     if(line < 0 || line >= this->size)
         return -1;
 
-    if(this->p->entry[line].breakp == false)
+    if(this->entry[line].breakp == false)
         return -1;
 
-    if(this->p->entry[line].addr < 0)
+    if(this->entry[line].addr < 0)
         return -1;
 
-    this->p->entry[line].breakp = false;
+    this->entry[line].breakp = false;
     this->breakc -= 1;
 
     return 0;
@@ -118,17 +106,17 @@ void table_define(struct _table *this, const char *alias, const char *seq) {
     for(int i = 0; i < this->size; i++) {
 
         int pos;
-        char *line = this->p->entry[i].ln;
+        char *line = this->entry[i].ln;
 
-        if(this->p->entry[i].addr < 0) {
+        if(this->entry[i].addr < 0) {
 
             char *repl = strrepl(line, alias, seq);
             const int len = strlen(repl) + 1;
 
-            free(this->p->entry[i].ln);
+            free(this->entry[i].ln);
 
-            this->p->entry[i].ln = malloc(len * sizeof(char));
-            strncpy(this->p->entry[i].ln, repl, len);
+            this->entry[i].ln = malloc(len * sizeof(char));
+            strncpy(this->entry[i].ln, repl, len);
             free(repl);
 
             continue;
@@ -145,9 +133,9 @@ void table_define(struct _table *this, const char *alias, const char *seq) {
 
         const int len = strlen(result) + 1;
 
-        free(this->p->entry[i].ln);
-        this->p->entry[i].ln = malloc(len * sizeof(char));
-        strncpy(this->p->entry[i].ln, result, len);
+        free(this->entry[i].ln);
+        this->entry[i].ln = malloc(len * sizeof(char));
+        strncpy(this->entry[i].ln, result, len);
 
         nfree(4, code, comment, repl, result);
     }
@@ -157,8 +145,8 @@ bool table_on_breakp(const struct _table *this, const int pc) {
 
     for(int i = 0; i < this->size; i++) {
 
-        if(this->p->entry[i].addr == pc)
-            return this->p->entry[i].breakp;
+        if(this->entry[i].addr == pc)
+            return this->entry[i].breakp;
     }
 
     return false;
@@ -166,6 +154,6 @@ bool table_on_breakp(const struct _table *this, const int pc) {
 
 entry_t* table_dump(const struct _table *this) {
 
-    return this->p->entry;
+    return this->entry;
 }
 

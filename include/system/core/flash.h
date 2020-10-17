@@ -12,11 +12,15 @@ typedef struct _entry entry_t;
 typedef struct _plain plain_t;
 typedef struct _array array_t;
 
-struct _private;
-
 typedef struct _flash {
     
-    struct _private *p;
+    int pc;
+    
+    int16_t *memory;
+    unsigned int mem_usage;
+
+    array_t *plain;
+    table_t *table;
     
 } flash_t;
 
@@ -32,11 +36,11 @@ extern plain_t* flash_fetch(const struct _flash *this);
 extern plain_t* flash_read_instr(const struct _flash *this, const int addr);
 extern uint16_t flash_read(const struct _flash *this, const int addr);
 
-extern void flash_move_pc(const struct _flash *this, const int inc);
+extern void flash_move_pc(struct _flash *this, const int inc);
 extern void flash_set_pc(struct _flash *this, const int addr);
 extern int flash_get_pc(const struct _flash *this);
 
-extern void flash_reboot(const struct _flash *this);
+extern void flash_reboot(struct _flash *this);
 
 /* Table Operations */
 

@@ -3,13 +3,16 @@
 #ifndef LABELMAP_H
 #define LABELMAP_H
 
-struct _private;
 typedef struct _plain plain_t;
+typedef struct _array array_t;
+typedef struct _strmap strmap_t;
 
 typedef struct _lmap {
 
+    array_t *labels;
+    strmap_t *map;
+
     int size;
-    struct _private *p;
 
 } lmap_t;
 

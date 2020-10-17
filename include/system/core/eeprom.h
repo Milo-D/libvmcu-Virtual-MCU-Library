@@ -8,12 +8,10 @@
 
 typedef struct _tuple tuple_t;
 
-struct _private;
-
 typedef struct _eeprom {
 
-    int size;
-    struct _private *p;
+    int8_t *memory;
+    tuple_t *coi;
 
 } eeprom_t;
 

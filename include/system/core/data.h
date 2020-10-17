@@ -6,14 +6,15 @@
 // C Headers
 #include <inttypes.h>
 
+typedef struct _io io_t;
 typedef struct _tuple tuple_t;
 
-struct _private;
-
 typedef struct _data {
-    
-    int size;
-    struct _private *p;
+   
+    io_t *io;
+
+    int8_t *memory;
+    tuple_t *coi;
     
 } data_t;
 

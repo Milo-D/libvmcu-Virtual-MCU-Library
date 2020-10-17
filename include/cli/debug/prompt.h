@@ -5,11 +5,9 @@
 
 #define PLEN 64
 
-struct _private;
-
 typedef struct _prompt {
 
-    struct _private *p;
+	WINDOW *win;
 
 } prompt_t;
 

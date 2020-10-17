@@ -13,14 +13,6 @@
 #include "collections/tuple.h"
 #include "misc/bitmanip.h"
 
-struct _private {
-
-    io_t *io;
-
-    int8_t *memory;
-    tuple_t *coi;
-};
-
 /* Forward Declaration of static DATA Functions */
 
 static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop);
@@ -33,67 +25,59 @@ struct _data* data_ctor(void) {
     struct _data *data;
 
     if((data = malloc(sizeof(struct _data))) == NULL)
-        return NULL;
+        return NULL;  
 
-    if((data->p = malloc(sizeof(struct _private))) == NULL) {
+    data->memory = malloc((RAM_END + 1) * sizeof(int8_t));
+    memset(data->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
 
-        free(data);
-        return NULL;
-    }       
+    data->io = io_ctor(&data->memory[GPR_SIZE]);
 
-    data->p->memory = malloc((RAM_END + 1) * sizeof(int8_t));
-    memset(data->p->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
-
-    data->p->coi = tuple_ctor(2, UINT16, INT);
+    data->coi = tuple_ctor(2, UINT16, INT);
     data_set_coi(data, 0x0000, NONE);
-
-    data->p->io = io_ctor(&data->p->memory[GPR_SIZE]);
-    data->size = (RAM_END + 1);
 
     return data;
 }
 
 void data_dtor(struct _data *this) {
 
-    io_dtor(this->p->io);
-    tuple_dtor(this->p->coi);
+    io_dtor(this->io);
+    tuple_dtor(this->coi);
 
-    free(this->p->memory);
-    free(this->p);
+    free(this->memory);
     free(this);
 }
 
 void data_push(struct _data *this, const int8_t value) {
 
-    const uint8_t spl = this->p->memory[SPL];
-    const uint8_t sph = this->p->memory[SPH];
+    const uint8_t spl = this->memory[SPL];
+    const uint8_t sph = this->memory[SPH];
 
     uint16_t sp = sp(spl, sph);
 
     if(sp <= SRAM_START)
         return;
 
-    this->p->memory[sp--] = value;
-    this->p->memory[SPL] = spl(sp);
-    this->p->memory[SPH] = sph(sp);
+    this->memory[sp--] = value;
+    this->memory[SPL] = spl(sp);
+    this->memory[SPH] = sph(sp);
 
     data_set_coi(this, sp + 1, DEST);
 }
 
 int8_t data_pop(const struct _data *this) {
 
-    const uint8_t spl = this->p->memory[SPL];
-    const uint8_t sph = this->p->memory[SPH];
+    const uint8_t spl = this->memory[SPL];
+    const uint8_t sph = this->memory[SPH];
 
     uint16_t sp = sp(spl, sph);
 
     if(sp >= RAM_END)
         return 0xff;
 
-    const int8_t value = this->p->memory[++sp];
+    const int8_t value = this->memory[++sp];
 
-    this->p->memory[SPL] = spl(sp);
-    this->p->memory[SPH] = sph(sp);
+    this->memory[SPL] = spl(sp);
+    this->memory[SPH] = sph(sp);
 
     data_set_coi(this, sp, SRC);
     return value;
@@ -106,13 +90,13 @@ void data_write(struct _data *this, const uint16_t addr, const int8_t value) {
 
     if(addr >= SFR_START && addr <= SFR_END) {
 
-        (*io_write[addr - GPR_SIZE])(this->p->io, value);
+        (*io_write[addr - GPR_SIZE])(this->io, value);
         data_set_coi(this, addr, DEST);
 
         return;        
     }
 
-    this->p->memory[addr] = value;
+    this->memory[addr] = value;
     data_set_coi(this, addr, DEST);
 }
 
@@ -124,17 +108,17 @@ int8_t data_read(const struct _data *this, const uint16_t addr) {
     if(addr >= SFR_START && addr <= SFR_END) {
 
         data_set_coi(this, addr, SRC);
-        return (*io_read[addr - GPR_SIZE])(this->p->io);        
+        return (*io_read[addr - GPR_SIZE])(this->io);        
     }
 
     data_set_coi(this, addr, SRC);
-    return this->p->memory[addr];
+    return this->memory[addr];
 }
 
 void data_coi(const struct _data *this, tuple_t *buffer) {
 
-    const int cell = *((uint16_t*) tuple_get(this->p->coi, 0));
-    const int prop = *((int*) tuple_get(this->p->coi, 1));
+    const int cell = *((uint16_t*) tuple_get(this->coi, 0));
+    const int prop = *((int*) tuple_get(this->coi, 1));
 
     tuple_set(buffer, (void*) &cell, sizeof(uint16_t), 0);
     tuple_set(buffer, (void*) &prop, sizeof(int), 1);
@@ -144,33 +128,33 @@ void data_coi(const struct _data *this, tuple_t *buffer) {
 
 int8_t* data_dump(const struct _data *this) {
 
-    return this->p->memory;
+    return this->memory;
 }
 
 void data_reboot(const struct _data *this) {
 
-    io_reboot(this->p->io);
+    io_reboot(this->io);
 
-    memset(this->p->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
+    memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
     data_set_coi(this, 0x0000, NONE);
 }
 
 void data_update_io(const struct _data *this, const uint64_t dc) {
 
-    io_update(this->p->io, dc);
+    io_update(this->io, dc);
 }
 
 int data_check_irq(const struct _data *this) {
 
-    return io_check_irq(this->p->io);
+    return io_check_irq(this->io);
 }
 
 /* --- Private --- */
 
 static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop) {
 
-    tuple_set(this->p->coi, (void*) &cell, sizeof(uint16_t), 0);
-    tuple_set(this->p->coi, (void*) &prop, sizeof(int), 1);
+    tuple_set(this->coi, (void*) &cell, sizeof(uint16_t), 0);
+    tuple_set(this->coi, (void*) &prop, sizeof(int), 1);
 }
 
 static void data_clear_coi(const struct _data *this) {

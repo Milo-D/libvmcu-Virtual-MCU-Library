@@ -7,11 +7,11 @@
 #include <inttypes.h>
 
 typedef struct _array array_t;
-struct _private;
 
 typedef struct _gpr {
 
-    struct _private *p;
+    int8_t *regfile;
+    int *coi;
     
 } gpr_t;
 

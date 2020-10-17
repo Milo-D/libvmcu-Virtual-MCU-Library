@@ -3,14 +3,13 @@
 #ifndef PARSER_H
 #define PARSER_H
 
+typedef struct _map map_t;
 typedef enum { ARG, DEBUG } CONTEXT;
-
-struct _private;
 
 typedef struct _parser {
 
+    map_t *map;
     CONTEXT context;
-    struct _private *p;
 
 } parser_t;
 

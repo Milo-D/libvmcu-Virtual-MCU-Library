@@ -9,15 +9,14 @@
 typedef struct _entry entry_t;
 typedef struct _array array_t;
 
-struct _private;
-
 typedef struct _table {
 
     int size;
+
     int breakc;
     char *source;
 
-    struct _private *p;
+    entry_t *entry;
 
 } table_t;
 

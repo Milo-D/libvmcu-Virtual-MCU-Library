@@ -11,18 +11,12 @@
 #include "printer/memprop.h"
 #include "collections/tuple.h"
 
-struct _private {
-
-    int8_t *memory;
-    tuple_t *coi;
-};
-
 /* Forward Declaration of static EEPROM Functions */
 
 static void eeprom_set_coi(const struct _eeprom *this, const uint16_t cell, const int prop);
 static void eeprom_clear_coi(const struct _eeprom *this);
 
-/* --- Public --- */
+/* --- Extern --- */
 
 struct _eeprom* eeprom_ctor(void) {
 
@@ -30,29 +24,21 @@ struct _eeprom* eeprom_ctor(void) {
     
     if((eeprom = malloc(sizeof(struct _eeprom))) == NULL)
         return NULL;
-        
-    if((eeprom->p = malloc(sizeof(struct _private))) == NULL) {
-    
-        free(eeprom);
-        return NULL;
-    }
 
-    eeprom->p->memory = malloc(EEPROM_SIZE * sizeof(int8_t));
-    memset(eeprom->p->memory, 0x00, EEPROM_SIZE * sizeof(int8_t));
+    eeprom->memory = malloc(EEPROM_SIZE * sizeof(int8_t));
+    memset(eeprom->memory, 0x00, EEPROM_SIZE * sizeof(int8_t));
 
-    eeprom->p->coi = tuple_ctor(2, UINT16, INT);
+    eeprom->coi = tuple_ctor(2, UINT16, INT);
     eeprom_set_coi(eeprom, 0x0000, NONE);
 
-    eeprom->size = EEPROM_SIZE;
     return eeprom;
 }
 
 void eeprom_dtor(struct _eeprom *this) {
 
-    tuple_dtor(this->p->coi);
+    tuple_dtor(this->coi);
     
-    free(this->p->memory);
-    free(this->p);
+    free(this->memory);
     free(this);
 }
 
@@ -61,7 +47,7 @@ void eeprom_write(struct _eeprom *this, const uint16_t addr, const int8_t value)
     if(addr >= EEPROM_SIZE)
         return;
 
-    this->p->memory[addr] = value;
+    this->memory[addr] = value;
     eeprom_set_coi(this, addr, DEST);
 }
 
@@ -71,13 +57,13 @@ int8_t eeprom_read(const struct _eeprom *this, const uint16_t addr) {
         return 0xff;
 
     eeprom_set_coi(this, addr, SRC);
-    return this->p->memory[addr];
+    return this->memory[addr];
 }
 
 void eeprom_coi(const struct _eeprom *this, tuple_t *buffer) {
 
-    const int cell = *((uint16_t*) tuple_get(this->p->coi, 0));
-    const int prop = *((int*) tuple_get(this->p->coi, 1));
+    const int cell = *((uint16_t*) tuple_get(this->coi, 0));
+    const int prop = *((int*) tuple_get(this->coi, 1));
     
     tuple_set(buffer, (void*) &cell, sizeof(uint16_t), 0);
     tuple_set(buffer, (void*) &prop, sizeof(int), 1);
@@ -87,21 +73,21 @@ void eeprom_coi(const struct _eeprom *this, tuple_t *buffer) {
 
 int8_t* eeprom_dump(const struct _eeprom *this) {
 
-    return this->p->memory;
+    return this->memory;
 }
 
 void eeprom_reboot(const struct _eeprom *this) {
 
-    memset(this->p->memory, 0x00, EEPROM_SIZE * sizeof(int8_t));
+    memset(this->memory, 0x00, EEPROM_SIZE * sizeof(int8_t));
     eeprom_set_coi(this, 0x0000, NONE);
 }
 
-/* --- Private --- */
+/* --- Static --- */
 
 static void eeprom_set_coi(const struct _eeprom *this, const uint16_t cell, const int prop) {
 
-    tuple_set(this->p->coi, (void*) &cell, sizeof(uint16_t), 0);
-    tuple_set(this->p->coi, (void*) &prop, sizeof(int), 1);
+    tuple_set(this->coi, (void*) &cell, sizeof(uint16_t), 0);
+    tuple_set(this->coi, (void*) &prop, sizeof(int), 1);
 }
 
 static void eeprom_clear_coi(const struct _eeprom *this) {

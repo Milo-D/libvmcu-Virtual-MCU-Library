@@ -3,12 +3,16 @@
 #ifndef HIGHLIGHTER_H
 #define HIGHLIGHTER_H
 
+// Project Headers
+#include "misc/mnemstr.h"
+
 typedef struct _panel panel_t;
-struct _private;
+typedef	struct _strmap strmap_t;
 
 typedef struct _highlighter {
 
-    struct _private *p;
+    strmap_t *maps[N_MAPS];
+    int color[N_MAPS];
 
 } highlighter_t;
 

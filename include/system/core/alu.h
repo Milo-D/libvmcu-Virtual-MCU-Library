@@ -8,18 +8,18 @@
 
 typedef struct _flash flash_t;
 typedef struct _gpr gpr_t;
-typedef struct _sreg sregt_t;
+typedef struct _sreg sreg_t;
 typedef struct _system system_t;
 typedef struct _table table_t;
 typedef struct _plain plain_t;
 typedef struct _entry entry_t;
 typedef struct _array array_t;
 
-struct _private;
-
 typedef struct _alu {
 
-    struct _private *p;
+    flash_t *flash;
+    gpr_t *gpr;
+    sreg_t *sreg;
 
 } alu_t;
 

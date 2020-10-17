@@ -17,12 +17,6 @@
 #include "misc/mnemstr.h"
 #include "misc/memmanip.h"
 
-struct _private {
-
-    array_t *labels;
-    strmap_t *map;
-};
-
 /* Forward Declaration of private Functions */
 
 static int find_addr(const char *ln);
@@ -38,21 +32,15 @@ struct _lmap* lmap_ctor(void) {
     if((lmap = malloc(sizeof(struct _lmap))) == NULL)
         return NULL;
 
-    if((lmap->p = malloc(sizeof(struct _private))) == NULL) {
-
-        free(lmap);
-        return NULL;
-    }
-
-    lmap->p->labels = array_ctor(256, NULL, NULL);
-    lmap->p->map = strmap_ctor(N_FLOW);
+    lmap->labels = array_ctor(256, NULL, NULL);
+    lmap->map = strmap_ctor(N_FLOW);
 
     for(int i = 0; i < N_FLOW - 4; i++) {
 
         /* (N_FLOW - 4) excludes indirect jumps */
 
         const char *instr = mnemstr[FLOW][i];
-        strmap_put(lmap->p->map, mnemstr[FLOW][i]);
+        strmap_put(lmap->map, mnemstr[FLOW][i]);
     }
 
     lmap->size = 0;
@@ -61,16 +49,15 @@ struct _lmap* lmap_ctor(void) {
 
 void lmap_dtor(struct _lmap *this) {
 
-    for(int i = 0; i < this->p->labels->top; i++) {
+    for(int i = 0; i < this->labels->top; i++) {
 
-        plain_t *p = (plain_t*) array_at(this->p->labels, i);
+        plain_t *p = (plain_t*) array_at(this->labels, i);
         free(p->mnem);
     }
 
-    array_dtor(this->p->labels);
-    strmap_dtor(this->p->map);
+    array_dtor(this->labels);
+    strmap_dtor(this->map);
 
-    free(this->p);
     free(this);
 }
 
@@ -83,7 +70,7 @@ int lmap_add(struct _lmap *this, const char *ln, const int i) {
 
     char *sub = substr(ln, 0, pos - 1);
 
-    if(strmap_get(this->p->map, sub) < 0) {
+    if(strmap_get(this->map, sub) < 0) {
 
         free(sub);
         return -1;
@@ -91,14 +78,14 @@ int lmap_add(struct _lmap *this, const char *ln, const int i) {
 
     addr = find_addr(ln) + i + 1;
 
-    if((lx = label_exists(this->p->labels, addr)) >= 0) {
+    if((lx = label_exists(this->labels, addr)) >= 0) {
 
         free(sub);
         return lx;
     }
 
-    if(this->size + 1 > this->p->labels->size)
-        this->p->labels->size *= 2;
+    if(this->size + 1 > this->labels->size)
+        this->labels->size *= 2;
 
     plain_t label = {
 
@@ -112,7 +99,7 @@ int lmap_add(struct _lmap *this, const char *ln, const int i) {
 
     label.mnem = create_label(this->size);
 
-    array_push(this->p->labels, (void*) &label, sizeof(plain_t));
+    array_push(this->labels, (void*) &label, sizeof(plain_t));
     this->size += 1;
 
     free(sub);
@@ -132,7 +119,7 @@ int lmap_get(const struct _lmap *this, const int index, plain_t *buffer) {
     if(index < 0 || index > this->size - 1)
         return -1;
 
-    plain_t *p = array_at(this->p->labels, index);
+    plain_t *p = array_at(this->labels, index);
 
     const int len = strlen(p->mnem);
     buffer->mnem = malloc((len + 1) * sizeof(char));

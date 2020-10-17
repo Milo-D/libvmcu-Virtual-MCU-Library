@@ -15,11 +15,6 @@
 #include "misc/filemanip.h"
 #include "misc/stringmanip.h"
 
-struct _private {
-
-    map_t *map;
-};
-
 /* Forward Declaration of private Functions */
 
 static bool parser_parse_arg(const struct _parser *this, list_t *items);
@@ -34,16 +29,10 @@ struct _parser* parser_ctor(CONTEXT context) {
     if((parser = malloc(sizeof(struct _parser))) == NULL)
         return NULL;
 
-    if((parser->p = malloc(sizeof(struct _private))) == NULL) {
-
-        free(parser);
-        return NULL;
-    }
-
-    parser->p->map = map_ctor(ncmd[context]);
+    parser->map = map_ctor(ncmd[context]);
 
     for(int i = 0; i < ncmd[context]; i++)
-        map_put(parser->p->map, commands[context][i], i);
+        map_put(parser->map, commands[context][i], i);
 
     parser->context = context;
     return parser;
@@ -51,9 +40,7 @@ struct _parser* parser_ctor(CONTEXT context) {
 
 void parser_dtor(struct _parser *this) {
 
-    map_dtor(this->p->map);
-
-    free(this->p);
+    map_dtor(this->map);
     free(this);
 }
 
@@ -67,7 +54,7 @@ int parser_eval(const struct _parser *this, const char *cmd) {
 
     const char *keyword = (char*) ls_at(items, 0);
 
-    if(map_get(this->p->map, keyword) < 0) {
+    if(map_get(this->map, keyword) < 0) {
 
         ls_dtor(items);
         return -1;
@@ -83,7 +70,7 @@ int parser_eval(const struct _parser *this, const char *cmd) {
         default: break;
     }
 
-    const int res = (passed ? map_get(this->p->map, keyword) : -1);
+    const int res = (passed ? map_get(this->map, keyword) : -1);
     ls_dtor(items);
 
     return res;
@@ -95,7 +82,7 @@ static bool parser_parse_arg(const struct _parser *this, list_t *items) {
 
     const char *keyword = ls_at(items, 0);
 
-    const int index = map_get(this->p->map, keyword);
+    const int index = map_get(this->map, keyword);
     const int argc = items->size - 1;
 
     switch(index) {
@@ -129,7 +116,7 @@ static bool parser_parse_debug(const struct _parser *this, list_t *items) {
 
     const char *keyword = ls_at(items, 0);
 
-    const int index = map_get(this->p->map, keyword);
+    const int index = map_get(this->map, keyword);
     const int argc = items->size - 1;
 
     switch(index) {

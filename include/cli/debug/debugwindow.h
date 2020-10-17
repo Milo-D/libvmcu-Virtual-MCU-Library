@@ -27,12 +27,11 @@ typedef enum { GPNL, SPNL, CPNL, DPNL, EPNL, OPNL, RPNL } PANEL;
 typedef struct _panel panel_t;
 typedef struct _prompt prompt_t;
 
-struct _private;
-
 typedef struct _debugwindow {
 
-    struct _private *p;
-
+    panel_t **panel;
+    prompt_t *prompt;
+    
 } debugwindow_t;
 
 extern struct _debugwindow* dwin_ctor(const int size);

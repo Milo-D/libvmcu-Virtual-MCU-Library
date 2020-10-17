@@ -12,17 +12,10 @@
 #include "cli/debug/panel.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
-#include "misc/mnemstr.h"
 #include "collections/strmap.h"
 #include "collections/list.h"
 
 #define CAPACITY 128
-
-struct _private {
-
-    strmap_t *maps[N_MAPS];
-    int color[N_MAPS];
-};
 
 /* Forward Declaration of private Highlighter Functions */
 
@@ -42,30 +35,22 @@ extern struct _highlighter* hl_ctor(void) {
     if((hl = malloc(sizeof(struct _highlighter))) == NULL)
         return NULL;
 
-    if((hl->p = malloc(sizeof(struct _private))) == NULL) {
-
-        free(hl);
-        return NULL;
-    }
-
-    hl->p->color[0] = G;
-    hl->p->color[1] = D;
-    hl->p->color[2] = M;
-    hl->p->color[3] = D;
-    hl->p->color[4] = B;
-    hl->p->color[5] = R;
+    hl->color[0] = G;
+    hl->color[1] = D;
+    hl->color[2] = M;
+    hl->color[3] = D;
+    hl->color[4] = B;
+    hl->color[5] = R;
 
     init_maps(hl);
-
     return hl;
 }
 
 extern void hl_dtor(struct _highlighter *this) {
 
     for(int i = 0; i < N_MAPS; i++)
-        strmap_dtor(this->p->maps[i]);
+        strmap_dtor(this->maps[i]);
 
-    free(this->p);
     free(this);    
 }
 
@@ -122,10 +107,10 @@ static void init_maps(struct _highlighter *this) {
 
     for(int i = 0; i < N_MAPS; i++) {
 
-        this->p->maps[i] = strmap_ctor(CAPACITY);
+        this->maps[i] = strmap_ctor(CAPACITY);
 
         for(int j = 0; j < size[i]; j++)
-            strmap_put(this->p->maps[i], mnemstr[i][j]);
+            strmap_put(this->maps[i], mnemstr[i][j]);
     }
 }
 
@@ -135,10 +120,10 @@ static void paint_instr(struct _highlighter *this, panel_t *p, const char *instr
 
     for(int i = 0; i < N_MAPS; i++) {
 
-        if(strmap_get(this->p->maps[i], instr) < 0)
+        if(strmap_get(this->maps[i], instr) < 0)
             continue;
 
-        panel_add(p, output, this->p->color[i]);
+        panel_add(p, output, this->color[i]);
         free(output);
 
         return;

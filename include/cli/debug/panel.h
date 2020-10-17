@@ -6,16 +6,21 @@
 // Project Headers
 #include "cli/debug/color.h"
 
-struct _private;
+typedef struct _win_st WINDOW;
+typedef struct _highlighter highlighter_t;
 
 typedef struct _panel {
+
+    WINDOW *win;
+    highlighter_t *hl;
+
+    int cursor;
+    int range;
 
     int height;
     int width;
     int y;
     int x;
-
-    struct _private *p;
 
 } panel_t;
 

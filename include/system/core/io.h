@@ -9,11 +9,19 @@
 // Project Headers
 #include "system/mcudef.h"
 
-struct _private;
+typedef struct _irq irq_t;
+typedef struct _timer8 timer8_t;
 
 typedef struct _io {
 
-    struct _private *p;
+    /* IRQ-Handler */
+    irq_t *irq;
+
+    /* Peripherals */
+    timer8_t *timer0;
+
+    /* IO Memory */
+    int8_t *memory;
 
 } io_t;
 

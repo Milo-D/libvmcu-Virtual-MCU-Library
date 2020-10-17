@@ -10,11 +10,6 @@
 // Project Headers
 #include "cli/debug/prompt.h"
 
-struct _private {
-
-    WINDOW *win;
-};
-
 /* Forward Declaration of static Functions */
 
 static void prompt_init(struct _prompt *this, int h, int w, int y, int x);
@@ -28,12 +23,6 @@ struct _prompt* prompt_ctor(int h, int w, int y, int x) {
     if((prompt = malloc(sizeof(struct _prompt))) == NULL)
         return NULL;
 
-    if((prompt->p = malloc(sizeof(struct _private))) == NULL) {
-
-        free(prompt);
-        return NULL;
-    }
-
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     prompt_init(prompt, h, w, y, x);
 
@@ -42,19 +31,17 @@ struct _prompt* prompt_ctor(int h, int w, int y, int x) {
 
 void prompt_dtor(struct _prompt *this) {
 
-    delwin(this->p->win);
-
-    free(this->p);
+    delwin(this->win);
     free(this);
 }
 
 void prompt_read(const struct _prompt *this, char *buffer) {
 
-    mvwprintw(this->p->win, 1, 1, ">>> ");
-    wgetnstr(this->p->win, buffer, PLEN);
+    mvwprintw(this->win, 1, 1, ">>> ");
+    wgetnstr(this->win, buffer, PLEN);
 
-    wmove(this->p->win, 1, 5);
-    wclrtoeol(this->p->win);
+    wmove(this->win, 1, 5);
+    wclrtoeol(this->win);
 
     prompt_update(this);
 }
@@ -66,24 +53,24 @@ void prompt_write(const struct _prompt *this, const char *str) {
 
 void prompt_resize(struct _prompt *this, int h, int w, int y, int x) {
 
-    delwin(this->p->win);
+    delwin(this->win);
     prompt_init(this, h, w, y, x);
 }
 
 void prompt_update(const struct _prompt *this) {
 
-    wborder(this->p->win, 0, 0, 0, 0, 0, 0, 0, 0);
-    wrefresh(this->p->win);
+    wborder(this->win, 0, 0, 0, 0, 0, 0, 0, 0);
+    wrefresh(this->win);
 }
 
 /* --- Static --- */
 
 static void prompt_init(struct _prompt *this, int h, int w, int y, int x) {
 
-    this->p->win = newwin(h, w, y, x);
-    wbkgd(this->p->win, COLOR_PAIR(1));
+    this->win = newwin(h, w, y, x);
+    wbkgd(this->win, COLOR_PAIR(1));
 
     curs_set(2);
-    scrollok(this->p->win, true);
+    scrollok(this->win, true);
     prompt_update(this);
 }
