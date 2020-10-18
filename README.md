@@ -4,7 +4,7 @@
 [![GitHub license](https://img.shields.io/github/license/Milo-D/MDX-Assembly-Debugger.svg)](https://github.com/Milo-D/MDX-Assembly-Debugger.git/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/Milo-D/MDX-Assembly-Debugger.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Milo-D/MDX-Assembly-Debugger/stargazers/)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.gg/X9kmyyh)
-# MDX-Assembly-Debugger (In Development)
+# MDX-Micro-Debugger (In Development)
 An easy and fast CLI Assembly Debugger and Disassembler for 8-bit Atmel AVR
 Microcontrollers.
 
