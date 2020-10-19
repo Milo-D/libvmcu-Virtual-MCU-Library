@@ -62,6 +62,30 @@ char* mnem_movw(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_mul(const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    char *dstr = get_str(dest);
+    char *sstr = get_str(src);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 4, "mul r", dstr, ", r", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, dstr, sstr, fill);
+
+    return mnemonic;
+}
+
 char* mnem_muls(const int opcode) {
 
     const int dest = extract(opcode, 4, 8, 0);
@@ -2544,6 +2568,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
 
     mnem_nop, 
     mnem_movw, 
+    mnem_mul,
     mnem_muls, 
     mnem_mulsu, 
     mnem_fmul, 

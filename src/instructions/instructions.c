@@ -36,6 +36,26 @@ void movw(system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
+void mul(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
+    const uint8_t dest_val = sys_read_gpr(sys, dest);
+    const uint8_t src_val = sys_read_gpr(sys, src);
+
+    const uint16_t result = (dest_val * src_val);
+
+    sys_write_sreg(sys, CF, bit(result, 15));
+    sys_write_sreg(sys, ZF, (result == 0x00));
+
+    sys_write_gpr(sys, 0, (result & 0x00ff));
+    sys_write_gpr(sys, 1, (result & 0xff00) >> 8);
+
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
 void muls(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 8, 0) + 16;
@@ -61,7 +81,7 @@ void mulsu(system_t *sys, const int opcode) {
     const int8_t dest_val = sys_read_gpr(sys, dest);
     const uint8_t src_val = (uint8_t) sys_read_gpr(sys, src);
 
-    const int16_t result = dest_val * src_val;
+    const int16_t result = (dest_val * src_val);
 
     sys_write_sreg(sys, CF, bit(result, 15));
     sys_write_sreg(sys, ZF, (result == 0x00));
@@ -2082,6 +2102,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
 
     nop, 
     movw, 
+    mul,
     muls, 
     mulsu, 
     fmul, 

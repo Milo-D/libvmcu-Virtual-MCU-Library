@@ -27,5 +27,5 @@ const char *mnemstr[N_MAPS][32] = {
 
     /* Arithmetic Mnemonics*/
     { "muls", "mulsu", "dec", "inc", "add", "adc", "sub", "sbc", "cp", 
-      "cpi", "cpc", "sbiw", "adiw", "sbci", "subi", "fmul", "cpse" }
+      "cpi", "cpc", "sbiw", "adiw", "sbci", "subi", "fmul", "cpse", "mul" }
 };

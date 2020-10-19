@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added new assembly instructions:
+    - mul (multiply unsigned)
 - Timer0: Wave Generation using COM-bits in non-PWM Mode is now supported
 - Added: special behaviour for registers located in IO-Space.
 
