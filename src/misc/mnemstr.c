@@ -16,10 +16,10 @@ const char *mnemstr[N_MAPS][32] = {
 
     /* Logic Mnemonics */
     { "clr", "ori", "or", "and", "andi", "com", "asr", "lsr", "ror", "sbis", "sbrc",
-      "neg", "las", "lac", "sbrs", "sbi" },
+      "neg", "las", "lac", "sbrs", "sbi", "swap" },
 
     /* Access Mnemonics */
-    { "movw", "ldi", "mov", "in", "out", "ld", "ldd", "st", "sts", "xch", "swap", "std",
+    { "movw", "ldi", "mov", "in", "out", "ld", "ldd", "st", "sts", "xch", "std",
       "lpm", "lds" },
 
     /* StackOp Mnemonics */
