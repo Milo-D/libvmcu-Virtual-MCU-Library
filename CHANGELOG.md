@@ -4,6 +4,8 @@
 
 - Added new assembly instructions:
     - mul (multiply unsigned)
+    - ld(-Z) (indirect load using Z pointer + pre-decrement)
+    
 - Timer0: Wave Generation using COM-bits in non-PWM Mode is now supported
 - Added: special behaviour for registers located in IO-Space.
 

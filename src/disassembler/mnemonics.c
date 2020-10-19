@@ -974,6 +974,27 @@ char* mnem_ld_zi(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_ld_dz(const int opcode) {
+
+    const int dest = extract(opcode, 4, 9, 0);
+    char *dstr = get_str(dest);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "ld r", dstr, ", -Z");
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[-Z]");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(2, dstr, fill);
+
+    return mnemonic;
+}
+
 char* mnem_st_x(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
@@ -2606,6 +2627,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_ldd_zq,
     mnem_ld_z,
     mnem_ld_zi, 
+    mnem_ld_dz,
     mnem_st_x, 
     mnem_st_xi, 
     mnem_st_dx, 
