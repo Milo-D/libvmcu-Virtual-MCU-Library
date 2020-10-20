@@ -534,11 +534,33 @@ void out(system_t *sys, const int opcode) {
 void sbis(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 3, 8, 0);
-    const int bit = extract(opcode, 0, 3, 0);
+    const int bitpos = extract(opcode, 0, 3, 0);
 
     const uint8_t val = sys_read_data(sys, GPR_SIZE + dest);
 
-    if(bit(val, bit) == 0x00) {
+    if(bit(val, bitpos) == 0x00) {
+
+        sys_move_pc(sys, 1);
+        sys->cycles += 1;
+
+        return;
+    }
+
+    const int pc = sys_get_pc(sys);
+    plain_t *p = sys_read_instr(sys, pc + 1);
+
+    sys_set_pc(sys, pc + 2 + p->dword);
+    sys->cycles += (2 + p->dword);
+}
+
+void sbic(system_t *sys, const int opcode) {
+    
+    const int dest = extract(opcode, 3, 8, 0);
+    const int bitpos = extract(opcode, 0, 3, 0);
+
+    const uint8_t val = sys_read_data(sys, GPR_SIZE + dest);
+
+    if(bit(val, bitpos) == 0x01) {
 
         sys_move_pc(sys, 1);
         sys->cycles += 1;
@@ -2147,6 +2169,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     in, 
     out, 
     sbis, 
+    sbic,
     sbrc, 
     sbrs, 
     cpse, 
