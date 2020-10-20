@@ -620,20 +620,23 @@ void cpse(system_t *sys, const int opcode) {
     sys->cycles += (2 + p->dword);
 }
 
-void clr(system_t *sys, const int opcode) {
+void eor(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    const int8_t val_dest = sys_read_gpr(sys, dest);
-    const int8_t val_src = sys_read_gpr(sys, src);
+    const uint8_t val_dest = sys_read_gpr(sys, dest);
+    const uint8_t val_src = sys_read_gpr(sys, src);
 
-    sys_write_gpr(sys, dest, (val_dest ^ val_src));
+    const uint8_t result = (val_dest ^ val_src);
+    const int8_t nf_res = bit(result, 7);
 
-    sys_write_sreg(sys, SF, 0x00);
     sys_write_sreg(sys, VF, 0x00);
-    sys_write_sreg(sys, NF, 0x00);
-    sys_write_sreg(sys, ZF, 0x01);
+    sys_write_sreg(sys, NF, nf_res);
+    sys_write_sreg(sys, SF, nf_res ^ 0x00);
+    sys_write_sreg(sys, ZF, (result == 0x00));
+
+    sys_write_gpr(sys, dest, result);
 
     sys_move_pc(sys, 1);
     sys->cycles += 1;
@@ -2147,7 +2150,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     sbrc, 
     sbrs, 
     cpse, 
-    clr, 
+    eor, 
     ld_x, 
     ld_xi, 
     ld_dx, 

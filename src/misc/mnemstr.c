@@ -15,7 +15,7 @@ const char *mnemstr[N_MAPS][32] = {
       "cls", "clt", "clv", "clz", "clh", "clc", "cli", "cln", "bclr", "bset" },
 
     /* Logic Mnemonics */
-    { "clr", "ori", "or", "and", "andi", "com", "asr", "lsr", "ror", "sbis", "sbrc",
+    { "eor", "ori", "or", "and", "andi", "com", "asr", "lsr", "ror", "sbis", "sbrc",
       "neg", "las", "lac", "sbrs", "sbi", "swap" },
 
     /* Access Mnemonics */

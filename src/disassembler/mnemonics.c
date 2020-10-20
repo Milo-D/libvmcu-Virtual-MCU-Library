@@ -730,24 +730,27 @@ char* mnem_cpse(const int opcode) {
     return mnemonic;
 }
 
-char* mnem_clr(const int opcode) {
+char* mnem_eor(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
+    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+
     char *dstr = get_str(dest);
+    char *sstr = get_str(src);
 
     queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "clr r", dstr);
+    queue_put(stream, 4, "eor r", dstr, ", r", sstr);
 
     const int len = queue_size(stream);
 
     char *fill = strfill(' ', len, TAB);
     queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " xor ", "R", dstr);
+    queue_put(stream, 3, " xor ", "R", sstr);
 
     char *mnemonic = queue_str(stream);
 
     queue_dtor(stream);
-    nfree(2, dstr, fill);
+    nfree(3, dstr, sstr, fill);
 
     return mnemonic;
 }
@@ -2616,7 +2619,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_sbrc, 
     mnem_sbrs, 
     mnem_cpse, 
-    mnem_clr, 
+    mnem_eor, 
     mnem_ld_x, 
     mnem_ld_xi, 
     mnem_ld_dx, 
