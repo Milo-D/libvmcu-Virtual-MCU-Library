@@ -371,7 +371,7 @@ static void write_spmcr(struct _io *this, const int8_t value) {
 
 static void write_tifr(struct _io *this, const int8_t value) {
 
-    this->memory[0x38] = value;
+    this->memory[0x38] &= ~value;
 }
 
 static void write_timsk(struct _io *this, const int8_t value) {

@@ -2,12 +2,15 @@
 
 ## Unreleased
 
+- Timer Interrupt flags can be cleared now by user-software
 - Added new assembly instructions:
     - mul (multiply unsigned)
     - ld(-Z) (indirect load using Z pointer + pre-decrement)
+    - sbic (skip if bit in IO space is cleared)
     
 - Timer0: Wave Generation using COM-bits in non-PWM Mode is now supported
 - Added: special behaviour for registers located in IO-Space.
+- Bug fix: 'eor' is no longer decoded as 'clr'
 
 ## v.0.2.1 - 2020-10-12
 
