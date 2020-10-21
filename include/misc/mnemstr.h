@@ -12,7 +12,7 @@
 
 #define N_MAPS 6
 
-#define N_FLOW 20
+#define N_FLOW 21
 #define N_MISC 21
 #define N_LOGIC 19
 #define N_ACCESS 13

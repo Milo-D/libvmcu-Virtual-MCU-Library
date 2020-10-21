@@ -2009,6 +2009,14 @@ void lpm_zi(system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
+void eicall(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 4;
+}
+
 void ses(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, SF, 0x01);
@@ -2253,6 +2261,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     lpm, 
     lpm_z, 
     lpm_zi, 
+    eicall,
     ses, 
     set, 
     sev, 

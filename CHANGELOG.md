@@ -8,6 +8,7 @@
     - ld(-Z) (indirect load using Z pointer + pre-decrement)
     - sbic (skip if bit in IO space is cleared)
     - cbi (clear bit in IO space)
+    - eicall (extended indirect call to subroutine) (without functionality, because 22-bit PC currently not supported)
     
 - Timer0: Wave Generation using COM-bits in non-PWM Mode is now supported
 - Added: special behaviour for registers located in IO-Space.

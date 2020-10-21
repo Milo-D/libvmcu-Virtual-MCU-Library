@@ -2364,6 +2364,22 @@ char* mnem_lpm_zi(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_eicall(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "eicall");
+    
+    char *fill = strfill(' ', 6, TAB);
+    queue_put(stream, 2, fill, "; PC <- ZH:ZL | (EIND << 16)");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
 char* mnem_ses(const int opcode) {
 
     queue_t *stream = queue_ctor();
@@ -2740,6 +2756,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_lpm, 
     mnem_lpm_z, 
     mnem_lpm_zi, 
+    mnem_eicall,
     mnem_ses, 
     mnem_set, 
     mnem_sev, 
