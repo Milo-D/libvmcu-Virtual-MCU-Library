@@ -1936,6 +1936,20 @@ void sbi(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void cbi(system_t *sys, const int opcode) {
+
+    const int dest = extract(opcode, 3, 8, 0) + GPR_SIZE;
+    const int bpos = extract(opcode, 0, 3, 0);
+
+    const uint8_t val = sys_read_data(sys, dest);
+    const uint8_t result = (val & ~(0x01 << bpos));
+
+    sys_write_data(sys, dest, result);
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void lpm(system_t *sys, const int opcode) {
 
     const uint8_t zl = sys_read_gpr(sys, ZL);
@@ -2235,6 +2249,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     bld, 
     bst, 
     sbi,
+    cbi,
     lpm, 
     lpm_z, 
     lpm_zi, 
