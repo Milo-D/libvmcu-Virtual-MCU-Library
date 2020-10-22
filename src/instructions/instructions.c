@@ -2017,6 +2017,54 @@ void eicall(system_t *sys, const int opcode) {
     sys->cycles += 4;
 }
 
+void eijmp(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
+void elpm(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 3;
+}
+
+void elpm_z(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 3;
+}
+
+void elpm_zi(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 3;
+}
+
+void des(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
+void sleep(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
 void ses(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, SF, 0x01);
@@ -2262,6 +2310,12 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     lpm_z, 
     lpm_zi, 
     eicall,
+    eijmp,
+    elpm,
+    elpm_z,
+    elpm_zi,
+    des,
+    sleep,
     ses, 
     set, 
     sev, 

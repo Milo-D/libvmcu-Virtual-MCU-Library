@@ -2,13 +2,28 @@
 
 ## Unreleased
 
+## v.0.2.2 - 2020-10-22
+
 - Timer Interrupt flags can be cleared now by user-software
 - Added new assembly instructions:
     - mul (multiply unsigned)
     - ld(-Z) (indirect load using Z pointer + pre-decrement)
     - sbic (skip if bit in IO space is cleared)
     - cbi (clear bit in IO space)
-    - eicall (extended indirect call to subroutine) (without functionality, because 22-bit PC currently not supported)
+
+- New assembly instructions (currently without functionality):
+    - elpm (extented load program memory, R0)
+    - elpm(Z) (extended load program memory, Rd)
+    - elpm(Z+) (extended load program memory + post-increment)
+    - sleep (sets the circuit in sleep mode)
+    - des (single iterations of the data encryption standard)
+    - eijmp (extended indirect jump)
+    - eicall (extended indirect call)
+    
+Note: instructions without functionality will be implemented later, as soon as
+some new MCUs (which actually support these instructions) are added to MDX. Also
+some instructions (like sleep and spm) are requiring specific functionalities in the IO-space, 
+which are, currently, not supported by MDX.
     
 - Timer0: Wave Generation using COM-bits in non-PWM Mode is now supported
 - Added: special behaviour for registers located in IO-Space.

@@ -12,10 +12,10 @@
 
 #define N_MAPS 6
 
-#define N_FLOW 21
-#define N_MISC 21
-#define N_LOGIC 19
-#define N_ACCESS 13
+#define N_FLOW 22
+#define N_MISC 22
+#define N_LOGIC 20
+#define N_ACCESS 14
 #define N_STACKOP 2
 #define N_ARITHMETIC 18
 

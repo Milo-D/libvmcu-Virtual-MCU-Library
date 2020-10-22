@@ -2370,7 +2370,118 @@ char* mnem_eicall(const int opcode) {
     queue_put(stream, 1, "eicall");
     
     char *fill = strfill(' ', 6, TAB);
-    queue_put(stream, 2, fill, "; PC <- ZH:ZL | (EIND << 16)");
+    queue_put(stream, 2, fill, "; PC <- ZH:ZL + (EIND << 16)");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
+char* mnem_eijmp(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "eijmp");
+    
+    char *fill = strfill(' ', 5, TAB);
+    queue_put(stream, 2, fill, "; PC <- ZH:ZL + (EIND << 16)");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
+char* mnem_elpm(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "elpm");
+    
+    char *fill = strfill(' ', 4, TAB);
+    queue_put(stream, 2, fill, "; R0 <- FLASH[RAMPZ:Z]");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
+char* mnem_elpm_z(const int opcode) {
+    
+    const int dest = extract(opcode, 4, 9, 0);
+    char *dstr = get_str(dest);
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "elpm r", dstr, ", Z");
+    
+    const int len = queue_size(stream);
+    
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 4, fill, "; R", dstr, " <- FLASH[RAMPZ:Z]");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    nfree(2, dstr, fill);
+    
+    return mnemonic;
+}
+
+char* mnem_elpm_zi(const int opcode) {
+    
+    const int dest = extract(opcode, 4, 9, 0);
+    char *dstr = get_str(dest);
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "elpm r", dstr, ", Z+");
+    
+    const int len = queue_size(stream);
+    
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 4, fill, "; R", dstr, " <- FLASH[(RAMPZ:Z)+]");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    nfree(2, dstr, fill);
+    
+    return mnemonic;
+}
+
+char* mnem_des(const int opcode) {
+    
+    const int iter = extract(opcode, 4, 8, 0);
+    
+    char vstr[3];
+    to_hex(iter, vstr);
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 2, "des 0x", vstr);
+    
+    char *fill = strfill(' ', 8, TAB);
+    queue_put(stream, 2, fill, "; Data Encryption Standard");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
+char* mnem_sleep(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "sleep");
+
+    char *fill = strfill(' ', 5, TAB);
+    queue_put(stream, 2, fill, "; circuit sleep");
     
     char *mnemonic = queue_str(stream);
     
@@ -2757,6 +2868,12 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_lpm_z, 
     mnem_lpm_zi, 
     mnem_eicall,
+    mnem_eijmp,
+    mnem_elpm,
+    mnem_elpm_z,
+    mnem_elpm_zi,
+    mnem_des,
+    mnem_sleep,
     mnem_ses, 
     mnem_set, 
     mnem_sev, 

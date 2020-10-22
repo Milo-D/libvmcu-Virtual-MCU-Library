@@ -35,9 +35,9 @@ struct _lmap* lmap_ctor(void) {
     lmap->labels = array_ctor(256, NULL, NULL);
     lmap->map = strmap_ctor(N_FLOW);
 
-    for(int i = 0; i < N_FLOW - 5; i++) {
+    for(int i = 0; i < N_FLOW - 6; i++) {
 
-        /* (N_FLOW - 5) excludes indirect jumps */
+        /* (N_FLOW - 6) excludes indirect jumps */
 
         const char *instr = mnemstr[FLOW][i];
         strmap_put(lmap->map, mnemstr[FLOW][i]);
