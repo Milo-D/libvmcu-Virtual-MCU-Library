@@ -1774,6 +1774,161 @@ char* mnem_brmi(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_brhc(const int opcode) {
+
+    int offs = extract(opcode, 3, 10, 0);
+    char sign[2] = "+";
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+        sign[0] = '-';
+    }
+
+    char *offstr = get_str(offs);
+    char *hexoffs = itoh(offs);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "brhc ", sign, offstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; (H = 0): PC <- PC ", sign);
+    queue_put(stream, 3, " 0x", hexoffs, " + 1");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, offstr, hexoffs, fill);
+
+    return mnemonic;
+}
+
+char* mnem_brhs(const int opcode) {
+
+    int offs = extract(opcode, 3, 10, 0);
+    char sign[2] = "+";
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+        sign[0] = '-';
+    }
+
+    char *offstr = get_str(offs);
+    char *hexoffs = itoh(offs);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "brhs ", sign, offstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; (H = 1): PC <- PC ", sign);
+    queue_put(stream, 3, " 0x", hexoffs, " + 1");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, offstr, hexoffs, fill);
+
+    return mnemonic;
+}
+
+char* mnem_brid(const int opcode) {
+
+    int offs = extract(opcode, 3, 10, 0);
+    char sign[2] = "+";
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+        sign[0] = '-';
+    }
+
+    char *offstr = get_str(offs);
+    char *hexoffs = itoh(offs);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "brid ", sign, offstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; (I = 0): PC <- PC ", sign);
+    queue_put(stream, 3, " 0x", hexoffs, " + 1");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, offstr, hexoffs, fill);
+
+    return mnemonic;
+}
+
+char* mnem_brie(const int opcode) {
+
+    int offs = extract(opcode, 3, 10, 0);
+    char sign[2] = "+";
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+        sign[0] = '-';
+    }
+
+    char *offstr = get_str(offs);
+    char *hexoffs = itoh(offs);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "brie ", sign, offstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; (I = 1): PC <- PC ", sign);
+    queue_put(stream, 3, " 0x", hexoffs, " + 1");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, offstr, hexoffs, fill);
+
+    return mnemonic;
+}
+
+char* mnem_brvc(const int opcode) {
+
+    int offs = extract(opcode, 3, 10, 0);
+    char sign[2] = "+";
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+        sign[0] = '-';
+    }
+
+    char *offstr = get_str(offs);
+    char *hexoffs = itoh(offs);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, "brvc ", sign, offstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; (V = 0): PC <- PC ", sign);
+    queue_put(stream, 3, " 0x", hexoffs, " + 1");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, offstr, hexoffs, fill);
+
+    return mnemonic;
+}
+
 char* mnem_rcall(const int opcode) {
 
     int offs = extract(opcode, 0, 12, 0);
@@ -2521,6 +2676,38 @@ char* mnem_sleep(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_wdr(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "wdr");
+    
+    char *fill = strfill(' ', 3, TAB);
+    queue_put(stream, 2, fill, "; watchdog reset");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
+char* mnem_break_asm(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "break");
+    
+    char *fill = strfill(' ', 5, TAB);
+    queue_put(stream, 2, fill, "; cpu stop mode");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
 char* mnem_ses(const int opcode) {
 
     queue_t *stream = queue_ctor();
@@ -2871,6 +3058,11 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_brts, 
     mnem_brtc, 
     mnem_brmi, 
+    mnem_brhc,
+    mnem_brhs,
+    mnem_brid,
+    mnem_brie,
+    mnem_brvc,
     mnem_rcall, 
     mnem_ret, 
     mnem_reti, 
@@ -2905,6 +3097,8 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_elpm_zi,
     mnem_des,
     mnem_sleep,
+    mnem_wdr,
+    mnem_break_asm,
     mnem_ses, 
     mnem_set, 
     mnem_sev, 

@@ -3,7 +3,14 @@
 ## Unreleased
 
 - Added new assembly instructions:
+    - wdr (watchdog reset) (currently not functionality)
+    - break (break for on-chip debugsystem) (currently no functionality)
     - lds (16-bit, load direct from data space)
+    - brhc (branch if halfcarry is cleared)
+    - brhs (branch if halfcarry is set)
+    - brid (branch if global interrupts are disabled)
+    - brie (branch if global interrupts are enabled)
+    - brvc (branch if overflow flag is cleared)
 
 ## v.0.2.2 - 2020-10-22
 

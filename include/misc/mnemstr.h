@@ -12,8 +12,8 @@
 
 #define N_MAPS 6
 
-#define N_FLOW 22
-#define N_MISC 22
+#define N_FLOW 27
+#define N_MISC 23
 #define N_LOGIC 20
 #define N_ACCESS 14
 #define N_STACKOP 2

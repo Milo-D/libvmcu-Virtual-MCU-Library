@@ -1430,6 +1430,141 @@ void brmi(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void brhc(system_t *sys, const int opcode) {
+
+    if(sys_read_sreg(sys, HF) == 0x01) {
+
+        sys_move_pc(sys, 1);
+        sys->cycles += 1;
+
+        return;
+    }
+
+    int offs = extract(opcode, 3, 10, 0);
+    const int prog_counter = sys_get_pc(sys);
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+
+        sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
+
+        return;
+    }
+
+    sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
+}
+
+void brhs(system_t *sys, const int opcode) {
+
+    if(sys_read_sreg(sys, HF) == 0x00) {
+
+        sys_move_pc(sys, 1);    
+        sys->cycles += 1;
+
+        return;
+    }
+
+    int offs = extract(opcode, 3, 10, 0);
+    const int prog_counter = sys_get_pc(sys);
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+
+        sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
+
+        return;
+    }
+
+    sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
+}
+
+void brid(system_t *sys, const int opcode) {
+
+    if(sys_read_sreg(sys, IF) == 0x01) {
+
+        sys_move_pc(sys, 1);    
+        sys->cycles += 1;
+
+        return;
+    }
+
+    int offs = extract(opcode, 3, 10, 0);
+    const int prog_counter = sys_get_pc(sys);
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+
+        sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
+
+        return;
+    }
+
+    sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
+}
+
+void brie(system_t *sys, const int opcode) {
+
+    if(sys_read_sreg(sys, IF) == 0x00) {
+
+        sys_move_pc(sys, 1);    
+        sys->cycles += 1;
+
+        return;
+    }
+
+    int offs = extract(opcode, 3, 10, 0);
+    const int prog_counter = sys_get_pc(sys);
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+
+        sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
+
+        return;
+    }
+
+    sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
+}
+
+void brvc(system_t *sys, const int opcode) {
+
+    if(sys_read_sreg(sys, VF) == 0x01) {
+
+        sys_move_pc(sys, 1);    
+        sys->cycles += 1;
+
+        return;
+    }
+
+    int offs = extract(opcode, 3, 10, 0);
+    const int prog_counter = sys_get_pc(sys);
+
+    if(((0x01 << 6) & offs) != 0x00) {
+
+        offs = comp(offs, 7);
+
+        sys_set_pc(sys, prog_counter - offs + 1);
+        sys->cycles += 2;
+
+        return;
+    }
+
+    sys_set_pc(sys, prog_counter + offs + 1);
+    sys->cycles += 2;
+}
+
 void rcall(system_t *sys, const int opcode) {
 
     int offs = extract(opcode, 0, 12, 0);
@@ -2081,6 +2216,22 @@ void sleep(system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
+void wdr(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
+void break_asm(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
 void ses(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, SF, 0x01);
@@ -2299,6 +2450,11 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     brts, 
     brtc, 
     brmi, 
+    brhc,
+    brhs,
+    brid,
+    brie,
+    brvc,
     rcall, 
     ret, 
     reti, 
@@ -2333,6 +2489,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     elpm_zi,
     des,
     sleep,
+    wdr,
+    break_asm,
     ses, 
     set, 
     sev, 
