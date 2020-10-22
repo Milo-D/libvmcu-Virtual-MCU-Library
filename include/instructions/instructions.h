@@ -3,7 +3,7 @@
 #ifndef INSTRUCTIONS_H
 #define INSTRUCTIONS_H
 
-#define INSTR_MAX 130
+#define INSTR_MAX 145
 
 typedef struct _system system_t;
 

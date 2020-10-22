@@ -18,7 +18,7 @@ const char *mnemstr[N_MAPS][32] = {
 
     /* Logic Mnemonics */
     { "eor", "ori", "or", "and", "andi", "com", "asr", "lsr", "ror", "sbis", "sbrc",
-      "neg", "las", "lac", "sbrs", "sbi", "swap", "sbic", "cbi", "des" },
+      "neg", "las", "lac", "sbrs", "sbi", "swap", "sbic", "cbi", "des", "lat" },
 
     /* Access Mnemonics */
     { "movw", "ldi", "mov", "in", "out", "ld", "ldd", "st", "sts", "xch", "std",
@@ -29,5 +29,6 @@ const char *mnemstr[N_MAPS][32] = {
 
     /* Arithmetic Mnemonics*/
     { "muls", "mulsu", "dec", "inc", "add", "adc", "sub", "sbc", "cp", 
-      "cpi", "cpc", "sbiw", "adiw", "sbci", "subi", "fmul", "cpse", "mul" }
+      "cpi", "cpc", "sbiw", "adiw", "sbci", "subi", "fmul", "cpse", "mul",
+      "fmuls", "fmulsu" }
 };

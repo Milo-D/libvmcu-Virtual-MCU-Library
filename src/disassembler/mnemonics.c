@@ -158,6 +158,54 @@ char* mnem_fmul(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_fmuls(const int opcode) {
+    
+    const int dest = extract(opcode, 4, 7, 0);
+    const int src = extract(opcode, 0, 3, 0);
+
+    char *dstr = get_str(dest + 16);
+    char *sstr = get_str(src + 16);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 4, "fmuls r", dstr, ", r", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, dstr, sstr, fill);
+
+    return mnemonic;
+}
+
+char* mnem_fmulsu(const int opcode) {
+    
+    const int dest = extract(opcode, 4, 7, 0);
+    const int src = extract(opcode, 0, 3, 0);
+
+    char *dstr = get_str(dest + 16);
+    char *sstr = get_str(src + 16);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 4, "fmulsu r", dstr, ", r", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(3, dstr, sstr, fill);
+
+    return mnemonic;
+}
+
 char* mnem_ldi(const int opcode) {
 
     const int dest = extract(opcode, 4, 8, 0);
@@ -1332,7 +1380,7 @@ char* mnem_lds(const int opcode) {
                 ((0x40 & src) >> 1) | ((0x20 & src) >> 1) |
                 ((0x0f & opcode));
                 
-    char *dstr = get_str(src);            
+    char *dstr = get_str(dest);            
     char *sstr = itoh(addr);
 
     queue_t *stream = queue_ctor();
@@ -2343,6 +2391,28 @@ char* mnem_lac(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_lat(const int opcode) {
+
+    const int src = extract(opcode, 4, 9, 0);
+    char *sstr = get_str(src);
+
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 2, "lat Z, r", sstr);
+
+    const int len = queue_size(stream);
+
+    char *fill = strfill(' ', len, TAB);
+    queue_put(stream, 3, fill, "; DATA[Z] <- R", sstr);
+    queue_put(stream, 1, " | DATA[Z]");
+
+    char *mnemonic = queue_str(stream);
+
+    queue_dtor(stream);
+    nfree(2, sstr, fill);
+
+    return mnemonic;
+}
+
 char* mnem_com(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
@@ -2994,6 +3064,8 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_muls, 
     mnem_mulsu, 
     mnem_fmul, 
+    mnem_fmuls,
+    mnem_fmulsu,
     mnem_ldi, 
     mnem_rjmp, 
     mnem_jmp, 
@@ -3081,6 +3153,7 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_andi, 
     mnem_las, 
     mnem_lac, 
+    mnem_lat,
     mnem_com, 
     mnem_neg, 
     mnem_bld, 

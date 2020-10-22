@@ -102,16 +102,65 @@ void fmul(system_t *sys, const int opcode) {
     const uint8_t src_val = sys_read_gpr(sys, src);
 
     const uint16_t result = (dest_val * src_val);
+    const uint16_t res_shift = (result << 1);
 
-    const uint8_t rl = (result << 1) & 0x0f;
-    const uint8_t rh = (result >> 7) & 0x0f;
+    const uint8_t rl = (res_shift & 0x00ff);
+    const uint8_t rh = (res_shift & 0xff00) >> 8;
 
     sys_write_sreg(sys, CF, bit(result, 15));
-    sys_write_sreg(sys, ZF, (result == 0x0000));
+    sys_write_sreg(sys, ZF, (res_shift == 0x0000));
 
     sys_write_gpr(sys, 0, rl);
     sys_write_gpr(sys, 1, rh);
 
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
+void fmuls(system_t *sys, const int opcode) {
+    
+    const int dest = extract(opcode, 4, 7, 0) + 16;
+    const int src = extract(opcode, 0, 3, 0) + 16;
+    
+    const int8_t dest_val = sys_read_gpr(sys, dest);
+    const int8_t src_val = sys_read_gpr(sys, src);
+
+    const int16_t result = (dest_val * src_val);
+    const int16_t res_shift = (result << 1);
+
+    const uint8_t rl = (res_shift & 0x00ff);
+    const uint8_t rh = ((uint16_t) (res_shift & 0xff00)) >> 8;
+    
+    sys_write_sreg(sys, CF, bit(result, 15));
+    sys_write_sreg(sys, ZF, (res_shift == 0x00));
+    
+    sys_write_gpr(sys, 0, rl);
+    sys_write_gpr(sys, 1, rh);
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
+void fmulsu(system_t *sys, const int opcode) {
+    
+    const int dest = extract(opcode, 4, 7, 0) + 16;
+    const int src = extract(opcode, 0, 3, 0) + 16;
+    
+    const int8_t dest_val = sys_read_gpr(sys, dest);
+    const uint8_t src_val = sys_read_gpr(sys, src);
+    
+    const int16_t result = (dest_val * src_val);
+    const int16_t res_shift = (result << 1);
+    
+    const uint8_t rl = (res_shift & 0x00ff);
+    const uint8_t rh = ((uint16_t) (res_shift & 0xff00)) >> 8;
+    
+    sys_write_sreg(sys, CF, bit(result, 15));
+    sys_write_sreg(sys, ZF, (res_shift == 0x00));
+    
+    sys_write_gpr(sys, 0, rl);
+    sys_write_gpr(sys, 1, rh);
+    
     sys_move_pc(sys, 1);
     sys->cycles += 2;
 }
@@ -1991,6 +2040,26 @@ void lac(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void lat(system_t *sys, const int opcode) {
+    
+    const int src = extract(opcode, 4, 9, 0);
+    const uint8_t value = sys_read_gpr(sys, src);
+    
+    const uint8_t zl = sys_read_gpr(sys, ZL);
+    const uint8_t zh = sys_read_gpr(sys, ZH);
+
+    const uint16_t addr = ((zh << 8) + zl);
+    const uint8_t data = sys_read_data(sys, addr);
+    
+    const uint8_t result = (value ^ data);
+    
+    sys_write_gpr(sys, src, data);
+    sys_write_data(sys, addr, result);
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 2;
+}
+
 void com(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
@@ -2386,6 +2455,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     muls, 
     mulsu, 
     fmul, 
+    fmuls,
+    fmulsu,
     ldi, 
     rjmp, 
     jmp, 
@@ -2473,6 +2544,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     andi, 
     las, 
     lac, 
+    lat,
     com, 
     neg, 
     bld, 

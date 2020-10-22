@@ -11,6 +11,8 @@
     - brid (branch if global interrupts are disabled)
     - brie (branch if global interrupts are enabled)
     - brvc (branch if overflow flag is cleared)
+    - fmuls (fractional multiply, signed)
+    - fmulsu (fractional multiply, signed-unsigned)
 
 ## v.0.2.2 - 2020-10-22
 

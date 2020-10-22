@@ -162,7 +162,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [x] Syntax Highlight for the disassembled Sourcecode
 - [x] Interrupts supported
 - [x] Open and debug more than one file in the same session
-- [ ] Currently supporting ~ 102 assembly instructions
+- [ ] Currently supporting ~ 131 assembly instructions
 
 - [x] Breakpoints
 - [ ] Watchpoints
@@ -181,7 +181,7 @@ Note: You may open multiple files in interactive Debugging Mode.
     - [ ] ...
 
 # Instructions
-Currently MDX supports: ~ 102 Instructions. More Instructions are coming soon.
+Currently MDX supports: ~ 131 Instructions. More Instructions are coming soon.
 
 # Contributing
 
