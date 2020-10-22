@@ -1061,6 +1061,22 @@ void sts32(system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
+void lds(system_t *sys, const int opcode) {
+    
+    const int dest = extract(opcode, 4, 8, 0);
+    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 11, 4);
+    
+    int addr = (~(0x10 & src) << 3) | ((0x10 & src) << 2) | 
+                ((0x40 & src) >> 1) | ((0x20 & src) >> 1) |
+                ((0x0f & opcode));
+
+    const int8_t value = sys_read_data(sys, addr);
+    sys_write_gpr(sys, dest + 16, value);
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
 void lds32(system_t *sys, const int opcode) {
 
     const int dest = extract(opcode, 20, 25, 0);
@@ -2268,6 +2284,7 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     std_zq, 
     sts, 
     sts32, 
+    lds,
     lds32, 
     xch, 
     brne, 

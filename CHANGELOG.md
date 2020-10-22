@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added new assembly instructions:
+    - lds (16-bit, load direct from data space)
+
 ## v.0.2.2 - 2020-10-22
 
 - Timer Interrupt flags can be cleared now by user-software
