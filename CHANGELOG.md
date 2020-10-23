@@ -2,7 +2,9 @@
 
 ## Unreleased
 
-## v.0.3.0
+- Stack Bug-Fix
+
+## v.0.3.0 - 2020-10-23
 
 - MDX is now supporting whole AVR Instruction-Set. Some few instructions still have no
 functionality when simulating, but, atleast, it is possible to decode and disassemble them. 

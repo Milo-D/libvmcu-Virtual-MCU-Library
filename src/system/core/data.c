@@ -54,7 +54,7 @@ void data_push(struct _data *this, const int8_t value) {
 
     uint16_t sp = sp(spl, sph);
 
-    if(sp <= SRAM_START)
+    if(sp > RAM_END)
         return;
 
     this->memory[sp--] = value;
