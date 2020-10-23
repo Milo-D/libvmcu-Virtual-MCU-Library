@@ -35,7 +35,6 @@ static int decode_eep_line(const char *line, array_t *buffer);
 static int get_opc_key(const int hex);
 static bool is_dword(const int opcode);
 static int validate_hex(const char *line);
-static char* create_err(const int opcode);
 
 /* Public Functions of Decoder */
 
@@ -57,9 +56,11 @@ int decode_hex(const char *hex_file, array_t *buffer) {
         p->dword = is_dword(p->opcode);
 
         if((p->key = get_opc_key(p->opcode)) < 0) {
-
-            char *err = create_err(p->opcode);
-            print_status(err, true);
+            
+            p->exec = false;            
+            array_push(buffer, (void*) p, sizeof(plain_t));
+            
+            continue;
         }
 
         if((p->dword == true) && (i == temp->top - 1))
@@ -312,18 +313,4 @@ static int validate_hex(const char *line) {
         return -1;
 
     return 0;
-}
-
-static char* create_err(const int opcode) {
-
-    char high[3];
-    to_hex((opcode & 0x00ff), high);
-
-    char low[3];
-    to_hex(((opcode & 0xff00) >> 8), low);
-
-    char *err = malloc((19 + 5) * sizeof(char));
-    sprintf(err, "Could not decode 0x%s%s", high, low);
-
-    return err;
 }

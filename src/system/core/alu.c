@@ -65,9 +65,9 @@ int alu_fetch(struct _alu *this, system_t *sys) {
 
     plain_t *p = flash_fetch(this->flash);
 
-    if(p == NULL) {
+    if(p == NULL || p->exec == false) {
 
-        flash_move_pc(this->flash, 1); 
+        flash_move_pc(this->flash, 1);
         return -1;
     }
 

@@ -34,7 +34,14 @@ int disassemble(const char *hex_file, array_t *buffer) {
     for(int i = 0; i < buffer->size; i++) {
 
         plain_t *p = (plain_t*) array_at(buffer, i);
-        p->mnem = (*mnemonics[p->key])(p->opcode);
+        
+        switch((int) p->exec) {
+            
+            case false: p->mnem = mnem_dw(p->opcode);             break;
+            case true: p->mnem = (*mnemonics[p->key])(p->opcode); break;
+            
+            default: /* not possible */ break;
+        }
     }
 
     if(buffer->top == 0)

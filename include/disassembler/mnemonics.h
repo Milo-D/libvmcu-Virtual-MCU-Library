@@ -5,6 +5,8 @@
 
 #define INSTR_MAX 145
 
+extern char* mnem_dw(const int opcode);
+
 extern char* (*mnemonics[INSTR_MAX]) (const int opcode);
 
 #endif

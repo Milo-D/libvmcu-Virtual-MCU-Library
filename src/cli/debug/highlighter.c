@@ -35,12 +35,13 @@ extern struct _highlighter* hl_ctor(void) {
     if((hl = malloc(sizeof(struct _highlighter))) == NULL)
         return NULL;
 
-    hl->color[0] = G;
-    hl->color[1] = D;
-    hl->color[2] = M;
-    hl->color[3] = D;
-    hl->color[4] = B;
-    hl->color[5] = R;
+    hl->color[FLOW] = G;
+    hl->color[MISC] = D;
+    hl->color[LOGIC] = M;
+    hl->color[ACCESS] = D;
+    hl->color[STACKOP] = B;
+    hl->color[ARITHMETIC] = R;
+    hl->color[DIRECTIVE] = Y;
 
     init_maps(hl);
     return hl;
@@ -102,8 +103,8 @@ cleanup:
 
 static void init_maps(struct _highlighter *this) {
 
-    const int size[N_MAPS] = { N_FLOW, N_MISC, N_LOGIC, 
-                               N_ACCESS, N_STACKOP, N_ARITHMETIC };
+    const int size[N_MAPS] = { N_FLOW, N_MISC, N_LOGIC, N_ACCESS, 
+                               N_STACKOP, N_ARITHMETIC, N_DIRECTIVE };
 
     for(int i = 0; i < N_MAPS; i++) {
 

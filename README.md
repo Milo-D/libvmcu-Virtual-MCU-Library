@@ -130,11 +130,12 @@ Note: You may open multiple files in interactive Debugging Mode.
 
 # Troubleshooting
 
--  Issue: Could not parse Hexcode.
+-  Issue: Stepping over a non-nop instruction has no effect on the MCU.
 
--  Solution: Because MDX is still in Development, it does not support every
-   Instruction. I am working on adding new Instructions to MDX. Also manipulating
-   the Hexfile can lead to a corrupted Hexfile, which MDX wont parse.
+-  Solution: Some few instructions (like spm, wdr, break) require some further work.
+   For example, the 'wdr' (watchdog reset) instruction requires (obviously) a watchdog
+   timer, which MDX, currently, does not support. I will be working on adding functionality
+   to these few instructions, as soon as possible. For further information, see (#Instructions)
    
 - Issue: Wrong Hex Format.
 
@@ -162,7 +163,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [x] Syntax Highlight for the disassembled Sourcecode
 - [x] Interrupts supported
 - [x] Open and debug more than one file in the same session
-- [ ] Currently supporting ~ 131 assembly instructions
+- [ ] Currently supporting ~ 133 assembly instructions
 
 - [x] Breakpoints
 - [ ] Watchpoints
@@ -181,7 +182,18 @@ Note: You may open multiple files in interactive Debugging Mode.
     - [ ] ...
 
 # Instructions
-Currently MDX supports: ~ 131 Instructions. More Instructions are coming soon.
+Currently MDX supports: ~ 133 Instructions. Some few instructions are implemented as 'nop'
+instructions, therefore, have no real functionality. These instructions will be implemented
+as soon as possible. Following instructions require further work:
+
+- WDR
+- ELPM
+- DES
+- SLEEP
+- SPM
+- BREAK
+
+All other assembly instructions are working just fine.
 
 # Contributing
 

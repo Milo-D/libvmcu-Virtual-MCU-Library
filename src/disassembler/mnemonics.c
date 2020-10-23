@@ -15,6 +15,29 @@
 
 #define TAB 26
 
+/* --- Extern --- */
+
+char* mnem_dw(const int opcode) {
+    
+    char *word = itoh(opcode);
+    char *addr_fill = strfill('0', strlen(word), 4);
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 3, ".dw 0x", addr_fill, word);
+    
+    char *fill = strfill(' ', 10, TAB);
+    queue_put(stream, 3, fill, "; 0x", word);
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    nfree(3, word, addr_fill, fill);
+    
+    return mnemonic;
+}
+
+/* --- Static --- */
+
 char* mnem_nop(const int opcode) {
 
     queue_t *stream = queue_ctor();

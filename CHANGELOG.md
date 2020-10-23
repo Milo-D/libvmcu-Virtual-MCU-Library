@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v.0.3.0
+
+- MDX is now supporting whole AVR Instruction-Set. Some few instructions still have no
+functionality when simulating, but, atleast, it is possible to decode and disassemble them. 
+Missing functionality of instructions will be added soon.
+
+- Now supporting .dw directive
 - Added new assembly instructions:
     - wdr (watchdog reset) (currently no functionality)
     - break (break for on-chip debugsystem) (currently no functionality)

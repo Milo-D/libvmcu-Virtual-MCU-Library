@@ -27,8 +27,11 @@ const char *mnemstr[N_MAPS][32] = {
     /* StackOp Mnemonics */
     { "push", "pop" },
 
-    /* Arithmetic Mnemonics*/
+    /* Arithmetic Mnemonics */
     { "muls", "mulsu", "dec", "inc", "add", "adc", "sub", "sbc", "cp", 
       "cpi", "cpc", "sbiw", "adiw", "sbci", "subi", "fmul", "cpse", "mul",
-      "fmuls", "fmulsu" }
+      "fmuls", "fmulsu" },
+
+    /* Directive Mnemonics */
+    { ".dw" }
 };
