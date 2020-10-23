@@ -2778,6 +2778,38 @@ char* mnem_break_asm(const int opcode) {
     return mnemonic;
 }
 
+char* mnem_spm(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "spm");
+    
+    char *fill = strfill(' ', 3, TAB);
+    queue_put(stream, 2, fill, "; FLASH[Z] <- (R1:R0 v 0xffff)");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
+char* mnem_spm_zi(const int opcode) {
+    
+    queue_t *stream = queue_ctor();
+    queue_put(stream, 1, "spm Z+");
+    
+    char *fill = strfill(' ', 6, TAB);
+    queue_put(stream, 2, fill, "; FLASH[Z+] <- (R1:R0 v 0xffff)");
+    
+    char *mnemonic = queue_str(stream);
+    
+    queue_dtor(stream);
+    free(fill);
+    
+    return mnemonic;
+}
+
 char* mnem_ses(const int opcode) {
 
     queue_t *stream = queue_ctor();
@@ -3172,6 +3204,8 @@ char* (*mnemonics[INSTR_MAX]) (const int opcode) = {
     mnem_sleep,
     mnem_wdr,
     mnem_break_asm,
+    mnem_spm,
+    mnem_spm_zi,
     mnem_ses, 
     mnem_set, 
     mnem_sev, 

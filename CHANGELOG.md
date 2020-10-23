@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Added new assembly instructions:
-    - wdr (watchdog reset) (currently not functionality)
+    - wdr (watchdog reset) (currently no functionality)
     - break (break for on-chip debugsystem) (currently no functionality)
     - lds (16-bit, load direct from data space)
     - brhc (branch if halfcarry is cleared)
@@ -13,6 +13,8 @@
     - brvc (branch if overflow flag is cleared)
     - fmuls (fractional multiply, signed)
     - fmulsu (fractional multiply, signed-unsigned)
+    - spm (store program memory) (currently no functionality) 
+    - spm(Z+) (store program memory + post-increment) (currently no functionality)
 
 ## v.0.2.2 - 2020-10-22
 

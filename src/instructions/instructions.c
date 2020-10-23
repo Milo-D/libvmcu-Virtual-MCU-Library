@@ -2301,6 +2301,22 @@ void break_asm(system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
+void spm(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
+void spm_zi(system_t *sys, const int opcode) {
+    
+    /* currently not supported */
+    
+    sys_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
 void ses(system_t *sys, const int opcode) {
 
     sys_write_sreg(sys, SF, 0x01);
@@ -2563,6 +2579,8 @@ void (*instructions[INSTR_MAX]) (system_t *sys, const int opcode) = {
     sleep,
     wdr,
     break_asm,
+    spm,
+    spm_zi,
     ses, 
     set, 
     sev, 
