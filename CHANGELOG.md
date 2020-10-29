@@ -2,7 +2,14 @@
 
 ## Unreleased
 
+## v.0.3.1 - 2020-10-29
+
+- Switching to ATmega328P
 - Stack Bug-Fix
+
+Note: I've decided to switch to the ATmega328P due to the popularity
+of these chips (Arduino). Once the core of ATmega328P is done, the
+ATmega32(L) (and other MCUs) will be included.
 
 ## v.0.3.0 - 2020-10-23
 

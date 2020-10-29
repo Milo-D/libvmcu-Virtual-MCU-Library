@@ -1,7 +1,7 @@
 CXX      := -gcc
 CXXFLAGS := -g -D
 LDFLAGS  := -L /usr/lib -lm -lncurses
-MCU_ARCH := ATMEGA32
+MCU_ARCH := ATMEGA328P
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps

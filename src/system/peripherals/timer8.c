@@ -41,9 +41,14 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq);
 static void timer8_tick_pwm_correct(struct _timer8 *this, irq_t *irq);
 static void timer8_tick_pwm_fast(struct _timer8 *this, irq_t *irq);
 
-static void trigger_oc(struct _timer8 *this);
-static void trigger_oc_pwm_fast(struct _timer8 *this);
-static void trigger_oc_pwm_correct(struct _timer8 *this);
+static void trigger_ocpa(struct _timer8 *this);
+static void trigger_ocpb(struct _timer8 *this);
+
+static void trigger_ocpa_pwm_fast(struct _timer8 *this);
+static void trigger_ocpb_pwm_fast(struct _timer8 *this);
+
+static void trigger_ocpa_pwm_correct(struct _timer8 *this);
+static void trigger_ocpb_pwm_correct(struct _timer8 *this);
 
 /* Forward Declarations of static Members */
 
@@ -62,37 +67,45 @@ struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory) {
 
         case TC0:
 
-            timer->timsk = &memory[TIMSK];
+            timer->timsk = &memory[TIMSK0];
+            timer->tccra = &memory[TCCR0A];
+            timer->tccrb = &memory[TCCR0B];
 
-            timer->tcnt = &memory[TCNT0];
-            timer->tccr = &memory[TCCR0];
-            timer->tifr = &memory[TIFR];
-            timer->ocr  = &memory[OCR0];
+            timer->tcnt  = &memory[TCNT0];
+            timer->tifr  = &memory[TIFR0];
+            timer->ocra  = &memory[OCR0A];
+            timer->ocrb  = &memory[OCR0B];
 
-            timer->oc   = &memory[OC0P];
-            timer->ddr  = &memory[OC0DDR];
+            timer->ocpa  = &memory[OC0A_P];
+            timer->ocpb  = &memory[OC0B_P];
+            
+            timer->ddrxa = &memory[OC0A_DDR];
+            timer->ddrxb = &memory[OC0B_DDR];
 
-            timer->tov = TOV0;
-            timer->ocf = OCF0;
-            timer->ocx = OC0;
+            timer->oca   = OC0A;
+            timer->ocb   = OC0B;
 
         break;
 
         case TC2: 
 
-            timer->timsk = &memory[TIMSK];
+            timer->timsk = &memory[TIMSK2];
+            timer->tccra = &memory[TCCR2A];
+            timer->tccrb = &memory[TCCR2B];
 
-            timer->tcnt = &memory[TCNT2];
-            timer->tccr = &memory[TCCR2];
-            timer->tifr = &memory[TIFR];
-            timer->ocr  = &memory[OCR2];
+            timer->tcnt  = &memory[TCNT2];
+            timer->tifr  = &memory[TIFR2];
+            timer->ocra  = &memory[OCR2A];
+            timer->ocrb  = &memory[OCR2B];
 
-            timer->oc   = &memory[OC2P];
-            timer->ddr  = &memory[OC2DDR];
+            timer->ocpa  = &memory[OC2A_P];
+            timer->ocpb  = &memory[OC2B_P];
+            
+            timer->ddrxa = &memory[OC2A_DDR];
+            timer->ddrxb = &memory[OC2B_DDR];
 
-            timer->tov = TOV2;
-            timer->ocf = OCF2;
-            timer->ocx = OC2;
+            timer->oca   = OC2A;
+            timer->ocb   = OC2B;
 
         break;
 
@@ -112,7 +125,7 @@ void timer8_dtor(struct _timer8 *this) {
 
 void timer8_tick(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
 
-    const uint16_t csx = prescale(*(this->tccr));
+    const uint16_t csx = prescale(*(this->tccrb));
 
     if(csx == 0)
         return;
@@ -127,23 +140,53 @@ void timer8_tick(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
 
         if(--(this->countdown) > 0)
             continue;
+            
+        const uint8_t a = *(this->tccra);
+        const uint8_t b = *(this->tccrb);
 
-        (*tick[ wgmtc8(*(this->tccr)) ])(this, irq);
+        (*tick[ wgmtc8(a, b) ])(this, irq);
         this->countdown = this->prescaler;
     }
 }
 
-void timer8_force_oc(struct _timer8 *this) {
+void timer8_force_ocpa(struct _timer8 *this) {
 
-    switch( wgmtc8(*(this->tccr)) ) {
+    const uint8_t a = *(this->tccra);
+    const uint8_t b = *(this->tccrb);
 
-        case 0x02: return;
+    switch( wgmtc8(a, b) ) {
+
+        case 0x01: return;
         case 0x03: return;
+        case 0x04: return;
+        case 0x05: return;
+        case 0x06: return;
+        case 0x07: return;
 
         default: /* non-PWM mode */ break;
     }
 
-    trigger_oc(this);
+    trigger_ocpa(this);
+}
+
+void timer8_force_ocpb(struct _timer8 *this) {
+    
+    const uint8_t a = *(this->tccra);
+    const uint8_t b = *(this->tccrb);
+    
+    switch( wgmtc8(a, b) ) {
+
+        case 0x01: return;
+        case 0x03: return;
+        case 0x04: return;
+        case 0x05: return;
+        case 0x06: return;
+        case 0x07: return;
+
+        default: /* non-PWM mode */ break;
+    }
+    
+    trigger_ocpb(this);
 }
 
 void timer8_reboot(struct _timer8 *this) {
@@ -181,42 +224,30 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
 
     if(++(*(this->tcnt)) == 0x00) {
 
-        *(this->tifr) |= (0x01 << this->tov);
+        *(this->tifr) |= (0x01 << TOV);
 
-        if(((0x01 << this->tov) & *(this->timsk)))
+        if(((0x01 << TOV) & *(this->timsk)))
             irq_enable(irq, OVF0_VECT);
     }
 
-    if(*(this->tcnt) == *(this->ocr)) {
+    if(*(this->tcnt) == *(this->ocra)) {
 
-        *(this->tifr) |= (0x01 << this->ocf);
+        *(this->tifr) |= (0x01 << OCFA);
 
-        if(((0x01 << this->ocf) & *(this->timsk)))
-            irq_enable(irq, OC0_VECT);
+        if(((0x01 << OCFA) & *(this->timsk)))
+            irq_enable(irq, OC0A_VECT); // currently only timer0
 
-        trigger_oc(this);
+        trigger_ocpa(this);
     }
-}
-
-static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
     
-    if(++(*(this->tcnt)) == 0x00) {
-
-        *(this->tifr) |= (0x01 << this->tov);
-
-        if(((0x01 << this->tov) & *(this->timsk)))
-            irq_enable(irq, OVF0_VECT);
-    }
-
-    if(*(this->tcnt) == *(this->ocr)) {
-
-        *(this->tifr) |= (0x01 << this->ocf);
-        *(this->tcnt) = 0x00;
-
-        if(((0x01 << this->ocf) & *(this->timsk)))
-            irq_enable(irq, OC0_VECT);
-
-        trigger_oc(this);
+    if(*(this->tcnt) == *(this->ocrb)) {
+        
+        *(this->tifr) |= (0x01 << OCFB);
+        
+        if(((0x01 << OCFB) & *(this->timsk)))
+            irq_enable(irq, OC0B_VECT); // currently only timer0
+            
+        trigger_ocpb(this);
     }
 }
 
@@ -226,64 +257,154 @@ static void timer8_tick_pwm_correct(struct _timer8 *this, irq_t *irq) {
     return;
 }
 
+static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
+    
+    if(++(*(this->tcnt)) == 0x00) {
+
+        *(this->tifr) |= (0x01 << TOV);
+
+        if(((0x01 << TOV) & *(this->timsk)))
+            irq_enable(irq, OVF0_VECT);
+    }
+
+    if(*(this->tcnt) == *(this->ocra)) {
+
+        *(this->tifr) |= (0x01 << OCFA);
+        *(this->tcnt) = 0x00;
+
+        if(((0x01 << OCFA) & *(this->timsk)))
+            irq_enable(irq, OC0A_VECT); // currently only timer0
+
+        trigger_ocpa(this);
+    }
+    
+    if(*(this->tcnt) == *(this->ocrb)) {
+        
+        *(this->tifr) |= (0x01 << OCFB);
+        
+        if(((0x01 << OCFB) & *(this->timsk)))
+            irq_enable(irq, OC0B_VECT); // currently only timer0
+            
+        trigger_ocpb(this);
+    }
+}
+
 static void timer8_tick_pwm_fast(struct _timer8 *this, irq_t *irq) {
 
     /* in progress */
     return;
 }
 
-static void trigger_oc(struct _timer8 *this) {
+static void timer8_tick_reserved(struct _timer8 *this, irq_t *irq) {
+    
+    /* accessing reserved waveform generation mode */
+    return;
+}
 
-    if((*(this->ddr) & (0x01 << this->ocx)) == 0x00)
+static void trigger_ocpa(struct _timer8 *this) {
+
+    if((*(this->ddrxa) & (0x01 << this->oca)) == 0x00)
         return;
 
-    switch( comtc8(*(this->tccr)) ) {
+    switch( comtc8a(*(this->tccra)) ) {
 
-        case 0x00: /* OC disconnected */                break;
-        case 0x01: *(this->oc) ^= (0x01 << this->ocx);  break;
-        case 0x02: *(this->oc) &= ~(0x01 << this->ocx); break;
-        case 0x03: *(this->oc) |= (0x01 << this->ocx);  break;
+        case 0x00: /* OC disconnected */                  break;
+        case 0x01: *(this->ocpa) ^= (0x01 << this->oca);  break;
+        case 0x02: *(this->ocpa) &= ~(0x01 << this->oca); break;
+        case 0x03: *(this->ocpa) |= (0x01 << this->oca);  break;
 
-        default: /* not possible */                     break;
+        default: /* not possible */                       break;
     }
 }
 
-static void trigger_oc_pwm_fast(struct _timer8 *this) {
+static void trigger_ocpb(struct _timer8 *this) {
 
-    if((*(this->ddr) & (0x01 << this->ocx)) == 0x00)
+    if((*(this->ddrxb) & (0x01 << this->ocb)) == 0x00)
         return;
 
-    switch( comtc8(*(this->tccr)) ) {
+    switch( comtc8b(*(this->tccra)) ) {
 
-        case 0x00: /* OC disconnected */                break;
-        case 0x01: /* reserved */                       break;
-        case 0x02: /* not supported */                  break;
-        case 0x03: /* not supported */                  break;
+        case 0x00: /* OC disconnected */                  break;
+        case 0x01: *(this->ocpb) ^= (0x01 << this->ocb);  break;
+        case 0x02: *(this->ocpb) &= ~(0x01 << this->ocb); break;
+        case 0x03: *(this->ocpb) |= (0x01 << this->ocb);  break;
 
-        default: /* not possible */                     break;
+        default: /* not possible */                       break;
     }
 }
 
-static void trigger_oc_pwm_correct(struct _timer8 *this) {
+static void trigger_ocpa_pwm_fast(struct _timer8 *this) {
 
-    if((*(this->ddr) & (0x01 << this->ocx)) == 0x00)
+    if((*(this->ddrxa) & (0x01 << this->oca)) == 0x00)
         return;
 
-    switch( comtc8(*(this->tccr)) ) {
+    switch( comtc8a(*(this->tccra)) ) {
 
-        case 0x00: /* OC disconnected */                break;
-        case 0x01: /* reserved */                       break;
-        case 0x02: /* not supported */                  break;
-        case 0x03: /* not supported */                  break;
+        case 0x00: /* OC disconnected */                  break;
+        case 0x01: /* reserved */                         break;
+        case 0x02: /* not supported */                    break;
+        case 0x03: /* not supported */                    break;
 
-        default: /* not possible */                     break;
+        default: /* not possible */                       break;
+    }
+}
+
+static void trigger_ocpb_pwm_fast(struct _timer8 *this) {
+
+    if((*(this->ddrxb) & (0x01 << this->ocb)) == 0x00)
+        return;
+
+    switch( comtc8b(*(this->tccra)) ) {
+
+        case 0x00: /* OC disconnected */                  break;
+        case 0x01: /* reserved */                         break;
+        case 0x02: /* not supported */                    break;
+        case 0x03: /* not supported */                    break;
+
+        default: /* not possible */                       break;
+    }
+}
+
+static void trigger_ocpa_pwm_correct(struct _timer8 *this) {
+
+    if((*(this->ddrxa) & (0x01 << this->oca)) == 0x00)
+        return;
+
+    switch( comtc8a(*(this->tccra)) ) {
+
+        case 0x00: /* OC disconnected */                  break;
+        case 0x01: /* reserved */                         break;
+        case 0x02: /* not supported */                    break;
+        case 0x03: /* not supported */                    break;
+
+        default: /* not possible */                       break;
+    }
+}
+
+static void trigger_ocpb_pwm_correct(struct _timer8 *this) {
+
+    if((*(this->ddrxb) & (0x01 << this->ocb)) == 0x00)
+        return;
+
+    switch( comtc8b(*(this->tccra)) ) {
+
+        case 0x00: /* OC disconnected */                  break;
+        case 0x01: /* reserved */                         break;
+        case 0x02: /* not supported */                    break;
+        case 0x03: /* not supported */                    break;
+
+        default: /* not possible */                       break;
     }
 }
 
 static void (*tick[NMODT8]) (struct _timer8 *this, irq_t *irq) = {
 
     timer8_tick_normal,
-    timer8_tick_ctc,
     timer8_tick_pwm_correct,
+    timer8_tick_ctc,
+    timer8_tick_pwm_fast,
+    timer8_tick_reserved,
+    timer8_tick_pwm_correct,
+    timer8_tick_reserved,
     timer8_tick_pwm_fast
 };

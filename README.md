@@ -5,22 +5,21 @@
 [![GitHub stars](https://img.shields.io/github/stars/Milo-D/MDX-Assembly-Debugger.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Milo-D/MDX-Assembly-Debugger/stargazers/)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.gg/X9kmyyh)
 # MDX-Micro-Debugger (In Development)
-An easy and fast CLI Assembly Debugger and Disassembler for 8-bit Atmel AVR
-Microcontrollers.
+An easy and fast CLI Debugger and Disassembler for Atmel's 8-bit AVR
+Microcontrollers, including ATmega328P.
 
 # Overview
 ![mdx_debug0](https://user-images.githubusercontent.com/46600932/94999441-c2c96800-05b9-11eb-8c72-4e9cdeea0899.png)
 
-MDX is an easy and fast CLI Debugger for AVR Assembly Programs.
+MDX is an easy and fast CLI Debugger for AVR programs, with a focus on accurate simulation. It has some nice extra
+features built in like:
 
-You are able to open up more than just one file while debugging. This
-allows you to switch fast and spontanious between your files.
-
-Did you ever stepped too far? No problem, you don't have to restart the Session.
-Just **step back** and continue debugging.
-
-Additionally, every Instruction is colorfully visualized. You will see exactly what
-happens in the program.
+- Backstepping
+- Peripheral Simulation (Timers, ...)
+- Annotations for IO-Registers
+- Dataflow Visualization
+- Headless Mode
+- easy setup and easy usage
 
 (MDX is still in Developement. There might be issues, feel free to submit them in the issue segment.)
 
@@ -48,7 +47,7 @@ happens in the program.
 [XI Wiki](#Wiki)
 
 # How MDX works
-MDX accepts AVR Hex Files as input and decodes them. Then, a readable
+MDX accepts AVR Hex Files (Intel Hex) as input and decodes them. Then, a readable
 Assembly Source File is reconstructed from the decoded Hexdump.
 Now you are able to step through the Source Code and see what really happens.
 
@@ -151,8 +150,8 @@ Note: You may open multiple files in interactive Debugging Mode.
   In case of serious glitches and issues, feel free to submit them in the Issue Segment.
 
 # Supported Microcontroller
-- [x] ATmega32
-- [x] ATmega32L
+- [x] ATmega328
+- [x] ATmega328P
 - [ ] ATmega16
 - [ ] ATmega8
 - [ ] ...

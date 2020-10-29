@@ -34,7 +34,7 @@ void io_dtor(struct _io *this) {
 
 void io_update(struct _io *this, const uint64_t dc) {
 
-    if((this->memory[TCCR0] & CSX_MSK) != 0x00)
+    if((this->memory[TCCR0B] & CSX_MSK) != 0x00)
         timer8_tick(this->timer0, this->irq, dc);
 }
 
@@ -48,29 +48,32 @@ int io_check_irq(const struct _io *this) {
 
     switch(isr) {
 
-        case RST_VECT:  /* not yet implemented */           break;
-        case INT0_VECT: /* not yet implemented */           break;
-        case INT1_VECT: /* not yet implemented */           break;
-        case INT2_VECT: /* not yet implemented */           break;
-        case OC2_VECT:  /* not yet implemented */           break;
-        case OVF2_VECT: /* not yet implemented */           break;
-        case ICP1_VECT: /* not yet implemented */           break;
-        case OC1A_VECT: /* not yet implemented */           break;
-        case OC1B_VECT: /* not yet implemented */           break;
-        case OVF1_VECT: /* not yet implemented */           break;
-        case OC0_VECT:  clear(this->memory[TIFR], OCF0);    break;
-        case OVF0_VECT: clear(this->memory[TIFR], TOV0);    break;
-        case SPI_VECT:  /* not yet implemented */           break;
-        case URXC_VECT: /* not yet implemented */           break;
-        case UDRE_VECT: /* not yet implemented */           break;
-        case UTXC_VECT: /* not yet implemented */           break;
-        case ADCC_VECT: /* not yet implemented */           break;
-        case ERDY_VECT: /* not yet implemented */           break;
-        case ACI_VECT:  /* not yet implemented */           break;
-        case TWI_VECT:  /* not yet implemented */           break;
-        case SPMR_VECT: /* not yet implemented */           break;
+        case RST_VECT:        /* not yet implemented */           break;
+        case INT0_VECT:       /* not yet implemented */           break;
+        case INT1_VECT:       /* not yet implemented */           break;
+        case PCINT0_VECT:     /* not yet implemented */           break;
+        case PCINT1_VECT:     /* not yet implemented */           break;
+        case PCINT2_VECT:     /* not yet implemented */           break;
+        case WDT_VECT:        /* not yet implemented */           break;
+        case OC2A_VECT:       /* not yet implemented */           break;
+        case OC2B_VECT:       /* not yet implemented */           break;
+        case OVF2_VECT:       /* not yet implemented */           break;
+        case CAPT1_VECT:      /* not yet implemented */           break;
+        case OC1A_VECT:       /* not yet implemented */           break;
+        case OC1B_VECT:       /* not yet implemented */           break;
+        case OVF1_VECT:       /* not yet implemented */           break;
+        case OC0A_VECT:       clear(this->memory[TIFR0], OCFA);   break;
+        case OC0B_VECT:       clear(this->memory[TIFR0], OCFB);   break;
+        case OVF0_VECT:       clear(this->memory[TIFR0], TOV);    break;
+        case STC_VECT:        /* not yet implemented */           break;
+        case USART_RX_VECT:   /* not yet implemented */           break;
+        case USART_UDRE_VECT: /* not yet implemented */           break;
+        case USART_TX_VECT:   /* not yet implemented */           break;
+        case ADC_VECT:        /* not yet implemented */           break;
+        case ERDY_VECT:       /* not yet implemented */           break;
+        case ACOMP_VECT:      /* not yet implemented */           break;
 
-        default: /* should not happen */ break;
+        default:              /* should not happen */             break;
     }
 
     return (int) isr;
@@ -84,785 +87,1246 @@ void io_reboot(const struct _io *this) {
 
 /* --- Static --- */
 
-#ifdef ATMEGA32
+#ifdef ATMEGA328P
 
-static void write_twbr(struct _io *this, const int8_t value) {
-
-    this->memory[0x00] = value;
+static void write_reserved(struct _io *this, const int8_t value) {
+    
+    /* write access on reserved memory */
+    return;
 }
 
-static void write_twsr(struct _io *this, const int8_t value) {
-
-    this->memory[0x01] = value;
-}
-
-static void write_twar(struct _io *this, const int8_t value) {
-
-    this->memory[0x02] = value;
-}
-
-static void write_tdwr(struct _io *this, const int8_t value) {
+static void write_PINB(struct _io *this, const int8_t value) {
 
     this->memory[0x03] = value;
 }
 
-static void write_adcl(struct _io *this, const int8_t value) {
+static void write_DDRB(struct _io *this, const int8_t value) {
 
     this->memory[0x04] = value;
 }
 
-static void write_adch(struct _io *this, const int8_t value) {
+static void write_PORTB(struct _io *this, const int8_t value) {
 
     this->memory[0x05] = value;
 }
 
-static void write_adcsra(struct _io *this, const int8_t value) {
+static void write_PINC(struct _io *this, const int8_t value) {
 
     this->memory[0x06] = value;
 }
 
-static void write_admux(struct _io *this, const int8_t value) {
+static void write_DDRC(struct _io *this, const int8_t value) {
 
     this->memory[0x07] = value;
 }
 
-static void write_acsr(struct _io *this, const int8_t value) {
+static void write_PORTC(struct _io *this, const int8_t value) {
 
     this->memory[0x08] = value;
 }
 
-static void write_ubrrl(struct _io *this, const int8_t value) {
+static void write_PIND(struct _io *this, const int8_t value) {
 
     this->memory[0x09] = value;
 }
 
-static void write_ucsrb(struct _io *this, const int8_t value) {
+static void write_DDRD(struct _io *this, const int8_t value) {
 
     this->memory[0x0a] = value;
 }
 
-static void write_ucsra(struct _io *this, const int8_t value) {
+static void write_PORTD(struct _io *this, const int8_t value) {
 
     this->memory[0x0b] = value;
 }
 
-static void write_udr(struct _io *this, const int8_t value) {
-
-    this->memory[0x0c] = value;
-}
-
-static void write_spcr(struct _io *this, const int8_t value) {
-
-    this->memory[0x0d] = value;
-}
-
-static void write_spsr(struct _io *this, const int8_t value) {
-
-    this->memory[0x0e] = value;
-}
-
-static void write_spdr(struct _io *this, const int8_t value) {
-
-    this->memory[0x0f] = value;
-}
-
-static void write_pind(struct _io *this, const int8_t value) {
-
-    this->memory[0x10] = value;
-}
-
-static void write_ddrd(struct _io *this, const int8_t value) {
-
-    this->memory[0x11] = value;
-}
-
-static void write_portd(struct _io *this, const int8_t value) {
-
-    this->memory[0x12] = value;
-}
-
-static void write_pinc(struct _io *this, const int8_t value) {
-
-    this->memory[0x13] = value;
-}
-
-static void write_ddrc(struct _io *this, const int8_t value) {
-
-    this->memory[0x14] = value;
-}
-
-static void write_portc(struct _io *this, const int8_t value) {
+static void write_TIFR0(struct _io *this, const int8_t value) {
 
     this->memory[0x15] = value;
 }
 
-static void write_pinb(struct _io *this, const int8_t value) {
+static void write_TIFR1(struct _io *this, const int8_t value) {
 
     this->memory[0x16] = value;
 }
 
-static void write_ddrb(struct _io *this, const int8_t value) {
+static void write_TIFR2(struct _io *this, const int8_t value) {
 
     this->memory[0x17] = value;
 }
 
-static void write_portb(struct _io *this, const int8_t value) {
-
-    this->memory[0x18] = value;
-}
-
-static void write_pina(struct _io *this, const int8_t value) {
-
-    this->memory[0x19] = value;
-}
-
-static void write_ddra(struct _io *this, const int8_t value) {
-
-    this->memory[0x1a] = value;
-}
-
-static void write_porta(struct _io *this, const int8_t value) {
+static void write_PCIFR(struct _io *this, const int8_t value) {
 
     this->memory[0x1b] = value;
 }
 
-static void write_eecr(struct _io *this, const int8_t value) {
+static void write_EIFR(struct _io *this, const int8_t value) {
 
     this->memory[0x1c] = value;
 }
 
-static void write_eedr(struct _io *this, const int8_t value) {
+static void write_EIMSK(struct _io *this, const int8_t value) {
 
     this->memory[0x1d] = value;
 }
 
-static void write_eearl(struct _io *this, const int8_t value) {
+static void write_GPIOR0(struct _io *this, const int8_t value) {
 
     this->memory[0x1e] = value;
 }
 
-static void write_eearh(struct _io *this, const int8_t value) {
+static void write_EECR(struct _io *this, const int8_t value) {
 
     this->memory[0x1f] = value;
 }
 
-static void write_ucsrc(struct _io *this, const int8_t value) {
+static void write_EEDR(struct _io *this, const int8_t value) {
 
     this->memory[0x20] = value;
 }
 
-static void write_wdtcr(struct _io *this, const int8_t value) {
+static void write_EEARL(struct _io *this, const int8_t value) {
 
     this->memory[0x21] = value;
 }
 
-static void write_assr(struct _io *this, const int8_t value) {
+static void write_EEARH(struct _io *this, const int8_t value) {
 
     this->memory[0x22] = value;
 }
 
-static void write_ocr2(struct _io *this, const int8_t value) {
+static void write_GTCCR(struct _io *this, const int8_t value) {
 
     this->memory[0x23] = value;
 }
 
-static void write_tcnt2(struct _io *this, const int8_t value) {
+static void write_TCCR0A(struct _io *this, const int8_t value) {
 
     this->memory[0x24] = value;
 }
 
-static void write_tccr2(struct _io *this, const int8_t value) {
+static void write_TCCR0B(struct _io *this, const int8_t value) {
 
-    this->memory[0x25] = value;
+    this->memory[0x25] = (value & 0x3f);
+    
+    if((value & (0x01 << FOC0A)) != 0x00)
+        timer8_force_ocpa(this->timer0);
+        
+    if((value & (0x01 << FOC0B)) != 0x00)
+        timer8_force_ocpb(this->timer0);
 }
 
-static void write_icr1l(struct _io *this, const int8_t value) {
+static void write_TCNT0(struct _io *this, const int8_t value) {
 
     this->memory[0x26] = value;
 }
 
-static void write_icr1h(struct _io *this, const int8_t value) {
+static void write_OCR0A(struct _io *this, const int8_t value) {
 
     this->memory[0x27] = value;
 }
 
-static void write_ocr1bl(struct _io *this, const int8_t value) {
+static void write_OCR0B(struct _io *this, const int8_t value) {
 
     this->memory[0x28] = value;
 }
 
-static void write_ocr1bh(struct _io *this, const int8_t value) {
-
-    this->memory[0x29] = value;
-}
-
-static void write_ocr1al(struct _io *this, const int8_t value) {
+static void write_GPIOR1(struct _io *this, const int8_t value) {
 
     this->memory[0x2a] = value;
 }
 
-static void write_ocr1ah(struct _io *this, const int8_t value) {
+static void write_GPIOR2(struct _io *this, const int8_t value) {
 
     this->memory[0x2b] = value;
 }
 
-static void write_tcnt1l(struct _io *this, const int8_t value) {
+static void write_SPCR0(struct _io *this, const int8_t value) {
 
     this->memory[0x2c] = value;
 }
 
-static void write_tcnt1h(struct _io *this, const int8_t value) {
+static void write_SPSR0(struct _io *this, const int8_t value) {
 
     this->memory[0x2d] = value;
 }
 
-static void write_tccr1b(struct _io *this, const int8_t value) {
+static void write_SPDR0(struct _io *this, const int8_t value) {
 
     this->memory[0x2e] = value;
 }
 
-static void write_tccr1a(struct _io *this, const int8_t value) {
-
-    this->memory[0x2f] = value;
-}
-
-static void write_sfior(struct _io *this, const int8_t value) {
+static void write_ACSR(struct _io *this, const int8_t value) {
 
     this->memory[0x30] = value;
 }
 
-static void write_osccal(struct _io *this, const int8_t value) {
+static void write_DWDR(struct _io *this, const int8_t value) {
 
     this->memory[0x31] = value;
 }
 
-static void write_tcnt0(struct _io *this, const int8_t value) {
+static void write_SMCR(struct _io *this, const int8_t value) {
 
-    this->memory[0x32] = value;
+    this->memory[0x33] = value;
 }
 
-static void write_tccr0(struct _io *this, const int8_t value) {
-
-    this->memory[0x33] = (value & 0x7f);
-
-    if((value & (0x01 << FOC0)) != 0x00)
-        timer8_force_oc(this->timer0);
-}
-
-static void write_mcucsr(struct _io *this, const int8_t value) {
+static void write_MCUSR(struct _io *this, const int8_t value) {
 
     this->memory[0x34] = value;
 }
 
-static void write_mcucr(struct _io *this, const int8_t value) {
+static void write_MCUCR(struct _io *this, const int8_t value) {
 
     this->memory[0x35] = value;
 }
 
-static void write_twcr(struct _io *this, const int8_t value) {
-
-    this->memory[0x36] = value;
-}
-
-static void write_spmcr(struct _io *this, const int8_t value) {
+static void write_SPMCSR(struct _io *this, const int8_t value) {
 
     this->memory[0x37] = value;
 }
 
-static void write_tifr(struct _io *this, const int8_t value) {
-
-    this->memory[0x38] &= ~value;
-}
-
-static void write_timsk(struct _io *this, const int8_t value) {
-
-    this->memory[0x39] = value;
-}
-
-static void write_gifr(struct _io *this, const int8_t value) {
-
-    this->memory[0x3a] = value;
-}
-
-static void write_gicr(struct _io *this, const int8_t value) {
-
-    this->memory[0x3b] = value;
-}
-
-static void write_ocr0(struct _io *this, const int8_t value) {
-
-    this->memory[0x3c] = value;
-}
-
-static void write_spl(struct _io *this, const int8_t value) {
+static void write_SPL(struct _io *this, const int8_t value) {
 
     this->memory[0x3d] = value;
 }
 
-static void write_sph(struct _io *this, const int8_t value) {
+static void write_SPH(struct _io *this, const int8_t value) {
 
     this->memory[0x3e] = value;
 }
 
-static void write_sreg(struct _io *this, const int8_t value) {
+static void write_SREG(struct _io *this, const int8_t value) {
 
     this->memory[0x3f] = value;
 }
 
-static int8_t read_twbr(struct _io *this) {
+static void write_WDTCSR(struct _io *this, const int8_t value) {
 
-    return this->memory[0x00];
+    this->memory[0x40] = value;
 }
 
-static int8_t read_twsr(struct _io *this) {
+static void write_CLKPR(struct _io *this, const int8_t value) {
 
-    return this->memory[0x01];
+    this->memory[0x41] = value;
 }
 
-static int8_t read_twar(struct _io *this) {
+static void write_PRR(struct _io *this, const int8_t value) {
 
-    return this->memory[0x02];
+    this->memory[0x44] = value;
 }
 
-static int8_t read_tdwr(struct _io *this) {
+static void write_OSCCAL(struct _io *this, const int8_t value) {
+
+    this->memory[0x46] = value;
+}
+
+static void write_PCICR(struct _io *this, const int8_t value) {
+
+    this->memory[0x48] = value;
+}
+
+static void write_EICRA(struct _io *this, const int8_t value) {
+
+    this->memory[0x49] = value;
+}
+
+static void write_PCMSK0(struct _io *this, const int8_t value) {
+
+    this->memory[0x4b] = value;
+}
+
+static void write_PCMSK1(struct _io *this, const int8_t value) {
+
+    this->memory[0x4c] = value;
+}
+
+static void write_PCMSK2(struct _io *this, const int8_t value) {
+
+    this->memory[0x4d] = value;
+}
+
+static void write_TIMSK0(struct _io *this, const int8_t value) {
+
+    this->memory[0x4e] = value;
+}
+
+static void write_TIMSK1(struct _io *this, const int8_t value) {
+
+    this->memory[0x4f] = value;
+}
+
+static void write_TIMSK2(struct _io *this, const int8_t value) {
+
+    this->memory[0x50] = value;
+}
+
+static void write_ADCL(struct _io *this, const int8_t value) {
+
+    this->memory[0x58] = value;
+}
+
+static void write_ADCH(struct _io *this, const int8_t value) {
+
+    this->memory[0x59] = value;
+}
+
+static void write_ADCSRA(struct _io *this, const int8_t value) {
+
+    this->memory[0x5a] = value;
+}
+
+static void write_ADCSRB(struct _io *this, const int8_t value) {
+
+    this->memory[0x5b] = value;
+}
+
+static void write_ADMUX(struct _io *this, const int8_t value) {
+
+    this->memory[0x5c] = value;
+}
+
+static void write_DIDR0(struct _io *this, const int8_t value) {
+
+    this->memory[0x5e] = value;
+}
+
+static void write_DIDR1(struct _io *this, const int8_t value) {
+
+    this->memory[0x5f] = value;
+}
+
+static void write_TCCR1A(struct _io *this, const int8_t value) {
+
+    this->memory[0x60] = value;
+}
+
+static void write_TCCR1B(struct _io *this, const int8_t value) {
+
+    this->memory[0x61] = value;
+}
+
+static void write_TCCR1C(struct _io *this, const int8_t value) {
+
+    this->memory[0x62] = value;
+}
+
+static void write_TCNT1L(struct _io *this, const int8_t value) {
+
+    this->memory[0x64] = value;
+}
+
+static void write_TCNT1H(struct _io *this, const int8_t value) {
+
+    this->memory[0x65] = value;
+}
+
+static void write_ICR1L(struct _io *this, const int8_t value) {
+
+    this->memory[0x66] = value;
+}
+
+static void write_ICR1H(struct _io *this, const int8_t value) {
+
+    this->memory[0x67] = value;
+}
+
+static void write_OCR1AL(struct _io *this, const int8_t value) {
+
+    this->memory[0x68] = value;
+}
+
+static void write_OCR1AH(struct _io *this, const int8_t value) {
+
+    this->memory[0x69] = value;
+}
+
+static void write_OCR1BL(struct _io *this, const int8_t value) {
+
+    this->memory[0x6a] = value;
+}
+
+static void write_OCR1BH(struct _io *this, const int8_t value) {
+
+    this->memory[0x6b] = value;
+}
+
+static void write_TCCR2A(struct _io *this, const int8_t value) {
+
+    this->memory[0x90] = value;
+}
+
+static void write_TCCR2B(struct _io *this, const int8_t value) {
+
+    this->memory[0x91] = value;
+}
+
+static void write_TCNT2(struct _io *this, const int8_t value) {
+
+    this->memory[0x92] = value;
+}
+
+static void write_OCR2A(struct _io *this, const int8_t value) {
+
+    this->memory[0x93] = value;
+}
+
+static void write_OCR2B(struct _io *this, const int8_t value) {
+
+    this->memory[0x94] = value;
+}
+
+static void write_ASSR(struct _io *this, const int8_t value) {
+
+    this->memory[0x96] = value;
+}
+
+static void write_TWBR(struct _io *this, const int8_t value) {
+
+    this->memory[0x98] = value;
+}
+
+static void write_TWSR(struct _io *this, const int8_t value) {
+
+    this->memory[0x99] = value;
+}
+
+static void write_TWAR(struct _io *this, const int8_t value) {
+
+    this->memory[0x9a] = value;
+}
+
+static void write_TWDR(struct _io *this, const int8_t value) {
+
+    this->memory[0x9b] = value;
+}
+
+static void write_TWCR(struct _io *this, const int8_t value) {
+
+    this->memory[0x9c] = value;
+}
+
+static void write_TWAMR(struct _io *this, const int8_t value) {
+
+    this->memory[0x9d] = value;
+}
+
+static void write_UCSR0A(struct _io *this, const int8_t value) {
+
+    this->memory[0xa0] = value;
+}
+
+static void write_UCSR0B(struct _io *this, const int8_t value) {
+
+    this->memory[0xa1] = value;
+}
+
+static void write_UCSR0C(struct _io *this, const int8_t value) {
+
+    this->memory[0xa2] = value;
+}
+
+static void write_UBRR0L(struct _io *this, const int8_t value) {
+
+    this->memory[0xa4] = value;
+}
+
+static void write_UBRR0H(struct _io *this, const int8_t value) {
+
+    this->memory[0xa5] = value;
+}
+
+static void write_UDR0(struct _io *this, const int8_t value) {
+
+    this->memory[0xa6] = value;
+}
+
+static int8_t read_reserved(struct _io *this) {
+    
+    /* read access on reserved memory */
+    return 0x00;
+}
+
+static int8_t read_PINB(struct _io *this) {
 
     return this->memory[0x03];
 }
 
-static int8_t read_adcl(struct _io *this) {
+static int8_t read_DDRB(struct _io *this) {
 
     return this->memory[0x04];
 }
 
-static int8_t read_adch(struct _io *this) {
+static int8_t read_PORTB(struct _io *this) {
 
     return this->memory[0x05];
 }
 
-static int8_t read_adcsra(struct _io *this) {
+static int8_t read_PINC(struct _io *this) {
 
     return this->memory[0x06];
 }
 
-static int8_t read_admux(struct _io *this) {
+static int8_t read_DDRC(struct _io *this) {
 
     return this->memory[0x07];
 }
 
-static int8_t read_acsr(struct _io *this) {
+static int8_t read_PORTC(struct _io *this) {
 
     return this->memory[0x08];
 }
 
-static int8_t read_ubrrl(struct _io *this) {
+static int8_t read_PIND(struct _io *this) {
 
     return this->memory[0x09];
 }
 
-static int8_t read_ucsrb(struct _io *this) {
+static int8_t read_DDRD(struct _io *this) {
 
     return this->memory[0x0a];
 }
 
-static int8_t read_ucsra(struct _io *this) {
+static int8_t read_PORTD(struct _io *this) {
 
     return this->memory[0x0b];
 }
 
-static int8_t read_udr(struct _io *this) {
-
-    return this->memory[0x0c];
-}
-
-static int8_t read_spcr(struct _io *this) {
-
-    return this->memory[0x0d];
-}
-
-static int8_t read_spsr(struct _io *this) {
-
-    return this->memory[0x0e];
-}
-
-static int8_t read_spdr(struct _io *this) {
-
-    return this->memory[0x0f];
-}
-
-static int8_t read_pind(struct _io *this) {
-
-    return this->memory[0x10];
-}
-
-static int8_t read_ddrd(struct _io *this) {
-
-    return this->memory[0x11];
-}
-
-static int8_t read_portd(struct _io *this) {
-
-    return this->memory[0x12];
-}
-
-static int8_t read_pinc(struct _io *this) {
-
-    return this->memory[0x13];
-}
-
-static int8_t read_ddrc(struct _io *this) {
-
-    return this->memory[0x14];
-}
-
-static int8_t read_portc(struct _io *this) {
+static int8_t read_TIFR0(struct _io *this) {
 
     return this->memory[0x15];
 }
 
-static int8_t read_pinb(struct _io *this) {
+static int8_t read_TIFR1(struct _io *this) {
 
     return this->memory[0x16];
 }
 
-static int8_t read_ddrb(struct _io *this) {
+static int8_t read_TIFR2(struct _io *this) {
 
     return this->memory[0x17];
 }
 
-static int8_t read_portb(struct _io *this) {
-
-    return this->memory[0x18];
-}
-
-static int8_t read_pina(struct _io *this) {
-
-    return this->memory[0x19];
-}
-
-static int8_t read_ddra(struct _io *this) {
-
-    return this->memory[0x1a];
-}
-
-static int8_t read_porta(struct _io *this) {
+static int8_t read_PCIFR(struct _io *this) {
 
     return this->memory[0x1b];
 }
 
-static int8_t read_eecr(struct _io *this) {
+static int8_t read_EIFR(struct _io *this) {
 
     return this->memory[0x1c];
 }
 
-static int8_t read_eedr(struct _io *this) {
+static int8_t read_EIMSK(struct _io *this) {
 
     return this->memory[0x1d];
 }
 
-static int8_t read_eearl(struct _io *this) {
+static int8_t read_GPIOR0(struct _io *this) {
 
     return this->memory[0x1e];
 }
 
-static int8_t read_eearh(struct _io *this) {
+static int8_t read_EECR(struct _io *this) {
 
     return this->memory[0x1f];
 }
 
-static int8_t read_ucsrc(struct _io *this) {
+static int8_t read_EEDR(struct _io *this) {
 
     return this->memory[0x20];
 }
 
-static int8_t read_wdtcr(struct _io *this) {
+static int8_t read_EEARL(struct _io *this) {
 
     return this->memory[0x21];
 }
 
-static int8_t read_assr(struct _io *this) {
+static int8_t read_EEARH(struct _io *this) {
 
     return this->memory[0x22];
 }
 
-static int8_t read_ocr2(struct _io *this) {
+static int8_t read_GTCCR(struct _io *this) {
 
     return this->memory[0x23];
 }
 
-static int8_t read_tcnt2(struct _io *this) {
+static int8_t read_TCCR0A(struct _io *this) {
 
     return this->memory[0x24];
 }
 
-static int8_t read_tccr2(struct _io *this) {
+static int8_t read_TCCR0B(struct _io *this) {
 
     return this->memory[0x25];
 }
 
-static int8_t read_icr1l(struct _io *this) {
+static int8_t read_TCNT0(struct _io *this) {
 
     return this->memory[0x26];
 }
 
-static int8_t read_icr1h(struct _io *this) {
+static int8_t read_OCR0A(struct _io *this) {
 
     return this->memory[0x27];
 }
 
-static int8_t read_ocr1bl(struct _io *this) {
+static int8_t read_OCR0B(struct _io *this) {
 
     return this->memory[0x28];
 }
 
-static int8_t read_ocr1bh(struct _io *this) {
-
-    return this->memory[0x29];
-}
-
-static int8_t read_ocr1al(struct _io *this) {
+static int8_t read_GPIOR1(struct _io *this) {
 
     return this->memory[0x2a];
 }
 
-static int8_t read_ocr1ah(struct _io *this) {
+static int8_t read_GPIOR2(struct _io *this) {
 
     return this->memory[0x2b];
 }
 
-static int8_t read_tcnt1l(struct _io *this) {
+static int8_t read_SPCR0(struct _io *this) {
 
     return this->memory[0x2c];
 }
 
-static int8_t read_tcnt1h(struct _io *this) {
+static int8_t read_SPSR0(struct _io *this) {
 
     return this->memory[0x2d];
 }
 
-static int8_t read_tccr1b(struct _io *this) {
+static int8_t read_SPDR0(struct _io *this) {
 
     return this->memory[0x2e];
 }
 
-static int8_t read_tccr1a(struct _io *this) {
-
-    return this->memory[0x2f];
-}
-
-static int8_t read_sfior(struct _io *this) {
+static int8_t read_ACSR(struct _io *this) {
 
     return this->memory[0x30];
 }
 
-static int8_t read_osccal(struct _io *this) {
+static int8_t read_DWDR(struct _io *this) {
 
     return this->memory[0x31];
 }
 
-static int8_t read_tcnt0(struct _io *this) {
-
-    return this->memory[0x32];
-}
-
-static int8_t read_tccr0(struct _io *this) {
+static int8_t read_SMCR(struct _io *this) {
 
     return this->memory[0x33];
 }
 
-static int8_t read_mcucsr(struct _io *this) {
+static int8_t read_MCUSR(struct _io *this) {
 
     return this->memory[0x34];
 }
 
-static int8_t read_mcucr(struct _io *this) {
+static int8_t read_MCUCR(struct _io *this) {
 
     return this->memory[0x35];
 }
 
-static int8_t read_twcr(struct _io *this) {
-
-    return this->memory[0x36];
-}
-
-static int8_t read_spmcr(struct _io *this) {
+static int8_t read_SPMCSR(struct _io *this) {
 
     return this->memory[0x37];
 }
 
-static int8_t read_tifr(struct _io *this) {
-
-    return this->memory[0x38];
-}
-
-static int8_t read_timsk(struct _io *this) {
-
-    return this->memory[0x39];
-}
-
-static int8_t read_gifr(struct _io *this) {
-
-    return this->memory[0x3a];
-}
-
-static int8_t read_gicr(struct _io *this) {
-
-    return this->memory[0x3b];
-}
-
-static int8_t read_ocr0(struct _io *this) {
-
-    return this->memory[0x3c];
-}
-
-static int8_t read_spl(struct _io *this) {
+static int8_t read_SPL(struct _io *this) {
 
     return this->memory[0x3d];
 }
 
-static int8_t read_sph(struct _io *this) {
+static int8_t read_SPH(struct _io *this) {
 
     return this->memory[0x3e];
 }
 
-static int8_t read_sreg(struct _io *this) {
+static int8_t read_SREG(struct _io *this) {
 
     return this->memory[0x3f];
 }
 
+static int8_t read_WDTCSR(struct _io *this) {
+
+    return this->memory[0x40];
+}
+
+static int8_t read_CLKPR(struct _io *this) {
+
+    return this->memory[0x41];
+}
+
+static int8_t read_PRR(struct _io *this) {
+
+    return this->memory[0x44];
+}
+
+static int8_t read_OSCCAL(struct _io *this) {
+
+    return this->memory[0x46];
+}
+
+static int8_t read_PCICR(struct _io *this) {
+
+    return this->memory[0x48];
+}
+
+static int8_t read_EICRA(struct _io *this) {
+
+    return this->memory[0x49];
+}
+
+static int8_t read_PCMSK0(struct _io *this) {
+
+    return this->memory[0x4b];
+}
+
+static int8_t read_PCMSK1(struct _io *this) {
+
+    return this->memory[0x4c];
+}
+
+static int8_t read_PCMSK2(struct _io *this) {
+
+    return this->memory[0x4d];
+}
+
+static int8_t read_TIMSK0(struct _io *this) {
+
+    return this->memory[0x4e];
+}
+
+static int8_t read_TIMSK1(struct _io *this) {
+
+    return this->memory[0x4f];
+}
+
+static int8_t read_TIMSK2(struct _io *this) {
+
+    return this->memory[0x50];
+}
+
+static int8_t read_ADCL(struct _io *this) {
+
+    return this->memory[0x58];
+}
+
+static int8_t read_ADCH(struct _io *this) {
+
+    return this->memory[0x59];
+}
+
+static int8_t read_ADCSRA(struct _io *this) {
+
+    return this->memory[0x5a];
+}
+
+static int8_t read_ADCSRB(struct _io *this) {
+
+    return this->memory[0x5b];
+}
+
+static int8_t read_ADMUX(struct _io *this) {
+
+    return this->memory[0x5c];
+}
+
+static int8_t read_DIDR0(struct _io *this) {
+
+    return this->memory[0x5e];
+}
+
+static int8_t read_DIDR1(struct _io *this) {
+
+    return this->memory[0x5f];
+}
+
+static int8_t read_TCCR1A(struct _io *this) {
+
+    return this->memory[0x60];
+}
+
+static int8_t read_TCCR1B(struct _io *this) {
+
+    return this->memory[0x61];
+}
+
+static int8_t read_TCCR1C(struct _io *this) {
+
+    return this->memory[0x62];
+}
+
+static int8_t read_TCNT1L(struct _io *this) {
+
+    return this->memory[0x64];
+}
+
+static int8_t read_TCNT1H(struct _io *this) {
+
+    return this->memory[0x65];
+}
+
+static int8_t read_ICR1L(struct _io *this) {
+
+    return this->memory[0x66];
+}
+
+static int8_t read_ICR1H(struct _io *this) {
+
+    return this->memory[0x67];
+}
+
+static int8_t read_OCR1AL(struct _io *this) {
+
+    return this->memory[0x68];
+}
+
+static int8_t read_OCR1AH(struct _io *this) {
+
+    return this->memory[0x69];
+}
+
+static int8_t read_OCR1BL(struct _io *this) {
+
+    return this->memory[0x6a];
+}
+
+static int8_t read_OCR1BH(struct _io *this) {
+
+    return this->memory[0x6b];
+}
+
+static int8_t read_TCCR2A(struct _io *this) {
+
+    return this->memory[0x90];
+}
+
+static int8_t read_TCCR2B(struct _io *this) {
+
+    return this->memory[0x91];
+}
+
+static int8_t read_TCNT2(struct _io *this) {
+
+    return this->memory[0x92];
+}
+
+static int8_t read_OCR2A(struct _io *this) {
+
+    return this->memory[0x93];
+}
+
+static int8_t read_OCR2B(struct _io *this) {
+
+    return this->memory[0x94];
+}
+
+static int8_t read_ASSR(struct _io *this) {
+
+    return this->memory[0x96];
+}
+
+static int8_t read_TWBR(struct _io *this) {
+
+    return this->memory[0x98];
+}
+
+static int8_t read_TWSR(struct _io *this) {
+
+    return this->memory[0x99];
+}
+
+static int8_t read_TWAR(struct _io *this) {
+
+    return this->memory[0x9a];
+}
+
+static int8_t read_TWDR(struct _io *this) {
+
+    return this->memory[0x9b];
+}
+
+static int8_t read_TWCR(struct _io *this) {
+
+    return this->memory[0x9c];
+}
+
+static int8_t read_TWAMR(struct _io *this) {
+
+    return this->memory[0x9d];
+}
+
+static int8_t read_UCSR0A(struct _io *this) {
+
+    return this->memory[0xa0];
+}
+
+static int8_t read_UCSR0B(struct _io *this) {
+
+    return this->memory[0xa1];
+}
+
+static int8_t read_UCSR0C(struct _io *this) {
+
+    return this->memory[0xa2];
+}
+
+static int8_t read_UBRR0L(struct _io *this) {
+
+    return this->memory[0xa4];
+}
+
+static int8_t read_UBRR0H(struct _io *this) {
+
+    return this->memory[0xa5];
+}
+
+static int8_t read_UDR0(struct _io *this) {
+
+    return this->memory[0xa6];
+}
+
 void (*io_write[SFR_SIZE]) (struct _io *this, const int8_t value) = {
 
-    write_twbr,
-    write_twsr,
-    write_twar,
-    write_tdwr,
-    write_adcl,
-    write_adch,
-    write_adcsra,
-    write_admux,
-    write_acsr,
-    write_ubrrl,
-    write_ucsrb,
-    write_ucsra,
-    write_udr,
-    write_spcr,
-    write_spsr,
-    write_spdr,
-    write_pind,
-    write_ddrd,
-    write_portd,
-    write_pinc,
-    write_ddrc,
-    write_portc,
-    write_pinb,
-    write_ddrb,
-    write_portb,
-    write_pina,
-    write_ddra,
-    write_porta,
-    write_eecr,
-    write_eedr,
-    write_eearl,
-    write_eearh,
-    write_ucsrc,
-    write_wdtcr,
-    write_assr,
-    write_ocr2,
-    write_tcnt2,
-    write_tccr2,
-    write_icr1l,
-    write_icr1h,
-    write_ocr1bl,
-    write_ocr1bh,
-    write_ocr1al,
-    write_ocr1ah,
-    write_tcnt1l,
-    write_tcnt1h,
-    write_tccr1b,
-    write_tccr1a,
-    write_sfior,
-    write_osccal,
-    write_tcnt0,
-    write_tccr0,
-    write_mcucsr,
-    write_mcucr,
-    write_twcr,
-    write_spmcr,
-    write_tifr,
-    write_timsk,
-    write_gifr,
-    write_gicr,
-    write_ocr0,
-    write_spl,
-    write_sph,
-    write_sreg
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_PINB,
+    write_DDRB,
+    write_PORTB,
+    write_PINC,
+    write_DDRC,
+    write_PORTC,
+    write_PIND,
+    write_DDRD,
+    write_PORTD,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_TIFR0,
+    write_TIFR1,
+    write_TIFR2,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_PCIFR,
+    write_EIFR,
+    write_EIMSK,
+    write_GPIOR0,
+    write_EECR,
+    write_EEDR,
+    write_EEARL,
+    write_EEARH,
+    write_GTCCR,
+    write_TCCR0A,
+    write_TCCR0B,
+    write_TCNT0,
+    write_OCR0A,
+    write_OCR0B,
+    write_reserved,
+    write_GPIOR1,
+    write_GPIOR2,
+    write_SPCR0,
+    write_SPSR0,
+    write_SPDR0,
+    write_reserved,
+    write_ACSR,
+    write_DWDR,
+    write_reserved,
+    write_SMCR,
+    write_MCUSR,
+    write_MCUCR,
+    write_reserved,
+    write_SPMCSR,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_SPL,
+    write_SPH,
+    write_SREG,
+    write_WDTCSR,
+    write_CLKPR,
+    write_reserved,
+    write_reserved,
+    write_PRR,
+    write_reserved,
+    write_OSCCAL,
+    write_reserved,
+    write_PCICR,
+    write_EICRA,
+    write_reserved,
+    write_PCMSK0,
+    write_PCMSK1,
+    write_PCMSK2,
+    write_TIMSK0,
+    write_TIMSK1,
+    write_TIMSK2,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_ADCL,
+    write_ADCH,
+    write_ADCSRA,
+    write_ADCSRB,
+    write_ADMUX,
+    write_reserved,
+    write_DIDR0,
+    write_DIDR1,
+    write_TCCR1A,
+    write_TCCR1B,
+    write_TCCR1C,
+    write_reserved,
+    write_TCNT1L,
+    write_TCNT1H,
+    write_ICR1L,
+    write_ICR1H,
+    write_OCR1AL,
+    write_OCR1AH,
+    write_OCR1BL,
+    write_OCR1BH,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_reserved,
+    write_TCCR2A,
+    write_TCCR2B,
+    write_TCNT2,
+    write_OCR2A,
+    write_OCR2B,
+    write_reserved,
+    write_ASSR,
+    write_reserved,
+    write_TWBR,
+    write_TWSR,
+    write_TWAR,
+    write_TWDR,
+    write_TWCR,
+    write_TWAMR,
+    write_reserved,
+    write_reserved,
+    write_UCSR0A,
+    write_UCSR0B,
+    write_UCSR0C,
+    write_reserved,
+    write_UBRR0L,
+    write_UBRR0H,
+    write_UDR0
 };
 
 int8_t (*io_read[SFR_SIZE]) (struct _io *this) = {
 
-    read_twbr,
-    read_twsr,
-    read_twar,
-    read_tdwr,
-    read_adcl,
-    read_adch,
-    read_adcsra,
-    read_admux,
-    read_acsr,
-    read_ubrrl,
-    read_ucsrb,
-    read_ucsra,
-    read_udr,
-    read_spcr,
-    read_spsr,
-    read_spdr,
-    read_pind,
-    read_ddrd,
-    read_portd,
-    read_pinc,
-    read_ddrc,
-    read_portc,
-    read_pinb,
-    read_ddrb,
-    read_portb,
-    read_pina,
-    read_ddra,
-    read_porta,
-    read_eecr,
-    read_eedr,
-    read_eearl,
-    read_eearh,
-    read_ucsrc,
-    read_wdtcr,
-    read_assr,
-    read_ocr2,
-    read_tcnt2,
-    read_tccr2,
-    read_icr1l,
-    read_icr1h,
-    read_ocr1bl,
-    read_ocr1bh,
-    read_ocr1al,
-    read_ocr1ah,
-    read_tcnt1l,
-    read_tcnt1h,
-    read_tccr1b,
-    read_tccr1a,
-    read_sfior,
-    read_osccal,
-    read_tcnt0,
-    read_tccr0,
-    read_mcucsr,
-    read_mcucr,
-    read_twcr,
-    read_spmcr,
-    read_tifr,
-    read_timsk,
-    read_gifr,
-    read_gicr,
-    read_ocr0,
-    read_spl,
-    read_sph,
-    read_sreg
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_PINB,
+    read_DDRB,
+    read_PORTB,
+    read_PINC,
+    read_DDRC,
+    read_PORTC,
+    read_PIND,
+    read_DDRD,
+    read_PORTD,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_TIFR0,
+    read_TIFR1,
+    read_TIFR2,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_PCIFR,
+    read_EIFR,
+    read_EIMSK,
+    read_GPIOR0,
+    read_EECR,
+    read_EEDR,
+    read_EEARL,
+    read_EEARH,
+    read_GTCCR,
+    read_TCCR0A,
+    read_TCCR0B,
+    read_TCNT0,
+    read_OCR0A,
+    read_OCR0B,
+    read_reserved,
+    read_GPIOR1,
+    read_GPIOR2,
+    read_SPCR0,
+    read_SPSR0,
+    read_SPDR0,
+    read_reserved,
+    read_ACSR,
+    read_DWDR,
+    read_reserved,
+    read_SMCR,
+    read_MCUSR,
+    read_MCUCR,
+    read_reserved,
+    read_SPMCSR,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_SPL,
+    read_SPH,
+    read_SREG,
+    read_WDTCSR,
+    read_CLKPR,
+    read_reserved,
+    read_reserved,
+    read_PRR,
+    read_reserved,
+    read_OSCCAL,
+    read_reserved,
+    read_PCICR,
+    read_EICRA,
+    read_reserved,
+    read_PCMSK0,
+    read_PCMSK1,
+    read_PCMSK2,
+    read_TIMSK0,
+    read_TIMSK1,
+    read_TIMSK2,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_ADCL,
+    read_ADCH,
+    read_ADCSRA,
+    read_ADCSRB,
+    read_ADMUX,
+    read_reserved,
+    read_DIDR0,
+    read_DIDR1,
+    read_TCCR1A,
+    read_TCCR1B,
+    read_TCCR1C,
+    read_reserved,
+    read_TCNT1L,
+    read_TCNT1H,
+    read_ICR1L,
+    read_ICR1H,
+    read_OCR1AL,
+    read_OCR1AH,
+    read_OCR1BL,
+    read_OCR1BH,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_reserved,
+    read_TCCR2A,
+    read_TCCR2B,
+    read_TCNT2,
+    read_OCR2A,
+    read_OCR2B,
+    read_reserved,
+    read_ASSR,
+    read_reserved,
+    read_TWBR,
+    read_TWSR,
+    read_TWAR,
+    read_TWDR,
+    read_TWCR,
+    read_TWAMR,
+    read_reserved,
+    read_reserved,
+    read_UCSR0A,
+    read_UCSR0B,
+    read_UCSR0C,
+    read_reserved,
+    read_UBRR0L,
+    read_UBRR0H,
+    read_UDR0
 };
 
 #endif
