@@ -30,7 +30,7 @@ void jump_forward(debugwindow_t *window, system_t *sys, const int delay) {
 
     dwin_write(window, OPNL, JUMP_START, D);
 
-    while(sys_is_term(sys) == false) {
+    while(true) {
 
         if(sys_on_breakp(sys) == true)
             break;

@@ -10,19 +10,30 @@
 // Project Headers
 #include "table/entry.h"
 
+typedef struct _gpr gpr_t;
+typedef struct _sreg sreg_t;
+typedef struct _flash flash_t;
+typedef struct _data data_t;
+typedef struct _eeprom eeprom_t;
 typedef struct _table table_t;
+
 typedef struct _plain plain_t;
 typedef struct _array array_t;
 typedef struct _tuple tuple_t;
 
-struct _private;
-
 typedef struct _system {
+    
+    gpr_t *gpr;
+    sreg_t *sreg;
+    
+    flash_t *flash;
+    data_t *data;
+    eeprom_t *eeprom;
 
     uint64_t cycles;
     uint32_t clock;
-
-    struct _private *p;
+    
+    int steps;
 
 } system_t;
 
@@ -36,8 +47,6 @@ extern void sys_dtor(struct _system *this);
 extern int sys_step(struct _system *this);
 extern void sys_backstep(struct _system *this);
 extern void sys_reboot(struct _system *this);
-extern void sys_kill(const struct _system *this);
-extern bool sys_is_term(const struct _system *this);
 
 /* GPR Operations */
 

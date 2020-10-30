@@ -57,9 +57,6 @@ void debug(system_t *sys, const char *file) {
         if(strcmp(select, "") != 0)
             strncpy(last_select, select, 64);
 
-        if(sys_is_term(sys) == true)
-            dwin_write(window, OPNL, SIM_TERM, D);
-
         list_t *com = ls_ctor(NULL, NULL);
         split(last_select, ' ', com);
 

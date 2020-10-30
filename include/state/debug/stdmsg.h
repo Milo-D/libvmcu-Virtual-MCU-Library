@@ -8,7 +8,6 @@
 
 #define INIT_SUCCESS "(mdx) DebugWindow successfully initialized.\n"
 #define ILLEGAL_OPC "(mdx) Warning: Executing illegal opcode.\n"
-#define SIM_TERM "(mdx) System terminated. Simulation has stopped.\n"
 
 #define JUMP_START "(mdx) Jumping to next Breakpoint...\n"
 #define BREAK_REACHED "(mdx) <--- Breakpoint reached --->\n"

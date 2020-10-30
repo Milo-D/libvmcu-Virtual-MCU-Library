@@ -110,9 +110,9 @@ static void mode_headless(const char *hex_file) {
             break;
 
         if(sys_step(sys) < 0)
-            sys_kill(sys);
+            break;
 
-    } while(sys_is_term(sys) == false);
+    } while(true);
 
     queue_t *stream = queue_ctor();
     make_json(sys, stream);

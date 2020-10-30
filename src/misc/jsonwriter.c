@@ -81,11 +81,7 @@ static int make_status_obj(system_t *sys, queue_t *buffer) {
     queue_put(buffer, 1, "\"simulation_status\": {\n\n");
 
     add_apair("elapsed_time", "...", false, buffer);
-
-    if(sys_is_term(sys) == true)
-        add_apair("status", "terminated", true, buffer);
-    else
-        add_apair("status", "running", true, buffer);
+    add_apair("status", "terminated", true, buffer);
 
     queue_put(buffer, 2, CONST_TAB, "}, \n\n");
 
