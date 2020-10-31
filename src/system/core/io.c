@@ -142,7 +142,7 @@ static void write_PORTD(struct _io *this, const int8_t value) {
 
 static void write_TIFR0(struct _io *this, const int8_t value) {
 
-    this->memory[0x15] = value;
+    this->memory[0x15] &= ~value;
 }
 
 static void write_TIFR1(struct _io *this, const int8_t value) {
