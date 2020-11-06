@@ -7,7 +7,7 @@
 
     #define SYSTEM "ATmega328(P)"
 
-    #define CLOCK 1000000U
+    #define CLOCK 1000000U      /* Default CPU Clock [Hz]*/
 
     #define GPR_SIZE 32
     #define SREG_SIZE 8
@@ -120,6 +120,50 @@
     #define PORTD7 7
 
     #define DDRD 0x000a
+    
+    /* SPM Control Register */
+    
+    #define SPMCSR 0x0037
+    
+    #define SPMIE  7
+    #define RWWSB  6
+    #define SIGRD  5
+    #define RWWSRE 4
+    #define BLBSET 3
+    #define PGWRT  2
+    #define PGERS  1
+    #define SPMEN  0
+    
+    /* EEPROM (General) */
+    
+    #define EEP_CLK 8000000         /* Calibrated RC Oscillator [Hz] */
+    
+    #define EEEW_CYCLES 26368
+    #define EEE_CYCLES  13960       /* calculated */
+    #define EEW_CYCLES  13960       /* calculated */
+    
+    /* EEPROM Control Register */
+    
+    #define EECR 0x1f
+    
+    #define EEPM1 5
+    #define EEPM0 4
+    #define EERIE 3
+    #define EEMPE 2
+    #define EEPE  1
+    #define EERE  0
+    
+    #define EEPM0_MSK (0x01 << EEPM0)
+    #define EEPM1_MSK (0x01 << EEPM1)
+    
+    #define eep_mode(eecr) ((eecr & EEPM1_MSK) >> (EEPM1 - 1)) | \
+                           ((eecr & EEPM0_MSK) >> EEPM0)         \
+    
+    /* EEPROM Data and Address Register */
+    
+    #define EEDR 0x20
+    #define EEARL 0x21
+    #define EEARH 0x22
 
     /* Timer (General) */
 
@@ -223,11 +267,11 @@
                                  ((tccra & WGM01_MSK) | ((tccrb & WGM02_MSK) >> 1))   \
                            
                            
-    #define comtc8a(tccra) ((tccra & COM0A1_MSK) >> COM0A1 - 1) | \
-                           ((tccra & COM0A0_MSK) >> COM0A0)       \
+    #define comtc8a(tccra) ((tccra & COM0A1_MSK) >> (COM0A1 - 1)) | \
+                           ((tccra & COM0A0_MSK) >> COM0A0)         \
     
-    #define comtc8b(tccra) ((tccra & COM0B1_MSK) >> COM0B1 - 1) | \
-                           ((tccra & COM0B0_MSK) >> COM0B0)       \
+    #define comtc8b(tccra) ((tccra & COM0B1_MSK) >> (COM0B1 - 1)) | \
+                           ((tccra & COM0B0_MSK) >> COM0B0)         \
 
     /* ISR Vector Table */
 

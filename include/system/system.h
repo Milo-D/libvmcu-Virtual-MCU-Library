@@ -14,7 +14,6 @@ typedef struct _gpr gpr_t;
 typedef struct _sreg sreg_t;
 typedef struct _flash flash_t;
 typedef struct _data data_t;
-typedef struct _eeprom eeprom_t;
 typedef struct _table table_t;
 
 typedef struct _plain plain_t;
@@ -25,10 +24,9 @@ typedef struct _system {
     
     gpr_t *gpr;
     sreg_t *sreg;
-    
+
     flash_t *flash;
     data_t *data;
-    eeprom_t *eeprom;
 
     uint64_t cycles;
     uint32_t clock;
@@ -81,9 +79,6 @@ extern int8_t* sys_dump_data(const struct _system *this);
 
 /* EEPROM Operations */
 
-extern void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value);
-extern int8_t sys_read_eeprom(const struct _system *this, const uint16_t addr);
-extern void sys_eeprom_coi(const struct _system *this, tuple_t *buffer);
 extern int8_t* sys_dump_eeprom(const struct _system *this);
 
 /* Table Operations */

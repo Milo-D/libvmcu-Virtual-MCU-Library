@@ -1,4 +1,4 @@
-/* IO Memory Header */
+/* IO Memory Implementation */
 
 // C Headers
 #include <stdlib.h>
@@ -7,6 +7,7 @@
 #include "system/core/io.h"
 #include "system/core/irq.h"
 #include "system/peripherals/timer8.h"
+#include "system/peripherals/eeprom.h"
 #include "misc/bitmanip.h"
 
 struct _io* io_ctor(int8_t *io_start) {
@@ -17,9 +18,12 @@ struct _io* io_ctor(int8_t *io_start) {
         return NULL;
 
     io->memory = io_start;
-
     io->irq = irq_ctor();
+    
+    /* Peripherals */
+    
     io->timer0 = timer8_ctor(TC0, io->memory);
+    io->eeprom = eeprom_ctor(io->memory);
 
     return io;
 }
@@ -27,15 +31,23 @@ struct _io* io_ctor(int8_t *io_start) {
 void io_dtor(struct _io *this) {
 
     timer8_dtor(this->timer0);
+    eeprom_dtor(this->eeprom);
     irq_dtor(this->irq);
 
     free(this);
 }
 
-void io_update(struct _io *this, const uint64_t dc) {
+void io_update(struct _io *this, const uint32_t cpu_clk, const uint64_t dc) {
 
-    if((this->memory[TCCR0B] & CSX_MSK) != 0x00)
+    /* Timer0 Update */
+
+    if(timer8_is_busy(this->timer0) == true)
         timer8_tick(this->timer0, this->irq, dc);
+
+    /* EEPROM Update */
+
+    if(eeprom_is_busy(this->eeprom) == true)
+        eeprom_update(this->eeprom, this->irq, cpu_clk, dc);
 }
 
 int io_check_irq(const struct _io *this) {
@@ -70,7 +82,7 @@ int io_check_irq(const struct _io *this) {
         case USART_UDRE_VECT: /* not yet implemented */           break;
         case USART_TX_VECT:   /* not yet implemented */           break;
         case ADC_VECT:        /* not yet implemented */           break;
-        case ERDY_VECT:       /* not yet implemented */           break;
+        case ERDY_VECT:       /* no flag clearing */              break;
         case ACOMP_VECT:      /* not yet implemented */           break;
 
         default:              /* should not happen */             break;
@@ -82,7 +94,14 @@ int io_check_irq(const struct _io *this) {
 void io_reboot(const struct _io *this) {
 
     irq_reboot(this->irq);
+    
     timer8_reboot(this->timer0);
+    eeprom_reboot(this->eeprom);
+}
+
+int8_t* io_dump_eeprom(const struct _io *this) {
+
+    return eeprom_dump(this->eeprom);
 }
 
 /* --- Static --- */
@@ -176,8 +195,33 @@ static void write_GPIOR0(struct _io *this, const int8_t value) {
 }
 
 static void write_EECR(struct _io *this, const int8_t value) {
+    
+    const uint8_t eecr = this->memory[0x1f];
+    uint8_t masked_value = (value & 0x3e);
 
-    this->memory[0x1f] = value;
+    if((eecr & (0x01 << EEPE)) != 0x00) {  // OLD_EECR != EEPE
+        
+        masked_value &= ~(0x01 << EEPM0);
+        masked_value &= ~(0x01 << EEPM1);
+
+    } else if((value & (0x01 << EEPE)) != 0x00) {   // EECR <- EEPE & OLD_EECR != EEPE
+        
+        this->memory[0x1f] = masked_value;
+        eeprom_try_write(this->eeprom);
+        
+    } else if((value & (0x01 << EERE)) != 0x00) {
+
+        this->memory[0x1f] = masked_value;        
+        eeprom_try_read(this->eeprom);
+    }
+
+    if(((eecr & (0x01 << EEMPE)) >> EEMPE) == 0x00) {
+    
+        if((value & (0x01 << EEMPE)) != 0x00)
+            eeprom_enable_write(this->eeprom);
+    }
+
+    this->memory[0x1f] = masked_value;
 }
 
 static void write_EEDR(struct _io *this, const int8_t value) {
@@ -187,10 +231,16 @@ static void write_EEDR(struct _io *this, const int8_t value) {
 
 static void write_EEARL(struct _io *this, const int8_t value) {
 
+    if((this->memory[0x1f] & (0x01 << EEPE)) != 0x00)
+        return;
+
     this->memory[0x21] = value;
 }
 
 static void write_EEARH(struct _io *this, const int8_t value) {
+
+    if((this->memory[0x1f] & (0x01 << EEPE)) != 0x00)
+        return;
 
     this->memory[0x22] = value;
 }

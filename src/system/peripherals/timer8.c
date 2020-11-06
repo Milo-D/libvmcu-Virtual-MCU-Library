@@ -189,6 +189,11 @@ void timer8_force_ocpb(struct _timer8 *this) {
     trigger_ocpb(this);
 }
 
+bool timer8_is_busy(struct _timer8 *this) {
+    
+    return ((*(this->tccrb) & CSX_MSK) != 0x00);
+}
+
 void timer8_reboot(struct _timer8 *this) {
 
     this->prescaler = 0;

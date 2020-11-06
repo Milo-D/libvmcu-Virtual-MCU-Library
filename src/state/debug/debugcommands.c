@@ -112,13 +112,15 @@ void examine_eeprom(debugwindow_t *window, system_t *sys, const char *mem_cell) 
         return;
     }
 
-    const int8_t data = sys_read_eeprom(sys, cell);
-
+    const int8_t *memory = sys_dump_eeprom(sys);
+    
     char hex[3];
-    to_hex(data, hex);
+    to_hex(memory[cell], hex);
 
     char *msg = val_of(mem_cell, hex);
-    dwin_write(window, OPNL, val_of(mem_cell, hex), D);
+
+    dwin_write(window, OPNL, msg, D);
+    dwin_set_curs(window, EPNL, cell);
 
     free(msg);
 }
@@ -174,15 +176,16 @@ void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char *mem_c
 
     char ascii[offs + 1];
     ascii[offs] = '\0';
+    
+    int8_t *memory = sys_dump_eeprom(sys);
 
-    for(int i = cell; i < (cell + offs); i++) {
-
-        const uint8_t byte = (uint8_t) sys_read_eeprom(sys, i);
-        ascii[i - cell] = byte;
-    }
+    for(int i = cell; i < (cell + offs); i++)
+        ascii[i - cell] = (uint8_t) memory[i];
 
     char *msg = val_of_eep(mem_cell, range, ascii);
+    
     dwin_write(window, OPNL, msg, D);
+    dwin_set_curs(window, EPNL, cell);
 
     free(msg);
 }
@@ -210,10 +213,12 @@ void load_eep_hex(debugwindow_t *window, system_t *sys, const char *file) {
         return;
     }
 
+    int8_t *memory = sys_dump_eeprom(sys);
+
     for(int i = 0; i < buffer->top; i++) {
 
         eep_t *eep = (eep_t*) array_at(buffer, i);
-        sys_write_eeprom(sys, eep->addr, (int8_t) eep->value);
+        memory[eep->addr] = (int8_t) eep->value;
     }
 
     char *msg = eep_success(file);

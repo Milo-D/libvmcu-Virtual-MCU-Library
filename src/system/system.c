@@ -12,7 +12,6 @@
 #include "system/core/sreg.h"
 #include "system/core/data.h"
 #include "system/core/flash.h"
-#include "system/core/eeprom.h"
 #include "table/table.h"
 #include "disassembler/plain.h"
 #include "instructions/instructions.h"
@@ -56,12 +55,6 @@ struct _system* sys_ctor(const char *file) {
         sys_dtor(sys);
         return NULL;
     }
-    
-    if((sys->eeprom = eeprom_ctor()) == NULL) {
-    
-        sys_dtor(sys);
-        return NULL;
-    }
 
     sys->cycles = 0;
     sys->clock = CLOCK;
@@ -83,9 +76,6 @@ void sys_dtor(struct _system *this) {
         
     if(this->data != NULL)
         data_dtor(this->data);
-        
-    if(this->eeprom != NULL)
-        eeprom_dtor(this->eeprom);
 
     free(this);
 }
@@ -132,9 +122,7 @@ void sys_reboot(struct _system *this) {
     flash_reboot(this->flash);
     sreg_reboot(this->sreg);
     gpr_reboot(this->gpr);
-    
     data_reboot(this->data);
-    eeprom_reboot(this->eeprom);
 }
 
 void sys_write_gpr(struct _system *this, const int rx, const int8_t data) {
@@ -241,24 +229,9 @@ int8_t* sys_dump_data(const struct _system *this) {
     return data_dump(this->data);
 }
 
-void sys_write_eeprom(struct _system *this, const uint16_t addr, const int8_t value) {
-
-    eeprom_write(this->eeprom, addr, value);
-}
-
-int8_t sys_read_eeprom(const struct _system *this, const uint16_t addr) {
-
-    return eeprom_read(this->eeprom, addr);
-}
-
-void sys_eeprom_coi(const struct _system *this, tuple_t *buffer) {
-
-    eeprom_coi(this->eeprom, buffer);
-}
-
 int8_t* sys_dump_eeprom(const struct _system *this) {
 
-    return eeprom_dump(this->eeprom);
+    return data_dump_eeprom(this->data);
 }
 
 int sys_add_breakp(const struct _system *this, const char *point) {
@@ -293,7 +266,7 @@ static void sys_update_io(struct _system *this, const uint64_t dc) {
     const uint8_t sreg = sreg_dump(this->sreg);
     const bool iflag = ((sreg & (0x01 << IF)) >> IF);
 
-    data_update_io(this->data, dc);
+    data_update_io(this->data, this->clock, dc);
 
     if(iflag == true) {
 

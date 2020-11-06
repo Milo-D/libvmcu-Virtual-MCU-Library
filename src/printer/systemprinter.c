@@ -208,32 +208,18 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
 
     dwin_add(window, EPNL, "EEPROM:\n\n", D);
 
-    tuple_t *coi = tuple_ctor(2, UINT16, INT);
-    sys_eeprom_coi(sys, coi);
-
     int8_t *eeprom = sys_dump_eeprom(sys);
     int16_t cursor = dwin_curs_of(window, EPNL);
-
-    if(*((int*) tuple_get(coi, 1)) != NONE) {
-
-        cursor = *((int16_t*) tuple_get(coi, 0));
-        dwin_set_curs(window, EPNL, cursor);
-    }
 
     queue_t *stream = queue_ctor();
 
     for(int i = (cursor - 4); i <= (cursor + 4); i++) {
-
-        int ism = D;
 
         if(i < 0 || i >= EEPROM_SIZE) {
 
             dwin_add(window, EPNL, "\n", D);
             continue;
         }
-
-        if(i == *((int16_t*) tuple_get(coi, 0)))
-            ism = color(*((int*) tuple_get(coi, 1)));
 
         char vstr[3];
         to_hex(eeprom[i], vstr);
@@ -252,14 +238,13 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
         queue_put(stream, 4, "0x", right, vstr, "\n");
         
         char *val_out = queue_str(stream);
-        dwin_add(window, EPNL, val_out, ism);
+        dwin_add(window, EPNL, val_out, D);
         
         queue_flush(stream);
         nfree(5, addr, left, addr_out, right, val_out);
     }
 
     queue_dtor(stream);
-    tuple_dtor(coi);
 }
 
 static void print_flash(debugwindow_t *window, system_t *sys) {

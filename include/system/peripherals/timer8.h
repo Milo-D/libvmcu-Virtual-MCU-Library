@@ -4,6 +4,7 @@
 #define TIMER8_H
 
 // C Headers
+#include <stdbool.h>
 #include <inttypes.h>
 
 typedef struct _irq irq_t;
@@ -44,6 +45,7 @@ extern void timer8_tick(struct _timer8 *this, irq_t *irq, const uint64_t dc);
 extern void timer8_force_ocpa(struct _timer8 *this);
 extern void timer8_force_ocpb(struct _timer8 *this);
 
+extern bool timer8_is_busy(struct _timer8 *this);
 extern void timer8_reboot(struct _timer8 *this);
 
 #endif

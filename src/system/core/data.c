@@ -139,14 +139,19 @@ void data_reboot(const struct _data *this) {
     data_set_coi(this, 0x0000, NONE);
 }
 
-void data_update_io(const struct _data *this, const uint64_t dc) {
+void data_update_io(const struct _data *this, const uint32_t cpu_clk, const uint64_t dc) {
 
-    io_update(this->io, dc);
+    io_update(this->io, cpu_clk, dc);
 }
 
 int data_check_irq(const struct _data *this) {
 
     return io_check_irq(this->io);
+}
+
+int8_t* data_dump_eeprom(const struct _data *this) {
+    
+    return io_dump_eeprom(this->io);
 }
 
 /* --- Private --- */

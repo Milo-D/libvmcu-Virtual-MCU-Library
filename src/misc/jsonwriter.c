@@ -178,9 +178,11 @@ static int make_eeprom_obj(system_t *sys, queue_t *buffer) {
     queue_put(buffer, 1, CONST_TAB);
     queue_put(buffer, 1, "\"eeprom_memory\": {\n\n");
 
+    int8_t *memory = sys_dump_eeprom(sys);
+
     for(int i = 0; i < EEPROM_SIZE; i++) {
 
-        int8_t cell_data = sys_read_eeprom(sys, i);
+        int8_t cell_data = memory[i];
 
         if(cell_data == 0x00)
             continue;
