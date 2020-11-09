@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Stackpointer Initialization to RAMEND
+
 ## v.0.4.0 - 2020-11-09
 
 - Added EEPROM Module

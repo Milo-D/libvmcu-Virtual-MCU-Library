@@ -175,7 +175,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [ ] Peripherals
     - [x] 8-bit Timer (partial)
     - [ ] 16-bit Timer
-    - [ ] EEPROM
+    - [x] EEPROM
     - [ ] UART
     - [ ] SPI
     - [ ] ...

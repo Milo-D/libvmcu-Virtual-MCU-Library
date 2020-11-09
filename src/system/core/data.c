@@ -34,6 +34,9 @@ struct _data* data_ctor(void) {
 
     data->coi = tuple_ctor(2, UINT16, INT);
     data_set_coi(data, 0x0000, NONE);
+    
+    data->memory[SPL] = spl(RAM_END);
+    data->memory[SPH] = sph(RAM_END);
 
     return data;
 }
@@ -137,6 +140,9 @@ void data_reboot(const struct _data *this) {
 
     memset(this->memory, 0x00, (RAM_END + 1) * sizeof(int8_t));
     data_set_coi(this, 0x0000, NONE);
+
+    this->memory[SPL] = spl(RAM_END);
+    this->memory[SPH] = sph(RAM_END);
 }
 
 void data_update_io(const struct _data *this, const uint32_t cpu_clk, const uint64_t dc) {
