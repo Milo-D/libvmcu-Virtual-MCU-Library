@@ -40,7 +40,7 @@ typedef struct _timer8 {
 extern struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory);
 extern void timer8_dtor(struct _timer8 *this);
 
-extern void timer8_tick(struct _timer8 *this, irq_t *irq, const uint64_t dc);
+extern void timer8_update(struct _timer8 *this, irq_t *irq, const uint64_t dc);
 
 extern void timer8_force_ocpa(struct _timer8 *this);
 extern void timer8_force_ocpb(struct _timer8 *this);

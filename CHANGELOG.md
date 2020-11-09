@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Bugfix: COM0Bn bits are now working correctly
 - Stackpointer Initialization to RAMEND
 
 ## v.0.4.0 - 2020-11-09

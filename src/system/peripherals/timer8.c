@@ -123,7 +123,7 @@ void timer8_dtor(struct _timer8 *this) {
     free(this);
 }
 
-void timer8_tick(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
+void timer8_update(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
 
     const uint16_t csx = prescale(*(this->tccrb));
 
@@ -272,6 +272,16 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
             irq_enable(irq, OVF0_VECT);
     }
 
+    if(*(this->tcnt) == *(this->ocrb)) {
+        
+        *(this->tifr) |= (0x01 << OCFB);
+        
+        if(((0x01 << OCFB) & *(this->timsk)))
+            irq_enable(irq, OC0B_VECT); // currently only timer0
+            
+        trigger_ocpb(this);
+    }
+
     if(*(this->tcnt) == *(this->ocra)) {
 
         *(this->tifr) |= (0x01 << OCFA);
@@ -281,16 +291,6 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
             irq_enable(irq, OC0A_VECT); // currently only timer0
 
         trigger_ocpa(this);
-    }
-    
-    if(*(this->tcnt) == *(this->ocrb)) {
-        
-        *(this->tifr) |= (0x01 << OCFB);
-        
-        if(((0x01 << OCFB) & *(this->timsk)))
-            irq_enable(irq, OC0B_VECT); // currently only timer0
-            
-        trigger_ocpb(this);
     }
 }
 

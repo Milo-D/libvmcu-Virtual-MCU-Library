@@ -42,7 +42,7 @@ void io_update(struct _io *this, const uint32_t cpu_clk, const uint64_t dc) {
     /* Timer0 Update */
 
     if(timer8_is_busy(this->timer0) == true)
-        timer8_tick(this->timer0, this->irq, dc);
+        timer8_update(this->timer0, this->irq, dc);
 
     /* EEPROM Update */
 
