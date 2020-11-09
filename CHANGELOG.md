@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-## v.0.3.1 - 2020-10-29
+## v.0.4.0 - 2020-11-09
+
+- Added EEPROM Module
+    - Cycle accurate simulation of EEPROM
+    - 2 out of 3 EEP Modes implemented
+        - Atomic Erase/Write Mode
+        - Erase Mode
+    - EEPROM Ready Interrupts (ERDY)
+    - Reading EEPROM by setting EERE
 
 - Switching to ATmega328P
 - Stack Bug-Fix
