@@ -82,7 +82,7 @@ int io_check_irq(const struct _io *this) {
         case USART_UDRE_VECT: /* not yet implemented */           break;
         case USART_TX_VECT:   /* not yet implemented */           break;
         case ADC_VECT:        /* not yet implemented */           break;
-        case ERDY_VECT:       /* no flag clearing */              break;
+        case ERDY_VECT:       /* no flag clearing needed */       break;
         case ACOMP_VECT:      /* not yet implemented */           break;
 
         default:              /* should not happen */             break;
@@ -199,12 +199,15 @@ static void write_EECR(struct _io *this, const int8_t value) {
     const uint8_t eecr = this->memory[0x1f];
     uint8_t masked_value = (value & 0x3e);
 
-    if((eecr & (0x01 << EEPE)) != 0x00) {  // OLD_EECR != EEPE
-        
+    if((eecr & (0x01 << EEPE)) != 0x00) {
+
         masked_value &= ~(0x01 << EEPM0);
         masked_value &= ~(0x01 << EEPM1);
+        masked_value |=  (0x01 << EEPE);
+        
+        this->memory[0x1f] = masked_value;
 
-    } else if((value & (0x01 << EEPE)) != 0x00) {   // EECR <- EEPE & OLD_EECR != EEPE
+    } else if((value & (0x01 << EEPE)) != 0x00) {
         
         this->memory[0x1f] = masked_value;
         eeprom_try_write(this->eeprom);
@@ -213,15 +216,31 @@ static void write_EECR(struct _io *this, const int8_t value) {
 
         this->memory[0x1f] = masked_value;        
         eeprom_try_read(this->eeprom);
+        
+    } else {
+
+        this->memory[0x1f] = masked_value;
     }
+    
+    const uint8_t new_eecr = this->memory[0x1f];
 
     if(((eecr & (0x01 << EEMPE)) >> EEMPE) == 0x00) {
     
-        if((value & (0x01 << EEMPE)) != 0x00)
+        if((new_eecr & (0x01 << EEMPE)) != 0x00)
             eeprom_enable_write(this->eeprom);
     }
+    
+    if((eecr & (0x01 << EERIE)) != 0x00) {
 
-    this->memory[0x1f] = masked_value;
+        if(((new_eecr & (0x01 << EERIE)) >> EERIE) == 0x00)
+            irq_disable(this->irq, ERDY_VECT);
+    }
+    
+    if(((eecr & (0x01 << EEPE)) >> EEPE) == 0x00) {
+        
+        if((new_eecr & (0x01 << EEPE)) != 0x00)
+            irq_disable(this->irq, ERDY_VECT);
+    }
 }
 
 static void write_EEDR(struct _io *this, const int8_t value) {

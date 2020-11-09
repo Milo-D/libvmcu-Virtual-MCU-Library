@@ -183,9 +183,9 @@ void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char *mem_c
         ascii[i - cell] = (uint8_t) memory[i];
 
     char *msg = val_of_eep(mem_cell, range, ascii);
-    
+
     dwin_write(window, OPNL, msg, D);
-    dwin_set_curs(window, EPNL, cell);
+    dwin_set_curs(window, EPNL, (cell + offs - 1));
 
     free(msg);
 }

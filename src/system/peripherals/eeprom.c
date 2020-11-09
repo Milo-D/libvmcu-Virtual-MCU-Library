@@ -70,7 +70,7 @@ void eeprom_update(struct _eeprom *this, irq_t *irq, const uint32_t cpu_clk, con
 
     if(this->mw_enabled == true && this->mw_lock == false)
         this->mw_counter -= dc;
-        
+
     if(this->mw_counter <= 0) {
 
         *(this->eecr) &= ~(0x01 << EEMPE);
@@ -119,20 +119,26 @@ void eeprom_try_read(struct _eeprom *this) {
 
     if(addr < EEPROM_SIZE)
         *(this->eedr) = this->memory[addr];
-    
+
     /* missing: cpu halt (4 cycles) */
 }
 
 void eeprom_try_write(struct _eeprom *this) {
 
-    if(this->mw_enabled == false)
-        return;
-
     if(((*(this->eecr) & (0x01 << EEPE)) >> EEPE) == 0x00)
         return;
 
-    if((*(this->spmcsr) & (0x01 << SPMEN)) != 0x00)
+    if((*(this->spmcsr) & (0x01 << SPMEN)) != 0x00) {
+
+        *(this->eecr) &= ~(0x01 << EEPE);        
         return;
+    }
+        
+    if(this->mw_enabled == false) {
+     
+        *(this->eecr) &= ~(0x01 << EEPE);
+        return;
+    }
     
     switch( eep_mode(*(this->eecr)) ) {
         
@@ -160,7 +166,7 @@ bool eeprom_is_busy(struct _eeprom *this) {
 
     if((*(this->eecr) & (0x01 << EERIE)) != 0x00)
         return true;
-    
+
     if(this->mw_enabled == true)
         return true;
         
@@ -174,7 +180,7 @@ int8_t* eeprom_dump(const struct _eeprom *this) {
 
 void eeprom_reboot(struct _eeprom *this) {
     
-    memset(&this->memory, 0xff, EEPROM_SIZE * sizeof(int8_t));
+    memset(this->memory, 0xff, EEPROM_SIZE * sizeof(int8_t));
     
     this->mw_counter = 0;
     this->mw_enabled = false;

@@ -1,3 +1,0 @@
-1.) test eeprom module
-2.) xe/xec/... should set focus on the last byte read instead of the first one
-6.) cpu halt after write/read
