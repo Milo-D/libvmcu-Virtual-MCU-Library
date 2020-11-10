@@ -7,7 +7,11 @@
 #include <inttypes.h>
 
 // Project Headers
+#include "system/core/sfr.h"
 #include "system/mcudef.h"
+
+#define io_write_sfr(this, addr, value) (*sfr_write[addr - GPR_SIZE])(this, value);
+#define io_read_sfr(this, addr) (*sfr_read[addr - GPR_SIZE])(this);
 
 typedef struct _irq irq_t;
 
@@ -40,10 +44,5 @@ extern void io_reboot(const struct _io *this);
 /* EEPROM Operations */
 
 extern int8_t* io_dump_eeprom(const struct _io *this);
-
-/* SFR Access Functions */
-
-extern void (*io_write[SFR_SIZE]) (struct _io *this, const int8_t value);
-extern int8_t (*io_read[SFR_SIZE]) (struct _io *this);
 
 #endif

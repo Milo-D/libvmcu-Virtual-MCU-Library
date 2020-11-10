@@ -38,8 +38,6 @@ struct _lmap* lmap_ctor(void) {
     for(int i = 0; i < N_FLOW - 6; i++) {
 
         /* (N_FLOW - 6) excludes indirect jumps */
-
-        const char *instr = mnemstr[FLOW][i];
         strmap_put(lmap->map, mnemstr[FLOW][i]);
     }
 

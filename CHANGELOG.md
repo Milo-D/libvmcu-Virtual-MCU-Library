@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## v.0.4.1 - 2020-11-10
 
+- Refactor: Splitted IO into two submodules (io.h, sfr.h)
+- Cleanup: Improved code readability of bitfunctions in peripherals
+- Fixed some unwanted gcc warnings
 - Bugfix: COM0Bn bits are now working correctly
 - Stackpointer Initialization to RAMEND
 

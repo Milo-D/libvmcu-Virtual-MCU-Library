@@ -1,5 +1,5 @@
 CXX      := -gcc
-CXXFLAGS := -O1 -D
+CXXFLAGS := -O1 -Wall -D
 LDFLAGS  := -L /usr/lib -lm -lncurses
 MCU_ARCH := ATMEGA328P
 BUILD    := ./build

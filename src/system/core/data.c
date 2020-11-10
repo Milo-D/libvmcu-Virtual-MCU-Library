@@ -93,10 +93,10 @@ void data_write(struct _data *this, const uint16_t addr, const int8_t value) {
 
     if(addr >= SFR_START && addr <= SFR_END) {
 
-        (*io_write[addr - GPR_SIZE])(this->io, value);
+        io_write_sfr(this->io, addr, value);
         data_set_coi(this, addr, DEST);
 
-        return;        
+        return;
     }
 
     this->memory[addr] = value;
@@ -111,7 +111,7 @@ int8_t data_read(const struct _data *this, const uint16_t addr) {
     if(addr >= SFR_START && addr <= SFR_END) {
 
         data_set_coi(this, addr, SRC);
-        return (*io_read[addr - GPR_SIZE])(this->io);        
+        return io_read_sfr(this->io, addr);
     }
 
     data_set_coi(this, addr, SRC);

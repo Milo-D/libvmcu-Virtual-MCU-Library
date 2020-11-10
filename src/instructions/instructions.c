@@ -206,8 +206,6 @@ void jmp(system_t *sys, const int opcode) {
 
 void ijmp(system_t *sys, const int opcode) {
 
-    const int pc = sys_get_pc(sys);
-
     const uint8_t zl = sys_read_data(sys, ZL);
     const uint8_t zh = sys_read_data(sys, ZH);
 

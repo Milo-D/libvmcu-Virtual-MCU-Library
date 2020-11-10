@@ -9,6 +9,7 @@
 #include "system/peripherals/eeprom.h"
 #include "system/core/irq.h"
 #include "system/mcudef.h"
+#include "misc/bitmanip.h"
 
 #define NMOD 4
 #define UNDEFINED -1
@@ -82,7 +83,7 @@ void eeprom_update(struct _eeprom *this, irq_t *irq, const uint32_t cpu_clk, con
         if((this->wapc -= rounded) <= 0) {
 
             (*exec[ eep_mode(*(this->eecr)) ])(this);
-            *(this->eecr) &= ~(0x01 << EEPE);
+            clearbit(*(this->eecr), EEPE);
 
             this->wapc = UNDEFINED;
             this->data = UNDEFINED;
@@ -90,9 +91,9 @@ void eeprom_update(struct _eeprom *this, irq_t *irq, const uint32_t cpu_clk, con
         }
     }
     
-    if((*(this->eecr) & (0x01 << EERIE)) != 0x00) {
+    if(bit(*(this->eecr), EERIE) == 0x01) {
 
-        if((*(this->eecr) & (0x01 << EEPE)) == 0x00)
+        if(bit(*(this->eecr), EEPE) == 0x00)
             irq_enable(irq, ERDY_VECT);
     }
 
@@ -109,7 +110,7 @@ void eeprom_enable_write(struct _eeprom *this) {
 
 void eeprom_try_read(struct _eeprom *this) {
 
-    if((*(this->eecr) & (0x01 << EEPE)) != 0x00)
+    if(bit(*(this->eecr), EEPE) == 0x01)
         return;
         
     const uint8_t al = *(this->eearl);
@@ -125,18 +126,18 @@ void eeprom_try_read(struct _eeprom *this) {
 
 void eeprom_try_write(struct _eeprom *this) {
 
-    if(((*(this->eecr) & (0x01 << EEPE)) >> EEPE) == 0x00)
+    if(bit(*(this->eecr), EEPE) == 0x00)
         return;
 
-    if((*(this->spmcsr) & (0x01 << SPMEN)) != 0x00) {
+    if(bit(*(this->spmcsr), SPMEN) == 0x01) {
 
-        *(this->eecr) &= ~(0x01 << EEPE);        
+        clearbit(*(this->eecr), EEPE);       
         return;
     }
         
     if(this->mw_enabled == false) {
      
-        *(this->eecr) &= ~(0x01 << EEPE);
+        clearbit(*(this->eecr), EEPE);
         return;
     }
     
@@ -229,19 +230,3 @@ static void (*exec[NMOD]) (struct _eeprom *this) = {
     eeprom_exec_write,
     eeprom_exec_reserved
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

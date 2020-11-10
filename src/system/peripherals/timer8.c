@@ -9,6 +9,7 @@
 #include "system/peripherals/timer8.h"
 #include "system/core/irq.h"
 #include "system/mcudef.h"
+#include "misc/bitmanip.h"
 
 /*
 *
@@ -229,28 +230,28 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
 
     if(++(*(this->tcnt)) == 0x00) {
 
-        *(this->tifr) |= (0x01 << TOV);
+        setbit(*(this->tifr), TOV);
 
-        if(((0x01 << TOV) & *(this->timsk)))
+        if(bit(*(this->timsk), TOV) == 0x01)
             irq_enable(irq, OVF0_VECT);
     }
 
     if(*(this->tcnt) == *(this->ocra)) {
 
-        *(this->tifr) |= (0x01 << OCFA);
+        setbit(*(this->tifr), OCFA);
 
-        if(((0x01 << OCFA) & *(this->timsk)))
-            irq_enable(irq, OC0A_VECT); // currently only timer0
+        if(bit(*(this->timsk), OCFA) == 0x01)
+            irq_enable(irq, OC0A_VECT); // currently only tc0
 
         trigger_ocpa(this);
     }
     
     if(*(this->tcnt) == *(this->ocrb)) {
         
-        *(this->tifr) |= (0x01 << OCFB);
+        setbit(*(this->tifr), OCFB);
         
-        if(((0x01 << OCFB) & *(this->timsk)))
-            irq_enable(irq, OC0B_VECT); // currently only timer0
+        if(bit(*(this->timsk), OCFB) == 0x01)
+            irq_enable(irq, OC0B_VECT); // currently only tc0
             
         trigger_ocpb(this);
     }
@@ -266,29 +267,29 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
     
     if(++(*(this->tcnt)) == 0x00) {
 
-        *(this->tifr) |= (0x01 << TOV);
+        setbit(*(this->tifr), TOV);
 
-        if(((0x01 << TOV) & *(this->timsk)))
+        if(bit(*(this->timsk), TOV) == 0x01)
             irq_enable(irq, OVF0_VECT);
     }
 
     if(*(this->tcnt) == *(this->ocrb)) {
         
-        *(this->tifr) |= (0x01 << OCFB);
+        setbit(*(this->tifr), OCFB);
         
-        if(((0x01 << OCFB) & *(this->timsk)))
-            irq_enable(irq, OC0B_VECT); // currently only timer0
+        if(bit(*(this->timsk), OCFB) == 0x01)
+            irq_enable(irq, OC0B_VECT); // currently only tc0
             
         trigger_ocpb(this);
     }
 
     if(*(this->tcnt) == *(this->ocra)) {
 
-        *(this->tifr) |= (0x01 << OCFA);
+        setbit(*(this->tifr), OCFA);
         *(this->tcnt) = 0x00;
 
-        if(((0x01 << OCFA) & *(this->timsk)))
-            irq_enable(irq, OC0A_VECT); // currently only timer0
+        if(bit(*(this->timsk), OCFA) == 0x01)
+            irq_enable(irq, OC0A_VECT); // currently only tc0
 
         trigger_ocpa(this);
     }
@@ -308,7 +309,7 @@ static void timer8_tick_reserved(struct _timer8 *this, irq_t *irq) {
 
 static void trigger_ocpa(struct _timer8 *this) {
 
-    if((*(this->ddrxa) & (0x01 << this->oca)) == 0x00)
+    if(bit(*(this->ddrxa), this->oca) == 0x00)
         return;
 
     switch( comtc8a(*(this->tccra)) ) {
@@ -324,7 +325,7 @@ static void trigger_ocpa(struct _timer8 *this) {
 
 static void trigger_ocpb(struct _timer8 *this) {
 
-    if((*(this->ddrxb) & (0x01 << this->ocb)) == 0x00)
+    if(bit(*(this->ddrxb), this->ocb) == 0x00)
         return;
 
     switch( comtc8b(*(this->tccra)) ) {
@@ -340,7 +341,7 @@ static void trigger_ocpb(struct _timer8 *this) {
 
 static void trigger_ocpa_pwm_fast(struct _timer8 *this) {
 
-    if((*(this->ddrxa) & (0x01 << this->oca)) == 0x00)
+    if(bit(*(this->ddrxa), this->oca) == 0x00)
         return;
 
     switch( comtc8a(*(this->tccra)) ) {
@@ -356,7 +357,7 @@ static void trigger_ocpa_pwm_fast(struct _timer8 *this) {
 
 static void trigger_ocpb_pwm_fast(struct _timer8 *this) {
 
-    if((*(this->ddrxb) & (0x01 << this->ocb)) == 0x00)
+    if(bit(*(this->ddrxb), this->ocb) == 0x00)
         return;
 
     switch( comtc8b(*(this->tccra)) ) {
@@ -372,7 +373,7 @@ static void trigger_ocpb_pwm_fast(struct _timer8 *this) {
 
 static void trigger_ocpa_pwm_correct(struct _timer8 *this) {
 
-    if((*(this->ddrxa) & (0x01 << this->oca)) == 0x00)
+    if(bit(*(this->ddrxa), this->oca) == 0x00)
         return;
 
     switch( comtc8a(*(this->tccra)) ) {
@@ -388,7 +389,7 @@ static void trigger_ocpa_pwm_correct(struct _timer8 *this) {
 
 static void trigger_ocpb_pwm_correct(struct _timer8 *this) {
 
-    if((*(this->ddrxb) & (0x01 << this->ocb)) == 0x00)
+    if(bit(*(this->ddrxb), this->ocb) == 0x00)
         return;
 
     switch( comtc8b(*(this->tccra)) ) {

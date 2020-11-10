@@ -28,7 +28,6 @@
 static void mode_disassembler(const char *hex_file);
 static void mode_headless(const char *hex_file);
 static void mode_help(void);
-static void check_args(const int argc, char **argv, list_t *buffer);
 
 /* --- Public --- */
 
@@ -171,27 +170,4 @@ static void mode_help(void) {
 
     printf("\nREPORTING BUGS\n");
     printf(" https://github.com/Milo-D/MDX-Assembly-Debugger/issues/\n\n");
-}
-
-static void check_args(const int argc, char **argv, list_t *buffer) {
-
-    print_status("Parsing arguments...", false);
-
-    if(argc < 2)
-        print_status("Missing arguments.", true);
-
-    for(int i = 1; i < argc; i++) {
-
-        const char *argp = argv[i];
-
-        if(file_exists(argp) == false)
-            print_status("Specified file does not exist.", true);
-
-        is_hex_file(argp);
-
-        const size_t bytes = strlen(argp);
-        ls_push(buffer, (void*) argp, (bytes + 1) * sizeof(char));
-    }
-
-    print_status("Done!", false);
 }

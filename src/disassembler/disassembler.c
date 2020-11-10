@@ -55,7 +55,7 @@ int disassemble(const char *hex_file, array_t *buffer) {
 
 static void add_labels(array_t *buffer) {
 
-    lmap_t *lmap = lmap_ctor(); int offs = 0;
+    lmap_t *lmap = lmap_ctor();
 
     for(int i = 0; i < buffer->size; i++) {
 
