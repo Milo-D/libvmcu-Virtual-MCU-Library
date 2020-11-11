@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added new testfile: kmp.asm (KMP Pattern Matching for M328P)
+
 ## v.0.4.1 - 2020-11-10
 
 - Refactor: Splitted IO into two submodules (io.h, sfr.h)
