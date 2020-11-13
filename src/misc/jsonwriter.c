@@ -184,7 +184,7 @@ static int make_eeprom_obj(system_t *sys, queue_t *buffer) {
 
         int8_t cell_data = memory[i];
 
-        if(cell_data == 0x00)
+        if(cell_data == (int8_t) 0xff)
             continue;
 
         queue_t *addr = queue_ctor();

@@ -2142,13 +2142,10 @@ void bst(system_t *sys, const int opcode) {
 
 void sbi(system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 3, 8, 0) + GPR_SIZE;
+    const int dest = extract(opcode, 3, 8, 0);
     const int bpos = extract(opcode, 0, 3, 0);
-
-    const uint8_t val = sys_read_data(sys, dest);
-    const uint8_t result = (val | (0x01 << bpos));
-
-    sys_write_data(sys, dest, result);
+    
+    sys_set_sfr(sys, (GPR_SIZE + dest), bpos);
     
     sys_move_pc(sys, 1);
     sys->cycles += 2;
@@ -2156,13 +2153,10 @@ void sbi(system_t *sys, const int opcode) {
 
 void cbi(system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 3, 8, 0) + GPR_SIZE;
+    const int dest = extract(opcode, 3, 8, 0);
     const int bpos = extract(opcode, 0, 3, 0);
 
-    const uint8_t val = sys_read_data(sys, dest);
-    const uint8_t result = (val & ~(0x01 << bpos));
-
-    sys_write_data(sys, dest, result);
+    sys_clear_sfr(sys, (GPR_SIZE + dest), bpos);
     
     sys_move_pc(sys, 1);
     sys->cycles += 2;

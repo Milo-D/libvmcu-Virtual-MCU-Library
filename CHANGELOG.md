@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## v.0.4.2 - 2020-11-13
+
+- Added two functions to system_t: 
+    - sys_set_sfr(system_t*, const uint16_t, const int)
+    - sys_clear_sfr(system_t*, const uint16_t, const int)
+    
+- The first 32 registers in IO-Space are now set/cleared by writing single bits when using sbi, cbi
+- Headless Mode is now ignoring EEPROM values equals to 0xff, in order to minimize output 
+- Bugfix: Flag clearing in TIFR0
 - Added new testfile: kmp.asm (KMP Pattern Matching for M328P)
 
 ## v.0.4.1 - 2020-11-10

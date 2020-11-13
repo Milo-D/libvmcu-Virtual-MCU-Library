@@ -39,7 +39,7 @@ extern void eeprom_update(struct _eeprom *this, irq_t *irq, const uint32_t cpu_c
 extern void eeprom_enable_write(struct _eeprom *this);
 
 extern void eeprom_try_read(struct _eeprom *this);
-extern void eeprom_try_write(struct _eeprom *this);
+extern int eeprom_try_write(struct _eeprom *this);
 
 extern bool eeprom_is_busy(struct _eeprom *this);
 extern int8_t* eeprom_dump(const struct _eeprom *this);

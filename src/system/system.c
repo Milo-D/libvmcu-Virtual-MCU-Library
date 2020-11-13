@@ -229,6 +229,16 @@ int8_t* sys_dump_data(const struct _system *this) {
     return data_dump(this->data);
 }
 
+void sys_set_sfr(struct _system *this, const uint16_t addr, const int bit) {
+    
+    data_set_sfr(this->data, addr, bit);
+}
+
+void sys_clear_sfr(struct _system *this, const uint16_t addr, const int bit) {
+
+    data_clear_sfr(this->data, addr, bit);
+}
+
 int8_t* sys_dump_eeprom(const struct _system *this) {
 
     return data_dump_eeprom(this->data);

@@ -21,6 +21,9 @@
 
 typedef struct _io io_t;
 
+extern void (*sfr_set[SFRL_SIZE]) (io_t *this, const int bit);
+extern void (*sfr_clear[SFRL_SIZE]) (io_t *this, const int bit);
+
 extern void (*sfr_write[SFR_SIZE]) (io_t *this, const int8_t value);
 extern int8_t (*sfr_read[SFR_SIZE]) (io_t *this);
 

@@ -77,6 +77,11 @@ extern int8_t sys_read_data(const struct _system *this, const uint16_t addr);
 extern void sys_data_coi(const struct _system *this, tuple_t *buffer);
 extern int8_t* sys_dump_data(const struct _system *this);
 
+/* IO/SFR Operations */
+
+extern void sys_set_sfr(struct _system *this, const uint16_t addr, const int bit);
+extern void sys_clear_sfr(struct _system *this, const uint16_t addr, const int bit);
+
 /* EEPROM Operations */
 
 extern int8_t* sys_dump_eeprom(const struct _system *this);

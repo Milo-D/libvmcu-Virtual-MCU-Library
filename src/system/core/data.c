@@ -155,6 +155,24 @@ int data_check_irq(const struct _data *this) {
     return io_check_irq(this->io);
 }
 
+void data_set_sfr(struct _data *this, const uint16_t addr, const int bit) {
+    
+    if(addr < SFRL_START || addr > SFRL_END)
+        return;
+
+    io_set_sfr(this->io, addr, bit);
+    data_set_coi(this, addr, DEST);
+}
+
+void data_clear_sfr(struct _data *this, const uint16_t addr, const int bit) {
+    
+    if(addr < SFRL_START || addr > SFRL_END)
+        return;
+
+    io_clear_sfr(this->io, addr, bit);
+    data_set_coi(this, addr, DEST);
+}
+
 int8_t* data_dump_eeprom(const struct _data *this) {
     
     return io_dump_eeprom(this->io);

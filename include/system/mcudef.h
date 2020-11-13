@@ -11,13 +11,17 @@
 
     #define GPR_SIZE 32
     #define SREG_SIZE 8
-    #define SFR_SIZE 167
     #define SRAM_SIZE 2048
     #define EEPROM_SIZE 1024
     #define FLASH_SIZE 16384    /* 16384 x 16-bit */
 
+    #define SFR_SIZE 167
     #define SFR_START 0x0020
     #define SFR_END 0x00c6
+    
+    #define SFRL_SIZE 32
+    #define SFRL_START SFR_START
+    #define SFRL_END 0x003f
     
     #define RAM_END 0x08ff
 

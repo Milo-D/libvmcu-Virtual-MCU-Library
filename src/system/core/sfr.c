@@ -21,6 +21,265 @@
 
 #ifdef ATMEGA328P
 
+static void set_reserved(io_t *io, const int bit) {
+    
+    /* set access on reserved memory */
+    return;
+}
+
+static void set_PINB(io_t *io, const int bit) {
+
+    setbit(io->memory[0x03], bit);
+}
+
+static void set_DDRB(io_t *io, const int bit) {
+
+    setbit(io->memory[0x04], bit);
+}
+
+static void set_PORTB(io_t *io, const int bit) {
+
+    setbit(io->memory[0x05], bit);
+}
+
+static void set_PINC(io_t *io, const int bit) {
+
+    setbit(io->memory[0x06], bit);
+}
+
+static void set_DDRC(io_t *io, const int bit) {
+
+    setbit(io->memory[0x07], bit);
+}
+
+static void set_PORTC(io_t *io, const int bit) {
+
+    setbit(io->memory[0x08], bit);
+}
+
+static void set_PIND(io_t *io, const int bit) {
+
+    setbit(io->memory[0x09], bit);
+}
+
+static void set_DDRD(io_t *io, const int bit) {
+
+    setbit(io->memory[0x0a], bit);
+}
+
+static void set_PORTD(io_t *io, const int bit) {
+
+    setbit(io->memory[0x0b], bit);
+}
+
+static void set_TIFR0(io_t *io, const int bit) {
+
+    switch(bit) {
+        
+        case 3: case 4: case 5:
+        case 6: case 7: return;
+
+        default: break;
+    }
+    
+    clearbit(io->memory[TIFR0], bit);
+}
+
+static void set_TIFR1(io_t *io, const int bit) {
+
+    setbit(io->memory[0x16], bit);
+}
+
+static void set_TIFR2(io_t *io, const int bit) {
+
+    setbit(io->memory[0x17], bit);
+}
+
+static void set_PCIFR(io_t *io, const int bit) {
+
+    setbit(io->memory[0x1b], bit);
+}
+
+static void set_EIFR(io_t *io, const int bit) {
+
+    setbit(io->memory[0x1c], bit);
+}
+
+static void set_EIMSK(io_t *io, const int bit) {
+
+    setbit(io->memory[0x1d], bit);
+}
+
+static void set_GPIOR0(io_t *io, const int bit) {
+
+    setbit(io->memory[0x1e], bit);
+}
+
+static void set_EECR(io_t *io, const int bit) {
+    
+    const uint8_t eecr = io->memory[EECR];
+    
+    switch(bit) {
+        
+        case EERE:
+        
+            if(bit(eecr, EEPE) == 0x00)
+                eeprom_try_read(io->eeprom);
+        
+        break;
+        
+        case EEPE:
+
+            if(bit(eecr, EEPE) == 0x01)
+                return;
+                
+            setbit(io->memory[EECR], EEPE);
+
+            if(eeprom_try_write(io->eeprom) == 0)
+                irq_disable(io->irq, ERDY_VECT);
+        
+        break;
+        
+        case EEMPE:
+        
+            if(bit(eecr, EEMPE) == 0x01)
+                return;
+            
+            setbit(io->memory[EECR], EEMPE);
+            eeprom_enable_write(io->eeprom);
+        
+        break;
+        
+        case EERIE:
+        
+            setbit(io->memory[EECR], EERIE);
+        
+        break;
+        
+        case EEPM0: case EEPM1:
+        
+            if(bit(eecr, EEPE) == 0x00)
+                setbit(io->memory[EECR], bit);
+
+        break;
+
+        default: break;
+    }
+}
+
+static void clear_reserved(io_t *io, const int bit) {
+    
+    /* clear access on reserved memory */
+    return;
+}
+
+static void clear_PINB(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x03], bit);
+}
+
+static void clear_DDRB(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x04], bit);
+}
+
+static void clear_PORTB(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x05], bit);
+}
+
+static void clear_PINC(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x06], bit);
+}
+
+static void clear_DDRC(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x07], bit);
+}
+
+static void clear_PORTC(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x08], bit);
+}
+
+static void clear_PIND(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x09], bit);
+}
+
+static void clear_DDRD(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x0a], bit);
+}
+
+static void clear_PORTD(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x0b], bit);
+}
+
+static void clear_TIFR0(io_t *io, const int bit) {
+
+    /* TIFR0 can not be cleared this way */
+    return;
+}
+
+static void clear_TIFR1(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x16], bit);
+}
+
+static void clear_TIFR2(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x17], bit);
+}
+
+static void clear_PCIFR(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x1b], bit);
+}
+
+static void clear_EIFR(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x1c], bit);
+}
+
+static void clear_EIMSK(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x1d], bit);
+}
+
+static void clear_GPIOR0(io_t *io, const int bit) {
+
+    clearbit(io->memory[0x1e], bit);
+}
+
+static void clear_EECR(io_t *io, const int bit) {
+
+    const uint8_t eecr = io->memory[EECR];
+
+    switch(bit) {
+        
+        case EEMPE: clearbit(io->memory[EECR], EEMPE); break;
+        
+        case EERIE:
+        
+            if(bit(eecr, EERIE) == 0x01)
+                irq_disable(io->irq, ERDY_VECT);
+                
+            clearbit(io->memory[EECR], EERIE);
+        
+        break;
+        
+        case EEPM0: case EEPM1:
+        
+            if(bit(eecr, EEPE) == 0x00)
+                clearbit(io->memory[EECR], bit);
+        
+        break;
+    }
+}
+
 static void write_reserved(io_t *io, const int8_t value) {
 
     /* write access on reserved memory */
@@ -74,7 +333,7 @@ static void write_PORTD(io_t *io, const int8_t value) {
 
 static void write_TIFR0(io_t *io, const int8_t value) {
 
-    io->memory[0x15] &= ~value;
+    io->memory[TIFR0] &= ~value;
 }
 
 static void write_TIFR1(io_t *io, const int8_t value) {
@@ -108,52 +367,11 @@ static void write_GPIOR0(io_t *io, const int8_t value) {
 }
 
 static void write_EECR(io_t *io, const int8_t value) {
-    
-    const uint8_t eecr = io->memory[EECR];
-    uint8_t masked_value = (value & 0x3e);
 
-    if(bit(eecr, EEPE) == 0x01) {
+    void (*bitop[2]) (io_t *io, const int bit) = { clear_EECR, set_EECR };
 
-        clearbit(masked_value, EEPM0);
-        clearbit(masked_value, EEPM1);
-        
-        setbit(masked_value, EEPE);
-        io->memory[EECR] = masked_value;
-
-    } else if(bit(value, EEPE) == 0x01) {
-        
-        io->memory[EECR] = masked_value;
-        eeprom_try_write(io->eeprom);
-        
-    } else if(bit(value, EERE) == 0x01) {
-
-        io->memory[EECR] = masked_value;        
-        eeprom_try_read(io->eeprom);
-        
-    } else {
-
-        io->memory[EECR] = masked_value;
-    }
-    
-    const uint8_t new_eecr = io->memory[EECR];
-
-    if(bit(eecr, EEMPE) == 0x00) {
-    
-        if(bit(new_eecr, EEMPE) == 0x01)
-            eeprom_enable_write(io->eeprom);
-    }
-    
-    if(bit(eecr, EERIE) == 0x01) {
-
-        if(bit(new_eecr, EERIE) == 0x00)
-            irq_disable(io->irq, ERDY_VECT);
-    }
-    
-    if(bit(eecr, EEPE) == 0x00) {
-        
-        if(bit(new_eecr, EEPE) == 0x01)
-            irq_disable(io->irq, ERDY_VECT);
-    }
+    for(int i = EERE; i <= EEPM1; i++)
+        (*bitop[ bit(value, i) ])(io, i);
 }
 
 static void write_EEDR(io_t *io, const int8_t value) {
@@ -576,7 +794,7 @@ static int8_t read_PORTD(io_t *io) {
 
 static int8_t read_TIFR0(io_t *io) {
 
-    return io->memory[0x15];
+    return io->memory[TIFR0];
 }
 
 static int8_t read_TIFR1(io_t *io) {
@@ -969,6 +1187,78 @@ static int8_t read_UDR0(io_t *io) {
     return io->memory[0xa6];
 }
 
+void (*sfr_set[SFRL_SIZE]) (io_t *this, const int bit) = {
+
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_PINB,
+    set_DDRB,
+    set_PORTB,
+    set_PINC,
+    set_DDRC,
+    set_PORTC,
+    set_PIND,
+    set_DDRD,
+    set_PORTD,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_TIFR0,
+    set_TIFR1,
+    set_TIFR2,
+    set_reserved,
+    set_reserved,
+    set_reserved,
+    set_PCIFR,
+    set_EIFR,
+    set_EIMSK,
+    set_GPIOR0,
+    set_EECR
+};
+
+void (*sfr_clear[SFRL_SIZE]) (io_t *this, const int bit) = {
+  
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_PINB,
+    clear_DDRB,
+    clear_PORTB,
+    clear_PINC,
+    clear_DDRC,
+    clear_PORTC,
+    clear_PIND,
+    clear_DDRD,
+    clear_PORTD,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_TIFR0,
+    clear_TIFR1,
+    clear_TIFR2,
+    clear_reserved,
+    clear_reserved,
+    clear_reserved,
+    clear_PCIFR,
+    clear_EIFR,
+    clear_EIMSK,
+    clear_GPIOR0,
+    clear_EECR
+};
+
 void (*sfr_write[SFR_SIZE]) (io_t *this, const int8_t value) = {
 
     write_reserved,
@@ -1312,3 +1602,10 @@ int8_t (*sfr_read[SFR_SIZE]) (io_t *this) = {
 };
 
 #endif
+
+
+
+
+
+
+

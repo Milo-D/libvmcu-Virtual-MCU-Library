@@ -112,7 +112,7 @@ void eeprom_try_read(struct _eeprom *this) {
 
     if(bit(*(this->eecr), EEPE) == 0x01)
         return;
-        
+
     const uint8_t al = *(this->eearl);
     const uint8_t ah = *(this->eearh);
     
@@ -124,21 +124,21 @@ void eeprom_try_read(struct _eeprom *this) {
     /* missing: cpu halt (4 cycles) */
 }
 
-void eeprom_try_write(struct _eeprom *this) {
+int eeprom_try_write(struct _eeprom *this) {
 
     if(bit(*(this->eecr), EEPE) == 0x00)
-        return;
+        return -1;
 
     if(bit(*(this->spmcsr), SPMEN) == 0x01) {
 
         clearbit(*(this->eecr), EEPE);       
-        return;
+        return -1;
     }
         
     if(this->mw_enabled == false) {
      
         clearbit(*(this->eecr), EEPE);
-        return;
+        return -1;
     }
     
     switch( eep_mode(*(this->eecr)) ) {
@@ -158,6 +158,7 @@ void eeprom_try_write(struct _eeprom *this) {
     this->addr = ((ah << 8) + al);
 
     // missing: cpu halt (2 cycles)
+    return 0;
 }
 
 bool eeprom_is_busy(struct _eeprom *this) {

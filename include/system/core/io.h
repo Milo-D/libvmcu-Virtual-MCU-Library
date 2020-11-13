@@ -10,8 +10,11 @@
 #include "system/core/sfr.h"
 #include "system/mcudef.h"
 
-#define io_write_sfr(this, addr, value) (*sfr_write[addr - GPR_SIZE])(this, value);
-#define io_read_sfr(this, addr) (*sfr_read[addr - GPR_SIZE])(this);
+#define io_set_sfr(this, addr, bit) (*sfr_set[addr - GPR_SIZE])(this, bit)
+#define io_clear_sfr(this, addr, bit) (*sfr_clear[addr - GPR_SIZE])(this, bit)
+
+#define io_write_sfr(this, addr, value) (*sfr_write[addr - GPR_SIZE])(this, value)
+#define io_read_sfr(this, addr) (*sfr_read[addr - GPR_SIZE])(this)
 
 typedef struct _irq irq_t;
 
