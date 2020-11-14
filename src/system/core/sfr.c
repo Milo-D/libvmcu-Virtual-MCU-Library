@@ -75,14 +75,25 @@ static void set_PORTD(io_t *io, const int bit) {
 static void set_TIFR0(io_t *io, const int bit) {
 
     switch(bit) {
-        
+
         case 3: case 4: case 5:
         case 6: case 7: return;
 
         default: break;
     }
+
+    if(bit(io->memory[TIFR0], bit) == 0x00)
+        return;
+
+    const uint16_t vector[3] = { 
+
+        OVF0_VECT, 
+        OC0A_VECT,
+        OC0B_VECT 
+    };
     
     clearbit(io->memory[TIFR0], bit);
+    irq_disable(io->irq, vector[bit]);
 }
 
 static void set_TIFR1(io_t *io, const int bit) {
@@ -127,7 +138,7 @@ static void set_EECR(io_t *io, const int bit) {
                 eeprom_try_read(io->eeprom);
         
         break;
-        
+
         case EEPE:
 
             if(bit(eecr, EEPE) == 0x01)
@@ -266,7 +277,7 @@ static void clear_EECR(io_t *io, const int bit) {
         
             if(bit(eecr, EERIE) == 0x01)
                 irq_disable(io->irq, ERDY_VECT);
-                
+
             clearbit(io->memory[EECR], EERIE);
         
         break;
@@ -332,6 +343,12 @@ static void write_PORTD(io_t *io, const int8_t value) {
 }
 
 static void write_TIFR0(io_t *io, const int8_t value) {
+
+    for(int i = TOV; i <= OCFB; i++) {
+
+        if(bit(value, i) == 0x01)
+            set_TIFR0(io, i);
+    }
 
     io->memory[TIFR0] &= ~value;
 }
@@ -548,7 +565,31 @@ static void write_PCMSK2(io_t *io, const int8_t value) {
 
 static void write_TIMSK0(io_t *io, const int8_t value) {
 
-    io->memory[0x4e] = value;
+    const uint8_t timsk = io->memory[TIMSK0];
+    const uint8_t tifr = io->memory[TIFR0];
+
+    const uint16_t vector[3] = { 
+        
+        OVF0_VECT, 
+        OC0A_VECT, 
+        OC0B_VECT 
+    };
+
+    for(int i = TOIE; i <= OCIEB; i++) {
+
+        const uint8_t bv = bit(value, i);
+
+        if(bv == 0x00 && bit(timsk, i) == 0x01) {
+
+            irq_disable(io->irq, vector[i]);
+            continue;
+        }
+        
+        if(bv == 0x01 && bit(tifr, i) == 0x01)
+            irq_enable(io->irq, vector[i]);
+    }
+
+    io->memory[TIMSK0] = (value & 0x07);
 }
 
 static void write_TIMSK1(io_t *io, const int8_t value) {
@@ -994,7 +1035,7 @@ static int8_t read_PCMSK2(io_t *io) {
 
 static int8_t read_TIMSK0(io_t *io) {
 
-    return io->memory[0x4e];
+    return io->memory[TIMSK0];
 }
 
 static int8_t read_TIMSK1(io_t *io) {

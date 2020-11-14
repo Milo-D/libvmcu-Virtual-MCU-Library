@@ -179,6 +179,10 @@
     #define TOV 0
     #define OCFA 1
     #define OCFB 2
+    
+    #define TOIE 0
+    #define OCIEA 1
+    #define OCIEB 2
 
     /* Timer0 (8-bit) */
 
