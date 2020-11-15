@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Bugfix: Timer increments now, even when executing illegal opcode.
 - Timer Interrupts are now handled in TIFR0 and TIMSK0, too.
 
 ## v.0.4.2 - 2020-11-13

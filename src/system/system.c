@@ -90,6 +90,8 @@ int sys_step(struct _system *this) {
     if(p == NULL || p->exec == false) {
 
         flash_move_pc(this->flash, 1);
+        this->cycles += 1;
+
         err = -1;
         
     } else {
