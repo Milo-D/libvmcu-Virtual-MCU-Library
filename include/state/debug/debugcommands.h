@@ -7,6 +7,7 @@ typedef struct _debugwindow debugwindow_t;
 typedef struct _system system_t;
 
 extern void jump_forward(debugwindow_t *window, system_t *sys, const int delay);
+extern void jump_cycles(debugwindow_t *window, system_t *sys, const int n);
 extern void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp);
 extern void remove_breakpoint(debugwindow_t *window, system_t *sys, const char *bp);
 extern void examine_data(debugwindow_t *window, system_t *sys, const char *mem_cell);

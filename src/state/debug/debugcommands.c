@@ -47,6 +47,23 @@ void jump_forward(debugwindow_t *window, system_t *sys, const int delay) {
     dwin_write(window, OPNL, BREAK_REACHED, G);
 }
 
+void jump_cycles(debugwindow_t *window, system_t *sys, const int n) {
+
+    if(n < 0) {
+        
+        dwin_write(window, OPNL, CYCLE_ERR, D);
+        return;
+    }
+    
+    const uint64_t end = (sys->cycles + n);
+    dwin_write(window, OPNL, CYCLE_JUMP_START, D);
+
+    while(sys->cycles < end)
+        sys_step(sys);
+
+    dwin_write(window, OPNL, CYCLE_REACHED, G);
+}
+
 void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
 
     if(sys_add_breakp(sys, bp) < 0) {

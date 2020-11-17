@@ -94,6 +94,7 @@ void debug(system_t *sys, const char *file) {
             case 23: show_clock(window, sys);                                     break;
             case 24: show_time(window, sys);                                      break;
             case 25: examine_data_byte(window, sys, at(com, 1));                  break;
+            case 26: jump_cycles(window, sys, get_int(at(com, 1)));               break;
 
             default: /* ignoring invalid input */                                 break;
         }

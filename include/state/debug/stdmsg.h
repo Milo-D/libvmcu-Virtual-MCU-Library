@@ -13,6 +13,10 @@
 #define BREAK_REACHED "(mdx) <--- Breakpoint reached --->\n"
 #define DELAY_ERR "(mdx) Invalid delay. Usage: jb <delay in ms>\n"
 
+#define CYCLE_JUMP_START "(mdx) Jumping to desired Cycle...\n"
+#define CYCLE_REACHED "(mdx) <--- Cycle reached --->\n"
+#define CYCLE_ERR "(mdx) Invalid cycle. Usage: jc <cycle offset>\n"
+
 #define MEM_CELL_ERR "(mdx) Illegal memory cell.\n"
 #define MEM_RANGE_ERR "(mdx) Literal length must be > 0.\n"
 #define EEP_DECODE_ERR "(mdx) Could not decode EEPROM Hex File.\n"

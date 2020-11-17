@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## v.0.4.3 - 2020-11-17
+
+- Added new Debugcommand: jc <cycle offset n> (jump cycles)
+    - Fast forwarding simulation without the need for setting breakpoints
+    - Useful when waiting for an event in an endless loop, like EEPROM Ready or a Timer Overflow.
+
 - Bugfix: Timer increments now, even when executing illegal opcode.
 - Timer Interrupts are now handled in TIFR0 and TIMSK0, too.
 
