@@ -127,47 +127,53 @@ static void mode_headless(const char *hex_file) {
 
 static void mode_help(void) {
 
-    printf("\nNote that, MDX is still in development.\n");
+    printf("\nMDX - A Debugger for AVR Microcontrollers.\n");
 
     printf("\nARGUMENTS\n");
     printf(" <blank>       <HEX-FILE, ...>           - Interactive Assembly Debugger\n");
     printf(" -d            <HEX-FILE>                - Disassembler\n");
     printf(" -hl           <HEX-FILE>                - Headless Mode\n");
-    printf(" -h            <blank>                   - Help\n");
+    printf(" -h            <none>                    - Help\n");
 
     printf("\nDEBUG COMMANDS\n");
-    printf(" n             <blank>                   - Stepping forward\n");
-    printf(" b             <blank>                   - Stepping backwards\n");
-    printf(" rn            <blank>                   - Show next GPR Page\n");
-    printf(" rp            <blank>                   - Show prev. GPR Page\n");
-    printf(" dn            <blank>                   - Next Data memory cell\n");
-    printf(" dp            <blank>                   - Prev. Data memory cell\n");
+    printf(" n             <none>                    - Stepping forward\n");
+    printf(" b             <none>                    - Stepping backwards\n");
+    printf(" rn            <none>                    - Show next GPR Page\n");
+    printf(" rp            <none>                    - Show prev. GPR Page\n");
+    printf(" dn            <none>                    - Next Data memory cell\n");
+    printf(" dp            <none>                    - Prev. Data memory cell\n");
     printf(" jb            <delay in ms>             - Jump to next Breakpoint\n");
-    printf(" en            <blank>                   - Next EEPROM memory cell\n");
-    printf(" ep            <blank>                   - Prev. EEPROM memory cell\n");
-    printf(" q             <blank>                   - Leave / Open File Selector\n");
-    printf(" ?             <blank>                   - Show commands (coming soon)\n");
+    printf(" jc            <cycles>                  - Jump n Cycles forward\n");
+    printf(" en            <none>                    - Next EEPROM memory cell\n");
+    printf(" ep            <none>                    - Prev. EEPROM memory cell\n");
+    printf(" q             <none>                    - Leave / Open File Selector\n");
+    printf(" ?             <none>                    - Show commands (coming soon)\n");
     printf(" break         <line>                    - Set a Breakpoint at 'line'\n");
     printf(" unbreak       <line>                    - Remove Breakpoint at 'line'\n");
     printf(" def           <alias> <seq>             - Redefine Symbols in Table\n");
-    printf(" pn            <blank>                   - Show next Source Code Page\n");
-    printf(" pp            <blank>                   - Show prev. Source Code Page\n");
+    printf(" pn            <none>                    - Show next Source Code Page\n");
+    printf(" pp            <none>                    - Show prev. Source Code Page\n");
     printf(" xd            <address>                 - Examine Data Memory at 'address'\n");
     printf(" xe            <address>                 - Examine EEPROM Memory at 'address'\n");
     printf(" xec           <addr> <range>            - Examine EEPROM Memory as char literal\n");
+    printf(" xdc           <addr> <range>            - Examine Data Memory as char literal\n");
+    printf(" xdb           <address>                 - Examine Data Memory as bitmap\n");
     printf(" leep          <eep.hex>                 - Load an .eep.hex file into the EEPROM\n");
     printf(" cycles        <none>                    - Show current Cycles\n");
     printf(" clock         <none>                    - Show Clock Frequency\n");
     printf(" time          <none>                    - Show elapsed Time\n");
 
     printf("\nGITHUB\n");
-    printf(" https://github.com/Milo-D/MDX-Assembly-Debugger/\n");
+    printf(" https://github.com/Milo-D/MDX-Micro-Debugger/\n");
 
+    printf("\nCOMPLETE WIKI\n");
+    printf(" https://github.com/Milo-D/MDX-Micro-Debugger/wiki\n");
+
+    printf("\nREPORTING BUGS\n");
+    printf(" https://github.com/Milo-D/MDX-Micro-Debugger/issues/\n");
+    
     printf("\nAUTHOR OF MDX\n");
     printf(" Name: David Milosevic\n");
     printf(" Email: David.Milosevic@web.de\n");
-    printf(" GitHub: Milo-D\n");
-
-    printf("\nREPORTING BUGS\n");
-    printf(" https://github.com/Milo-D/MDX-Assembly-Debugger/issues/\n\n");
+    printf(" GitHub: Milo-D\n\n");
 }
