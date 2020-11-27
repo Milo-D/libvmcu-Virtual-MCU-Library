@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fixed some issues in the Makefile
+
 ## v.0.4.3 - 2020-11-17
 
 - Added new Debugcommand: jc <cycle offset n> (jump cycles)
