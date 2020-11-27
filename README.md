@@ -111,6 +111,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | dn            | none          | Scroll to next Data Cell    |
 | dp            | none          | Scroll to prev. Data Cell   |
 | jb            | delay in ms   | Jump to next Breakpoint     |
+| jc            | cycles        | Jump n Cycles forward       |
 | en            | none          | Scroll to next EEPROM Cell  |
 | ep            | none          | Scroll to prev. EEPROM Cell |
 | xd            | address       | Examine Data Memory         |
@@ -162,7 +163,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [x] Syntax Highlight for the disassembled Sourcecode
 - [x] Interrupts supported
 - [x] Open and debug more than one file in the same session
-- [ ] Currently supporting ~ 133 assembly instructions
+- [x] Currently supporting ~ 133 assembly instructions
 
 - [x] Breakpoints
 - [ ] Watchpoints
