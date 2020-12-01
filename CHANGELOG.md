@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## v.0.4.4 - 2020-12-01
+
+- Major Performance Enhancement
+    - 56% better runtime performance
+        - before: 7.250.000 Cycles per second (7,25 MHz)
+        - after:  12.800.000 Cycles per second (12,8 MHz)
+    - Tested on an Intel Core i5. So actual execution speed may differ.
+    - Goal: atleast 20 MHz
+
 - Fixed some issues in the Makefile
 
 ## v.0.4.3 - 2020-11-17

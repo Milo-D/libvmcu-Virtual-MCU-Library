@@ -87,15 +87,20 @@ int sys_step(struct _system *this) {
     
     plain_t *p = flash_fetch(this->flash);
 
-    if(p == NULL || p->exec == false) {
+    if(p->exec == false) {
 
         flash_move_pc(this->flash, 1);
         this->cycles += 1;
 
         err = -1;
-        
+
+    } else if(p->dword == true) {
+
+        uint16_t opcl = flash_read(this->flash, this->flash->pc + 1);
+        (*instructions[p->key])(this, (p->opcode << 16) + opcl);
+
     } else {
-        
+
         (*instructions[p->key])(this, p->opcode);
     }
 

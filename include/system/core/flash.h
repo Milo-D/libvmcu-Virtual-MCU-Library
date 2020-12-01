@@ -13,14 +13,12 @@ typedef struct _plain plain_t;
 typedef struct _array array_t;
 
 typedef struct _flash {
-    
-    int pc;
-    
-    int16_t *memory;
-    unsigned int mem_usage;
 
-    array_t *plain;
+    plain_t *memory;
     table_t *table;
+
+    int pc;
+    unsigned int mem_usage;
     
 } flash_t;
 

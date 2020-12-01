@@ -25,69 +25,79 @@ struct _flash* flash_ctor(const char *file) {
     if((flash = malloc(sizeof(struct _flash))) == NULL)
         return NULL;
 
-    flash->memory = malloc(FLASH_SIZE * sizeof(int16_t));
-    memset(flash->memory, 0x0000, FLASH_SIZE * sizeof(int16_t));
+    flash->memory = malloc(FLASH_SIZE * sizeof(plain_t));
 
-    flash->plain = array_ctor(1, NULL, NULL);
+    array_t *buffer = array_ctor(1, NULL, NULL);
     flash->table = table_ctor(file);
 
-    decode_hex(file, flash->plain);
-    flash->mem_usage = flash->plain->top;
+    decode_hex(file, buffer);
+    flash->mem_usage = buffer->top;
+
+    for(int i = 0; i < FLASH_SIZE; i++) {
+
+        flash->memory[i].opcode = 0xffff;
+        flash->memory[i].addr = i;
+        flash->memory[i].key = -1;
+
+        flash->memory[i].mnem = NULL; 
+        flash->memory[i].exec = false;
+        flash->memory[i].dword = false;
+    }
 
     for(int i = 0; i < flash->mem_usage; i++) {
 
-        plain_t *p = (plain_t*) array_at(flash->plain, i);
+        plain_t *p = (plain_t*) array_at(buffer, i);
+
+        if(p->addr >= FLASH_SIZE)
+            continue;
+
+        flash->memory[ p->addr ].addr = p->addr;
+        flash->memory[ p->addr ].key = p->key;
+        
+        flash->memory[ p->addr ].exec = p->exec;
+        flash->memory[ p->addr ].dword = p->dword;
 
         if(p->dword == true) {
 
             const uint16_t opch = ((p->opcode & 0xffff0000) >> 16);
             const uint16_t opcl = ((p->opcode & 0x0000ffff));
 
-            flash->memory[ p->addr ] = opch;
-            flash->memory[ p->addr + 0x01 ] = opcl;
+            flash->memory[ p->addr ].opcode = opch;
+            flash->memory[ p->addr + 0x01 ].opcode = opcl;
 
             continue;
         }
 
-        flash->memory[ p->addr ] = p->opcode;
+        flash->memory[ p->addr ].opcode = p->opcode;
     }
 
     flash->pc = 0x0000;
+    array_dtor(buffer);
+
     return flash;
 }
 
 void flash_dtor(struct _flash *this) {
 
     table_dtor(this->table);
-    array_dtor(this->plain);
-
+    
     free(this->memory);
     free(this);
 }
 
 plain_t* flash_fetch(const struct _flash *this) {
 
-    return flash_read_instr(this, this->pc);
+    return &this->memory[this->pc % FLASH_SIZE];
 }
 
 plain_t* flash_read_instr(const struct _flash *this, const int addr) {
 
-    const int tar = (addr % FLASH_SIZE);
-
-    for(int i = 0; i < this->mem_usage; i++) {
-
-        plain_t *p = (plain_t*) array_at(this->plain, i);
-
-        if(p->addr == tar)
-            return p;
-    }
-
-    return NULL;
+    return &this->memory[addr % FLASH_SIZE];
 }
 
 uint16_t flash_read(const struct _flash *this, const int addr) {
 
-    return this->memory[addr % FLASH_SIZE];
+    return this->memory[addr % FLASH_SIZE].opcode;
 }
 
 void flash_move_pc(struct _flash *this, const int inc) {
