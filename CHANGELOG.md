@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Statusregister can be read/written now by writing to its dataspace address (0x005f)
+
 ## v.0.4.4 - 2020-12-01
 
 - Major Performance Enhancement

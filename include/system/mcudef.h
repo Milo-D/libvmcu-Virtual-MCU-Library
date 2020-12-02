@@ -30,6 +30,8 @@
 
     #define PC_BIT 16
 
+    #define SREG 0x003f
+
     #define IF 7
     #define TF 6
     #define HF 5

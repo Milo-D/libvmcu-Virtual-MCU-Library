@@ -214,6 +214,12 @@ void sys_write_data(struct _system *this, const uint16_t addr, const int8_t valu
         gpr_write(this->gpr, addr, value);
         return;
     }
+    
+    if(addr == (GPR_SIZE + SREG)) {
+        
+        sreg_write_byte(this->sreg, value);
+        return;
+    }
 
     data_write(this->data, addr, value);
 }
@@ -222,6 +228,9 @@ int8_t sys_read_data(const struct _system *this, const uint16_t addr) {
 
     if(addr < GPR_SIZE)
         return gpr_read(this->gpr, addr);
+
+    if(addr == (GPR_SIZE + SREG))
+        return sreg_read_byte(this->sreg);
 
     return data_read(this->data, addr);
 }

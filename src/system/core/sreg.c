@@ -23,7 +23,7 @@ struct _sreg* sreg_ctor(void) {
     
     if((sreg = malloc(sizeof(struct _sreg))) == NULL)
         return NULL;
-    
+
     sreg->coi = malloc(SREG_SIZE * sizeof(int));
     memset(sreg->coi, NONE, SREG_SIZE * sizeof(int));
     
@@ -60,6 +60,34 @@ bool sreg_read(const struct _sreg *this, const int flag) {
     
     this->coi[flag] = SRC;
     return ((this->status >> flag) & 0x01); 
+}
+
+void sreg_write_byte(struct _sreg *this, const uint8_t byte) {
+
+    this->coi[CF] = DEST;
+    this->coi[ZF] = DEST;
+    this->coi[NF] = DEST;
+    this->coi[VF] = DEST;
+    this->coi[SF] = DEST;
+    this->coi[HF] = DEST;
+    this->coi[TF] = DEST;
+    this->coi[IF] = DEST;
+
+    this->status = byte;
+}
+
+uint8_t sreg_read_byte(struct _sreg *this) {
+    
+    this->coi[CF] = SRC;
+    this->coi[ZF] = SRC;
+    this->coi[NF] = SRC;
+    this->coi[VF] = SRC;
+    this->coi[SF] = SRC;
+    this->coi[HF] = SRC;
+    this->coi[TF] = SRC;
+    this->coi[IF] = SRC;
+
+    return this->status;
 }
 
 void sreg_clear(struct _sreg *this) {
