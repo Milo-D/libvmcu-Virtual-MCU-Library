@@ -42,6 +42,8 @@ extern void flash_reboot(struct _flash *this);
 
 /* Table Operations */
 
+extern int flash_write_table(struct _flash *this, const int lnno, const char *line);
+extern char* flash_read_table(struct _flash *this, const int lnno);
 extern int flash_add_breakp(const struct _flash *this, const char *point);
 extern int flash_del_breakp(const struct _flash *this, const char *point);
 extern bool flash_on_breakp(const struct _flash *this);

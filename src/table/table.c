@@ -63,6 +63,28 @@ void table_dtor(struct _table *this) {
     free(this);
 }
 
+int table_write(struct _table *this, const int lnno, const char *line) {
+    
+    if(lnno < 0 || lnno >= this->size)
+        return -1;
+        
+    free(this->entry[lnno].ln);
+    
+    const size_t len = strlen(line) + 1;
+    this->entry[lnno].ln = malloc(len * sizeof(char));
+    strncpy(this->entry[lnno].ln, line, len);
+
+    return 0;
+}
+
+char* table_read(struct _table *this, const int lnno) {
+    
+    if(lnno < 0 || lnno >= this->size)
+        return NULL;
+        
+    return this->entry[lnno].ln;
+}
+
 int table_add_breakp(struct _table *this, const char *point) {
 
     const int line = get_int(point);

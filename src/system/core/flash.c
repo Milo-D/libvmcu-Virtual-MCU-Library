@@ -120,6 +120,16 @@ void flash_reboot(struct _flash *this) {
     this->pc = 0x0000;
 }
 
+int flash_write_table(struct _flash *this, const int lnno, const char *line) {
+    
+    return table_write(this->table, lnno, line);
+}
+
+char* flash_read_table(struct _flash *this, const int lnno) {
+    
+    return table_read(this->table, lnno);
+}
+
 int flash_add_breakp(const struct _flash *this, const char *point) {
 
     return table_add_breakp(this->table, point);

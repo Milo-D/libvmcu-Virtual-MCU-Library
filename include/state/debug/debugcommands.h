@@ -20,5 +20,6 @@ extern void show_cycles(debugwindow_t *window, system_t *sys);
 extern void show_clock(debugwindow_t *window, system_t *sys);
 extern void show_time(debugwindow_t *window, system_t *sys);
 extern void examine_data_byte(debugwindow_t *window, system_t *sys, const char *mem_cell);
+extern void create_comment(debugwindow_t *window, system_t *sys, const char *line, const char *comment);
 
 #endif

@@ -260,6 +260,16 @@ int8_t* sys_dump_eeprom(const struct _system *this) {
     return data_dump_eeprom(this->data);
 }
 
+int sys_write_table(struct _system *this, const int lnno, const char *line) {
+    
+    return flash_write_table(this->flash, lnno, line);
+}
+
+char* sys_read_table(struct _system *this, const int lnno) {
+
+    return flash_read_table(this->flash, lnno);
+}
+
 int sys_add_breakp(const struct _system *this, const char *point) {
 
     return flash_add_breakp(this->flash, point);

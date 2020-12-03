@@ -23,6 +23,10 @@
 
 #define NOT_AVAIL "(mdx) This command is currently unavailable.\n"
 
+#define CC_FAILURE "(mdx) Could not create comment. Invalid line number.\n"
+#define CC_SUCCESS "(mdx) Successfully created comment.\n"
+#define CC_TOO_LONG "(mdx) Could not create comment. Comment length must be < 32.\n"
+
 
 extern char* sim_start(const char *file);
 

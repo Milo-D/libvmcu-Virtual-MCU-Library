@@ -23,6 +23,9 @@ typedef struct _table {
 extern struct _table* table_ctor(const char *hex_file);
 extern void table_dtor(struct _table *this);
 
+extern int table_write(struct _table *this, const int lnno, const char *line);
+extern char* table_read(struct _table *this, const int lnno);
+
 extern int table_add_breakp(struct _table *this, const char *point);
 extern int table_del_breakp(struct _table *this, const char *point);
 

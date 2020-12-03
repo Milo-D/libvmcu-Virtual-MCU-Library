@@ -88,6 +88,8 @@ extern int8_t* sys_dump_eeprom(const struct _system *this);
 
 /* Table Operations */
 
+extern int sys_write_table(struct _system *this, const int lnno, const char *line);
+extern char* sys_read_table(struct _system *this, const int lnno);
 extern int sys_add_breakp(const struct _system *this, const char *point);
 extern int sys_del_breakp(const struct _system *this, const char *point);
 extern bool sys_on_breakp(const struct _system *this);

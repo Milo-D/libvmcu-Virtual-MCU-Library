@@ -307,3 +307,42 @@ void examine_data_byte(debugwindow_t *window, system_t *sys, const char *mem_cel
 
     free(msg);   
 }
+
+void create_comment(debugwindow_t *window, system_t *sys, const char *line, const char *comment) {
+    
+    const int lnno = get_int(line);
+    const int len = strlen(comment);
+    
+    const char *mnem = sys_read_table(sys, lnno);
+    const int pos = strpos(mnem, ";");
+
+    if(len > 32) {
+        
+        dwin_write(window, OPNL, CC_TOO_LONG, D);
+        return;
+    }
+    
+    if(mnem == NULL || pos < 0) {
+
+        dwin_write(window, OPNL, CC_FAILURE, D);
+        return;
+    }
+
+    char *sub = substr(mnem, 0, pos + 1);
+    char *new_mnem = strxcat(sub, comment);
+
+    sys_write_table(sys, lnno, new_mnem);
+    dwin_write(window, OPNL, CC_SUCCESS, D);
+
+    free(new_mnem);
+    free(sub);
+}
+
+
+
+
+
+
+
+
+
