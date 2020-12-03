@@ -123,6 +123,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | cycles        | none          | Show current Cycles         |
 | clock         | none          | Show Clock Frequency        |
 | time          | none          | Show elapsed Time           |
+| cc            | line comment  | Create comment in disasm.   |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
 | ?             | none          | Show Help (in progress)     |
@@ -168,6 +169,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [x] Breakpoints
 - [ ] Watchpoints
 - [x] Examine Memory
+- [x] Create comments
 
 - [x] Interactive Mode
 - [x] Disassembler Mode

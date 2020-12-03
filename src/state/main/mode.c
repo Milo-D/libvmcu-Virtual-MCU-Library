@@ -162,6 +162,7 @@ static void mode_help(void) {
     printf(" cycles        <none>                    - Show current Cycles\n");
     printf(" clock         <none>                    - Show Clock Frequency\n");
     printf(" time          <none>                    - Show elapsed Time\n");
+    printf(" cc            <line> <comment>          - Create comment in disassembly\n");
 
     printf("\nGITHUB\n");
     printf(" https://github.com/Milo-D/MDX-Micro-Debugger/\n");
