@@ -10,6 +10,7 @@ INCLUDE  := -I include
 SRC      :=                                	\
 	$(wildcard src/cli/main/*.c)		\
    	$(wildcard src/cli/debug/*.c)           \
+	$(wildcard src/cli/util/*.c)		\
    	$(wildcard src/collections/*.c)         \
    	$(wildcard src/disassembler/*.c)        \
    	$(wildcard src/instructions/*.c)        \

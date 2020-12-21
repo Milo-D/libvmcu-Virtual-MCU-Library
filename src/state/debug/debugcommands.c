@@ -137,7 +137,7 @@ void examine_eeprom(debugwindow_t *window, system_t *sys, const char *mem_cell) 
     char *msg = val_of(mem_cell, hex);
 
     dwin_write(window, OPNL, msg, D);
-    dwin_set_curs(window, EPNL, cell);
+    dwin_set_page(window, EPNL, cell);
 
     free(msg);
 }
@@ -202,7 +202,7 @@ void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char *mem_c
     char *msg = val_of_eep(mem_cell, range, ascii);
 
     dwin_write(window, OPNL, msg, D);
-    dwin_set_curs(window, EPNL, (cell + offs - 1));
+    dwin_set_page(window, EPNL, (cell + offs - 1));
 
     free(msg);
 }

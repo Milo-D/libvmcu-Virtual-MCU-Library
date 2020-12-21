@@ -6,23 +6,18 @@
 #include <ncurses.h>
 
 // Project Headers
-#include "cli/debug/panel.h"
-#include "cli/debug/highlighter.h"
+#include "cli/util/panel.h"
+#include "cli/util/highlighter.h"
 
 /* Forward Declaration of static Functions */
 
-static void panel_init(struct _panel *this, int h, int w, int y, int x);
+static void panel_init(struct _panel *this, properties_t *prop);
 
 /* --- Extern --- */
 
-struct _panel* panel_ctor(int h, int w, int y, int x, int cs, int cr) {
+void panel_ctor(struct _panel *this, properties_t *prop) {
 
-    struct _panel *panel; 
-
-    if((panel = malloc(sizeof(struct _panel))) == NULL)
-        return NULL;
-
-    panel->hl = hl_ctor();
+    this->hl = hl_ctor();
 
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
@@ -32,20 +27,16 @@ struct _panel* panel_ctor(int h, int w, int y, int x, int cs, int cr) {
     init_pair(6, COLOR_CYAN, COLOR_BLACK);
     init_pair(7, COLOR_WHITE, COLOR_BLACK);
 
-    panel_init(panel, h, w, y, x);
+    panel_init(this, prop);
 
-    panel->cursor = cs;
-    panel->range = cr;
-
-    return panel;
+    this->page = prop->page_init;
+    this->range = prop->page_range;
 }
 
 void panel_dtor(struct _panel *this) {
 
     delwin(this->win);
     hl_dtor(this->hl);
-    
-    free(this);
 }
 
 void panel_add(struct _panel *this, const char *str, const COLOR col) {
@@ -69,10 +60,10 @@ void panel_highlight(struct _panel *this, const char *str) {
     hl_paint(this->hl, this, str);
 }
 
-void panel_resize(struct _panel *this, int h, int w, int y, int x) {
+void panel_resize(struct _panel *this, properties_t *prop) {
 
     delwin(this->win);
-    panel_init(this, h, w, y, x);
+    panel_init(this, prop);
 }
 
 void panel_update(struct _panel *this) {
@@ -89,33 +80,38 @@ void panel_clear(struct _panel *this) {
     panel_update(this);
 }
 
-void panel_mv_curs(struct _panel *this, const int offs) {
+void panel_change_page(struct _panel *this, const int offs) {
 
-    if((this->cursor + offs) < 0)
+    if((this->page + offs) < 0)
         return;
 
-    if((this->cursor + offs) >= this->range)
+    if((this->page + offs) >= this->range)
         return;
 
-    this->cursor += offs;    
+    this->page += offs;    
 }
 
-void panel_set_curs(struct _panel *this, const int at) {
+void panel_set_page(struct _panel *this, const int at) {
 
     if(at < 0 || at >= this->range)
         return;
 
-    this->cursor = at;
+    this->page = at;
 }
 
-int panel_get_curs(struct _panel *this) {
+int panel_get_page(struct _panel *this) {
 
-    return this->cursor;
+    return this->page;
 }
 
 /* --- Static --- */
 
-static void panel_init(struct _panel *this, int h, int w, int y, int x) {
+static void panel_init(struct _panel *this, properties_t *prop) {
+
+    const int h = prop->window.height;
+    const int w = prop->window.width;
+    const int y = prop->window.y;
+    const int x = prop->window.x;
 
     this->win = newwin(h, w, y, x);
     wborder(this->win, 0, 0, 0, 0, 0, 0, 0, 0);

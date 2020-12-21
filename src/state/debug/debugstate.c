@@ -70,13 +70,13 @@ void debug(system_t *sys, const char *file) {
             break;
 
             case 1: sys_backstep(sys);                                            break;
-            case 2: dwin_mv_curs(window, GPNL, +1);                               break;
-            case 3: dwin_mv_curs(window, GPNL, -1);                               break;
-            case 4: dwin_mv_curs(window, DPNL, +1);                               break;
-            case 5: dwin_mv_curs(window, DPNL, -1);                               break;
+            case 2: dwin_change_page(window, GPNL, +1);                           break;
+            case 3: dwin_change_page(window, GPNL, -1);                           break;
+            case 4: dwin_change_page(window, DPNL, +1);                           break;
+            case 5: dwin_change_page(window, DPNL, -1);                           break;
             case 6: jump_forward(window, sys, get_int(at(com, 1)));               break;
-            case 7: dwin_mv_curs(window, EPNL, +1);                               break;
-            case 8: dwin_mv_curs(window, EPNL, -1);                               break;
+            case 7: dwin_change_page(window, EPNL, +1);                           break;
+            case 8: dwin_change_page(window, EPNL, -1);                           break;
             case 9: examine_data(window, sys, at(com, 1));                        break;
             case 10: examine_eeprom(window, sys, at(com, 1));                     break;
             case 11: examine_data_char(window, sys, at(com, 1), at(com, 2));      break;
@@ -88,8 +88,8 @@ void debug(system_t *sys, const char *file) {
             case 17: set_breakpoint(window, sys, at(com, 1));                     break;
             case 18: remove_breakpoint(window, sys, at(com, 1));                  break;
             case 19: dwin_write(window, OPNL, NOT_AVAIL, R);                      break;
-            case 20: dwin_mv_curs(window, RPNL, +1);                              break;
-            case 21: dwin_mv_curs(window, RPNL, -1);                              break;
+            case 20: dwin_change_page(window, RPNL, +1);                          break;
+            case 21: dwin_change_page(window, RPNL, -1);                          break;
             case 22: show_cycles(window, sys);                                    break;
             case 23: show_clock(window, sys);                                     break;
             case 24: show_time(window, sys);                                      break;

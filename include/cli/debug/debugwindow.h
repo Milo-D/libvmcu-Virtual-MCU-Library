@@ -14,7 +14,7 @@ Panels:
 
 (I) GPNL = gpr panel
 (II) SPNL = sreg panel
-(III) CPNL = code panel
+(III) FPNL = flash panel
 (IV) DPNL = data panel
 (V) EPNL = eeprom panel
 (VI) OPNL = output panel
@@ -22,15 +22,31 @@ Panels:
 
 **************************************************************************/
 
-typedef enum { GPNL, SPNL, CPNL, DPNL, EPNL, OPNL, RPNL } PANEL;
+typedef enum { GPNL, SPNL, FPNL, DPNL, EPNL, OPNL, RPNL } PANEL;
+
+typedef struct _gpnl gpnl_t;
+typedef struct _spnl spnl_t;
+typedef struct _fpnl fpnl_t;
+typedef struct _dpnl dpnl_t;
+typedef struct _epnl epnl_t;
+typedef struct _opnl opnl_t;
+typedef struct _rpnl rpnl_t;
 
 typedef struct _panel panel_t;
 typedef struct _prompt prompt_t;
 
 typedef struct _debugwindow {
 
-    panel_t **panel;
+    panel_t *panels[N_PANEL];
     prompt_t *prompt;
+    
+    gpnl_t *gpnl;
+    spnl_t *spnl;
+    fpnl_t *fpnl;
+    dpnl_t *dpnl;
+    epnl_t *epnl;
+    opnl_t *opnl;
+    rpnl_t *rpnl;
     
 } debugwindow_t;
 
@@ -50,9 +66,9 @@ extern void dwin_clear(struct _debugwindow *this);
 extern void dwin_update(struct _debugwindow *this, const PANEL ptype);
 extern void dwin_update_all(struct _debugwindow *this);
 
-extern void dwin_mv_curs(struct _debugwindow *this, const PANEL ptype, const int offs);
-extern void dwin_set_curs(struct _debugwindow *this, const PANEL ptype, const int at);
-extern int dwin_curs_of(struct _debugwindow *this, const PANEL ptype);
+extern void dwin_change_page(struct _debugwindow *this, const PANEL ptype, const int offs);
+extern void dwin_set_page(struct _debugwindow *this, const PANEL ptype, const int at);
+extern int dwin_get_page(struct _debugwindow *this, const PANEL ptype);
 
 extern int dwin_height(struct _debugwindow *this, const PANEL ptype);
 extern int dwin_width(struct _debugwindow *this, const PANEL ptype);

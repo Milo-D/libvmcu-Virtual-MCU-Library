@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## v.0.4.5 - 2020-12-21
+
+- DebugWindow refactored.
+    - No use of generic panels in DebugWindow anymore
+    - Created subdirectory: src/cli/util/ and include/cli/util
+    - Panel class is now stored in cli/util/
+    - Created individual panels (gpnl_t, etc.) in cli/debug/
+    - gpnl_t, spnl_t, fpnl_t, dpnl_t, epnl_t, opnl_t, rpnl_t are extending panel_t (cli/util/panel.h)
+    - Created _win_properties which holds data related to the window (WINDOW*) state (height, width, y, x)
+    - struct _properties extends struct _win_properties (adding page properties)
+    - Panels are now initialized by struct _properties*
+    - Prompt is now initialized by struct _win_properties* (prompt has no page properties)
+    - Right now extending panel_t class has no real benefits, since all individual panels are the same,
+    but this will change in the future.
+
 - Added: 'cc' debugcommand. Create comments in disassembly with 'cc <line> <comment>'
 - Statusregister can be read/written now by writing to its dataspace address (0x005f)
 

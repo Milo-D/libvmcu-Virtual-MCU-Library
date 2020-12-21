@@ -12,11 +12,11 @@
 
 /* Forward Declaration of static Functions */
 
-static void prompt_init(struct _prompt *this, int h, int w, int y, int x);
+static void prompt_init(struct _prompt *this, win_properties_t *prop);
 
 /* --- Extern --- */
 
-struct _prompt* prompt_ctor(int h, int w, int y, int x) {
+struct _prompt* prompt_ctor(win_properties_t *prop) {
 
     struct _prompt *prompt;
 
@@ -24,7 +24,7 @@ struct _prompt* prompt_ctor(int h, int w, int y, int x) {
         return NULL;
 
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
-    prompt_init(prompt, h, w, y, x);
+    prompt_init(prompt, prop);
 
     return prompt;
 }
@@ -51,10 +51,10 @@ void prompt_write(const struct _prompt *this, const char *str) {
     /* autocompletion in progress */
 }
 
-void prompt_resize(struct _prompt *this, int h, int w, int y, int x) {
+void prompt_resize(struct _prompt *this, win_properties_t *prop) {
 
     delwin(this->win);
-    prompt_init(this, h, w, y, x);
+    prompt_init(this, prop);
 }
 
 void prompt_update(const struct _prompt *this) {
@@ -65,7 +65,12 @@ void prompt_update(const struct _prompt *this) {
 
 /* --- Static --- */
 
-static void prompt_init(struct _prompt *this, int h, int w, int y, int x) {
+static void prompt_init(struct _prompt *this, win_properties_t *prop) {
+
+    const int h = prop->height;
+    const int w = prop->width;
+    const int y = prop->y;
+    const int x = prop->x;
 
     this->win = newwin(h, w, y, x);
     wbkgd(this->win, COLOR_PAIR(1));

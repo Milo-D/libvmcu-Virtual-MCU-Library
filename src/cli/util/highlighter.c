@@ -1,15 +1,13 @@
 /* Syntax Highlighter Implemetation */
 
-// C++ Header
-#include <stdio.h>
+// C Headers
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 // Project Headers
-#include "cli/debug/highlighter.h"
-#include "cli/debug/debugwindow.h"
-#include "cli/debug/panel.h"
+#include "cli/util/highlighter.h"
+#include "cli/util/panel.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "collections/strmap.h"

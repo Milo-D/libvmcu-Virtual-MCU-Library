@@ -54,7 +54,7 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
 
     int8_t *regfile = sys_dump_gpr(sys);
 
-    const int s = dwin_curs_of(window, GPNL) * 8;
+    const int s = dwin_get_page(window, GPNL) * 8;
     queue_t *stream = queue_ctor();
 
     for(int i = 0; i < 8; i++) {
@@ -138,12 +138,12 @@ static void print_data(debugwindow_t *window, system_t *sys) {
     sys_data_coi(sys, coi);
 
     int8_t *data = sys_dump_data(sys);
-    int16_t cursor = dwin_curs_of(window, DPNL);
+    int16_t cursor = dwin_get_page(window, DPNL);
 
     if(*((int*) tuple_get(coi, 1)) != NONE) {
 
         cursor = *((int16_t*) tuple_get(coi, 0));
-        dwin_set_curs(window, DPNL, cursor);
+        dwin_set_page(window, DPNL, cursor);
     }
 
     const uint8_t spl = (uint8_t) data[SPL];
@@ -209,7 +209,7 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
     dwin_add(window, EPNL, "EEPROM:\n\n", D);
 
     int8_t *eeprom = sys_dump_eeprom(sys);
-    int16_t cursor = dwin_curs_of(window, EPNL);
+    int16_t cursor = dwin_get_page(window, EPNL);
 
     queue_t *stream = queue_ctor();
 
@@ -249,7 +249,7 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
 
 static void print_flash(debugwindow_t *window, system_t *sys) {
 
-    dwin_add(window, CPNL, "Flash:\n\n", D);
+    dwin_add(window, FPNL, "Flash:\n\n", D);
 
     const int pc = sys_get_pc(sys);
     const int size = sys_table_size(sys);
@@ -269,7 +269,7 @@ static void print_flash(debugwindow_t *window, system_t *sys) {
 
         if(i < 0 || i > size - 1) {
 
-            dwin_add(window, CPNL, "\n", D);
+            dwin_add(window, FPNL, "\n", D);
             continue;
         }
 
@@ -281,30 +281,30 @@ static void print_flash(debugwindow_t *window, system_t *sys) {
             queue_put(stream, 3, "0x", fill, addr);
 
             char *out = queue_str(stream);
-            dwin_add(window, CPNL, out, D);
+            dwin_add(window, FPNL, out, D);
 
             nfree(3, addr, fill, out);
 
         } else {
 
-            dwin_add(window, CPNL, "      ", D);
+            dwin_add(window, FPNL, "      ", D);
         }
 
         if(i == k) {
 
-            dwin_add(window, CPNL, " [->] ", B);
+            dwin_add(window, FPNL, " [->] ", B);
 
         } else if(entry[i].breakp == true) {
 
-            dwin_add(window, CPNL, " [b+] ", R);
+            dwin_add(window, FPNL, " [b+] ", R);
 
         } else {
 
-            dwin_add(window, CPNL, "      ", D);
+            dwin_add(window, FPNL, "      ", D);
         }
 
-        dwin_highlight(window, CPNL, entry[i].ln);
-        dwin_add(window, CPNL, "\n", D);
+        dwin_highlight(window, FPNL, entry[i].ln);
+        dwin_add(window, FPNL, "\n", D);
 
         queue_flush(stream);
     }
@@ -319,7 +319,7 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
     const int pc = sys_get_pc(sys);
     const int size = sys_table_size(sys);
 
-    const int cursor = dwin_curs_of(window, RPNL);
+    const int cursor = dwin_get_page(window, RPNL);
     const int height = dwin_height(window, RPNL) - 4;
 
     const int start = (cursor * height);

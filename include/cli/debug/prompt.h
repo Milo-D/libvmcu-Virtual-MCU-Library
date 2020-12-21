@@ -5,19 +5,22 @@
 
 #define PLEN 64
 
+// Project Headers
+#include "cli/util/properties.h"
+
 typedef struct _prompt {
 
 	WINDOW *win;
 
 } prompt_t;
 
-extern struct _prompt* prompt_ctor(int h, int w, int y, int x);
+extern struct _prompt* prompt_ctor(win_properties_t *prop);
 extern void prompt_dtor(struct _prompt *this);
 
 extern void prompt_read(const struct _prompt *this, char *buffer);
 extern void prompt_write(const struct _prompt *this, const char *str);
 
-extern void prompt_resize(struct _prompt *this, int h, int w, int y, int x);
+extern void prompt_resize(struct _prompt *this, win_properties_t *prop);
 extern void prompt_update(const struct _prompt *this);
 
 #endif
