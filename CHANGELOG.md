@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- DebugWindow Refactor (II)
+    - panel properties are now calculated seperately in <g,s,f,d,e,o,r> pnl_ctor
+
 ## v.0.4.5 - 2020-12-21
 
 - DebugWindow refactored.

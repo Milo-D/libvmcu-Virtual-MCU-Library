@@ -14,13 +14,13 @@ typedef struct _prompt {
 
 } prompt_t;
 
-extern struct _prompt* prompt_ctor(win_properties_t *prop);
+extern struct _prompt* prompt_ctor(void);
 extern void prompt_dtor(struct _prompt *this);
 
 extern void prompt_read(const struct _prompt *this, char *buffer);
 extern void prompt_write(const struct _prompt *this, const char *str);
 
-extern void prompt_resize(struct _prompt *this, win_properties_t *prop);
+extern void prompt_resize(struct _prompt *this);
 extern void prompt_update(const struct _prompt *this);
 
 #endif

@@ -12,7 +12,9 @@ typedef struct _spnl {
 
 } spnl_t;
 
-extern struct _spnl* spnl_ctor(properties_t *prop);
+extern struct _spnl* spnl_ctor(void);
 extern void spnl_dtor(struct _spnl *this);
+
+extern void spnl_resize(struct _spnl *this);
 
 #endif

@@ -12,7 +12,9 @@ typedef struct _dpnl {
 
 } dpnl_t;
 
-extern struct _dpnl* dpnl_ctor(properties_t *prop);
+extern struct _dpnl* dpnl_ctor(void);
 extern void dpnl_dtor(struct _dpnl *this);
+
+extern void dpnl_resize(struct _dpnl *this);
 
 #endif

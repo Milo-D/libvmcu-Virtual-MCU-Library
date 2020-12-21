@@ -12,7 +12,9 @@ typedef struct _fpnl {
     
 } fpnl_t;
 
-extern struct _fpnl* fpnl_ctor(properties_t *prop);
+extern struct _fpnl* fpnl_ctor(void);
 extern void fpnl_dtor(struct _fpnl *this);
+
+extern void fpnl_resize(struct _fpnl *this);
 
 #endif

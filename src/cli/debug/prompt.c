@@ -12,11 +12,12 @@
 
 /* Forward Declaration of static Functions */
 
+static void prompt_default_properties(win_properties_t *prop);
 static void prompt_init(struct _prompt *this, win_properties_t *prop);
 
 /* --- Extern --- */
 
-struct _prompt* prompt_ctor(win_properties_t *prop) {
+struct _prompt* prompt_ctor(void) {
 
     struct _prompt *prompt;
 
@@ -24,7 +25,11 @@ struct _prompt* prompt_ctor(win_properties_t *prop) {
         return NULL;
 
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
-    prompt_init(prompt, prop);
+    
+    win_properties_t prop;
+    
+    prompt_default_properties(&prop);
+    prompt_init(prompt, &prop);
 
     return prompt;
 }
@@ -51,10 +56,13 @@ void prompt_write(const struct _prompt *this, const char *str) {
     /* autocompletion in progress */
 }
 
-void prompt_resize(struct _prompt *this, win_properties_t *prop) {
+void prompt_resize(struct _prompt *this) {
 
     delwin(this->win);
-    prompt_init(this, prop);
+    
+    win_properties_t prop;
+    prompt_default_properties(&prop);
+    prompt_init(this, &prop);
 }
 
 void prompt_update(const struct _prompt *this) {
@@ -64,6 +72,22 @@ void prompt_update(const struct _prompt *this) {
 }
 
 /* --- Static --- */
+
+static void prompt_default_properties(win_properties_t *prop) {
+    
+    int scr_y, scr_x;
+    getmaxyx(stdscr, scr_y, scr_x);
+
+    const int gy = (scr_y - 40);
+
+    *prop = (win_properties_t) {
+        
+        .height = 3,
+        .width  = scr_x,
+        .y      = 38 + gy - 1,
+        .x      = 0
+    };
+}
 
 static void prompt_init(struct _prompt *this, win_properties_t *prop) {
 

@@ -12,7 +12,9 @@ typedef struct _gpnl {
 
 } gpnl_t;
 
-extern struct _gpnl* gpnl_ctor(properties_t *prop);
+extern struct _gpnl* gpnl_ctor(void);
 extern void gpnl_dtor(struct _gpnl *this);
+
+extern void gpnl_resize(struct _gpnl *this);
 
 #endif

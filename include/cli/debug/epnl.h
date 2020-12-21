@@ -12,7 +12,9 @@ typedef struct _epnl {
     
 } epnl_t;
 
-extern struct _epnl* epnl_ctor(properties_t *prop);
+extern struct _epnl* epnl_ctor(void);
 extern void epnl_dtor(struct _epnl *this);
+
+extern void epnl_resize(struct _epnl *this);
 
 #endif

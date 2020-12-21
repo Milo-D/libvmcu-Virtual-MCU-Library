@@ -12,7 +12,9 @@ typedef struct _rpnl {
 
 } rpnl_t;
 
-extern struct _rpnl* rpnl_ctor(properties_t *prop);
+extern struct _rpnl* rpnl_ctor(const int size);
 extern void rpnl_dtor(struct _rpnl *this);
+
+extern void rpnl_resize(struct _rpnl *this);
 
 #endif

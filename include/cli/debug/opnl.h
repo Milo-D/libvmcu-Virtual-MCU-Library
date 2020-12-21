@@ -12,7 +12,9 @@ typedef struct _opnl {
     
 } opnl_t;
 
-extern struct _opnl* opnl_ctor(properties_t *prop);
+extern struct _opnl* opnl_ctor(void);
 extern void opnl_dtor(struct _opnl *this);
+
+extern void opnl_resize(struct _opnl *this);
 
 #endif

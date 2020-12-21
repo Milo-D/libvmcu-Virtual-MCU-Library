@@ -24,9 +24,6 @@
 
 static void dwin_init(struct _debugwindow *this);
 
-static void calculate_panel_properties(properties_t *props, const int size);
-static void calculate_prompt_properties(win_properties_t *props);
-
 /* --- Extern --- */
 
 struct _debugwindow* dwin_ctor(const int size) {
@@ -38,19 +35,15 @@ struct _debugwindow* dwin_ctor(const int size) {
 
     dwin_init(dwin);
 
-    properties_t props[N_PANEL];
-    calculate_panel_properties(props, size);
-    
-    win_properties_t win_props;
-    calculate_prompt_properties(&win_props);
+    dwin->gpnl = gpnl_ctor();
+    dwin->spnl = spnl_ctor();
+    dwin->fpnl = fpnl_ctor();
+    dwin->dpnl = dpnl_ctor();
+    dwin->epnl = epnl_ctor();
+    dwin->opnl = opnl_ctor();
+    dwin->rpnl = rpnl_ctor(size);
 
-    dwin->gpnl = gpnl_ctor(&props[GPNL]);
-    dwin->spnl = spnl_ctor(&props[SPNL]);
-    dwin->fpnl = fpnl_ctor(&props[FPNL]);
-    dwin->dpnl = dpnl_ctor(&props[DPNL]);
-    dwin->epnl = epnl_ctor(&props[EPNL]);
-    dwin->opnl = opnl_ctor(&props[OPNL]);
-    dwin->rpnl = rpnl_ctor(&props[RPNL]);
+    dwin->prompt = prompt_ctor();
     
     dwin->panels[GPNL] = &dwin->gpnl->view;
     dwin->panels[SPNL] = &dwin->spnl->view;
@@ -60,7 +53,6 @@ struct _debugwindow* dwin_ctor(const int size) {
     dwin->panels[OPNL] = &dwin->opnl->view;
     dwin->panels[RPNL] = &dwin->rpnl->view;
 
-    dwin->prompt = prompt_ctor(&win_props);
     return dwin;
 }
 
@@ -85,16 +77,15 @@ void dwin_resize(struct _debugwindow *this) {
     endwin();
     dwin_init(this);
 
-    properties_t props[N_PANEL];
-    calculate_panel_properties(props, 0);
+    gpnl_resize(this->gpnl);
+    spnl_resize(this->spnl);
+    fpnl_resize(this->fpnl);
+    dpnl_resize(this->dpnl);
+    epnl_resize(this->epnl);
+    opnl_resize(this->opnl);
+    rpnl_resize(this->rpnl);
 
-    win_properties_t win_props;
-    calculate_prompt_properties(&win_props);
-
-    for(int i = 0; i < N_PANEL; i++)
-        panel_resize(this->panels[i], &props[i]);
-
-    prompt_resize(this->prompt, &win_props);
+    prompt_resize(this->prompt);
 }
 
 void dwin_read_prompt(const struct _debugwindow *this, char *buffer) {
@@ -187,116 +178,3 @@ static void dwin_init(struct _debugwindow *this) {
     curs_set(0);
     start_color();
 }
-
-static void calculate_panel_properties(properties_t *props, const int size) {
-    
-    int scr_y, scr_x;
-    getmaxyx(stdscr, scr_y, scr_x);
-
-    const int mx = (scr_x / 2);
-    const int mmx = (mx - (mx / 2));
-    const int gy = (scr_y - 40);
-
-    int n_pages = (size / (scr_y - 7));
-    n_pages += ((size % (scr_y - 7)) != 0);
-    
-    props[GPNL] = (properties_t) {
-        
-        .window.height     = 6,
-        .window.width      = mx,
-        .window.y          = 0,
-        .window.x          = 0,
-        
-        .page_init  = 0,
-        .page_range = GPR_SIZE / 8
-    };
-    
-    props[SPNL] = (properties_t) {
-        
-        .window.height     = 6,
-        .window.width      = mx,
-        .window.y          = 6,
-        .window.x          = 0,
-        
-        .page_init  = 0,
-        .page_range = 0
-    };
-    
-    props[FPNL] = (properties_t) {
-        
-        .window.height     = 13,
-        .window.width      = mx,
-        .window.y          = 12,
-        .window.x          = 0,
-        
-        .page_init  = 0,
-        .page_range = 0
-    };
-    
-    props[DPNL] = (properties_t) {
-        
-        .window.height     = 13,
-        .window.width      = mx / 2,
-        .window.y          = 25,
-        .window.x          = 0,
-        
-        .page_init  = 0x0060,
-        .page_range = RAM_END + 1
-    };
-    
-    props[EPNL] = (properties_t) {
-        
-        .window.height     = 13,
-        .window.width      = mmx,
-        .window.y          = 25,
-        .window.x          = mx / 2,
-        
-        .page_init  = EEPROM_SIZE / 2,
-        .page_range = EEPROM_SIZE
-    };
-
-    props[OPNL] = (properties_t) {
-        
-        .window.height     = gy - 1,
-        .window.width      = mx,
-        .window.y          = 38,
-        .window.x          = 0,
-        
-        .page_init  = 0,
-        .page_range = 0
-    };
-
-    props[RPNL] = (properties_t) {
-        
-        .window.height     = scr_y - 3,
-        .window.width      = scr_x / 2,
-        .window.y          = 0,
-        .window.x          = mx,
-        
-        .page_init  = 0,
-        .page_range = n_pages
-    };
-}
-
-static void calculate_prompt_properties(win_properties_t *props) {
-
-    int scr_y, scr_x;
-    getmaxyx(stdscr, scr_y, scr_x);
-
-    const int gy = (scr_y - 40);
-
-    props->height = 3;
-    props->width  = scr_x;
-    props->y      = 38 + gy - 1;
-    props->x      = 0;
-}
-
-
-
-
-
-
-
-
-
-
