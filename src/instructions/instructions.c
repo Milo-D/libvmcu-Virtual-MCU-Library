@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "instructions/instructions.h"
-#include "disassembler/plain.h"
+#include "decoder/plain.h"
 #include "system/mcudef.h"
 #include "system/system.h"
 #include "misc/bitmanip.h"

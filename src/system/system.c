@@ -13,7 +13,7 @@
 #include "system/core/data.h"
 #include "system/core/flash.h"
 #include "table/table.h"
-#include "disassembler/plain.h"
+#include "decoder/plain.h"
 #include "instructions/instructions.h"
 #include "collections/array.h"
 #include "collections/tuple.h"

@@ -7,9 +7,9 @@
 #include <stdbool.h>
 
 // Project Headers
-#include "disassembler/decoder.h"
-#include "disassembler/opcode.h"
-#include "disassembler/plain.h"
+#include "decoder/decoder.h"
+#include "decoder/opcode.h"
+#include "decoder/plain.h"
 #include "misc/ehandling.h"
 #include "misc/stringmanip.h"
 #include "misc/bitmanip.h"

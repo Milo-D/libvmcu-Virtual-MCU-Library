@@ -8,10 +8,10 @@
 
 // Project Headers
 #include "disassembler/disassembler.h"
-#include "disassembler/decoder.h"
 #include "disassembler/mnemonics.h"
 #include "disassembler/labelmap.h"
-#include "disassembler/plain.h"
+#include "decoder/decoder.h"
+#include "decoder/plain.h"
 #include "collections/array.h"
 #include "collections/queue.h"
 #include "misc/stringmanip.h"

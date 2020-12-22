@@ -13,7 +13,7 @@
 #include "misc/filemanip.h"
 #include "misc/jsonwriter.h"
 #include "disassembler/disassembler.h"
-#include "disassembler/plain.h"
+#include "decoder/plain.h"
 #include "system/system.h"
 #include "parser/parser.h"
 #include "collections/array.h"

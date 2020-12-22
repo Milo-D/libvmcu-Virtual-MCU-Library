@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 // Project Header
-#include "disassembler/opcode.h"
+#include "decoder/opcode.h"
 
 const int opcode[SET_SIZE][WORD] = {
 

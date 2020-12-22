@@ -11,7 +11,7 @@
 #include "cli/debug/debugwindow.h"
 #include "system/system.h"
 #include "system/mcudef.h"
-#include "disassembler/decoder.h"
+#include "decoder/decoder.h"
 #include "printer/systemprinter.h"
 #include "misc/stringmanip.h"
 #include "misc/bitmanip.h"

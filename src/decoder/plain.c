@@ -5,7 +5,7 @@
 #include <string.h>
 
 // Project Headers
-#include "disassembler/plain.h"
+#include "decoder/plain.h"
 
 void plain_dtor(struct _plain *this) {
 

@@ -11,7 +11,7 @@
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "disassembler/disassembler.h"
-#include "disassembler/plain.h"
+#include "decoder/plain.h"
 #include "collections/array.h"
 
 /* --- Public --- */
