@@ -8,17 +8,17 @@
 #include <inttypes.h>
 
 // Project Headers
-#include "table/entry.h"
+#include "system/util/progmem.h"
 
 typedef struct _gpr gpr_t;
 typedef struct _sreg sreg_t;
 typedef struct _flash flash_t;
 typedef struct _data data_t;
-typedef struct _table table_t;
 
-typedef struct _plain plain_t;
 typedef struct _array array_t;
 typedef struct _tuple tuple_t;
+
+typedef struct _report report_t;
 
 typedef struct _system {
     
@@ -37,7 +37,7 @@ typedef struct _system {
 
 /* System Constructor + Destructor */
 
-extern struct _system* sys_ctor(const char *file);
+extern struct _system* sys_ctor(const report_t *report);
 extern void sys_dtor(struct _system *this);
 
 /* General System Functions */
@@ -62,7 +62,7 @@ extern uint8_t sys_dump_sreg(const struct _system *this);
 
 /* FLASH Operations */
 
-extern plain_t* sys_read_instr(const struct _system *this, const int addr);
+extern progmem_t* sys_read_instr(const struct _system *this, const int addr);
 extern uint16_t sys_read_flash(const struct _system *this, const int addr);
 extern void sys_move_pc(const struct _system *this, const int inc);
 extern void sys_set_pc(struct _system *this, const int addr);
@@ -85,15 +85,5 @@ extern void sys_clear_sfr(struct _system *this, const uint16_t addr, const int b
 /* EEPROM Operations */
 
 extern int8_t* sys_dump_eeprom(const struct _system *this);
-
-/* Table Operations */
-
-extern int sys_write_table(struct _system *this, const int lnno, const char *line);
-extern char* sys_read_table(struct _system *this, const int lnno);
-extern int sys_add_breakp(const struct _system *this, const char *point);
-extern int sys_del_breakp(const struct _system *this, const char *point);
-extern bool sys_on_breakp(const struct _system *this);
-extern int sys_table_size(const struct _system *this);
-extern entry_t* sys_dump_table(const struct _system *this);
 
 #endif

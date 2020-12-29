@@ -9,7 +9,7 @@
 // Project Headers
 #include "decoder/decoder.h"
 #include "decoder/opcode.h"
-#include "decoder/plain.h"
+#include "analyzer/report/report.h"
 #include "misc/ehandling.h"
 #include "misc/stringmanip.h"
 #include "misc/bitmanip.h"

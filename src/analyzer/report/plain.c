@@ -1,11 +1,11 @@
-/* Plain Data-Structure Implementation */
+/* Plain (Data-Structure) Implementation */
 
 // C Headers
 #include <stdlib.h>
 #include <string.h>
 
 // Project Headers
-#include "decoder/plain.h"
+#include "analyzer/report/plain.h"
 
 void plain_dtor(struct _plain *this) {
 

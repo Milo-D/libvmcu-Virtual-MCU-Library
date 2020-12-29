@@ -1,4 +1,4 @@
-/* Plain Header */
+/* Plain (Data-Structure) Header */
 
 #ifndef PLAIN_H
 #define PLAIN_H
@@ -26,6 +26,5 @@ typedef struct _plain {
 
 extern void plain_dtor(struct _plain *this);
 extern struct _plain* plain_cpy(const struct _plain *src);
-
 
 #endif

@@ -12,8 +12,7 @@
 #include "system/core/sreg.h"
 #include "system/core/data.h"
 #include "system/core/flash.h"
-#include "table/table.h"
-#include "decoder/plain.h"
+#include "analyzer/report/report.h"
 #include "instructions/instructions.h"
 #include "collections/array.h"
 #include "collections/tuple.h"
@@ -25,14 +24,14 @@ static void sys_exec_isr(struct _system *this, const int isr);
 
 /* --- Extern --- */
 
-struct _system* sys_ctor(const char *file) {
+struct _system* sys_ctor(const report_t *report) {
 
     struct _system *sys;
     
     if((sys = malloc(sizeof(struct _system))) == NULL)
         return NULL;
 
-    if((sys->flash = flash_ctor(file)) == NULL) {
+    if((sys->flash = flash_ctor(report)) == NULL) {
 
         sys_dtor(sys);
         return NULL;
@@ -172,7 +171,7 @@ uint8_t sys_dump_sreg(const struct _system *this) {
     return sreg_dump(this->sreg);
 }
 
-plain_t* sys_read_instr(const struct _system *this, const int addr) {
+progmem_t* sys_read_instr(const struct _system *this, const int addr) {
 
     return flash_read_instr(this->flash, addr);
 }
@@ -258,41 +257,6 @@ void sys_clear_sfr(struct _system *this, const uint16_t addr, const int bit) {
 int8_t* sys_dump_eeprom(const struct _system *this) {
 
     return data_dump_eeprom(this->data);
-}
-
-int sys_write_table(struct _system *this, const int lnno, const char *line) {
-    
-    return flash_write_table(this->flash, lnno, line);
-}
-
-char* sys_read_table(struct _system *this, const int lnno) {
-
-    return flash_read_table(this->flash, lnno);
-}
-
-int sys_add_breakp(const struct _system *this, const char *point) {
-
-    return flash_add_breakp(this->flash, point);
-}
-
-int sys_del_breakp(const struct _system *this, const char *point) {
-
-    return flash_del_breakp(this->flash, point);
-}
-
-bool sys_on_breakp(const struct _system *this) {
-
-    return flash_on_breakp(this->flash);
-}
-
-int sys_table_size(const struct _system *this) {
-
-    return flash_table_size(this->flash);
-}
-
-entry_t* sys_dump_table(const struct _system *this) {
-
-    return flash_dump_table(this->flash);
 }
 
 /* --- Static --- */
