@@ -327,11 +327,10 @@ static void print_side(debugwindow_t *window, dbg_t *dbg) {
 
     dwin_add(window, RPNL, "Source Code:\n\n", D);
 
-    const int pc = sys_get_pc(sys);
-
     const int cursor = dwin_get_page(window, RPNL);
     const int height = dwin_height(window, RPNL) - 4;
 
+    const int pc = sys_get_pc(sys);
     const int start = (cursor * height);
 
     if(report->progsize == 0) {
@@ -348,27 +347,29 @@ static void print_side(debugwindow_t *window, dbg_t *dbg) {
     queue_t *stream = queue_ctor();
 
     for(int i = start; i < (start + height); i++) {
-
-        char *addr = get_str(i);
-        char *fill = strfill(' ', strlen(addr), 3);
-
-        queue_put(stream, 2, fill, addr);
-
+        
         if(i >= report->progsize) {
 
-            queue_put(stream, 1, "\n");
-
-            char *out = queue_str(stream);
-            dwin_add(window, RPNL, out, D);
-            
-            queue_flush(stream);
-            nfree(3, addr, fill, out);
-
+            dwin_add(window, RPNL, "\n", D);
             continue;
         }
 
-        char *out = queue_str(stream);
-        dwin_add(window, RPNL, out, D);
+        if(disassembly[i].addr >= 0) {
+
+            char *addr = itoh(disassembly[i].addr);
+            char *fill = strfill('0', strlen(addr), 4);
+            
+            queue_put(stream, 3, "0x", fill, addr);
+
+            char *out = queue_str(stream);
+            dwin_add(window, RPNL, out, D);
+
+            nfree(3, addr, fill, out);
+
+        } else {
+
+            dwin_add(window, RPNL, "      ", D);
+        }
 
         if(disassembly[i].addr == pc) {
           
@@ -387,7 +388,6 @@ static void print_side(debugwindow_t *window, dbg_t *dbg) {
         dwin_add(window, RPNL, "\n", D);
 
         queue_flush(stream);
-        nfree(3, addr, fill, out);
     }
 
     queue_dtor(stream);
