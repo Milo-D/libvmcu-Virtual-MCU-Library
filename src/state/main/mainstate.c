@@ -102,4 +102,6 @@ static void destroy_dbg(dbg_t *dbg, const int n) {
         table_dtor(dbg[i].table);
         sys_dtor(dbg[i].sys);
     }
+
+    free(dbg);
 }

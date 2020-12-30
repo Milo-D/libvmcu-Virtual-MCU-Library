@@ -24,7 +24,7 @@ struct _flash* flash_ctor(const report_t *report) {
     if((flash = malloc(sizeof(struct _flash))) == NULL)
         return NULL;
 
-    flash->memory = malloc(FLASH_SIZE * sizeof(plain_t));
+    flash->memory = malloc(FLASH_SIZE * sizeof(progmem_t));
     flash_init_memory(flash);
 
     plain_t *p = report->disassembly;
@@ -33,7 +33,7 @@ struct _flash* flash_ctor(const report_t *report) {
 
         const int addr = p[i].addr;
 
-        if(addr >= FLASH_SIZE)
+        if(addr < 0 || addr >= FLASH_SIZE)
             continue;
 
         flash->memory[ addr ].addr  = p[i].addr;
