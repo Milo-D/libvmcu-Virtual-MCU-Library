@@ -20,8 +20,8 @@ typedef struct _table {
 extern struct _table* table_ctor(const int size);
 extern void table_dtor(struct _table *this);
 
-extern int table_add_breakp(struct _table *this, const char *point);
-extern int table_del_breakp(struct _table *this, const char *point);
+extern int table_add_breakp(struct _table *this, const int addr);
+extern int table_del_breakp(struct _table *this, const int addr);
 extern bool table_on_breakp(const struct _table *this, const int addr);
 
 #endif

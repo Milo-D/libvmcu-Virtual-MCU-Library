@@ -71,10 +71,10 @@ char* val_of_data(const char *addr, const char *range, const char *value) {
     return msg;
 }
 
-char* bp_set_success(const char *line) {
+char* bp_set_success(const char *addr) {
 
     queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "(mdx) Breakpoint set at line ", line, ".\n");
+    queue_put(stream, 3, "(mdx) Breakpoint set at address ", addr, ".\n");
 
     char *out = queue_str(stream);
     queue_dtor(stream);
@@ -82,10 +82,10 @@ char* bp_set_success(const char *line) {
     return out;
 }
 
-char* bp_set_failure(const char *line) {
+char* bp_set_failure(const char *addr) {
 
     queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "(mdx) Could not set Breakpoint at line ", line, ".\n");
+    queue_put(stream, 3, "(mdx) Could not set Breakpoint at address ", addr, ".\n");
 
     char *out = queue_str(stream);
     queue_dtor(stream);
@@ -93,10 +93,10 @@ char* bp_set_failure(const char *line) {
     return out;
 }
 
-char* bp_del_success(const char *line) {
+char* bp_del_success(const char *addr) {
 
     queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "(mdx) Removing Breakpoint at line ", line, ".\n");
+    queue_put(stream, 3, "(mdx) Removing Breakpoint at address ", addr, ".\n");
 
     char *out = queue_str(stream);
     queue_dtor(stream);
@@ -104,10 +104,10 @@ char* bp_del_success(const char *line) {
     return out;
 }
 
-char* bp_del_failure(const char *line) {
+char* bp_del_failure(const char *addr) {
 
     queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "(mdx) Could not remove Breakpoint at line ", line, ".\n");
+    queue_put(stream, 3, "(mdx) Could not remove Breakpoint at address ", addr, ".\n");
 
     char *out = queue_str(stream);
     queue_dtor(stream);

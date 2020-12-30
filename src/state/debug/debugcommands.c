@@ -124,7 +124,9 @@ void command_jc(debugwindow_t *window, dbg_t *dbg, const int n) {
 
 void command_break(debugwindow_t *window, dbg_t *dbg, const char *bp) {
 
-    if(table_add_breakp(dbg->table, bp) < 0) {
+    const int addr = htoi(bp);
+
+    if(table_add_breakp(dbg->table, addr) < 0) {
 
         char *msg = bp_set_failure(bp);
         dwin_write(window, OPNL, msg, D);
@@ -141,7 +143,9 @@ void command_break(debugwindow_t *window, dbg_t *dbg, const char *bp) {
 
 void command_unbreak(debugwindow_t *window, dbg_t *dbg, const char *bp) {
 
-    if(table_del_breakp(dbg->table, bp) < 0) {
+    const int addr = htoi(bp);
+
+    if(table_del_breakp(dbg->table, addr) < 0) {
 
         char *msg = bp_del_failure(bp);
         dwin_write(window, OPNL, msg, D);

@@ -279,10 +279,12 @@ static void print_flash(debugwindow_t *window, dbg_t *dbg) {
             dwin_add(window, FPNL, "\n", D);
             continue;
         }
+        
+        const int address = disassembly[i].addr;
 
-        if(disassembly[i].addr >= 0) {
+        if(address >= 0) {
 
-            char *addr = itoh(disassembly[i].addr);
+            char *addr = itoh(address);
 
             char *fill = strfill('0', strlen(addr), 4);
             queue_put(stream, 3, "0x", fill, addr);
@@ -301,12 +303,16 @@ static void print_flash(debugwindow_t *window, dbg_t *dbg) {
 
             dwin_add(window, FPNL, " [->] ", B);
 
-        } else if(table_on_breakp(table, i) == true) {
+        } else if(address < 0) {
+
+            dwin_add(window, FPNL, "      ", D);
+
+        } else if(table_on_breakp(table, address)) {
 
             dwin_add(window, FPNL, " [b+] ", R);
-
+            
         } else {
-
+            
             dwin_add(window, FPNL, "      ", D);
         }
 
@@ -353,10 +359,12 @@ static void print_side(debugwindow_t *window, dbg_t *dbg) {
             dwin_add(window, RPNL, "\n", D);
             continue;
         }
+        
+        const int address = disassembly[i].addr;
 
-        if(disassembly[i].addr >= 0) {
+        if(address >= 0) {
 
-            char *addr = itoh(disassembly[i].addr);
+            char *addr = itoh(address);
             char *fill = strfill('0', strlen(addr), 4);
             
             queue_put(stream, 3, "0x", fill, addr);
@@ -371,16 +379,20 @@ static void print_side(debugwindow_t *window, dbg_t *dbg) {
             dwin_add(window, RPNL, "      ", D);
         }
 
-        if(disassembly[i].addr == pc) {
+        if(address == pc) {
           
             dwin_add(window, RPNL, " [->] ", B);
 
-        } else if(table_on_breakp(table, i) == true) {
+        } else if(address < 0) {
+
+            dwin_add(window, RPNL, "      ", D);
+
+        } else if(table_on_breakp(table, address)) {
 
             dwin_add(window, RPNL, " [b+] ", R);
-
+            
         } else {
-
+            
             dwin_add(window, RPNL, "      ", D);
         }
 

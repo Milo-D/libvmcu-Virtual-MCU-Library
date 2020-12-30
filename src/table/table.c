@@ -36,9 +36,7 @@ void table_dtor(struct _table *this) {
     free(this);
 }
 
-int table_add_breakp(struct _table *this, const char *point) {
-
-    const int addr = get_int(point);
+int table_add_breakp(struct _table *this, const int addr) {
 
     if(addr < 0 || addr >= this->size)
         return -1;
@@ -52,9 +50,7 @@ int table_add_breakp(struct _table *this, const char *point) {
     return 0;
 }
 
-int table_del_breakp(struct _table *this, const char *point) {
-
-    const int addr = get_int(point);
+int table_del_breakp(struct _table *this, const int addr) {
 	
     if(addr < 0 || addr >= this->size)
         return -1;
