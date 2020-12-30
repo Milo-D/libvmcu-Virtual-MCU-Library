@@ -9,33 +9,33 @@
 #include "state/main/mode.h"
 #include "state/debug/debugstate.h"
 #include "cli/main/mainwindow.h"
-#include "system/system.h"
+#include "analyzer/analyzer.h"
+#include "system/mcudef.h"
 #include "misc/ehandling.h"
 #include "misc/stringmanip.h"
 #include "misc/filemanip.h"
-#include "parser/parser.h"
 #include "collections/array.h"
 
 #define MAX_FILE_REACH "Can not open more than 4 files."
-#define SYS_INIT_ERR "Could not initialize System."
+#define SYS_INIT_ERR "Could not initialize Debug Session."
 
 static mainwindow_t *window;
 
 /* Forward Declaration of static Functions */
 
-static system_t** create_systems(array_t *files);
+static dbg_t* create_dbg(array_t *files);
+static void destroy_dbg(dbg_t *dbg, const int n);
 
 /* --- Extern --- */
 
 int main(int argc, char **argv) {
 
+    dbg_t *dbg; int key, x;
+
     if(call_mode(argc, argv) == 0)
         return EXIT_SUCCESS;
-
-    system_t **system;
+    
     array_t *files = array_ctor(4, NULL, NULL);
-
-    int key, x;
     get_files(argc, argv, files);
 
     if(files->top > 4) {
@@ -44,14 +44,14 @@ int main(int argc, char **argv) {
         print_status(MAX_FILE_REACH, true);
     }
 
-    if((system = create_systems(files)) == NULL) {
+    if((dbg = create_dbg(files)) == NULL) {
 
         array_dtor(files);
         print_status(SYS_INIT_ERR, true);
     }
 
     if(files->top == 1)
-        debug(system[0], argv[1]);
+        debug(&dbg[0], argv[1]);
 
     window = mwin_ctor(files);
 
@@ -62,16 +62,14 @@ int main(int argc, char **argv) {
             mwin_destroy(window);
             x = mwin_get_choice(window);
 
-            debug(system[x], argv[x + 1]);
+            debug(&dbg[x], argv[x + 1]);
             mwin_reinit(&window);
         }
 
     } while(key != QUIT);
 
-    for(int i = 0; i < files->top; i++)
-        sys_dtor(system[i]);
+    destroy_dbg(dbg, files->top);
     
-    free(system);
     array_dtor(files);
     mwin_dtor(window);
 
@@ -80,18 +78,28 @@ int main(int argc, char **argv) {
 
 /* --- Static --- */
 
-static system_t** create_systems(array_t *files) {
+static dbg_t* create_dbg(array_t *files) {
 
-    system_t **system = malloc(files->top * sizeof(system_t*));
-
-    if(system == NULL)
-        return NULL;
+    dbg_t *dbg = malloc(files->top * sizeof(dbg_t));
 
     for(int i = 0; i < files->top; i++) {
 
-        const char *path = (char*) array_at(files, i);
-        system[i] = sys_ctor(path);
+        const char *f = (char*) array_at(files, i);
+        
+        dbg[i].report = analyze(f);
+        dbg[i].table  = table_ctor(FLASH_SIZE);
+        dbg[i].sys    = sys_ctor(dbg[i].report);
     }
 
-    return system;
+    return dbg;
+}
+
+static void destroy_dbg(dbg_t *dbg, const int n) {
+    
+    for(int i = 0; i < n; i++) {
+        
+        report_dtor(dbg[i].report);
+        table_dtor(dbg[i].table);
+        sys_dtor(dbg[i].sys);
+    }
 }

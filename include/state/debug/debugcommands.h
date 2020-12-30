@@ -4,22 +4,34 @@
 #define DEBUGCOMMANDS_H
 
 typedef struct _debugwindow debugwindow_t;
-typedef struct _system system_t;
+typedef struct _dbg dbg_t;
 
-extern void jump_forward(debugwindow_t *window, system_t *sys, const int delay);
-extern void jump_cycles(debugwindow_t *window, system_t *sys, const int n);
-extern void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp);
-extern void remove_breakpoint(debugwindow_t *window, system_t *sys, const char *bp);
-extern void examine_data(debugwindow_t *window, system_t *sys, const char *mem_cell);
-extern void examine_eeprom(debugwindow_t *window, system_t *sys, const char *mem_cell);
-extern void examine_data_char(debugwindow_t *window, system_t *sys, const char *mem_cell, const char *range);
-extern void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char *mem_cell, const char *range);
-extern void load_eep_hex(debugwindow_t *window, system_t *sys, const char *file);
-extern void clear_output(debugwindow_t *window);
-extern void show_cycles(debugwindow_t *window, system_t *sys);
-extern void show_clock(debugwindow_t *window, system_t *sys);
-extern void show_time(debugwindow_t *window, system_t *sys);
-extern void examine_data_byte(debugwindow_t *window, system_t *sys, const char *mem_cell);
-extern void create_comment(debugwindow_t *window, system_t *sys, const char *line, const char *comment);
+extern void command_rn(debugwindow_t *window);
+extern void command_rp(debugwindow_t *window);
+extern void command_dn(debugwindow_t *window);
+extern void command_dp(debugwindow_t *window);
+extern void command_en(debugwindow_t *window);
+extern void command_ep(debugwindow_t *window);
+extern void command_pn(debugwindow_t *window);
+extern void command_pp(debugwindow_t *window);
+
+extern void command_n(debugwindow_t *window, dbg_t *dbg);
+extern void command_b(debugwindow_t *window, dbg_t *dbg);
+extern void command_jb(debugwindow_t *window, dbg_t *dbg, const int delay);
+extern void command_jc(debugwindow_t *window, dbg_t *dbg, const int n);
+extern void command_break(debugwindow_t *window, dbg_t *dbg, const char *bp);
+extern void command_unbreak(debugwindow_t *window, dbg_t *dbg, const char *bp);
+extern void command_xd(debugwindow_t *window, dbg_t *dbg, const char *mem_cell);
+extern void command_xe(debugwindow_t *window, dbg_t *dbg, const char *mem_cell);
+extern void command_xdc(debugwindow_t *window, dbg_t *dbg, const char *mem_cell, const char *range);
+extern void command_xec(debugwindow_t *window, dbg_t *dbg, const char *mem_cell, const char *range);
+extern void command_leep(debugwindow_t *window, dbg_t *dbg, const char *file);
+extern void command_clear(debugwindow_t *window);
+extern void command_cycles(debugwindow_t *window, dbg_t *dbg);
+extern void command_clock(debugwindow_t *window, dbg_t *dbg);
+extern void command_time(debugwindow_t *window, dbg_t *dbg);
+extern void command_xdb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell);
+extern void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char *comment);
+extern void command_def(debugwindow_t *window);
 
 #endif

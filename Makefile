@@ -1,4 +1,4 @@
-CC	 := -gcc
+CC		 := -gcc
 CFLAGS	 := -O1 -std=gnu11
 LDLIBS	 := -lm -lncurses
 MCU_ARCH := -D ATMEGA328P

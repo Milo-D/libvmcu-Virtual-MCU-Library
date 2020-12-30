@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "disassembler/labelmap.h"
-#include "decoder/plain.h"
+#include "analyzer/report/plain.h"
 #include "collections/array.h"
 #include "collections/tuple.h"
 #include "collections/strmap.h"

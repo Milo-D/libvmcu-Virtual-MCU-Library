@@ -13,6 +13,7 @@ typedef struct _report {
 
 } report_t;
 
-extern struct _report* report_ctor(const int progsize);
+extern struct _report* report_ctor(const char *file);
+extern void report_dtor(struct _report *this);
 
 #endif

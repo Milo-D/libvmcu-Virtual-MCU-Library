@@ -84,7 +84,7 @@ int sys_step(struct _system *this) {
     int err = 0;
     const uint64_t old_cycles = this->cycles;
     
-    plain_t *p = flash_fetch(this->flash);
+    progmem_t *p = flash_fetch(this->flash);
 
     if(p->exec == false) {
 

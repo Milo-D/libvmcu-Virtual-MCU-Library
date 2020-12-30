@@ -6,7 +6,7 @@
 // C Headers
 #include <stdbool.h>
 
-typedef struct _array array_t;
+typedef struct _breakpoint breakpoint_t;
 
 typedef struct _table {
 

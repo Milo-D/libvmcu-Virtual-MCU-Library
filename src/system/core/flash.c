@@ -108,12 +108,12 @@ static void flash_init_memory(struct _flash *this) {
 
     for(int i = 0; i < FLASH_SIZE; i++) {
 
-        flash->memory[i].opcode = 0xffff;
-        flash->memory[i].addr   = i;
-        flash->memory[i].key    = -1;
+        this->memory[i].opcode = 0xffff;
+        this->memory[i].addr   = i;
+        this->memory[i].key    = -1;
 
-        flash->memory[i].exec   = false;
-        flash->memory[i].dword  = false;
+        this->memory[i].exec   = false;
+        this->memory[i].dword  = false;
     }
 }
 

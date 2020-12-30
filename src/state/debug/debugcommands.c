@@ -9,8 +9,8 @@
 #include "state/debug/debugcommands.h"
 #include "state/debug/stdmsg.h"
 #include "cli/debug/debugwindow.h"
-#include "system/system.h"
 #include "system/mcudef.h"
+#include "dbg/dbg.h"
 #include "decoder/decoder.h"
 #include "printer/systemprinter.h"
 #include "misc/stringmanip.h"
@@ -20,7 +20,61 @@
 #include "collections/array.h"
 #include "collections/list.h"
 
-void jump_forward(debugwindow_t *window, system_t *sys, const int delay) {
+void command_rn(debugwindow_t *window) {
+
+    dwin_change_page(window, GPNL, +1);
+}
+
+void command_rp(debugwindow_t *window) {
+    
+    dwin_change_page(window, GPNL, -1);
+}
+
+void command_dn(debugwindow_t *window) {
+
+    dwin_change_page(window, DPNL, +1);
+}
+
+void command_dp(debugwindow_t *window) {
+    
+    dwin_change_page(window, DPNL, -1);
+}
+
+void command_en(debugwindow_t *window) {
+    
+    dwin_change_page(window, EPNL, +1);
+}
+
+void command_ep(debugwindow_t *window) {
+    
+    dwin_change_page(window, EPNL, -1);
+}
+
+void command_pn(debugwindow_t *window) {
+    
+    dwin_change_page(window, RPNL, +1);
+}
+
+void command_pp(debugwindow_t *window) {
+    
+    dwin_change_page(window, RPNL, -1);
+}
+
+void command_n(debugwindow_t *window, dbg_t *dbg) {
+    
+    if(sys_step(dbg->sys) < 0)
+        dwin_write(window, OPNL, ILLEGAL_OPC, D);
+}
+
+void command_b(debugwindow_t *window, dbg_t *dbg) {
+
+    sys_backstep(dbg->sys);
+}
+
+void command_jb(debugwindow_t *window, dbg_t *dbg, const int delay) {
+
+    system_t *sys  = dbg->sys;
+    table_t *table = dbg->table;
 
     if(delay < 0) {
 
@@ -32,11 +86,13 @@ void jump_forward(debugwindow_t *window, system_t *sys, const int delay) {
 
     while(true) {
 
-        if(sys_on_breakp(sys) == true)
+        const int pc = sys_get_pc(sys);
+
+        if(table_on_breakp(table, pc) == true)
             break;
 
         if(delay >= 10)
-            system_to_win(window, sys);
+            system_to_win(window, dbg);
 
         sys_step(sys);
 
@@ -47,7 +103,9 @@ void jump_forward(debugwindow_t *window, system_t *sys, const int delay) {
     dwin_write(window, OPNL, BREAK_REACHED, G);
 }
 
-void jump_cycles(debugwindow_t *window, system_t *sys, const int n) {
+void command_jc(debugwindow_t *window, dbg_t *dbg, const int n) {
+
+    system_t *sys = dbg->sys;
 
     if(n < 0) {
         
@@ -64,9 +122,9 @@ void jump_cycles(debugwindow_t *window, system_t *sys, const int n) {
     dwin_write(window, OPNL, CYCLE_REACHED, G);
 }
 
-void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
+void command_break(debugwindow_t *window, dbg_t *dbg, const char *bp) {
 
-    if(sys_add_breakp(sys, bp) < 0) {
+    if(table_add_breakp(dbg->table, bp) < 0) {
 
         char *msg = bp_set_failure(bp);
         dwin_write(window, OPNL, msg, D);
@@ -81,9 +139,9 @@ void set_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
     free(msg);
 }
 
-void remove_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
+void command_unbreak(debugwindow_t *window, dbg_t *dbg, const char *bp) {
 
-    if(sys_del_breakp(sys, bp) < 0) {
+    if(table_del_breakp(dbg->table, bp) < 0) {
 
         char *msg = bp_del_failure(bp);
         dwin_write(window, OPNL, msg, D);
@@ -98,7 +156,7 @@ void remove_breakpoint(debugwindow_t *window, system_t *sys, const char *bp) {
     free(msg);
 }
 
-void examine_data(debugwindow_t *window, system_t *sys, const char *mem_cell) {
+void command_xd(debugwindow_t *window, dbg_t *dbg, const char *mem_cell) {
 
     const int cell = htoi(mem_cell);
 
@@ -108,7 +166,7 @@ void examine_data(debugwindow_t *window, system_t *sys, const char *mem_cell) {
         return;
     }
 
-    const int8_t data = sys_read_data(sys, cell);
+    const int8_t data = sys_read_data(dbg->sys, cell);
 
     char hex[3];
     to_hex(data, hex);
@@ -119,7 +177,7 @@ void examine_data(debugwindow_t *window, system_t *sys, const char *mem_cell) {
     free(msg);
 }
 
-void examine_eeprom(debugwindow_t *window, system_t *sys, const char *mem_cell) {
+void command_xe(debugwindow_t *window, dbg_t *dbg, const char *mem_cell) {
 
     const int cell = htoi(mem_cell);
 
@@ -129,7 +187,7 @@ void examine_eeprom(debugwindow_t *window, system_t *sys, const char *mem_cell) 
         return;
     }
 
-    const int8_t *memory = sys_dump_eeprom(sys);
+    const int8_t *memory = sys_dump_eeprom(dbg->sys);
     
     char hex[3];
     to_hex(memory[cell], hex);
@@ -142,7 +200,7 @@ void examine_eeprom(debugwindow_t *window, system_t *sys, const char *mem_cell) 
     free(msg);
 }
 
-void examine_data_char(debugwindow_t *window, system_t *sys, const char *mem_cell, const char *range) {
+void command_xdc(debugwindow_t *window, dbg_t *dbg, const char *mem_cell, const char *range) {
 
     const int cell = htoi(mem_cell);
     const int offs = get_int(range);
@@ -164,7 +222,7 @@ void examine_data_char(debugwindow_t *window, system_t *sys, const char *mem_cel
 
     for(int i = cell; i < (cell + offs); i++) {
 
-        const uint8_t byte = (uint8_t) sys_read_data(sys, i);
+        const uint8_t byte = (uint8_t) sys_read_data(dbg->sys, i);
         ascii[i - cell] = byte;
     }
 
@@ -174,7 +232,7 @@ void examine_data_char(debugwindow_t *window, system_t *sys, const char *mem_cel
     free(msg);
 }
 
-void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char *mem_cell, const char *range) {
+void command_xec(debugwindow_t *window, dbg_t *dbg, const char *mem_cell, const char *range) {
 
     const int cell = htoi(mem_cell);
     const int offs = get_int(range);
@@ -194,7 +252,7 @@ void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char *mem_c
     char ascii[offs + 1];
     ascii[offs] = '\0';
     
-    int8_t *memory = sys_dump_eeprom(sys);
+    int8_t *memory = sys_dump_eeprom(dbg->sys);
 
     for(int i = cell; i < (cell + offs); i++)
         ascii[i - cell] = (uint8_t) memory[i];
@@ -207,7 +265,7 @@ void examine_eeprom_char(debugwindow_t *window, system_t *sys, const char *mem_c
     free(msg);
 }
 
-void load_eep_hex(debugwindow_t *window, system_t *sys, const char *file) {
+void command_leep(debugwindow_t *window, dbg_t *dbg, const char *file) {
 
     array_t *buffer = array_ctor(1024, NULL, NULL);
 
@@ -230,7 +288,7 @@ void load_eep_hex(debugwindow_t *window, system_t *sys, const char *file) {
         return;
     }
 
-    int8_t *memory = sys_dump_eeprom(sys);
+    int8_t *memory = sys_dump_eeprom(dbg->sys);
 
     for(int i = 0; i < buffer->top; i++) {
 
@@ -245,31 +303,31 @@ void load_eep_hex(debugwindow_t *window, system_t *sys, const char *file) {
     free(msg);
 }
 
-void clear_output(debugwindow_t *window) {
+void command_clear(debugwindow_t *window) {
 
     dwin_clear_panel(window, OPNL);
 }
 
-void show_cycles(debugwindow_t *window, system_t *sys) {
+void command_cycles(debugwindow_t *window, dbg_t *dbg) {
 
-    char *cycles_str = get_cycles(sys->cycles);
+    char *cycles_str = get_cycles(dbg->sys->cycles);
     dwin_write(window, OPNL, cycles_str, D);
 
     free(cycles_str);
 }
 
-void show_clock(debugwindow_t *window, system_t *sys) {
+void command_clock(debugwindow_t *window, dbg_t *dbg) {
 
-    char *clock_str = get_clock(sys->clock);
+    char *clock_str = get_clock(dbg->sys->clock);
     dwin_write(window, OPNL, clock_str, D);
 
     free(clock_str);
 }
 
-void show_time(debugwindow_t *window, system_t *sys) {
+void command_time(debugwindow_t *window, dbg_t *dbg) {
 
-    const double c = sys->cycles;
-    const double f = sys->clock;
+    const double c = dbg->sys->cycles;
+    const double f = dbg->sys->clock;
 
     const double time = ((c / f) * 1000000);
 
@@ -279,7 +337,7 @@ void show_time(debugwindow_t *window, system_t *sys) {
     free(time_str);
 }
 
-void examine_data_byte(debugwindow_t *window, system_t *sys, const char *mem_cell) {
+void command_xdb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell) {
 
     const int cell = htoi(mem_cell);
 
@@ -289,7 +347,7 @@ void examine_data_byte(debugwindow_t *window, system_t *sys, const char *mem_cel
         return;
     }
 
-    const uint8_t data = sys_read_data(sys, cell);
+    const uint8_t data = sys_read_data(dbg->sys, cell);
 
     char byte[10];
 
@@ -308,7 +366,9 @@ void examine_data_byte(debugwindow_t *window, system_t *sys, const char *mem_cel
     free(msg);   
 }
 
-void create_comment(debugwindow_t *window, system_t *sys, const char *line, const char *comment) {
+void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char *comment) {
+    
+    /*
     
     const int lnno = get_int(line);
     const int len = strlen(comment);
@@ -336,13 +396,12 @@ void create_comment(debugwindow_t *window, system_t *sys, const char *line, cons
 
     free(new_mnem);
     free(sub);
+
+    */
 }
 
-
-
-
-
-
-
-
+void command_def(debugwindow_t *window) {
+ 
+    dwin_write(window, OPNL, NOT_AVAIL, R);
+}
 

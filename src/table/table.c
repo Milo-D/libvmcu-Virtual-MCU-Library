@@ -7,6 +7,7 @@
 // Project Headers
 #include "table/table.h"
 #include "table/breakpoint.h"
+#include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 
 /* --- Public --- */
@@ -21,7 +22,7 @@ struct _table* table_ctor(const int size) {
     table->breakpoints = malloc(size * sizeof(breakpoint_t));
     
     for(int i = 0; i < size; i++)
-        table->breakpoints.active = false;
+        table->breakpoints[i].active = false;
 
     table->breakc = 0;
     table->size = size;

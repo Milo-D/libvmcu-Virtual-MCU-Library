@@ -9,8 +9,8 @@
 #include "printer/systemprinter.h"
 #include "printer/memprop.h"
 #include "cli/debug/debugwindow.h"
-#include "system/system.h"
 #include "system/mcudef.h"
+#include "dbg/dbg.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
 #include "collections/array.h"
@@ -19,37 +19,38 @@
 
 /* Forward Declaration of static Systemprinter Functions */
 
-static void print_gpr(debugwindow_t *window, system_t *sys);
-static void print_sreg(debugwindow_t *window, system_t *sys);
-static void print_data(debugwindow_t *window, system_t *sys);
-static void print_eeprom(debugwindow_t *window, system_t *sys);
-static void print_flash(debugwindow_t *window, system_t *sys);
-static void print_side_table(debugwindow_t *window, system_t *sys);
+static void print_gpr(debugwindow_t *window, dbg_t *dbg);
+static void print_sreg(debugwindow_t *window, dbg_t *dbg);
+static void print_data(debugwindow_t *window, dbg_t *dbg);
+static void print_eeprom(debugwindow_t *window, dbg_t *dbg);
+static void print_flash(debugwindow_t *window, dbg_t *dbg);
+static void print_side(debugwindow_t *window, dbg_t *dbg);
 
 static int color(const int mem_prop); 
 
 /* Extern Systemprinter Functions */
 
-extern void system_to_win(debugwindow_t *window, system_t *sys) {
+extern void system_to_win(debugwindow_t *window, dbg_t *dbg) {
 
-    print_gpr(window, sys);
-    print_sreg(window, sys);
-    print_data(window, sys);
-    print_eeprom(window, sys);
+    print_gpr(window, dbg);
+    print_sreg(window, dbg);
+    print_data(window, dbg);
+    print_eeprom(window, dbg);
 
-    print_flash(window, sys);
-    print_side_table(window, sys);
+    print_flash(window, dbg);
+    print_side(window, dbg);
 
     dwin_update_all(window);
 }
 
 /* Static Systemprinter Functions */
 
-static void print_gpr(debugwindow_t *window, system_t *sys) {
-
-    dwin_add(window, GPNL, "Registers:\n\n", D);
+static void print_gpr(debugwindow_t *window, dbg_t *dbg) {
 
     array_t *coi = array_ctor(GPR_SIZE, NULL, NULL);
+    dwin_add(window, GPNL, "Registers:\n\n", D);
+    
+    system_t *sys = dbg->sys;
     sys_gpr_coi(sys, coi);
 
     int8_t *regfile = sys_dump_gpr(sys);
@@ -93,11 +94,12 @@ static void print_gpr(debugwindow_t *window, system_t *sys) {
     array_dtor(coi);
 }
 
-static void print_sreg(debugwindow_t *window, system_t *sys) {
-
-    dwin_add(window, SPNL, "Status-Register:\n\n", D);
+static void print_sreg(debugwindow_t *window, dbg_t *dbg) {
 
     array_t *coi = array_ctor(SREG_SIZE, NULL, NULL);
+    dwin_add(window, SPNL, "Status-Register:\n\n", D);
+    
+    system_t *sys = dbg->sys;
     sys_sreg_coi(sys, coi);
 
     const uint8_t status = sys_dump_sreg(sys);
@@ -130,11 +132,12 @@ static void print_sreg(debugwindow_t *window, system_t *sys) {
     array_dtor(coi);
 }
 
-static void print_data(debugwindow_t *window, system_t *sys) {
-
-    dwin_add(window, DPNL, "Data Memory:\n\n", D);
+static void print_data(debugwindow_t *window, dbg_t *dbg) {
 
     tuple_t *coi = tuple_ctor(2, UINT16, INT);
+    dwin_add(window, DPNL, "Data Memory:\n\n", D);
+    
+    system_t *sys = dbg->sys;
     sys_data_coi(sys, coi);
 
     int8_t *data = sys_dump_data(sys);
@@ -204,8 +207,9 @@ static void print_data(debugwindow_t *window, system_t *sys) {
     tuple_dtor(coi);
 }
 
-static void print_eeprom(debugwindow_t *window, system_t *sys) {
+static void print_eeprom(debugwindow_t *window, dbg_t *dbg) {
 
+    system_t *sys = dbg->sys;
     dwin_add(window, EPNL, "EEPROM:\n\n", D);
 
     int8_t *eeprom = sys_dump_eeprom(sys);
@@ -247,35 +251,38 @@ static void print_eeprom(debugwindow_t *window, system_t *sys) {
     queue_dtor(stream);
 }
 
-static void print_flash(debugwindow_t *window, system_t *sys) {
+static void print_flash(debugwindow_t *window, dbg_t *dbg) {
 
+    report_t *report = dbg->report;
+    table_t *table = dbg->table;
+    system_t *sys = dbg->sys;
+    
     dwin_add(window, FPNL, "Flash:\n\n", D);
 
     const int pc = sys_get_pc(sys);
-    const int size = sys_table_size(sys);
 
-    entry_t *entry = sys_dump_table(sys);
+    plain_t *disassembly = report->disassembly;
     queue_t *stream = queue_ctor();
 
     int k;
 
-    for(k = 0; k < size; k++) {
+    for(k = 0; k < report->progsize; k++) {
 
-        if(entry[k].addr == pc)
+        if(disassembly[k].addr == pc)
             break;
     }
 
     for(int i = (k - 4); i <= (k + 4); i++) {
 
-        if(i < 0 || i > size - 1) {
+        if(i < 0 || i > report->progsize - 1) {
 
             dwin_add(window, FPNL, "\n", D);
             continue;
         }
 
-        if(entry[i].addr >= 0) {
+        if(disassembly[i].addr >= 0) {
 
-            char *addr = itoh(entry[i].addr);
+            char *addr = itoh(disassembly[i].addr);
 
             char *fill = strfill('0', strlen(addr), 4);
             queue_put(stream, 3, "0x", fill, addr);
@@ -294,7 +301,7 @@ static void print_flash(debugwindow_t *window, system_t *sys) {
 
             dwin_add(window, FPNL, " [->] ", B);
 
-        } else if(entry[i].breakp == true) {
+        } else if(table_on_breakp(table, i) == true) {
 
             dwin_add(window, FPNL, " [b+] ", R);
 
@@ -303,7 +310,7 @@ static void print_flash(debugwindow_t *window, system_t *sys) {
             dwin_add(window, FPNL, "      ", D);
         }
 
-        dwin_highlight(window, FPNL, entry[i].ln);
+        dwin_highlight(window, FPNL, disassembly[i].mnem);
         dwin_add(window, FPNL, "\n", D);
 
         queue_flush(stream);
@@ -312,19 +319,22 @@ static void print_flash(debugwindow_t *window, system_t *sys) {
     queue_dtor(stream);
 }
 
-static void print_side_table(debugwindow_t *window, system_t *sys) {
+static void print_side(debugwindow_t *window, dbg_t *dbg) {
+
+    report_t *report = dbg->report;
+    table_t *table = dbg->table;
+    system_t *sys = dbg->sys;
 
     dwin_add(window, RPNL, "Source Code:\n\n", D);
 
     const int pc = sys_get_pc(sys);
-    const int size = sys_table_size(sys);
 
     const int cursor = dwin_get_page(window, RPNL);
     const int height = dwin_height(window, RPNL) - 4;
 
     const int start = (cursor * height);
 
-    if(size == 0) {
+    if(report->progsize == 0) {
 
         dwin_clear_panel(window, RPNL);
 
@@ -334,7 +344,7 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
         return;
     }
 
-    entry_t *entry = sys_dump_table(sys);
+    plain_t *disassembly = report->disassembly;
     queue_t *stream = queue_ctor();
 
     for(int i = start; i < (start + height); i++) {
@@ -344,7 +354,7 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
 
         queue_put(stream, 2, fill, addr);
 
-        if(i >= size) {
+        if(i >= report->progsize) {
 
             queue_put(stream, 1, "\n");
 
@@ -360,11 +370,11 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
         char *out = queue_str(stream);
         dwin_add(window, RPNL, out, D);
 
-        if(entry[i].addr == pc) {
+        if(disassembly[i].addr == pc) {
           
             dwin_add(window, RPNL, " [->] ", B);
 
-        } else if(entry[i].breakp == true) {
+        } else if(table_on_breakp(table, i) == true) {
 
             dwin_add(window, RPNL, " [b+] ", R);
 
@@ -373,7 +383,7 @@ static void print_side_table(debugwindow_t *window, system_t *sys) {
             dwin_add(window, RPNL, "      ", D);
         }
 
-        dwin_highlight(window, RPNL, entry[i].ln);
+        dwin_highlight(window, RPNL, disassembly[i].mnem);
         dwin_add(window, RPNL, "\n", D);
 
         queue_flush(stream);

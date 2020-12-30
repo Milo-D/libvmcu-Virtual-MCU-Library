@@ -30,9 +30,9 @@ static void sig_handler(int signal);
 
 /* --- Public --- */
 
-void debug(system_t *sys, const char *file) {
+void debug(dbg_t *dbg, const char *file) {
 
-    const int size = sys_table_size(sys);
+    const int size = dbg->report->progsize;
 
     window = dwin_ctor(size);
     parser_t *parser = parser_ctor(DEBUG);
@@ -48,7 +48,7 @@ void debug(system_t *sys, const char *file) {
 
     do {
 
-        system_to_win(window, sys);
+        system_to_win(window, dbg);
         dwin_read_prompt(window, select);
 
         if(size <= 0)
@@ -62,42 +62,36 @@ void debug(system_t *sys, const char *file) {
 
         switch(parser_eval(parser, last_select)) {
 
-            case 0:
+            case 0:  command_n(window, dbg);                                break;
+            case 1:  command_b(window, dbg);                                break;
+            case 2:  command_rn(window);                                    break;
+            case 3:  command_rp(window);                                    break;
+            case 4:  command_dn(window);                                    break;
+            case 5:  command_dp(window);                                    break;
+            case 6:  command_jb(window, dbg, get_int(at(com, 1)));          break;
+            case 7:  command_en(window);                                    break;
+            case 8:  command_ep(window);                                    break;
+            case 9:  command_xd(window, dbg, at(com, 1));                   break;
+            case 10: command_xe(window, dbg, at(com, 1));                   break;
+            case 11: command_xdc(window, dbg, at(com, 1), at(com, 2));      break;
+            case 12: command_xec(window, dbg, at(com, 1), at(com, 2));      break;
+            case 13: command_leep(window, dbg, at(com, 1));                 break;
+            case 14: command_clear(window);                                 break;
+            case 15: /* debug exit */                                       break;
+            case 16: /* here comes help output*/                            break;
+            case 17: command_break(window, dbg, at(com, 1));                break;
+            case 18: command_unbreak(window, dbg, at(com, 1));              break;
+            case 19: command_def(window);                                   break;
+            case 20: command_pn(window);                                    break;
+            case 21: command_pp(window);                                    break;
+            case 22: command_cycles(window, dbg);                           break;
+            case 23: command_clock(window, dbg);                            break;
+            case 24: command_time(window, dbg);                             break;
+            case 25: command_xdb(window, dbg, at(com, 1));                  break;
+            case 26: command_jc(window, dbg, get_int(at(com, 1)));          break;
+            case 27: command_cc(window, dbg, at(com, 1), at(com, 2));       break;
 
-                if(sys_step(sys) < 0)
-                    dwin_write(window, OPNL, ILLEGAL_OPC, D);                                      
-
-            break;
-
-            case 1: sys_backstep(sys);                                            break;
-            case 2: dwin_change_page(window, GPNL, +1);                           break;
-            case 3: dwin_change_page(window, GPNL, -1);                           break;
-            case 4: dwin_change_page(window, DPNL, +1);                           break;
-            case 5: dwin_change_page(window, DPNL, -1);                           break;
-            case 6: jump_forward(window, sys, get_int(at(com, 1)));               break;
-            case 7: dwin_change_page(window, EPNL, +1);                           break;
-            case 8: dwin_change_page(window, EPNL, -1);                           break;
-            case 9: examine_data(window, sys, at(com, 1));                        break;
-            case 10: examine_eeprom(window, sys, at(com, 1));                     break;
-            case 11: examine_data_char(window, sys, at(com, 1), at(com, 2));      break;
-            case 12: examine_eeprom_char(window, sys, at(com, 1), at(com, 2));    break;
-            case 13: load_eep_hex(window, sys, at(com, 1));                       break;
-            case 14: clear_output(window);                                        break;
-            case 15: /* debug exit */                                             break;
-            case 16: /* here comes help output*/                                  break;
-            case 17: set_breakpoint(window, sys, at(com, 1));                     break;
-            case 18: remove_breakpoint(window, sys, at(com, 1));                  break;
-            case 19: dwin_write(window, OPNL, NOT_AVAIL, R);                      break;
-            case 20: dwin_change_page(window, RPNL, +1);                          break;
-            case 21: dwin_change_page(window, RPNL, -1);                          break;
-            case 22: show_cycles(window, sys);                                    break;
-            case 23: show_clock(window, sys);                                     break;
-            case 24: show_time(window, sys);                                      break;
-            case 25: examine_data_byte(window, sys, at(com, 1));                  break;
-            case 26: jump_cycles(window, sys, get_int(at(com, 1)));               break;
-            case 27: create_comment(window, sys, at(com, 1), at(com, 2));         break;
-
-            default: /* ignoring invalid input */                                 break;
+            default: /* ignoring invalid input */                           break;
         }
 
         ls_dtor(com);
