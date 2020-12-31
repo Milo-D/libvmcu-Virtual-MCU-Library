@@ -189,6 +189,7 @@ Note: You may open multiple files in interactive Debugging Mode.
     - [x] EEPROM
     - [ ] UART
     - [ ] SPI
+    - [ ] WDT
     - [ ] ...
     
 # Static Analysis
