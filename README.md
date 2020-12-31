@@ -11,12 +11,13 @@ Microcontrollers, including ATmega328P.
 # Overview
 ![mdx](https://user-images.githubusercontent.com/46600932/103389512-93ba8800-4b0f-11eb-911b-fa8c8d6123c1.png)
 
-MDX is an easy and fast CLI Debugger for AVR programs, with a focus on accurate simulation. It has some nice extra
+MDX is an easy and fast CLI Debugger for AVR programs, with a focus on accurate simulation. It has some useful 
 features built in like:
 
 - Backstepping
 - Peripheral Simulation (Timers, ...)
 - Annotations for IO-Registers
+- Static Analysis
 - Dataflow Visualization
 - Headless Mode
 - easy setup and easy usage
@@ -34,27 +35,31 @@ features built in like:
 
 [V Supported MCUs](#Supported-Microcontroller)
 
-[VI Features](#How-To)
+[VI Debugging](#Debugging)
 
-[VII Instruction Set](#Instructions)
+[VII Static Analysis](#Static-Analysis)
 
-[VIII Contributing](#Contributing)
+[VIII Instruction Set](#Instructions)
 
-[IX Credits](#Credits)
+[IX Contributing](#Contributing)
 
-[X Screenshots](#Screenshots)
+[X Credits](#Credits)
 
-[XI Wiki](#Wiki)
+[XI Screenshots](#Screenshots)
+
+[XII Wiki](#Wiki)
 
 # How MDX works
 
 <img src="https://raw.githubusercontent.com/Milo-D/MDX-Assembly-Debugger/master/images/analyze_dataflow.svg" width="50%">
 
-MDX accepts AVR Hex Files (Intel Hex) as input and decodes them. Then, a readable
-Assembly Source File is reconstructed from the decoded Hexdump.
-Now you are able to step through the Source Code and see what really happens.
+MDX accepts AVR Hex Files (Intel Hex) as input. Then the decoder tries to decode the given Hex File.
+After that, the decoded data will be sent to the disassembler, in order to generate mnemonics,
+labels, comments and blank lines (blank lines help to improve readability).
 
-You will find some example programs in the /test/ directory of this Repository.
+Now the analyzer comes into play. The analyzer takes all the data from the previous two steps 
+and performs a static analysis on it. It then generates a report and returns it, so that
+the virtual microcontroller can be initialized.
 
 # Installation
 Setting up MDX isn't really difficult. Since the new CLI is based on NCurses,
@@ -64,7 +69,7 @@ After that, only 4 Steps are left:
 
 - Step 1: Clone this repo.
 ```console
-You@Terminal:~$ git clone https://www.github.com/Milo-D/MDX-Assembly-Debugger.git/
+You@Terminal:~$ git clone https://www.github.com/Milo-D/MDX-Micro-Debugger.git/
 ```
 
 - Step 2: Run 'make' to compile MDX.
@@ -126,7 +131,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | cycles        | none          | Show current Cycles         |
 | clock         | none          | Show Clock Frequency        |
 | time          | none          | Show elapsed Time           |
-| cc            | line comment  | Create comment in disasm.   |
+| cc            | addr comment  | Create comment in disasm.   |
 | q             | none          | Back to File Selector       |
 | q + q         | none          | Quit                        |
 | ?             | none          | Show Help (in progress)     |
@@ -161,7 +166,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [ ] ATmega8
 - [ ] ...
 
-# Features
+# Debugging
 - [x] Backwards Stepping
 - [x] Advanced Disassembler, recovering Labels
 - [x] Syntax Highlight for the disassembled Sourcecode
@@ -185,6 +190,16 @@ Note: You may open multiple files in interactive Debugging Mode.
     - [ ] UART
     - [ ] SPI
     - [ ] ...
+    
+# Static Analysis
+- [x] Analyzer Core Module
+- [x] Report generator
+
+- [ ] Analyzer Submodules
+   - [ ] Function analysis
+   - [ ] ISR analysis
+   - [ ] SFR analysis
+   - [ ] ...
 
 # Instructions
 Currently MDX supports: ~ 133 Instructions. Some few instructions are implemented as 'nop'
