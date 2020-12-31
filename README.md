@@ -47,6 +47,9 @@ features built in like:
 [XI Wiki](#Wiki)
 
 # How MDX works
+
+<img src="https://raw.githubusercontent.com/Milo-D/MDX-Assembly-Debugger/master/images/analyze_dataflow.svg" width="50%">
+
 MDX accepts AVR Hex Files (Intel Hex) as input and decodes them. Then, a readable
 Assembly Source File is reconstructed from the decoded Hexdump.
 Now you are able to step through the Source Code and see what really happens.
