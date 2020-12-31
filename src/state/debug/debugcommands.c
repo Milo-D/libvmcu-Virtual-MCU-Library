@@ -372,13 +372,13 @@ void command_xdb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell) {
 
 void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char *comment) {
     
-    /*
-    
-    const int lnno = get_int(line);
+    /* move this functionality to table_t */
+
+    report_t *report = dbg->report;
+    plain_t *disassembly = dbg->report->disassembly;
+
+    const int lnno = htoi(line);
     const int len = strlen(comment);
-    
-    const char *mnem = sys_read_table(sys, lnno);
-    const int pos = strpos(mnem, ";");
 
     if(len > 32) {
         
@@ -386,22 +386,44 @@ void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char 
         return;
     }
     
-    if(mnem == NULL || pos < 0) {
+    char **mnem = NULL;
+    
+    for(int i = 0; i < report->progsize; i++) {
+        
+        if(disassembly[i].addr != lnno)
+            continue;
+            
+        mnem = &(disassembly[i].mnem);
+        break;
+    }
+
+    if(mnem == NULL) {
+
+        dwin_write(window, OPNL, CC_FAILURE, D);
+        return;
+    }
+    
+    const int pos = strpos(*mnem, ";");
+    
+    if(pos < 0) {
 
         dwin_write(window, OPNL, CC_FAILURE, D);
         return;
     }
 
-    char *sub = substr(mnem, 0, pos + 1);
+    char *sub = substr(*mnem, 0, pos + 1);
     char *new_mnem = strxcat(sub, comment);
 
-    sys_write_table(sys, lnno, new_mnem);
+    free(*mnem);
+    
+    const size_t new_len = strlen(new_mnem) + 1;
+    *mnem = malloc(new_len * sizeof(char));
+    strncpy(*mnem, new_mnem, new_len);
+
     dwin_write(window, OPNL, CC_SUCCESS, D);
 
     free(new_mnem);
     free(sub);
-
-    */
 }
 
 void command_def(debugwindow_t *window) {

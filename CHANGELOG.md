@@ -1,6 +1,29 @@
 # Changelog
 
-## Unreleased
+## v.0.5.0 - 2020-12-31
+
+- Added: Analyzer Module.
+    - The Analyzer Module consists of multiple (future) submodules.
+    - Each submodule will be covering exactly one aspect of static code analysis.
+    - Planned submodules:
+        - ISR analysis (explore details about ISRs in your code)
+        - SFR analysis (annotate addresses which target special function registers)
+        - Function analysis (analyse function calls and maybe even their arguments/return-values)
+        - many more...
+    - The analyzer is a work in progress
+
+- Performance: Reached 17 MHz execution speed. It is now possible to simulate default Arduino in realtime.
+
+- Refactor of toplevel structures
+    - table_t class is now only for user-defined entries like breakpoints, etc.
+    - system_t class does not contain table_t class anymore.
+    - report_t class is the report of the analyzer after decoding and disassembling hexfile.
+
+- Displaying hexadecimal addresses instead of line numbers in sidepanel.
+- Table commands (like break, unbreak) are now requiring a hexadecimal address
+
+- Added: Diagram of the analyzer dataflow
+- Added: New screenshot
 
 - DebugWindow Refactor (II)
     - panel properties are now calculated seperately in <g,s,f,d,e,o,r> pnl_ctor
