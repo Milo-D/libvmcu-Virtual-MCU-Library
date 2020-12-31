@@ -9,7 +9,7 @@ An easy and fast CLI Debugger and Disassembler for Atmel's 8-bit AVR
 Microcontrollers, including ATmega328P.
 
 # Overview
-![mdx](https://user-images.githubusercontent.com/46600932/100164073-65fe7580-2eb7-11eb-87af-79dd95a8bc18.png)
+![mdx](https://user-images.githubusercontent.com/46600932/103389512-93ba8800-4b0f-11eb-911b-fa8c8d6123c1.png)
 
 MDX is an easy and fast CLI Debugger for AVR programs, with a focus on accurate simulation. It has some nice extra
 features built in like:
@@ -47,6 +47,9 @@ features built in like:
 [XI Wiki](#Wiki)
 
 # How MDX works
+
+<img src="https://raw.githubusercontent.com/Milo-D/MDX-Assembly-Debugger/master/images/analyze_dataflow.svg" width="50%">
+
 MDX accepts AVR Hex Files (Intel Hex) as input and decodes them. Then, a readable
 Assembly Source File is reconstructed from the decoded Hexdump.
 Now you are able to step through the Source Code and see what really happens.
