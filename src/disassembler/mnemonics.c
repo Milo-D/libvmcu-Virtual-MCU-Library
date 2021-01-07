@@ -616,7 +616,7 @@ char* mnem_push(const int opcode) {
     const int len = queue_size(stream);
 
     char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[SP] <- R", sstr);
+    queue_put(stream, 3, fill, "; DATA[SP--] <- R", sstr);
 
     char *mnemonic = queue_str(stream);
 
@@ -637,7 +637,7 @@ char* mnem_pop(const int opcode) {
     const int len = queue_size(stream);
 
     char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[--SP]");
+    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[++SP]");
 
     char *mnemonic = queue_str(stream);
 
