@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Fixed comments for push/pop mnemonic.
+
 ## v.0.5.0 - 2020-12-31
 
 - Added: Analyzer Module.
