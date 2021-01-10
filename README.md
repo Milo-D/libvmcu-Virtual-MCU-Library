@@ -224,7 +224,7 @@ are welcome and if you have some changes/wishes in mind, do not hesitate to cont
 
 # Credits
 
-1) Huge thanks to <a href="https://alexander-hansen.dev">Alexander Hansen</a> for the new Logo :)
+1) Huge thanks to <a href="https://alexander-hansen.dev">Alexander Hansen</a> for the new logo and architecture diagram. :)
 
 # Screenshots
 

@@ -7,8 +7,9 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
-// Project Headers
+// Project Headers (exposed)
 #include "system/util/progmem.h"
+#include "system/util/memprop.h"
 
 typedef struct _gpr gpr_t;
 typedef struct _sreg sreg_t;

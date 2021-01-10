@@ -8,14 +8,14 @@
 // Project Headers
 #include "system/core/data.h"
 #include "system/core/io.h"
+#include "system/util/memprop.h"
 #include "system/mcudef.h"
-#include "printer/memprop.h"
 #include "collections/tuple.h"
 #include "misc/bitmanip.h"
 
 /* Forward Declaration of static DATA Functions */
 
-static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop);
+static void data_set_coi(const struct _data *this, const uint16_t cell, const MEMPROP prop);
 static void data_clear_coi(const struct _data *this);
 
 /* --- Public --- */
@@ -120,11 +120,11 @@ int8_t data_read(const struct _data *this, const uint16_t addr) {
 
 void data_coi(const struct _data *this, tuple_t *buffer) {
 
-    const int cell = *((uint16_t*) tuple_get(this->coi, 0));
-    const int prop = *((int*) tuple_get(this->coi, 1));
+    const uint16_t cell = *((uint16_t*) tuple_get(this->coi, 0));
+    const MEMPROP prop = *((MEMPROP*) tuple_get(this->coi, 1));
 
     tuple_set(buffer, (void*) &cell, sizeof(uint16_t), 0);
-    tuple_set(buffer, (void*) &prop, sizeof(int), 1);
+    tuple_set(buffer, (void*) &prop, sizeof(MEMPROP), 1);
 
     data_clear_coi(this);
 }
@@ -180,10 +180,10 @@ int8_t* data_dump_eeprom(const struct _data *this) {
 
 /* --- Private --- */
 
-static void data_set_coi(const struct _data *this, const uint16_t cell, const int prop) {
+static void data_set_coi(const struct _data *this, const uint16_t cell, const MEMPROP prop) {
 
     tuple_set(this->coi, (void*) &cell, sizeof(uint16_t), 0);
-    tuple_set(this->coi, (void*) &prop, sizeof(int), 1);
+    tuple_set(this->coi, (void*) &prop, sizeof(MEMPROP), 1);
 }
 
 static void data_clear_coi(const struct _data *this) {

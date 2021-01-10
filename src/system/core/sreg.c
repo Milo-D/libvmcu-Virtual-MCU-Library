@@ -8,7 +8,6 @@
 // Project Headers
 #include "system/core/sreg.h"
 #include "system/mcudef.h"
-#include "printer/memprop.h"
 #include "collections/array.h"
 
 /* Forward Declaration of static SREG Functions */
@@ -24,8 +23,8 @@ struct _sreg* sreg_ctor(void) {
     if((sreg = malloc(sizeof(struct _sreg))) == NULL)
         return NULL;
 
-    sreg->coi = malloc(SREG_SIZE * sizeof(int));
-    memset(sreg->coi, NONE, SREG_SIZE * sizeof(int));
+    sreg->coi = malloc(SREG_SIZE * sizeof(MEMPROP));
+    memset(sreg->coi, NONE, SREG_SIZE * sizeof(MEMPROP));
     
     sreg->status = 0x00;
     return sreg;
@@ -99,8 +98,8 @@ void sreg_coi(const struct _sreg *this, array_t *buffer) {
 
     for(int i = 0; i < SREG_SIZE; i++) {
     
-        const int prop = this->coi[i];
-        array_push(buffer, (void*) &prop, sizeof(int));
+        const MEMPROP prop = this->coi[i];
+        array_push(buffer, (void*) &prop, sizeof(MEMPROP));
     }
 
     sreg_clear_coi(this);
@@ -114,7 +113,7 @@ uint8_t sreg_dump(const struct _sreg *this) {
 void sreg_reboot(struct _sreg *this) {
 
     this->status = 0x00;
-    memset(this->coi, NONE, SREG_SIZE * sizeof(int));
+    memset(this->coi, NONE, SREG_SIZE * sizeof(MEMPROP));
 }
 
 /* --- Private --- */

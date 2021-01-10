@@ -7,12 +7,15 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
+// Project Headers
+#include "system/util/memprop.h"
+
 typedef struct _array array_t;
 
 typedef struct _sreg {
 
     uint8_t status;
-    int *coi;
+    MEMPROP *coi;
 
 } sreg_t;
 

@@ -14,7 +14,7 @@
 #include "system/mcudef.h"
 #include "system/system.h"
 #include "parser/parser.h"
-#include "printer/systemprinter.h"
+#include "printer/debugprinter.h"
 #include "misc/ehandling.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
@@ -48,7 +48,7 @@ void debug(dbg_t *dbg, const char *file) {
 
     do {
 
-        system_to_win(window, dbg);
+        print_debug(window, dbg);
         dwin_read_prompt(window, select);
 
         if(size <= 0)

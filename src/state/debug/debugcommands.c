@@ -12,7 +12,7 @@
 #include "system/mcudef.h"
 #include "dbg/dbg.h"
 #include "decoder/decoder.h"
-#include "printer/systemprinter.h"
+#include "printer/debugprinter.h"
 #include "misc/stringmanip.h"
 #include "misc/bitmanip.h"
 #include "misc/filemanip.h"
@@ -92,7 +92,7 @@ void command_jb(debugwindow_t *window, dbg_t *dbg, const int delay) {
             break;
 
         if(delay >= 10)
-            system_to_win(window, dbg);
+            print_debug(window, dbg);
 
         sys_step(sys);
 

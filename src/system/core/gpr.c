@@ -8,7 +8,6 @@
 // Project Headers
 #include "system/core/gpr.h"
 #include "system/mcudef.h"
-#include "printer/memprop.h"
 #include "collections/array.h"
 
 /* Forward Declaration of static GPR Functions */
@@ -27,8 +26,8 @@ struct _gpr* gpr_ctor(void) {
     gpr->regfile = malloc(GPR_SIZE * sizeof(int8_t));
     memset(gpr->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
     
-    gpr->coi = malloc(GPR_SIZE * sizeof(int));
-    memset(gpr->coi, NONE, GPR_SIZE * sizeof(int));
+    gpr->coi = malloc(GPR_SIZE * sizeof(MEMPROP));
+    memset(gpr->coi, NONE, GPR_SIZE * sizeof(MEMPROP));
 	
     return gpr;
 }
@@ -56,8 +55,8 @@ void gpr_coi(const struct _gpr *this, array_t *buffer) {
 
     for(int i = 0; i < GPR_SIZE; i++) {
 	
-        const int prop = this->coi[i];
-        array_push(buffer, (void*) &prop, sizeof(int));
+        const MEMPROP prop = this->coi[i];
+        array_push(buffer, (void*) &prop, sizeof(MEMPROP));
     }
 
     gpr_clear_coi(this);
@@ -71,7 +70,7 @@ int8_t* gpr_dump(const struct _gpr *this) {
 void gpr_reboot(const struct _gpr *this) {
 
     memset(this->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
-    memset(this->coi, NONE, GPR_SIZE * sizeof(int));
+    memset(this->coi, NONE, GPR_SIZE * sizeof(MEMPROP));
 }
 
 /* --- Private --- */

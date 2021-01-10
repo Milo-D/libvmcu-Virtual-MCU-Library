@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## v.0.5.1 - 2020-01-10
+
+- Systemprinter refactored
+    - Rename sytemprinter.* to debugprinter.*
+    - Seperated printer functionality into six files:
+        - gpnl_printer.* (printer for the gpr panel)
+        - spnl_printer.* (printer for the sreg panel)
+        - fpnl_printer.* (printer for the flash panel)
+        - dpnl_printer.* (printer for the data panel)
+        - epnl_printer.* (printer for the eeprom panel)
+        - rpnl_printer.* (printer for the right panel)
+    - functionality stayed the same
+
+- Added credits for the architecture diagram.
 - Fixed comments for push/pop mnemonic.
 
 ## v.0.5.0 - 2020-12-31

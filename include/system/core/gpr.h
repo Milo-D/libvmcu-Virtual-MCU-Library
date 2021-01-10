@@ -6,12 +6,15 @@
 // C Headers
 #include <inttypes.h>
 
+// Project Headers
+#include "system/util/memprop.h"
+
 typedef struct _array array_t;
 
 typedef struct _gpr {
 
     int8_t *regfile;
-    int *coi;
+    MEMPROP *coi;
     
 } gpr_t;
 
