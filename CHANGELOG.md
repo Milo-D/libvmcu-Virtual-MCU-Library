@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Now using sstream in mnemonics generator
+    - avoiding unnecessary heap allocations
+    
+- Added: stringstream collection (sstream.c, sstream.h)
+    - will be replacing queue collection (queue.c, queue.h)
+
 ## v.0.5.1 - 2020-01-10
 
 - Systemprinter refactored

@@ -1,17 +1,15 @@
 /* Mnemonic Generator Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 // Project Headers
 #include "disassembler/mnemonics.h"
 #include "system/mcudef.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
 #include "misc/bitmanip.h"
-#include "collections/queue.h"
+#include "collections/sstream.h"
 
 #define TAB 26
 
@@ -19,41 +17,30 @@
 
 char* mnem_dw(const int opcode) {
     
-    char *word = itoh(opcode);
-    char *addr_fill = strfill('0', strlen(word), 4);
-    
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, ".dw 0x", addr_fill, word);
-    
-    char *fill = strfill(' ', 10, TAB);
-    queue_put(stream, 3, fill, "; 0x", word);
-    
-    char *mnemonic = queue_str(stream);
-    
-    queue_dtor(stream);
-    nfree(3, word, addr_fill, fill);
-    
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+
+    sstream_put(&ss, ".dw 0x%04x", opcode);
+
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; 0x%x", opcode);
+
+    return sstream_alloc(&ss);
 }
 
 /* --- Static --- */
 
 char* mnem_nop(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "nop");
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "nop");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; no operation");
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 2, fill, "; no operation");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_movw(const int opcode) {
@@ -61,198 +48,129 @@ char* mnem_movw(const int opcode) {
     const int dest = extract(opcode, 4, 8, 0) * 2;
     const int src = extract(opcode, 0, 4, 0) * 2;
 
-    char *dstr = get_str(dest);
-    char *dstrn = get_str(dest + 1);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "movw r%d:r%d", dest + 1, dest);
+    sstream_put(&ss, ", r%d:r%d", src + 1, src);
 
-    char *sstr = get_str(src);
-    char *sstrn = get_str(src + 1);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d:R%d", dest + 1, dest);
+    sstream_put(&ss, " <- R%d:R%d", src + 1, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "movw r", dstrn, ":r", dstr);
-    queue_put(stream, 4, ", r", sstrn, ":r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R", dstrn, ":R", dstr);
-    queue_put(stream, 4, " <- R", sstrn, ":R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(5, dstr, dstrn, sstr, sstrn, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_mul(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "mul r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    sstream_put(&ss, "mul r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_muls(const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0);
-    const int src = extract(opcode, 0, 4, 0);
+    const int dest = extract(opcode, 4, 8, 0) + 16;
+    const int src = extract(opcode, 0, 4, 0) + 16;
 
-    char *dstr = get_str(dest + 16);
-    char *sstr = get_str(src + 16);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "muls r", dstr, ", r", sstr);
+    sstream_put(&ss, "muls r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_mulsu(const int opcode) {
 
-    const int dest = extract(opcode, 4, 7, 0);
-    const int src = extract(opcode, 0, 3, 0);
+    const int dest = extract(opcode, 4, 7, 0) + 16;
+    const int src = extract(opcode, 0, 3, 0) + 16;
 
-    char *dstr = get_str(dest + 16);
-    char *sstr = get_str(src + 16);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "mulsu r", dstr, ", r", sstr);
+    sstream_put(&ss, "mulsu r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_fmul(const int opcode) {
 
-    const int dest = extract(opcode, 4, 7, 0);
-    const int src = extract(opcode, 0, 3, 0);
+    const int dest = extract(opcode, 4, 7, 0) + 16;
+    const int src = extract(opcode, 0, 3, 0) + 16;
 
-    char *dstr = get_str(dest + 16);
-    char *sstr = get_str(src + 16);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "fmul r", dstr, ", r", sstr);
+    sstream_put(&ss, "fmul r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_fmuls(const int opcode) {
+
+    const int dest = extract(opcode, 4, 7, 0) + 16;
+    const int src = extract(opcode, 0, 3, 0) + 16;
+
+    sstream_t ss;
+    sstream_ctor(&ss);
+
+    sstream_put(&ss, "fmuls r%d, r%d", dest, src);
     
-    const int dest = extract(opcode, 4, 7, 0);
-    const int src = extract(opcode, 0, 3, 0);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
 
-    char *dstr = get_str(dest + 16);
-    char *sstr = get_str(src + 16);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "fmuls r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_fmulsu(const int opcode) {
     
-    const int dest = extract(opcode, 4, 7, 0);
-    const int src = extract(opcode, 0, 3, 0);
+    const int dest = extract(opcode, 4, 7, 0) + 16;
+    const int src = extract(opcode, 0, 3, 0) + 16;
 
-    char *dstr = get_str(dest + 16);
-    char *sstr = get_str(src + 16);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "fmulsu r", dstr, ", r", sstr);
+    sstream_put(&ss, "fmulsu r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R1:R0 <- R", dstr, " * R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ldi(const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0);
+    const int dest = extract(opcode, 4, 8, 0) + 16;
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-    char vstr[3];
-    to_hex(src, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ldi r%d, 0x%02x", dest, src);
 
-    char *dstr = get_str(dest + 16);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- 0x%02x", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "ldi r", dstr, ", 0x", vstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R", dstr, " <- 0x", vstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_rjmp(const int opcode) {
@@ -266,24 +184,15 @@ char* mnem_rjmp(const int opcode) {
         sign[0] = '-';
     }
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "rjmp %s%d", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "rjmp ", sign, offstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, offs);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_jmp(const int opcode) {
@@ -291,38 +200,28 @@ char* mnem_jmp(const int opcode) {
     const int addr = (opcode & 0x1ffff) 
                    + (opcode & 0x1f00000);
 
-    char *dstr = get_str(addr);
-    char *hex_addr = itoh(addr);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "jmp +", dstr);
+    sstream_put(&ss, "jmp +%d", addr);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- 0x%x", addr);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; PC <- 0x", hex_addr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, hex_addr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ijmp(const int opcode) {
 
-    queue_t *stream = queue_ctor();
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *fill = strfill(' ', 4, TAB);
-    queue_put(stream, 3, "ijmp", fill, "; PC <- ZH:ZL");
+    sstream_put(&ss, "ijmp");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- ZH:ZL");
 
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 } 
 
 char* mnem_mov(const int opcode) {
@@ -330,67 +229,45 @@ char* mnem_mov(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "mov r%d, r%d", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "mov r", dstr, ", r", sstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d", dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R", dstr, " <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_dec(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "dec r", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- R", dstr, " - 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "dec r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d - 0x01", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_inc(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "inc r", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- R", dstr, " + 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "inc r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d + 0x01", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_add(const int opcode) {
@@ -398,24 +275,15 @@ char* mnem_add(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "add r", dstr, ", r", sstr);
+    sstream_put(&ss, "add r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d + R%d", dest, dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, " <- R", dstr, " + R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_adc(const int opcode) {
@@ -423,24 +291,15 @@ char* mnem_adc(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "adc r", dstr, ", r", sstr);
+    sstream_put(&ss, "adc r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d + R%d + CF", dest, dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- R");
-    queue_put(stream, 4, dstr, " + R", sstr, " + CF");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_adiw(const int opcode) {
@@ -448,28 +307,18 @@ char* mnem_adiw(const int opcode) {
     const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
 
-    char *dstr = get_str(dest);
-    char *dstrn = get_str(dest + 1);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char vstr[3];
-    to_hex(src, vstr);
+    sstream_put(&ss, "adiw r%d:r%d, ", dest + 1, dest);
+    sstream_put(&ss, "0x%02x", src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "adiw r", dstrn, ":r", dstr);
-    queue_put(stream, 2, ", 0x", vstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    
+    sstream_put(&ss, "; R%d:R%d <- R%d:R%d", dest + 1, dest, dest + 1, dest);
+    sstream_put(&ss, " + 0x%02x", src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R", dstrn, ":R", dstr);
-    queue_put(stream, 7, " <- R", dstrn, ":R", dstr, " + ", "0x", vstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, dstrn, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sub(const int opcode) {
@@ -477,24 +326,15 @@ char* mnem_sub(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sub r%d, r%d", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sub r", dstr, ", r", sstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d - R%d", dest, dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, " <- R", dstr, " - R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_subi(const int opcode) {
@@ -502,26 +342,15 @@ char* mnem_subi(const int opcode) {
     const int dest = extract(opcode, 4, 8, 0) + 16;
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-    char vstr[3];
-    to_hex(src, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *dstr = get_str(dest);
+    sstream_put(&ss, "subi r%d, 0x%02x", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "subi r", dstr, ", 0x", vstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d - 0x%02x", dest, dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, " <- R", dstr, " - 0x", vstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbc(const int opcode) {
@@ -529,24 +358,15 @@ char* mnem_sbc(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sbc r%d, r%d", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbc r", dstr, ", r", sstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d - R%d - CF", dest, dest, src);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- R");
-    queue_put(stream, 4, dstr, " - R", sstr, " - CF");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbci(const int opcode) {
@@ -554,26 +374,15 @@ char* mnem_sbci(const int opcode) {
     const int dest = extract(opcode, 4, 8, 0) + 16;
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-    char vstr[3];
-    to_hex(src, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *dstr = get_str(dest);
+    sstream_put(&ss, "sbci r%d, 0x%02x", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d - 0x%02x - CF", dest, dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbci r", dstr, ", 0x", vstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 5, " <- R", dstr, " - 0x", vstr, " - CF");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbiw(const int opcode) {
@@ -581,70 +390,48 @@ char* mnem_sbiw(const int opcode) {
     const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
 
-    char *dstr = get_str(dest);
-    char *dstrn = get_str(dest + 1);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char vstr[3];
-    to_hex(src, vstr);
+    sstream_put(&ss, "sbiw r%d:r%d, ", dest + 1, dest);
+    sstream_put(&ss, "0x%02x", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    
+    sstream_put(&ss, "; R%d:R%d <- R%d:R%d", dest + 1, dest, dest + 1, dest);
+    sstream_put(&ss, " - 0x%02x", src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbiw r", dstrn, ":r", dstr);
-    queue_put(stream, 2, ", 0x", vstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; R", dstrn, ":R", dstr);
-    queue_put(stream, 7, " <- R", dstrn, ":R", dstr, " - ", "0x", vstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, dstrn, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_push(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "push r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[SP--] <- R%d", src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "push r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[SP--] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_pop(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "pop r", dstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "pop r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[++SP]", dest);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[++SP]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_in(const int opcode) {
@@ -652,25 +439,15 @@ char* mnem_in(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
 
-    char vstr[3];
-    to_hex(src, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "in r%d, 0x%02x", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- IO[addr]", dest);
 
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "in r", dstr, ", 0x", vstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- IO[addr]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_out(const int opcode) {
@@ -678,25 +455,15 @@ char* mnem_out(const int opcode) {
     const int dest = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
     const int src = extract(opcode, 4, 9, 0);
 
-    char vstr[3];
-    to_hex(dest, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "out 0x%02x, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; IO[addr] <- R%d", src);
 
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "out 0x", vstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; IO[addr] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbis(const int opcode) {
@@ -704,26 +471,16 @@ char* mnem_sbis(const int opcode) {
     const int dest = extract(opcode, 3, 8, 0);
     const int bit = extract(opcode, 0, 3, 0);
 
-    char vstr[3];
-    to_hex(dest, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sbis 0x%02x, %d", dest, bit);
+    sstream_pad(&ss, (TAB - ss.length));
+    
+    sstream_put(&ss, "; (IO[%02x, %d]", dest, bit);
+    sstream_put(&ss, " = 1): PC <- skip");
 
-    char *sstr = get_str(bit);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbis 0x", vstr, ", ", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; (IO[", vstr, ", ");
-    queue_put(stream, 2, sstr, "] = 1): PC <- skip");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbic(const int opcode) {
@@ -731,26 +488,16 @@ char* mnem_sbic(const int opcode) {
     const int dest = extract(opcode, 3, 8, 0);
     const int bit = extract(opcode, 0, 3, 0);
 
-    char vstr[3];
-    to_hex(dest, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sbic 0x%02x, %d", dest, bit);
+    sstream_pad(&ss, (TAB - ss.length));
+    
+    sstream_put(&ss, "; (IO[%02x, %d]", dest, bit);
+    sstream_put(&ss, " = 0): PC <- skip");
 
-    char *sstr = get_str(bit);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbic 0x", vstr, ", ", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; (IO[", vstr, ", ");
-    queue_put(stream, 2, sstr, "] = 0): PC <- skip");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbrc(const int opcode) {
@@ -758,24 +505,15 @@ char* mnem_sbrc(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int bit = extract(opcode, 0, 3, 0);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(bit);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sbrc r%d, %d", dest, bit);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (R%d[%d] = 0): PC <- skip", dest, bit);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbrc r", dstr, ", ", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; (R", dstr, "[", sstr);
-    queue_put(stream, 1, "] = 0): PC <- skip");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbrs(const int opcode) {
@@ -783,24 +521,15 @@ char* mnem_sbrs(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int bit = extract(opcode, 0, 3, 0);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(bit);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sbrs r%d, %d", dest, bit);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbrs r", dstr, ", ", sstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (R%d[%d] = 1): PC <- skip", dest, bit);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; (R", dstr, "[", sstr);
-    queue_put(stream, 1, "] = 1): PC <- skip");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cpse(const int opcode) {
@@ -808,24 +537,15 @@ char* mnem_cpse(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cpse r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (R%d = R%d): PC <- skip", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "cpse r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; (R", dstr, " = R", sstr);
-    queue_put(stream, 1, "): PC <- skip");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_eor(const int opcode) {
@@ -833,508 +553,361 @@ char* mnem_eor(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "eor r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " xor ", "R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "eor r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d xor R%d", dest, src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_x(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", X");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[X]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, X", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[X]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_xi(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", X+");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[X+]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, X+", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[X+]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_dx(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, -X", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[-X]", dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", -X");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[-X]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_y(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, Y", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[Y]", dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", Y");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[Y]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_yi(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, Y+", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[Y+]", dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", Y+");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[Y+]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_dy(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", -Y");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[-Y]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, -Y", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[-Y]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ldd_yq(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
+    const int disp = extract(opcode, 0, 3, 0) 
+                   + extract(opcode, 10, 12, 3)
                    + extract(opcode, 13, 14, 5);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(disp);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ldd r%d, Y+%d", dest, disp);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[Y+%d]", dest, disp);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "ldd r", dstr, ", Y+", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- DATA[Y+", sstr, "]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ldd_zq(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
+    const int disp = extract(opcode, 0, 3, 0) 
+                   + extract(opcode, 10, 12, 3)
                    + extract(opcode, 13, 14, 5);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(disp);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ldd r%d, Z+%d", dest, disp);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "ldd r", dstr, ", Z+", sstr);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[Z+%d]", dest, disp);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- DATA[Z+", sstr, "]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_z(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", Z");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    sstream_put(&ss, "ld r%d, Z", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[Z]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_zi(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", Z+");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[Z+]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, Z+", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[Z+]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ld_dz(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "ld r", dstr, ", -Z");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[-Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ld r%d, -Z", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[-Z]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_x(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st X, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[X] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st X, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[X] <- R%d", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_xi(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st X+, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[X+] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st X+, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[X+] <- R%d", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_dx(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st -X, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[-X] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st -X, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[-X] <- R%d", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_y(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st Y, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Y] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st Y, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Y] <- R%d", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_yi(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st Y+, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Y+] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st Y+, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Y+] <- R%d", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_dy(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st -Y, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[-Y] <- R%d", src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st -Y, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[-Y] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_std_yq(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
+    const int disp = extract(opcode, 0, 3, 0) 
+                   + extract(opcode, 10, 12, 3)
                    + extract(opcode, 13, 14, 5);
 
-    char *dstr = get_str(disp);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "std Y+%d, r%d", disp, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Y+%d] <- R%d", disp, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "std Y+", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; DATA[Y+", dstr, "] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_z(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st Z, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Z] <- R%d", src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st Z, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Z] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_zi(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st Z+, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Z+] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st Z+, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Z+] <- R%d", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_st_dz(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "st -Z, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[-Z] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "st -Z, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[-Z] <- R%d", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_std_zq(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
+    const int disp = extract(opcode, 0, 3, 0) 
+                   + extract(opcode, 10, 12, 3)
                    + extract(opcode, 13, 14, 5);
 
-    char *dstr = get_str(disp);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "std Z+", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 5, fill, "; DATA[Z+", dstr, "] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "std Z+%d, r%d", disp, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Z+%d] <- R%d", disp, src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sts(const int opcode) {
@@ -1346,24 +919,15 @@ char* mnem_sts(const int opcode) {
                 ((0x40 & dest) >> 1) | ((0x20 & dest) >> 1) |
                 ((0x0f & opcode));
 
-    char *dstr = itoh(addr);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sts 0x%x, r%d", addr, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[0x%x] <- R%d", addr, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sts 0x", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; DATA[0x", dstr, "] <- R");
-    queue_put(stream, 1, sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sts32(const int opcode) {
@@ -1371,27 +935,15 @@ char* mnem_sts32(const int opcode) {
     const int dest = extract(opcode, 0, 16, 0);
     const int src = extract(opcode, 20, 25, 0);
 
-    char *dstr = itoh(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sts 0x%04x, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[0x%x] <- R%d", dest, src);
 
-    queue_t *stream = queue_ctor();
-
-    char *addr_fill = strfill('0', strlen(dstr), 4);
-    queue_put(stream, 3, "sts 0x", addr_fill, dstr);
-    queue_put(stream, 2, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[0x", dstr); 
-    queue_put(stream, 2, "] <- R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(4, dstr, sstr, addr_fill, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lds(const int opcode) {
@@ -1402,25 +954,16 @@ char* mnem_lds(const int opcode) {
     int addr = (~(0x10 & src) << 3) | ((0x10 & src) << 2) | 
                 ((0x40 & src) >> 1) | ((0x20 & src) >> 1) |
                 ((0x0f & opcode));
-                
-    char *dstr = get_str(dest);            
-    char *sstr = itoh(addr);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lds r%d, 0x%x", dest, addr);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[0x%x]", dest, addr);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "lds r", dstr, ", 0x", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[0x");
-    queue_put(stream, 2, sstr, "]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lds32(const int opcode) {
@@ -1428,49 +971,31 @@ char* mnem_lds32(const int opcode) {
     const int dest = extract(opcode, 20, 25, 0);
     const int src = extract(opcode, 0, 16, 0);
 
-    char *dstr = get_str(dest);
-    char *sstr = itoh(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lds r%d, 0x%04x", dest, src);
 
-    queue_t *stream = queue_ctor();
-
-    char *addr_fill = strfill('0', strlen(sstr), 4);
-    queue_put(stream, 3, "lds r", dstr, ", 0x");
-    queue_put(stream, 2, addr_fill, sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- DATA[0x");
-    queue_put(stream, 2, sstr, "]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(4, dstr, sstr, addr_fill, fill);
-
-    return mnemonic;
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- DATA[0x%x]", dest, src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_xch(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "xch Z, r%d", src);
+    sstream_pad(&ss, (TAB - ss.length));
+    
+    sstream_put(&ss, "; DATA[Z] <- R%d", src);
+    sstream_put(&ss, ", R%d <- DATA[Z]", src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "xch Z, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Z] <- R", sstr);
-    queue_put(stream, 3, ", R", sstr, " <- DATA[Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brne(const int opcode) {
@@ -1484,24 +1009,15 @@ char* mnem_brne(const int opcode) {
         sign[0] = '-';
     }
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brne ", sign, offstr);
+    sstream_put(&ss, "brne %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (Z = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (Z = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_breq(const int opcode) {
@@ -1514,25 +1030,16 @@ char* mnem_breq(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "breq %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (Z = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "breq ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (Z = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brge(const int opcode) {
@@ -1545,25 +1052,16 @@ char* mnem_brge(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brge %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (N ^ V = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brge ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (N ^ V = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brpl(const int opcode) {
@@ -1576,25 +1074,16 @@ char* mnem_brpl(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brpl %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (N = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brpl ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (N = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brlo(const int opcode) {
@@ -1607,25 +1096,16 @@ char* mnem_brlo(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brlo %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brlo ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (C = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brlt(const int opcode) {
@@ -1638,25 +1118,16 @@ char* mnem_brlt(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brlt %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (N ^ V = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brlt ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (N ^ V = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brcc(const int opcode) {
@@ -1669,25 +1140,16 @@ char* mnem_brcc(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brcc %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (C = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brcc ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (C = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brcs(const int opcode) {
@@ -1700,25 +1162,16 @@ char* mnem_brcs(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brcs %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brcs ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (C = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brvs(const int opcode) {
@@ -1731,25 +1184,16 @@ char* mnem_brvs(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brvs %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (V = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brvs ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (V = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brts(const int opcode) {
@@ -1762,25 +1206,16 @@ char* mnem_brts(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brts %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (T = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brts ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (T = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brtc(const int opcode) {
@@ -1793,25 +1228,16 @@ char* mnem_brtc(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brtc %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (T = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brtc ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (T = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brmi(const int opcode) {
@@ -1824,25 +1250,16 @@ char* mnem_brmi(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brmi %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (N = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brmi ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (N = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brhc(const int opcode) {
@@ -1856,24 +1273,15 @@ char* mnem_brhc(const int opcode) {
         sign[0] = '-';
     }
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brhc ", sign, offstr);
+    sstream_put(&ss, "brhc %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (H = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (H = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brhs(const int opcode) {
@@ -1886,25 +1294,16 @@ char* mnem_brhs(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brhs %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (H = 1): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brhs ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (H = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brid(const int opcode) {
@@ -1918,24 +1317,15 @@ char* mnem_brid(const int opcode) {
         sign[0] = '-';
     }
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brid ", sign, offstr);
+    sstream_put(&ss, "brid %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (I = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (I = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brie(const int opcode) {
@@ -1948,25 +1338,16 @@ char* mnem_brie(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brie ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (I = 1): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    sstream_put(&ss, "brie %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (I = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_brvc(const int opcode) {
@@ -1979,25 +1360,16 @@ char* mnem_brvc(const int opcode) {
         offs = comp(offs, 7);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "brvc %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (V = 0): PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "brvc ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; (V = 0): PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_rcall(const int opcode) {
@@ -2010,70 +1382,55 @@ char* mnem_rcall(const int opcode) {
         offs = comp(offs, 12);
         sign[0] = '-';
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *offstr = get_str(offs);
-    char *hexoffs = itoh(offs);
+    sstream_put(&ss, "rcall %s%d", sign, offs);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, offs);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "rcall ", sign, offstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; PC <- PC ", sign);
-    queue_put(stream, 3, " 0x", hexoffs, " + 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, offstr, hexoffs, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ret(const int opcode) {
 
-    queue_t *stream = queue_ctor();
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "ret", fill, "; PC <- DATA[SP]");
+    sstream_put(&ss, "ret");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- DATA[SP]"); 
 
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_reti(const int opcode) {
 
-    queue_t *stream = queue_ctor();
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    char *fill = strfill(' ', 4, TAB);
-    queue_put(stream, 3, "reti", fill, "; PC <- DATA[SP]");
+    sstream_put(&ss, "reti");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- DATA[SP]"); 
 
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_icall(const int opcode) {
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
-    queue_t *stream = queue_ctor();
+    sstream_put(&ss, "icall");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- ZH:ZL"); 
 
-    char *fill = strfill(' ', 5, TAB);
-    queue_put(stream, 3, "icall", fill, "; PC <- ZH:ZL");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_call(const int opcode) {
@@ -2081,23 +1438,15 @@ char* mnem_call(const int opcode) {
     const int addr = (opcode & 0x1ffff) 
                    + (opcode & 0x1f00000);
 
-    char *dstr = get_str(addr);
-    char *hex_addr = itoh(addr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "call +%d", addr);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- 0x%x", addr);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "call +", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; PC <- 0x", hex_addr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, hex_addr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cp(const int opcode) {
@@ -2105,51 +1454,31 @@ char* mnem_cp(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cp r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d - R%d", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "cp r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 2, " - R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cpi(const int opcode) {
 
-    const int reg = extract(opcode, 4, 8, 0);
+    const int reg = extract(opcode, 4, 8, 0) + 16;
     const uint8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-    char vstr[3];
-    to_hex(comp, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cpi r%d, 0x%02x", reg, comp);
 
-    char *dstr = get_str(reg + 16);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d - 0x%02x", reg, comp);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "cpi r", dstr, ", 0x", vstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 2, " - 0x", vstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cpc(const int opcode) {
@@ -2157,140 +1486,92 @@ char* mnem_cpc(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cpc r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d - R%d - CF", dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "cpc r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " - R", sstr, " - CF");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lsr(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "lsr r", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- R", dstr, " >> 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lsr r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d >> 1", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_asr(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "asr r", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- R", dstr, " >> 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "asr r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d >> 1", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ror(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "ror r", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 3, " <- R", dstr, " >> 1");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ror r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d >> 1", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_swap(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "swap r", dstr);
-
-    const int len = queue_size(stream);
-    char *fill = strfill(' ', len, TAB);
-
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, "[7:4] <- R", dstr, "[3:0],", " R");
-    queue_put(stream, 4, dstr, "[3:0] <- R", dstr, "[7:4]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "swap r%d", dest);
+    sstream_pad(&ss, (TAB - ss.length));
+    
+    sstream_put(&ss, "; R%d[7:4] <- R%d[3:0]", dest, dest);
+    sstream_put(&ss, ", R%d[3:0] <- R%d[7:4]", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ori(const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0);
+    const int dest = extract(opcode, 4, 8, 0) + 16;
     const uint8_t val = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-    char vstr[3];
-    to_hex(val, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ori r%d, 0x%02x", dest, val);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d | 0x%02x", dest, dest, val);
 
-    char *dstr = get_str(dest + 16);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "ori r", dstr, ", 0x", vstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- ");
-    queue_put(stream, 4, "R", dstr, " | 0x", vstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_or_asm(const int opcode) {
@@ -2298,24 +1579,15 @@ char* mnem_or_asm(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "or r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d | R%d", dest, dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "or r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, " <- R", dstr, " | R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_and_asm(const int opcode) {
@@ -2323,24 +1595,15 @@ char* mnem_and_asm(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(src);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "and r%d, r%d", dest, src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d & R%d", dest, dest, src);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "and r", dstr, ", r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, " <- R", dstr, " & R", sstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_andi(const int opcode) {
@@ -2348,136 +1611,90 @@ char* mnem_andi(const int opcode) {
     const int dest = extract(opcode, 4, 8, 0) + 16;
     const int value = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
 
-    char vstr[3];
-    to_hex(value, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "andi r%d, 0x%02x", dest, value);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d & 0x%02x", dest, dest, value);
 
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "andi r", dstr, ", 0x", vstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, " <- R", dstr, " & 0x", vstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic; 
+    return sstream_alloc(&ss);
 }
 
 char* mnem_las(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "las Z, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Z] <- R", sstr);
-    queue_put(stream, 1, " | DATA[Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "las Z, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Z] <- R%d | DATA[Z]", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lac(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "lac Z, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Z] <- (0xff - R", sstr);
-    queue_put(stream, 1, ") * DATA[Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lac Z, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Z] <- (0xff - R%d) * DATA[Z]", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lat(const int opcode) {
 
     const int src = extract(opcode, 4, 9, 0);
-    char *sstr = get_str(src);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "lat Z, r", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; DATA[Z] <- R", sstr);
-    queue_put(stream, 1, " | DATA[Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lat Z, r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; DATA[Z] <- R%d | DATA[Z]", src);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_com(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "com r", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 2, " <- 0xff - R", dstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "com r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- 0xff - R%d", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_neg(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "neg r", dstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 2, " <- 0x00 - R", dstr);
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "neg r%d", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- 0x00 - R%d", dest, dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_bld(const int opcode) {
@@ -2485,49 +1702,31 @@ char* mnem_bld(const int opcode) {
     const int dest = extract(opcode, 4, 9, 0);
     const int bpos = extract(opcode, 0, 3, 0);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(bpos);
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "bld r%d, %d", dest, bpos);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d[%d] <- TF", dest, bpos);
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "bld r", dstr, ", ", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; R", dstr);
-    queue_put(stream, 4, "[", sstr, "]", " <- TF");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_bst(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
     const int bpos = extract(opcode, 0, 3, 0);
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "bst r%d, %d", dest, bpos);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; TF <- R%d[%d]", dest, bpos);
 
-    char *dstr = get_str(dest);
-    char *sstr = get_str(bpos);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "bst r", dstr, ", ", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 3, fill, "; TF <- R", dstr);
-    queue_put(stream, 3, "[", sstr, "]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(3, dstr, sstr, fill);
-
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sbi(const int opcode) {
@@ -2535,26 +1734,15 @@ char* mnem_sbi(const int opcode) {
     const int dest = extract(opcode, 3, 8, 0);
     const int bpos = extract(opcode, 0, 3, 0);
 
-    char vstr[3];
-    to_hex(dest, vstr);
-
-    char *sstr = get_str(bpos);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "sbi 0x", vstr, ", ", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; IO[", vstr, ", "); 
-    queue_put(stream, 2, sstr, "] <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sbi 0x%02x, %d", dest, bpos);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; IO[%02x, %d] <- 0x01", dest, bpos);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cbi(const int opcode) {
@@ -2562,553 +1750,445 @@ char* mnem_cbi(const int opcode) {
     const int dest = extract(opcode, 3, 8, 0);
     const int bpos = extract(opcode, 0, 3, 0);
 
-    char vstr[3];
-    to_hex(dest, vstr);
-
-    char *sstr = get_str(bpos);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 4, "cbi 0x", vstr, ", ", sstr);
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; IO[", vstr, ", "); 
-    queue_put(stream, 2, sstr, "] <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, sstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cbi 0x%02x, %d", dest, bpos);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; IO[%02x, %d] <- 0x00", dest, bpos);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lpm(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "lpm");
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 2, fill, "; R0 <- FLASH[Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lpm");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R0 <- FLASH[Z]");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lpm_z(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "lpm r", dstr, ", Z");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- FLASH[Z]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lpm r%d, Z", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- FLASH[Z]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_lpm_zi(const int opcode) {
 
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "lpm r", dstr, ", Z+");
-
-    const int len = queue_size(stream);
-
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- FLASH[Z+]");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "lpm r%d, Z+", dest);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- FLASH[Z+]", dest);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_eicall(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "eicall");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *fill = strfill(' ', 6, TAB);
-    queue_put(stream, 2, fill, "; PC <- ZH:ZL + (EIND << 16)");
+    sstream_put(&ss, "eicall");
     
-    char *mnemonic = queue_str(stream);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- ZH:ZL + (EIND << 16)");
     
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_eijmp(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "eijmp");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *fill = strfill(' ', 5, TAB);
-    queue_put(stream, 2, fill, "; PC <- ZH:ZL + (EIND << 16)");
+    sstream_put(&ss, "eijmp");
     
-    char *mnemonic = queue_str(stream);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; PC <- ZH:ZL + (EIND << 16)");
     
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_elpm(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "elpm");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *fill = strfill(' ', 4, TAB);
-    queue_put(stream, 2, fill, "; R0 <- FLASH[RAMPZ:Z]");
+    sstream_put(&ss, "elpm");
     
-    char *mnemonic = queue_str(stream);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R0 <- FLASH[RAMPZ:Z]");
     
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_elpm_z(const int opcode) {
     
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "elpm r", dstr, ", Z");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    const int len = queue_size(stream);
+    sstream_put(&ss, "elpm r%d, Z", dest);
     
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- FLASH[RAMPZ:Z]");
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- FLASH[RAMPZ:Z]", dest);
     
-    char *mnemonic = queue_str(stream);
-    
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_elpm_zi(const int opcode) {
     
     const int dest = extract(opcode, 4, 9, 0);
-    char *dstr = get_str(dest);
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "elpm r", dstr, ", Z+");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    const int len = queue_size(stream);
+    sstream_put(&ss, "elpm r%d, Z+", dest);
     
-    char *fill = strfill(' ', len, TAB);
-    queue_put(stream, 4, fill, "; R", dstr, " <- FLASH[(RAMPZ:Z)+]");
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- FLASH[(RAMPZ:Z)+]", dest);
     
-    char *mnemonic = queue_str(stream);
-    
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_des(const int opcode) {
     
     const int iter = extract(opcode, 4, 8, 0);
     
-    char vstr[3];
-    to_hex(iter, vstr);
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 2, "des 0x", vstr);
+    sstream_put(&ss, "des 0x%02x", iter);
     
-    char *fill = strfill(' ', 8, TAB);
-    queue_put(stream, 2, fill, "; Data Encryption Standard");
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; Data Encryption Standard");
     
-    char *mnemonic = queue_str(stream);
-    
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sleep(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "sleep");
-
-    char *fill = strfill(' ', 5, TAB);
-    queue_put(stream, 2, fill, "; circuit sleep");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *mnemonic = queue_str(stream);
+    sstream_put(&ss, "sleep");
     
-    queue_dtor(stream);
-    free(fill);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; circuit sleep");
     
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_wdr(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "wdr");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 2, fill, "; watchdog reset");
+    sstream_put(&ss, "wdr");
     
-    char *mnemonic = queue_str(stream);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; watchdog reset");
     
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_break_asm(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "break");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *fill = strfill(' ', 5, TAB);
-    queue_put(stream, 2, fill, "; cpu stop mode");
+    sstream_put(&ss, "break");
     
-    char *mnemonic = queue_str(stream);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; cpu stop mode");
     
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_spm(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "spm");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 2, fill, "; FLASH[Z] <- (R1:R0 v 0xffff)");
+    sstream_put(&ss, "spm");
     
-    char *mnemonic = queue_str(stream);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; FLASH[Z] <- (R1:R0 v 0xffff)");
     
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_spm_zi(const int opcode) {
     
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 1, "spm Z+");
+    sstream_t ss;
+    sstream_ctor(&ss);
     
-    char *fill = strfill(' ', 6, TAB);
-    queue_put(stream, 2, fill, "; FLASH[Z+] <- (R1:R0 v 0xffff)");
+    sstream_put(&ss, "spm Z+");
     
-    char *mnemonic = queue_str(stream);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; FLASH[Z+] <- (R1:R0 v 0xffff)");
     
-    queue_dtor(stream);
-    free(fill);
-    
-    return mnemonic;
+    return sstream_alloc(&ss);
 }
 
 char* mnem_ses(const int opcode) {
-
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "ses", fill, "; SF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "ses");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; SF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_set(const int opcode) {
-
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "set", fill, "; TF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "set");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; TF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sev(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "sev", fill, "; VF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sev");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; VF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sez(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "sez", fill, "; ZF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sez");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; ZF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_seh(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "seh", fill, "; HF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "seh");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; HF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sec(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "sec", fill, "; CF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sec");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; CF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sei(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "sei", fill, "; IF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sei");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; IF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_sen(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "sen", fill, "; NF <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sen");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; NF <- 0x01");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cls(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "cls", fill, "; SF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cls");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; SF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_clt(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "clt", fill, "; TF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "clt");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; TF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_clv(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "clv", fill, "; VF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "clv");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; VF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_clz(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "clz", fill, "; ZF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "clz");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; ZF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_clh(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "clh", fill, "; HF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "clh");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; HF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_clc(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "clc", fill, "; CF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "clc");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; CF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cli(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "cli", fill, "; IF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cli");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; IF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_cln(const int opcode) {
 
-    queue_t *stream = queue_ctor();
-
-    char *fill = strfill(' ', 3, TAB);
-    queue_put(stream, 3, "cln", fill, "; NF <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    free(fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "cln");
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; NF <- 0x00");
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_bclr(const int opcode) {
 
     const int s_bit = extract(opcode, 4, 7, 0);
 
-    char *dstr = get_str(s_bit);
-    char *fill = strfill(' ', 9, TAB);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "bclr 0x0", dstr, fill);
-    queue_put(stream, 3, "; ", flags[s_bit], " <- 0x00");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "bclr 0x0%d", s_bit);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; %s <- 0x00", flags[s_bit]);
+    
+    return sstream_alloc(&ss);
 }
 
 char* mnem_bset(const int opcode) {
 
     const int s_bit = extract(opcode, 4, 7, 0);
 
-    char *dstr = get_str(s_bit);
-    char *fill = strfill(' ', 9, TAB);
-
-    queue_t *stream = queue_ctor();
-    queue_put(stream, 3, "bset 0x0", dstr, fill);
-    queue_put(stream, 3, "; ", flags[s_bit], " <- 0x01");
-
-    char *mnemonic = queue_str(stream);
-
-    queue_dtor(stream);
-    nfree(2, dstr, fill);
-
-    return mnemonic;
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "bset 0x0%d", s_bit);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; %s <- 0x01", flags[s_bit]);
+    
+    return sstream_alloc(&ss);
 }
 
 char* (*mnemonics[INSTR_MAX]) (const int opcode) = { 
