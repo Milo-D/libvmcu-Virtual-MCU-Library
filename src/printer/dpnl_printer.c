@@ -9,10 +9,10 @@
 #include "cli/debug/debugwindow.h"
 #include "system/mcudef.h"
 #include "dbg/dbg.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
 #include "collections/tuple.h"
-#include "collections/queue.h"
+#include "collections/sstream.h"
+
+#define GAP 6
 
 void print_dpnl(debugwindow_t *window, dbg_t *dbg) {
 
@@ -22,8 +22,10 @@ void print_dpnl(debugwindow_t *window, dbg_t *dbg) {
     system_t *sys = dbg->sys;
     sys_data_coi(sys, coi);
 
-    int8_t *data = sys_dump_data(sys);
+    uint8_t *data = sys_dump_data(sys);
     int16_t cursor = dwin_get_page(window, DPNL);
+
+    const uint16_t sp = ((data[SPH] << 8) + data[SPL]);
 
     if(*((MEMPROP*) tuple_get(coi, 1)) != NONE) {
 
@@ -31,12 +33,8 @@ void print_dpnl(debugwindow_t *window, dbg_t *dbg) {
         dwin_set_page(window, DPNL, cursor);
     }
 
-    const uint8_t spl = (uint8_t) data[SPL];
-    const uint8_t sph = (uint8_t) data[SPH];
-
-    const uint16_t sp = ((sph << 8) + spl);
-
-    queue_t *stream = queue_ctor();
+    sstream_t ss;
+    sstream_ctor(&ss);
 
     for(int i = (cursor - 4); i <= (cursor + 4); i++) {
 
@@ -54,24 +52,16 @@ void print_dpnl(debugwindow_t *window, dbg_t *dbg) {
         if(i == *((int16_t*) tuple_get(coi, 0)))
             ism = propcol(*((MEMPROP*) tuple_get(coi, 1)));
 
-        char vstr[3];
-        to_hex(data[i], vstr);
+        sstream_put04x(&ss, i);
+        sstream_pad(&ss, GAP);
 
-        char *addr = itoh(i);
+        dwin_add(window, DPNL, ss.str, isp);
+        sstream_flush(&ss);
 
-        char *left = strfill('0', strlen(addr), 4);
-        queue_put(stream, 4, "0x", left, addr, "      ");
-
-        char *addr_out = queue_str(stream);
-        dwin_add(window, DPNL, addr_out, isp);
-
-        queue_flush(stream);
-
-        char *right = strfill('0', strlen(vstr), 2);
-        queue_put(stream, 3, "0x", right, vstr);
-
-        char *val_out = queue_str(stream);
-        dwin_add(window, DPNL, val_out, ism);
+        sstream_put02x(&ss, data[i]);
+        
+        dwin_add(window, DPNL, ss.str, ism);
+        sstream_flush(&ss);
 
         if(i >= SFR_START && i <= SFR_END) {
 
@@ -80,11 +70,7 @@ void print_dpnl(debugwindow_t *window, dbg_t *dbg) {
         }
         
         dwin_add(window, DPNL, "\n", D);
-
-        queue_flush(stream);
-        nfree(5, addr, left, addr_out, right, val_out);
     }
 
-    queue_dtor(stream);
     tuple_dtor(coi);
 }

@@ -8,9 +8,7 @@
 #include "cli/debug/debugwindow.h"
 #include "system/mcudef.h"
 #include "dbg/dbg.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
-#include "collections/queue.h"
+#include "collections/sstream.h"
 
 void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
     
@@ -21,9 +19,7 @@ void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
     dwin_add(window, FPNL, "Flash:\n\n", D);
 
     const int pc = sys_get_pc(sys);
-
     plain_t *disassembly = report->disassembly;
-    queue_t *stream = queue_ctor();
 
     int k;
 
@@ -32,6 +28,9 @@ void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
         if(disassembly[k].addr == pc)
             break;
     }
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
     for(int i = (k - 4); i <= (k + 4); i++) {
 
@@ -40,20 +39,15 @@ void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
             dwin_add(window, FPNL, "\n", D);
             continue;
         }
-        
-        const int address = disassembly[i].addr;
 
-        if(address >= 0) {
+        const int addr = disassembly[i].addr;
 
-            char *addr = itoh(address);
+        if(addr >= 0) {
 
-            char *fill = strfill('0', strlen(addr), 4);
-            queue_put(stream, 3, "0x", fill, addr);
-
-            char *out = queue_str(stream);
-            dwin_add(window, FPNL, out, D);
-
-            nfree(3, addr, fill, out);
+            sstream_put04x(&ss, addr);
+            
+            dwin_add(window, FPNL, ss.str, D);
+            sstream_flush(&ss);
 
         } else {
 
@@ -64,11 +58,11 @@ void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
 
             dwin_add(window, FPNL, " [->] ", B);
 
-        } else if(address < 0) {
+        } else if(addr < 0) {
 
             dwin_add(window, FPNL, "      ", D);
 
-        } else if(table_on_breakp(table, address)) {
+        } else if(table_on_breakp(table, addr)) {
 
             dwin_add(window, FPNL, " [b+] ", R);
             
@@ -79,9 +73,5 @@ void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
 
         dwin_highlight(window, FPNL, disassembly[i].mnem);
         dwin_add(window, FPNL, "\n", D);
-
-        queue_flush(stream);
     }
-
-    queue_dtor(stream);
 }

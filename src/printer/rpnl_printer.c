@@ -8,9 +8,7 @@
 #include "cli/debug/debugwindow.h"
 #include "system/mcudef.h"
 #include "dbg/dbg.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
-#include "collections/queue.h"
+#include "collections/sstream.h"
 
 void print_rpnl(debugwindow_t *window, dbg_t *dbg) {
     
@@ -27,17 +25,19 @@ void print_rpnl(debugwindow_t *window, dbg_t *dbg) {
     const int start = (cursor * height);
 
     if(report->progsize == 0) {
-
+        
         dwin_clear_panel(window, RPNL);
 
         dwin_add(window, RPNL, "Source Code:\n\n", D);
-        dwin_add(window, RPNL, "[ No Source available ]\n", D); 
-
+        dwin_add(window, RPNL, "[ No Source available ]\n", D);
+        
         return;
     }
 
     plain_t *disassembly = report->disassembly;
-    queue_t *stream = queue_ctor();
+    
+    sstream_t ss;
+    sstream_ctor(&ss);
 
     for(int i = start; i < (start + height); i++) {
         
@@ -47,34 +47,29 @@ void print_rpnl(debugwindow_t *window, dbg_t *dbg) {
             continue;
         }
         
-        const int address = disassembly[i].addr;
+        const int addr = disassembly[i].addr;
 
-        if(address >= 0) {
+        if(addr >= 0) {
 
-            char *addr = itoh(address);
-            char *fill = strfill('0', strlen(addr), 4);
-            
-            queue_put(stream, 3, "0x", fill, addr);
+            sstream_put04x(&ss, addr);
 
-            char *out = queue_str(stream);
-            dwin_add(window, RPNL, out, D);
-
-            nfree(3, addr, fill, out);
+            dwin_add(window, RPNL, ss.str, D);
+            sstream_flush(&ss);
 
         } else {
 
             dwin_add(window, RPNL, "      ", D);
         }
 
-        if(address == pc) {
+        if(addr == pc) {
           
             dwin_add(window, RPNL, " [->] ", B);
 
-        } else if(address < 0) {
+        } else if(addr < 0) {
 
             dwin_add(window, RPNL, "      ", D);
 
-        } else if(table_on_breakp(table, address)) {
+        } else if(table_on_breakp(table, addr)) {
 
             dwin_add(window, RPNL, " [b+] ", R);
             
@@ -85,9 +80,5 @@ void print_rpnl(debugwindow_t *window, dbg_t *dbg) {
 
         dwin_highlight(window, RPNL, disassembly[i].mnem);
         dwin_add(window, RPNL, "\n", D);
-
-        queue_flush(stream);
     }
-
-    queue_dtor(stream);
 }

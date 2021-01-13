@@ -33,7 +33,7 @@ void sstream_put(struct _sstream *this, const char *fmt, ...) {
     va_end(var);
 }
 
-void sstream_put04x(struct _sstream *this, const int decimal) {
+void sstream_put04x(struct _sstream *this, const unsigned int decimal) {
 
     char *s = (this->str + this->length);
     size_t n = sizeof(this->str) - (this->length + 1);
@@ -41,7 +41,7 @@ void sstream_put04x(struct _sstream *this, const int decimal) {
     this->length += snprintf(s, n, "0x%04x", decimal);
 }
 
-void sstream_put02x(struct _sstream *this, const int decimal) {
+void sstream_put02x(struct _sstream *this, const uint8_t decimal) {
 
     char *s = (this->str + this->length);
     size_t n = sizeof(this->str) - (this->length + 1);

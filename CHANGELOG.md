@@ -1,8 +1,13 @@
 # Changelog
 
-## Unreleased
+# Unreleased
 
-- Now using sstream in mnemonics generator
+## v.0.5.2 - 2020-01-13
+
+- This update reduces heap allocations for an overall better memory performance
+- Further improvements regarding memory consumption are coming soon
+
+- Now using sstream in mnemonics generator and debugprinter
     - avoiding unnecessary heap allocations
     
 - Added: stringstream collection (sstream.c, sstream.h)
