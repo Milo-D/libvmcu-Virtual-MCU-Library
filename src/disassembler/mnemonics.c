@@ -1550,10 +1550,9 @@ char* mnem_swap(const int opcode) {
     sstream_ctor(&ss);
     
     sstream_put(&ss, "swap r%d", dest);
-    sstream_pad(&ss, (TAB - ss.length));
     
-    sstream_put(&ss, "; R%d[7:4] <- R%d[3:0]", dest, dest);
-    sstream_put(&ss, ", R%d[3:0] <- R%d[7:4]", dest, dest);
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- swap nibbles", dest);
     
     return sstream_alloc(&ss);
 }

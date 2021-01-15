@@ -2,6 +2,8 @@
 
 # Unreleased
 
+- Added: Opcode view in disassembly.
+
 ## v.0.5.2 - 2020-01-13
 
 - This update reduces heap allocations for an overall better memory performance
