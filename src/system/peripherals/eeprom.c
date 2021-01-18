@@ -215,7 +215,10 @@ static void eeprom_exec_erase(struct _eeprom *this) {
 
 static void eeprom_exec_write(struct _eeprom *this) {
     
-    /* currently not supported */
+    if(this->addr >= EEPROM_SIZE)
+        return;
+
+    this->memory[ this->addr ] &= this->data;
 }
 
 static void eeprom_exec_reserved(struct _eeprom *this) {

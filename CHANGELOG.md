@@ -2,6 +2,9 @@
 
 # Unreleased
 
+- Added: EEPROM Write-Only Mode
+    - Now supporting all modes of EEPROM programming
+
 - Added: Opcode view in disassembly.
 
 ## v.0.5.2 - 2020-01-13
