@@ -2,6 +2,7 @@
 
 # Unreleased
 
+- Timer0: Minor work on Prescaler.
 - Added: EEPROM Write-Only Mode
     - Now supporting all modes of EEPROM programming
 

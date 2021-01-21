@@ -35,8 +35,6 @@
 
 /* Forward Declarations of static Functions */
 
-static uint16_t prescale(const uint8_t tccr);
-
 static void timer8_tick_normal(struct _timer8 *this, irq_t *irq);
 static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq);
 static void timer8_tick_pwm_correct(struct _timer8 *this, irq_t *irq);
@@ -126,16 +124,8 @@ void timer8_dtor(struct _timer8 *this) {
 
 void timer8_update(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
 
-    const uint16_t csx = prescale(*(this->tccrb));
-
-    if(csx == 0)
+    if(this->prescaler == 0)
         return;
-
-    if(csx != this->prescaler) {
-
-        this->prescaler = csx;
-        this->countdown = csx;
-    }
 
     for(int i = 0; i < dc; i++) {
 
@@ -148,6 +138,26 @@ void timer8_update(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
         (*tick[ wgmtc8(a, b) ])(this, irq);
         this->countdown = this->prescaler;
     }
+}
+
+void timer8_update_prescaler(struct _timer8 *this) {
+
+    uint16_t csx_table[8] = {
+        
+        0,
+        1,
+        8,
+        64,
+        256,
+        1024,
+        0,
+        0
+    };
+    
+    const uint8_t p = *(this->tccrb) & CSX_MSK;
+    
+    this->prescaler = csx_table[p];
+    this->countdown = csx_table[p];
 }
 
 void timer8_force_ocpa(struct _timer8 *this) {
@@ -202,29 +212,6 @@ void timer8_reboot(struct _timer8 *this) {
 }
 
 /* --- Static --- */
-
-static uint16_t prescale(const uint8_t tccr) {
-
-    /* Clock Source (CSx2, CSx1, CSx0) */
-
-    switch(tccr & CSX_MSK) {
-
-        case 0x00: return 0U;
-        case 0x01: return 1U;
-
-        case 0x02: return 8U;
-        case 0x03: return 64U;
-        case 0x04: return 256U;
-        case 0x05: return 1024U;
-
-        case 0x06: return 0U; /* not supported */
-        case 0x07: return 0U; /* not supported */
-
-        default: /* not possible */ break;
-    }
-
-    return 0U;
-}
 
 static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
 

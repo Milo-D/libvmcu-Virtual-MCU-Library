@@ -431,6 +431,8 @@ static void write_TCCR0B(io_t *io, const int8_t value) {
         
     if(bit(value, FOC0B) == 0x01)
         timer8_force_ocpb(io->timer0);
+
+    timer8_update_prescaler(io->timer0);
 }
 
 static void write_TCNT0(io_t *io, const int8_t value) {
