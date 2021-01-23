@@ -5,8 +5,9 @@
 
 #define INSTR_MAX 145
 
-extern char* mnem_dw(const int opcode);
+typedef struct _plain plain_t;
 
-extern char* (*mnemonics[INSTR_MAX]) (const int opcode);
+extern char* mnem_dw(plain_t *p);
+extern char* (*mnemonics[INSTR_MAX]) (plain_t *p);
 
 #endif

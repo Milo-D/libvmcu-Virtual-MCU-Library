@@ -51,13 +51,17 @@ features built in like:
 
 # How MDX works
 
-<img src="https://raw.githubusercontent.com/Milo-D/MDX-Assembly-Debugger/master/images/analyze_dataflow.svg" width="50%">
+<img src="https://raw.githubusercontent.com/Milo-D/MDX-Assembly-Debugger/master/images/mdx_analyzer_pipeline.svg" width="50%">
 
-MDX accepts AVR Hex Files (Intel Hex) as input. Then the decoder tries to decode the given Hex File.
-After that, the decoded data will be sent to the disassembler, in order to generate mnemonics,
-labels, comments and blank lines (blank lines help to improve readability).
+**Stage 0:** MDX accepts AVR Hex Files (Intel Hex) as input. The decoder tries to decode the given Hex File.
 
-Now the analyzer comes into play. The analyzer takes all the data from the previous two steps 
+**Stage 1:** Once the binary has been decoded successfully, the data will be sent to the decomposer, so that 
+operands can be extracted and classified.  
+
+**Stage 2:** In this stage, the disassembler receives the result of Stage 1 and Stage 2 in order to generate 
+mnemonics, labels, comments and blank lines (blank lines help to improve readability).
+
+**Stage 3:** Now the analyzer comes into play. The analyzer takes all the data from the previous three steps 
 and performs a static analysis on it. It then generates a report and returns it, so that
 the virtual microcontroller can be initialized.
 

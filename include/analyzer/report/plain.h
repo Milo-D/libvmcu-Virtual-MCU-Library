@@ -6,21 +6,25 @@
 // C Headers
 #include <stdbool.h>
 
+// Project Headers
+#include "analyzer/report/op.h"
+
 /* 
 *  plain_t is the main data-structure
-*  for the decoder and disassembler.
+*  for the analyzer pipeline.
 */
 
 typedef struct _plain {
 
+    op_t src, dest;
+
     int opcode;
     int addr;
     int key;
-
-    char *mnem;
     
     bool exec;
     bool dword;
+    char *mnem;
 
 } plain_t;
 

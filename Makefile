@@ -15,6 +15,7 @@ SRC      :=                                	\
 	$(wildcard src/cli/util/*.c)			\
    	$(wildcard src/collections/*.c)         \
 	$(wildcard src/decoder/*.c)				\
+	$(wildcard src/decomposer/*.c)		\
    	$(wildcard src/disassembler/*.c)        \
    	$(wildcard src/instructions/*.c)        \
    	$(wildcard src/misc/*.c)                \

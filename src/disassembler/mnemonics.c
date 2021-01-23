@@ -7,30 +7,30 @@
 
 // Project Headers
 #include "disassembler/mnemonics.h"
+#include "analyzer/report/plain.h"
 #include "system/mcudef.h"
-#include "misc/bitmanip.h"
 #include "collections/sstream.h"
 
 #define TAB 26
 
 /* --- Extern --- */
 
-char* mnem_dw(const int opcode) {
+char* mnem_dw(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, ".dw 0x%04x", opcode);
+    sstream_put(&ss, ".dw 0x%04x", p->src.value);
 
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; 0x%x", opcode);
+    sstream_put(&ss, "; 0x%x", p->src.value);
 
     return sstream_alloc(&ss);
 }
 
 /* --- Static --- */
 
-char* mnem_nop(const int opcode) {
+char* mnem_nop(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -43,10 +43,10 @@ char* mnem_nop(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_movw(const int opcode) {
+char* mnem_movw(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 8, 0) * 2;
-    const int src = extract(opcode, 0, 4, 0) * 2;
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -61,10 +61,10 @@ char* mnem_movw(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_mul(const int opcode) {
+char* mnem_mul(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -77,10 +77,10 @@ char* mnem_mul(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_muls(const int opcode) {
+char* mnem_muls(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int src = extract(opcode, 0, 4, 0) + 16;
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -93,10 +93,10 @@ char* mnem_muls(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_mulsu(const int opcode) {
+char* mnem_mulsu(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -109,10 +109,10 @@ char* mnem_mulsu(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_fmul(const int opcode) {
+char* mnem_fmul(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -125,10 +125,10 @@ char* mnem_fmul(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_fmuls(const int opcode) {
+char* mnem_fmuls(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -141,10 +141,10 @@ char* mnem_fmuls(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_fmulsu(const int opcode) {
+char* mnem_fmulsu(plain_t *p) {
     
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -157,10 +157,10 @@ char* mnem_fmulsu(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ldi(const int opcode) {
+char* mnem_ldi(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -173,32 +173,31 @@ char* mnem_ldi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_rjmp(const int opcode) {
+char* mnem_rjmp(plain_t *p) {
 
-    int offs = extract(opcode, 0, 12, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 11) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 12);
+        src *= -1;
         sign[0] = '-';
     }
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "rjmp %s%d", sign, offs);
+    sstream_put(&ss, "rjmp %s%d", sign, src);
 
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_jmp(const int opcode) {
+char* mnem_jmp(plain_t *p) {
 
-    const int addr = (opcode & 0x1ffff) 
-                   + (opcode & 0x1f00000);
+    const int addr = p->src.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -211,7 +210,7 @@ char* mnem_jmp(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ijmp(const int opcode) {
+char* mnem_ijmp(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -224,10 +223,10 @@ char* mnem_ijmp(const int opcode) {
     return sstream_alloc(&ss);
 } 
 
-char* mnem_mov(const int opcode) {
+char* mnem_mov(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -240,40 +239,40 @@ char* mnem_mov(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_dec(const int opcode) {
+char* mnem_dec(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-
-    sstream_t ss;
-    sstream_ctor(&ss);
-    
-    sstream_put(&ss, "dec r%d", dest);
-    
-    sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- R%d - 0x01", dest, dest);
-    
-    return sstream_alloc(&ss);
-}
-
-char* mnem_inc(const int opcode) {
-
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "inc r%d", dest);
+    sstream_put(&ss, "dec r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- R%d + 0x01", dest, dest);
+    sstream_put(&ss, "; R%d <- R%d - 0x01", src, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_add(const int opcode) {
+char* mnem_inc(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "inc r%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; R%d <- R%d + 0x01", src, src);
+    
+    return sstream_alloc(&ss);
+}
+
+char* mnem_add(plain_t *p) {
+
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -286,10 +285,10 @@ char* mnem_add(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_adc(const int opcode) {
+char* mnem_adc(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -302,10 +301,10 @@ char* mnem_adc(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_adiw(const int opcode) {
+char* mnem_adiw(plain_t *p) {
 
-    const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -321,10 +320,10 @@ char* mnem_adiw(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sub(const int opcode) {
+char* mnem_sub(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -337,10 +336,10 @@ char* mnem_sub(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_subi(const int opcode) {
+char* mnem_subi(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -353,10 +352,10 @@ char* mnem_subi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sbc(const int opcode) {
+char* mnem_sbc(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -369,10 +368,10 @@ char* mnem_sbc(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sbci(const int opcode) {
+char* mnem_sbci(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -385,10 +384,10 @@ char* mnem_sbci(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sbiw(const int opcode) {
+char* mnem_sbiw(plain_t *p) {
 
-    const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -404,9 +403,9 @@ char* mnem_sbiw(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_push(const int opcode) {
+char* mnem_push(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -419,25 +418,25 @@ char* mnem_push(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_pop(const int opcode) {
+char* mnem_pop(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "pop r%d", dest);
+    sstream_put(&ss, "pop r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- DATA[++SP]", dest);
+    sstream_put(&ss, "; R%d <- DATA[++SP]", src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_in(const int opcode) {
+char* mnem_in(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -450,10 +449,10 @@ char* mnem_in(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_out(const int opcode) {
+char* mnem_out(plain_t *p) {
 
-    const int dest = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -466,76 +465,76 @@ char* mnem_out(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sbis(const int opcode) {
+char* mnem_sbis(plain_t *p) {
 
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bit = extract(opcode, 0, 3, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "sbis 0x%02x, %d", dest, bit);
+    sstream_put(&ss, "sbis 0x%02x, %d", dest, src);
     sstream_pad(&ss, (TAB - ss.length));
     
-    sstream_put(&ss, "; (IO[%02x, %d]", dest, bit);
+    sstream_put(&ss, "; (IO[%02x, %d]", dest, src);
     sstream_put(&ss, " = 1): PC <- skip");
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_sbic(const int opcode) {
+char* mnem_sbic(plain_t *p) {
     
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bit = extract(opcode, 0, 3, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "sbic 0x%02x, %d", dest, bit);
+    sstream_put(&ss, "sbic 0x%02x, %d", dest, src);
     sstream_pad(&ss, (TAB - ss.length));
     
-    sstream_put(&ss, "; (IO[%02x, %d]", dest, bit);
+    sstream_put(&ss, "; (IO[%02x, %d]", dest, src);
     sstream_put(&ss, " = 0): PC <- skip");
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_sbrc(const int opcode) {
+char* mnem_sbrc(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bit = extract(opcode, 0, 3, 0);
-
-    sstream_t ss;
-    sstream_ctor(&ss);
-    
-    sstream_put(&ss, "sbrc r%d, %d", dest, bit);
-    
-    sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (R%d[%d] = 0): PC <- skip", dest, bit);
-
-    return sstream_alloc(&ss);
-}
-
-char* mnem_sbrs(const int opcode) {
-
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bit = extract(opcode, 0, 3, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "sbrs r%d, %d", dest, bit);
-
+    sstream_put(&ss, "sbrc r%d, %d", dest, src);
+    
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (R%d[%d] = 1): PC <- skip", dest, bit);
+    sstream_put(&ss, "; (R%d[%d] = 0): PC <- skip", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_cpse(const int opcode) {
+char* mnem_sbrs(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
+
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "sbrs r%d, %d", dest, src);
+
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; (R%d[%d] = 1): PC <- skip", dest, src);
+
+    return sstream_alloc(&ss);
+}
+
+char* mnem_cpse(plain_t *p) {
+
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -548,10 +547,10 @@ char* mnem_cpse(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_eor(const int opcode) {
+char* mnem_eor(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -564,9 +563,9 @@ char* mnem_eor(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_x(const int opcode) {
+char* mnem_ld_x(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -579,9 +578,9 @@ char* mnem_ld_x(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_xi(const int opcode) {
+char* mnem_ld_xi(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -594,9 +593,9 @@ char* mnem_ld_xi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_dx(const int opcode) {
+char* mnem_ld_dx(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -609,9 +608,9 @@ char* mnem_ld_dx(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_y(const int opcode) {
+char* mnem_ld_y(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -624,9 +623,9 @@ char* mnem_ld_y(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_yi(const int opcode) {
+char* mnem_ld_yi(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -639,9 +638,9 @@ char* mnem_ld_yi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_dy(const int opcode) {
+char* mnem_ld_dy(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -654,47 +653,41 @@ char* mnem_ld_dy(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ldd_yq(const int opcode) {
+char* mnem_ldd_yq(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-
-    const int disp = extract(opcode, 0, 3, 0) 
-                   + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
-
+    const int src = p->src.value;
+    const int dest = p->dest.value;
+    
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "ldd r%d, Y+%d", dest, disp);
+    sstream_put(&ss, "ldd r%d, Y+%d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- DATA[Y+%d]", dest, disp);
+    sstream_put(&ss, "; R%d <- DATA[Y+%d]", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_ldd_zq(const int opcode) {
+char* mnem_ldd_zq(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-
-    const int disp = extract(opcode, 0, 3, 0) 
-                   + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "ldd r%d, Z+%d", dest, disp);
+    sstream_put(&ss, "ldd r%d, Z+%d", dest, src);
 
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- DATA[Z+%d]", dest, disp);
+    sstream_put(&ss, "; R%d <- DATA[Z+%d]", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_z(const int opcode) {
+char* mnem_ld_z(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -707,9 +700,9 @@ char* mnem_ld_z(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_zi(const int opcode) {
+char* mnem_ld_zi(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -722,9 +715,9 @@ char* mnem_ld_zi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ld_dz(const int opcode) {
+char* mnem_ld_dz(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -737,9 +730,9 @@ char* mnem_ld_dz(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_x(const int opcode) {
+char* mnem_st_x(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -752,9 +745,9 @@ char* mnem_st_x(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_xi(const int opcode) {
+char* mnem_st_xi(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -767,9 +760,9 @@ char* mnem_st_xi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_dx(const int opcode) {
+char* mnem_st_dx(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -782,9 +775,9 @@ char* mnem_st_dx(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_y(const int opcode) {
+char* mnem_st_y(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -797,9 +790,9 @@ char* mnem_st_y(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_yi(const int opcode) {
+char* mnem_st_yi(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -812,9 +805,9 @@ char* mnem_st_yi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_dy(const int opcode) {
+char* mnem_st_dy(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -827,28 +820,25 @@ char* mnem_st_dy(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_std_yq(const int opcode) {
+char* mnem_std_yq(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
-
-    const int disp = extract(opcode, 0, 3, 0) 
-                   + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "std Y+%d, r%d", disp, src);
+    sstream_put(&ss, "std Y+%d, r%d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; DATA[Y+%d] <- R%d", disp, src);
+    sstream_put(&ss, "; DATA[Y+%d] <- R%d", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_z(const int opcode) {
+char* mnem_st_z(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -861,9 +851,9 @@ char* mnem_st_z(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_zi(const int opcode) {
+char* mnem_st_zi(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -876,9 +866,9 @@ char* mnem_st_zi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_st_dz(const int opcode) {
+char* mnem_st_dz(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -891,49 +881,42 @@ char* mnem_st_dz(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_std_zq(const int opcode) {
+char* mnem_std_zq(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
-
-    const int disp = extract(opcode, 0, 3, 0) 
-                   + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "std Z+%d, r%d", disp, src);
+    sstream_put(&ss, "std Z+%d, r%d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; DATA[Z+%d] <- R%d", disp, src);
+    sstream_put(&ss, "; DATA[Z+%d] <- R%d", dest, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_sts(const int opcode) {
+char* mnem_sts(plain_t *p) {
 
-    const int src = extract(opcode, 4, 8, 0) + 16;
-    const int dest = extract(opcode, 0, 4, 0) + extract(opcode, 8, 11, 4);
-
-    int addr = (~(0x10 & dest) << 3) | ((0x10 & dest) << 2) | 
-                ((0x40 & dest) >> 1) | ((0x20 & dest) >> 1) |
-                ((0x0f & opcode));
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "sts 0x%x, r%d", addr, src);
+    sstream_put(&ss, "sts 0x%x, r%d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; DATA[0x%x] <- R%d", addr, src);
+    sstream_put(&ss, "; DATA[0x%x] <- R%d", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_sts32(const int opcode) {
+char* mnem_sts32(plain_t *p) {
 
-    const int dest = extract(opcode, 0, 16, 0);
-    const int src = extract(opcode, 20, 25, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -946,30 +929,26 @@ char* mnem_sts32(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_lds(const int opcode) {
+char* mnem_lds(plain_t *p) {
     
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 11, 4);
-    
-    int addr = (~(0x10 & src) << 3) | ((0x10 & src) << 2) | 
-                ((0x40 & src) >> 1) | ((0x20 & src) >> 1) |
-                ((0x0f & opcode));
+    const int src = p->src.value;
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "lds r%d, 0x%x", dest, addr);
+    sstream_put(&ss, "lds r%d, 0x%x", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- DATA[0x%x]", dest, addr);
+    sstream_put(&ss, "; R%d <- DATA[0x%x]", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_lds32(const int opcode) {
+char* mnem_lds32(plain_t *p) {
 
-    const int dest = extract(opcode, 20, 25, 0);
-    const int src = extract(opcode, 0, 16, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -982,9 +961,9 @@ char* mnem_lds32(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_xch(const int opcode) {
+char* mnem_xch(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -998,403 +977,403 @@ char* mnem_xch(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_brne(const int opcode) {
+char* mnem_brne(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
 
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brne %s%d", sign, offs);
+    sstream_put(&ss, "brne %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (Z = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (Z = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_breq(const int opcode) {
+char* mnem_breq(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "breq %s%d", sign, offs);
+    sstream_put(&ss, "breq %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (Z = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (Z = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brge(const int opcode) {
+char* mnem_brge(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brge %s%d", sign, offs);
+    sstream_put(&ss, "brge %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (N ^ V = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (N ^ V = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brpl(const int opcode) {
+char* mnem_brpl(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brpl %s%d", sign, offs);
+    sstream_put(&ss, "brpl %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (N = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (N = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brlo(const int opcode) {
+char* mnem_brlo(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brlo %s%d", sign, offs);
+    sstream_put(&ss, "brlo %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brlt(const int opcode) {
+char* mnem_brlt(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brlt %s%d", sign, offs);
+    sstream_put(&ss, "brlt %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (N ^ V = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (N ^ V = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brcc(const int opcode) {
+char* mnem_brcc(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brcc %s%d", sign, offs);
+    sstream_put(&ss, "brcc %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (C = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (C = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brcs(const int opcode) {
+char* mnem_brcs(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brcs %s%d", sign, offs);
+    sstream_put(&ss, "brcs %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brvs(const int opcode) {
+char* mnem_brvs(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brvs %s%d", sign, offs);
+    sstream_put(&ss, "brvs %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (V = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (V = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brts(const int opcode) {
+char* mnem_brts(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brts %s%d", sign, offs);
+    sstream_put(&ss, "brts %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (T = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (T = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brtc(const int opcode) {
+char* mnem_brtc(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brtc %s%d", sign, offs);
+    sstream_put(&ss, "brtc %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (T = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (T = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brmi(const int opcode) {
+char* mnem_brmi(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brmi %s%d", sign, offs);
+    sstream_put(&ss, "brmi %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (N = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (N = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brhc(const int opcode) {
+char* mnem_brhc(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
 
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brhc %s%d", sign, offs);
+    sstream_put(&ss, "brhc %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (H = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (H = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brhs(const int opcode) {
+char* mnem_brhs(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brhs %s%d", sign, offs);
+    sstream_put(&ss, "brhs %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (H = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (H = 1): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brid(const int opcode) {
+char* mnem_brid(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
 
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brid %s%d", sign, offs);
+    sstream_put(&ss, "brid %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (I = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (I = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_brie(const int opcode) {
+char* mnem_brie(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brie %s%d", sign, offs);
+    sstream_put(&ss, "brie %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (I = 1): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (I = 1): PC <- PC %s 0x%x + 1", sign, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_brvc(const int opcode) {
+char* mnem_brvc(plain_t *p) {
 
-    int offs = extract(opcode, 3, 10, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 6) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 7);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "brvc %s%d", sign, offs);
+    sstream_put(&ss, "brvc %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; (V = 0): PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; (V = 0): PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_rcall(const int opcode) {
+char* mnem_rcall(plain_t *p) {
 
-    int offs = extract(opcode, 0, 12, 0);
+    int src = p->src.value;
     char sign[2] = "+";
 
-    if(((0x01 << 11) & offs) != 0x00) {
+    if(src < 0x00) {
 
-        offs = comp(offs, 12);
+        src *= -1;
         sign[0] = '-';
     }
     
     sstream_t ss;
     sstream_ctor(&ss);
 
-    sstream_put(&ss, "rcall %s%d", sign, offs);
+    sstream_put(&ss, "rcall %s%d", sign, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, offs);
+    sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_ret(const int opcode) {
+char* mnem_ret(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1407,7 +1386,7 @@ char* mnem_ret(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_reti(const int opcode) {
+char* mnem_reti(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1420,7 +1399,7 @@ char* mnem_reti(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_icall(const int opcode) {
+char* mnem_icall(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1433,26 +1412,25 @@ char* mnem_icall(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_call(const int opcode) {
+char* mnem_call(plain_t *p) {
 
-    const int addr = (opcode & 0x1ffff) 
-                   + (opcode & 0x1f00000);
+    const int src = p->src.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "call +%d", addr);
+    sstream_put(&ss, "call +%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; PC <- 0x%x", addr);
+    sstream_put(&ss, "; PC <- 0x%x", src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_cp(const int opcode) {
+char* mnem_cp(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1465,26 +1443,26 @@ char* mnem_cp(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_cpi(const int opcode) {
+char* mnem_cpi(plain_t *p) {
 
-    const int reg = extract(opcode, 4, 8, 0) + 16;
-    const uint8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const uint8_t src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "cpi r%d, 0x%02x", reg, comp);
+    sstream_put(&ss, "cpi r%d, 0x%02x", dest, src);
 
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d - 0x%02x", reg, comp);
+    sstream_put(&ss, "; R%d - 0x%02x", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_cpc(const int opcode) {
+char* mnem_cpc(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1497,86 +1475,86 @@ char* mnem_cpc(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_lsr(const int opcode) {
+char* mnem_lsr(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "lsr r%d", dest);
+    sstream_put(&ss, "lsr r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- R%d >> 1", dest, dest);
+    sstream_put(&ss, "; R%d <- R%d >> 1", src, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_asr(const int opcode) {
+char* mnem_asr(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "asr r%d", dest);
+    sstream_put(&ss, "asr r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- R%d >> 1", dest, dest);
+    sstream_put(&ss, "; R%d <- R%d >> 1", src, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_ror(const int opcode) {
+char* mnem_ror(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "ror r%d", dest);
+    sstream_put(&ss, "ror r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- R%d >> 1", dest, dest);
+    sstream_put(&ss, "; R%d <- R%d >> 1", src, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_swap(const int opcode) {
+char* mnem_swap(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "swap r%d", dest);
+    sstream_put(&ss, "swap r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- swap nibbles", dest);
+    sstream_put(&ss, "; R%d <- swap nibbles", src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_ori(const int opcode) {
+char* mnem_ori(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const uint8_t val = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const uint8_t src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "ori r%d, 0x%02x", dest, val);
+    sstream_put(&ss, "ori r%d, 0x%02x", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- R%d | 0x%02x", dest, dest, val);
+    sstream_put(&ss, "; R%d <- R%d | 0x%02x", dest, dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_or_asm(const int opcode) {
+char* mnem_or_asm(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1589,10 +1567,10 @@ char* mnem_or_asm(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_and_asm(const int opcode) {
+char* mnem_and_asm(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1605,25 +1583,25 @@ char* mnem_and_asm(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_andi(const int opcode) {
+char* mnem_andi(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int value = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "andi r%d, 0x%02x", dest, value);
+    sstream_put(&ss, "andi r%d, 0x%02x", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- R%d & 0x%02x", dest, dest, value);
+    sstream_put(&ss, "; R%d <- R%d & 0x%02x", dest, dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_las(const int opcode) {
+char* mnem_las(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1636,9 +1614,9 @@ char* mnem_las(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_lac(const int opcode) {
+char* mnem_lac(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1651,9 +1629,9 @@ char* mnem_lac(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_lat(const int opcode) {
+char* mnem_lat(plain_t *p) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1666,101 +1644,101 @@ char* mnem_lat(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_com(const int opcode) {
+char* mnem_com(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "com r%d", dest);
+    sstream_put(&ss, "com r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- 0xff - R%d", dest, dest);
+    sstream_put(&ss, "; R%d <- 0xff - R%d", src, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_neg(const int opcode) {
+char* mnem_neg(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "neg r%d", dest);
+    sstream_put(&ss, "neg r%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d <- 0x00 - R%d", dest, dest);
+    sstream_put(&ss, "; R%d <- 0x00 - R%d", src, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_bld(const int opcode) {
+char* mnem_bld(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "bld r%d, %d", dest, bpos);
+    sstream_put(&ss, "bld r%d, %d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; R%d[%d] <- TF", dest, bpos);
+    sstream_put(&ss, "; R%d[%d] <- TF", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_bst(const int opcode) {
+char* mnem_bst(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "bst r%d, %d", dest, bpos);
+    sstream_put(&ss, "bst r%d, %d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; TF <- R%d[%d]", dest, bpos);
+    sstream_put(&ss, "; TF <- R%d[%d]", dest, src);
 
     return sstream_alloc(&ss);
 }
 
-char* mnem_sbi(const int opcode) {
+char* mnem_sbi(plain_t *p) {
 
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "sbi 0x%02x, %d", dest, bpos);
+    sstream_put(&ss, "sbi 0x%02x, %d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; IO[%02x, %d] <- 0x01", dest, bpos);
+    sstream_put(&ss, "; IO[%02x, %d] <- 0x01", dest, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_cbi(const int opcode) {
+char* mnem_cbi(plain_t *p) {
     
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int src = p->src.value;
+    const int dest = p->dest.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "cbi 0x%02x, %d", dest, bpos);
+    sstream_put(&ss, "cbi 0x%02x, %d", dest, src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; IO[%02x, %d] <- 0x00", dest, bpos);
+    sstream_put(&ss, "; IO[%02x, %d] <- 0x00", dest, src);
     
     return sstream_alloc(&ss);
 }
 
-char* mnem_lpm(const int opcode) {
+char* mnem_lpm(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1773,9 +1751,9 @@ char* mnem_lpm(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_lpm_z(const int opcode) {
+char* mnem_lpm_z(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1788,9 +1766,9 @@ char* mnem_lpm_z(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_lpm_zi(const int opcode) {
+char* mnem_lpm_zi(plain_t *p) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1803,7 +1781,7 @@ char* mnem_lpm_zi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_eicall(const int opcode) {
+char* mnem_eicall(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1816,7 +1794,7 @@ char* mnem_eicall(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_eijmp(const int opcode) {
+char* mnem_eijmp(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1829,7 +1807,7 @@ char* mnem_eijmp(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_elpm(const int opcode) {
+char* mnem_elpm(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1842,9 +1820,9 @@ char* mnem_elpm(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_elpm_z(const int opcode) {
+char* mnem_elpm_z(plain_t *p) {
     
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1857,9 +1835,9 @@ char* mnem_elpm_z(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_elpm_zi(const int opcode) {
+char* mnem_elpm_zi(plain_t *p) {
     
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = p->dest.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1872,14 +1850,14 @@ char* mnem_elpm_zi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_des(const int opcode) {
+char* mnem_des(plain_t *p) {
     
-    const int iter = extract(opcode, 4, 8, 0);
+    const int src = p->src.value;
     
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "des 0x%02x", iter);
+    sstream_put(&ss, "des 0x%02x", src);
     
     sstream_pad(&ss, (TAB - ss.length));
     sstream_put(&ss, "; Data Encryption Standard");
@@ -1887,7 +1865,7 @@ char* mnem_des(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sleep(const int opcode) {
+char* mnem_sleep(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1900,7 +1878,7 @@ char* mnem_sleep(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_wdr(const int opcode) {
+char* mnem_wdr(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1913,7 +1891,7 @@ char* mnem_wdr(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_break_asm(const int opcode) {
+char* mnem_break_asm(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1926,7 +1904,7 @@ char* mnem_break_asm(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_spm(const int opcode) {
+char* mnem_spm(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1939,7 +1917,7 @@ char* mnem_spm(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_spm_zi(const int opcode) {
+char* mnem_spm_zi(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1952,7 +1930,7 @@ char* mnem_spm_zi(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_ses(const int opcode) {
+char* mnem_ses(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1965,7 +1943,7 @@ char* mnem_ses(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_set(const int opcode) {
+char* mnem_set(plain_t *p) {
     
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1978,7 +1956,7 @@ char* mnem_set(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sev(const int opcode) {
+char* mnem_sev(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -1991,7 +1969,7 @@ char* mnem_sev(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sez(const int opcode) {
+char* mnem_sez(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2004,7 +1982,7 @@ char* mnem_sez(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_seh(const int opcode) {
+char* mnem_seh(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2017,7 +1995,7 @@ char* mnem_seh(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sec(const int opcode) {
+char* mnem_sec(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2030,7 +2008,7 @@ char* mnem_sec(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sei(const int opcode) {
+char* mnem_sei(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2043,7 +2021,7 @@ char* mnem_sei(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_sen(const int opcode) {
+char* mnem_sen(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2056,7 +2034,7 @@ char* mnem_sen(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_cls(const int opcode) {
+char* mnem_cls(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2069,7 +2047,7 @@ char* mnem_cls(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_clt(const int opcode) {
+char* mnem_clt(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2082,7 +2060,7 @@ char* mnem_clt(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_clv(const int opcode) {
+char* mnem_clv(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2095,7 +2073,7 @@ char* mnem_clv(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_clz(const int opcode) {
+char* mnem_clz(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2108,7 +2086,7 @@ char* mnem_clz(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_clh(const int opcode) {
+char* mnem_clh(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2121,7 +2099,7 @@ char* mnem_clh(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_clc(const int opcode) {
+char* mnem_clc(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2134,7 +2112,7 @@ char* mnem_clc(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_cli(const int opcode) {
+char* mnem_cli(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2147,7 +2125,7 @@ char* mnem_cli(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_cln(const int opcode) {
+char* mnem_cln(plain_t *p) {
 
     sstream_t ss;
     sstream_ctor(&ss);
@@ -2160,37 +2138,37 @@ char* mnem_cln(const int opcode) {
     return sstream_alloc(&ss);
 }
 
-char* mnem_bclr(const int opcode) {
+char* mnem_bclr(plain_t *p) {
 
-    const int s_bit = extract(opcode, 4, 7, 0);
-
-    sstream_t ss;
-    sstream_ctor(&ss);
-    
-    sstream_put(&ss, "bclr 0x0%d", s_bit);
-    
-    sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; %s <- 0x00", flags[s_bit]);
-    
-    return sstream_alloc(&ss);
-}
-
-char* mnem_bset(const int opcode) {
-
-    const int s_bit = extract(opcode, 4, 7, 0);
+    const int src = p->src.value;
 
     sstream_t ss;
     sstream_ctor(&ss);
     
-    sstream_put(&ss, "bset 0x0%d", s_bit);
+    sstream_put(&ss, "bclr 0x0%d", src);
     
     sstream_pad(&ss, (TAB - ss.length));
-    sstream_put(&ss, "; %s <- 0x01", flags[s_bit]);
+    sstream_put(&ss, "; %s <- 0x00", flags[src]);
     
     return sstream_alloc(&ss);
 }
 
-char* (*mnemonics[INSTR_MAX]) (const int opcode) = { 
+char* mnem_bset(plain_t *p) {
+
+    const int src = p->src.value;
+
+    sstream_t ss;
+    sstream_ctor(&ss);
+    
+    sstream_put(&ss, "bset 0x0%d", src);
+    
+    sstream_pad(&ss, (TAB - ss.length));
+    sstream_put(&ss, "; %s <- 0x01", flags[src]);
+    
+    return sstream_alloc(&ss);
+}
+
+char* (*mnemonics[INSTR_MAX]) (plain_t *p) = { 
 
     mnem_nop, 
     mnem_movw, 

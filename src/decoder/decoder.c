@@ -79,6 +79,9 @@ int decode_hex(const char *hex_file, array_t *buffer) {
     buffer->size = buffer->top;
     array_dtor(temp);
     
+    if(buffer->size == 0)
+        return -1;
+    
     return 0;
 }
 

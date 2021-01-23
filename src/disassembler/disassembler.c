@@ -10,8 +10,9 @@
 #include "disassembler/disassembler.h"
 #include "disassembler/mnemonics.h"
 #include "disassembler/labelmap.h"
-#include "analyzer/report/plain.h"
+#include "decomposer/decomposer.h"
 #include "decoder/decoder.h"
+#include "analyzer/report/plain.h"
 #include "collections/array.h"
 #include "collections/queue.h"
 #include "misc/stringmanip.h"
@@ -29,23 +30,21 @@ static char* replace_addr(const char *line, const int lx);
 
 int disassemble(const char *hex_file, array_t *buffer) {
     
-    decode_hex(hex_file, buffer);
+    if(decompose(hex_file, buffer) < 0)
+        return -1;
 
     for(int i = 0; i < buffer->size; i++) {
 
         plain_t *p = (plain_t*) array_at(buffer, i);
         
-        switch((int) p->exec) {
+        if(p->exec == false) {
             
-            case false: p->mnem = mnem_dw(p->opcode);             break;
-            case true: p->mnem = (*mnemonics[p->key])(p->opcode); break;
-            
-            default: /* not possible */ break;
+            p->mnem = mnem_dw(p);
+            continue;
         }
-    }
 
-    if(buffer->top == 0)
-        return -1;
+        p->mnem = (*mnemonics[p->key])(p);
+    }
 
     add_labels(buffer);
     return 0;

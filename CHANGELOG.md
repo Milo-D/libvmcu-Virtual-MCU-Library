@@ -2,6 +2,17 @@
 
 # Unreleased
 
+# v.0.5.3 - 2020-01-23
+
+- Added: Instruction Decomposer - Stage 1 of the Analyzer Pipeline
+    - decomposes AVR Opcodes into its components
+
+- Extended Analyzer Pipeline:
+    - Stage 0: Decoder        (decodes binaries, extracts opcodes)
+    - Stage 1: Decomposer     (decomposes opcodes into its operands)
+    - Stage 2: Disassembler   (disassembles opcodes into mnemonics)
+    - Stage 3: Analyzer       (performs static analysis on disassembly)
+
 - Timer0: Minor work on Prescaler.
 - Added: EEPROM Write-Only Mode
     - Now supporting all modes of EEPROM programming
