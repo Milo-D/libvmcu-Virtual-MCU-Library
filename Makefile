@@ -26,6 +26,7 @@ SRC      :=                                	\
    	$(wildcard src/system/*.c)              \
    	$(wildcard src/system/core/*.c)         \
    	$(wildcard src/system/peripherals/*.c)  \
+	$(wildcard src/system/util/*.c)		\
    	$(wildcard src/table/*.c)               \
 
 OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)

@@ -31,7 +31,7 @@
 * = (clk(tx) / clk(cpu)) * ∆c
 * = (clk(tx) / clk(cpu)) * (c(1) - c(0))
 *
-*/
+* */
 
 /* Forward Declarations of static Functions */
 
