@@ -3,7 +3,6 @@
 // C Headers
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 // Project Headers
 #include "misc/ehandling.h"

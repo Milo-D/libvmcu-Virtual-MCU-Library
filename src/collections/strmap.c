@@ -1,7 +1,6 @@
 /* String Map Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,7 +15,7 @@ struct _private {
 /* Forward Declaration of private Functions */
 
 static int hash(const char *seq, const int mod);
-static int rotate(struct _strmap *this, const char *seq, int pos);
+static int rotate(struct _strmap *this, const int pos);
 
 /* --- Public --- */
 
@@ -67,12 +66,12 @@ int strmap_put(struct _strmap *this, const char *str) {
         return -1;
 
     if(this->p->grid[pos] != NULL)
-        pos = rotate(this, str, pos);
+        pos = rotate(this, pos);
 
     if(pos < 0)
         return -1;
 
-    const int bytes = strlen(str);
+    const size_t bytes = strlen(str);
     this->p->grid[pos] = malloc((bytes + 1) * sizeof(char));
 
     strncpy(this->p->grid[pos], str, bytes);
@@ -115,7 +114,7 @@ static int hash(const char *seq, const int mod) {
     return (acc % mod);
 }
 
-static int rotate(struct _strmap *this, const char *seq, int pos) {
+static int rotate(struct _strmap *this, const int pos) {
 
     int i = 1;
 

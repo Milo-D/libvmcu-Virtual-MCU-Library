@@ -93,11 +93,9 @@ int decode_eep(const char *hex_file, array_t *buffer) {
         return -1;
 
     size_t len;
-    ssize_t bytes_read;
-
     char *line = NULL;
 
-    while((bytes_read = getline(&line, &len, file)) != -1) {
+    while(getline(&line, &len, file) != -1) {
 
         if(validate_hex(line) < 0)
             return -1;
@@ -119,13 +117,11 @@ int decode_eep(const char *hex_file, array_t *buffer) {
 static int preprocess(const char *hex_file, array_t *buffer) {
 
     size_t len;
-    ssize_t bytes_read;
-
     char *line = NULL;
 
     FILE *file = fopen(hex_file, "r");
 
-    while((bytes_read = getline(&line, &len, file)) != -1) {
+    while(getline(&line, &len, file) != -1) {
 
         if(validate_hex(line) < 0) {
 
@@ -307,12 +303,10 @@ static bool is_dword(const int opcode) {
 
 static int validate_hex(const char *line) {
 
-    char *c;
-
     if(strlen(line) < 11)
         return -1;
 
-    if((c = strchr(line, ':')) == NULL)
+    if(strchr(line, ':') == NULL)
         return -1;
 
     return 0;

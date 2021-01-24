@@ -1,8 +1,6 @@
 /* Mnemonic Generator Implementation */
 
 // C Headers
-#include <stdlib.h>
-#include <string.h>
 #include <inttypes.h>
 
 // Project Headers

@@ -1,7 +1,6 @@
 /* Implementation of Disassembler */
 
 // C++ Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -11,13 +10,11 @@
 #include "disassembler/mnemonics.h"
 #include "disassembler/labelmap.h"
 #include "decomposer/decomposer.h"
-#include "decoder/decoder.h"
 #include "analyzer/report/plain.h"
 #include "collections/array.h"
 #include "collections/queue.h"
 #include "misc/stringmanip.h"
 #include "misc/memmanip.h"
-#include "misc/ehandling.h"
 
 /* Forward Declarations of private Functions */
 

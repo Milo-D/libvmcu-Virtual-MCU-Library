@@ -10,7 +10,6 @@
 #include "disassembler/labelmap.h"
 #include "analyzer/report/plain.h"
 #include "collections/array.h"
-#include "collections/tuple.h"
 #include "collections/strmap.h"
 #include "collections/queue.h"
 #include "misc/stringmanip.h"

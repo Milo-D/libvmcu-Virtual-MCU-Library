@@ -1,7 +1,6 @@
 /* Implementation of AVR Data Memory */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

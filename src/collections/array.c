@@ -1,10 +1,8 @@
 /* Array Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 // Project Headers
 #include "collections/array.h"

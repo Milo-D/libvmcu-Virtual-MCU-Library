@@ -1,10 +1,8 @@
 /* File Manipulation Implementation */
 
-// C++ Headers
+// C Headers
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 // Project Headers
 #include "misc/filemanip.h"

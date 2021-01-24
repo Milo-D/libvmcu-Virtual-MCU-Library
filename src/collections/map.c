@@ -1,7 +1,6 @@
 /* String-UnsignedInteger Map Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -23,7 +22,7 @@ struct _private {
 /* Forward Declaration of private Functions */
 
 static int hash(const char *seq, const int mod);
-static int rotate(struct _map *this, const char *seq, int pos);
+static int rotate(struct _map *this, const int pos);
 
 /* --- Public --- */
 
@@ -75,14 +74,14 @@ int map_put(struct _map *this, const char *key, const int value) {
         return -1;
 
     if(this->p->grid[pos] != NULL)
-        pos = rotate(this, key, pos);
+        pos = rotate(this, pos);
 
     if(pos < 0)
         return -1;
 
     this->p->grid[pos] = malloc(sizeof(pair_t));
 
-    const int bytes = strlen(key);
+    const size_t bytes = strlen(key);
     this->p->grid[pos]->key = malloc((bytes + 1) * sizeof(char));
     strncpy(this->p->grid[pos]->key, key, bytes);
 
@@ -128,7 +127,7 @@ static int hash(const char *seq, const int mod) {
     return (acc % mod);
 }
 
-static int rotate(struct _map *this, const char *seq, int pos) {
+static int rotate(struct _map *this, const int pos) {
 
     int i = 1;
 

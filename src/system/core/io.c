@@ -85,7 +85,7 @@ int io_check_irq(const struct _io *this) {
         case ERDY_VECT:       /* no flag clearing needed */         break;
         case ACOMP_VECT:      /* not yet implemented */             break;
 
-        default:              /* should not happen */             break;
+        default:              /* should not happen */               break;
     }
 
     return (int) isr;

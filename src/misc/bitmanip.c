@@ -1,8 +1,5 @@
 /* Bitmanipulation Implementation */
 
-// C Headers
-#include <stdlib.h>
-
 // Project Headers
 #include "misc/bitmanip.h"
 

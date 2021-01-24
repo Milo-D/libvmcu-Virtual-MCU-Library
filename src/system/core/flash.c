@@ -8,12 +8,11 @@
 #include "system/util/progmem.h"
 #include "system/mcudef.h"
 #include "analyzer/report/report.h"
-#include "misc/ehandling.h"
 #include "collections/array.h"
 
 /* Forward Declaration of static Functions */
 
-static void flash_init_memory(struct _flash *this);
+static void flash_erase_memory(struct _flash *this);
 
 /* --- Extern --- */
 
@@ -25,7 +24,7 @@ struct _flash* flash_ctor(const report_t *report) {
         return NULL;
 
     flash->memory = malloc(FLASH_SIZE * sizeof(progmem_t));
-    flash_init_memory(flash);
+    flash_erase_memory(flash);
 
     plain_t *p = report->disassembly;
 
@@ -104,7 +103,7 @@ void flash_reboot(struct _flash *this) {
 
 /* --- Static --- */
 
-static void flash_init_memory(struct _flash *this) {
+static void flash_erase_memory(struct _flash *this) {
 
     for(int i = 0; i < FLASH_SIZE; i++) {
 
