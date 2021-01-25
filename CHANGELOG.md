@@ -2,6 +2,9 @@
 
 # Unreleased
 
+- New Debugcommand: xeb - examine EEPROM as bitmap
+- Cleanup: unused Headers, unused variables
+
 # v.0.5.3 - 2020-01-23
 
 - Added: Instruction Decomposer - Stage 1 of the Analyzer Pipeline

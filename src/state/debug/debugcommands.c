@@ -16,9 +16,7 @@
 #include "misc/stringmanip.h"
 #include "misc/bitmanip.h"
 #include "misc/filemanip.h"
-#include "misc/memmanip.h"
 #include "collections/array.h"
-#include "collections/list.h"
 
 void command_rn(debugwindow_t *window) {
 
@@ -424,6 +422,38 @@ void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char 
 
     free(new_mnem);
     free(sub);
+}
+
+void command_xeb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell) {
+
+    const int cell = htoi(mem_cell);
+
+    if(cell < 0 || cell >= EEPROM_SIZE) {
+
+        dwin_write(window, OPNL, MEM_CELL_ERR, D);
+        return;
+    }
+
+    const int8_t *memory = sys_dump_eeprom(dbg->sys);
+    const uint8_t eep_data = memory[cell];
+
+    char byte[10];
+
+    byte[4] = ' ';
+    byte[9] = '\0';
+
+    for(int i = 0; i < 4; i++)
+        byte[i] = bit(eep_data, 7 - i) + 48;
+
+    for(int i = 4; i < 8; i++)
+        byte[i + 1] = bit(eep_data, 7 - i) + 48;
+
+    char *msg = bit_val_of(mem_cell, byte);
+
+    dwin_write(window, OPNL, msg, D);
+    dwin_set_page(window, EPNL, cell);
+
+    free(msg);
 }
 
 void command_def(debugwindow_t *window) {

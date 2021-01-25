@@ -131,6 +131,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 | xec           | start end     | EEP. Mem. as char literal   |
 | xdc           | start end     | Data Mem. as char literal   |
 | xdb           | address       | Data Mem. as Bitfield       |
+| xeb           | address       | EEP. Mem. as Bitfield       |
 | leep          | file.eep.hex  | Load .eep.hex into MCU      |
 | cycles        | none          | Show current Cycles         |
 | clock         | none          | Show Clock Frequency        |

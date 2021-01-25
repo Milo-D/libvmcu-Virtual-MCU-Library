@@ -1,7 +1,6 @@
 /* Implementation of DebugState */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
@@ -11,13 +10,9 @@
 #include "state/debug/debugcommands.h"
 #include "state/debug/stdmsg.h"
 #include "cli/debug/debugwindow.h"
-#include "system/mcudef.h"
-#include "system/system.h"
 #include "parser/parser.h"
 #include "printer/debugprinter.h"
-#include "misc/ehandling.h"
 #include "misc/stringmanip.h"
-#include "misc/memmanip.h"
 #include "collections/list.h"
 
 #define at(l, i) ls_at(l, i)
@@ -90,6 +85,7 @@ void debug(dbg_t *dbg, const char *file) {
             case 25: command_xdb(window, dbg, at(com, 1));                  break;
             case 26: command_jc(window, dbg, get_int(at(com, 1)));          break;
             case 27: command_cc(window, dbg, at(com, 1), at(com, 2));       break;
+            case 28: command_xeb(window, dbg, at(com, 1));                  break;
 
             default: /* ignoring invalid input */                           break;
         }

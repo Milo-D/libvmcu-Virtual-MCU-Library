@@ -32,6 +32,7 @@ extern void command_clock(debugwindow_t *window, dbg_t *dbg);
 extern void command_time(debugwindow_t *window, dbg_t *dbg);
 extern void command_xdb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell);
 extern void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char *comment);
+extern void command_xeb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell);
 extern void command_def(debugwindow_t *window);
 
 #endif

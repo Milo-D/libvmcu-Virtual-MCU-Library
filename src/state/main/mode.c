@@ -161,6 +161,7 @@ static void mode_help(void) {
     printf(" xec           <addr> <range>            - Examine EEPROM Memory as char literal\n");
     printf(" xdc           <addr> <range>            - Examine Data Memory as char literal\n");
     printf(" xdb           <address>                 - Examine Data Memory as bitmap\n");
+    printf(" xeb           <address>                 - Examine EEPROM Memory as bitmap\n");
     printf(" leep          <eep.hex>                 - Load an .eep.hex file into the EEPROM\n");
     printf(" cycles        <none>                    - Show current Cycles\n");
     printf(" clock         <none>                    - Show Clock Frequency\n");

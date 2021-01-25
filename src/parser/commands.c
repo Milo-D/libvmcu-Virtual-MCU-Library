@@ -1,10 +1,5 @@
 /* Commands Header */
 
-// C Headers
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 // Project Headers
 #include "parser/commands.h"
 
@@ -18,5 +13,5 @@ const char *commands[NCON][NCOM] = {
     /* DEBUG CONTEXT */
     { "n", "b", "rn", "rp", "dn", "dp", "jb", "en", "ep", "xd", "xe", "xdc",
       "xec", "leep", "clear", "q", "?", "break", "unbreak", "def", "pn",               
-      "pp", "cycles", "clock", "time", "xdb", "jc", "cc" }                                                      
+      "pp", "cycles", "clock", "time", "xdb", "jc", "cc", "xeb" }
 };
