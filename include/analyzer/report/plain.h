@@ -7,7 +7,7 @@
 #include <stdbool.h>
 
 // Project Headers
-#include "analyzer/report/op.h"
+#include "analyzer/report/operand.h"
 
 /* 
 *  plain_t is the main data-structure
@@ -16,8 +16,6 @@
 
 typedef struct _plain {
 
-    op_t src, dest;
-
     int opcode;
     int addr;
     int key;
@@ -25,6 +23,9 @@ typedef struct _plain {
     bool exec;
     bool dword;
     char *mnem;
+
+    operand_t src;
+    operand_t dest;
 
 } plain_t;
 

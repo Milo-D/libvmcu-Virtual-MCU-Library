@@ -1,9 +1,9 @@
 /* Operand Structure Header */
 
-#ifndef OP_H
-#define OP_H
+#ifndef OPERAND_H
+#define OPERAND_H
 
-typedef enum { 
+typedef enum {
     
     IMM,
     IMM8,
@@ -19,11 +19,11 @@ typedef enum {
     
 } OPTYPE;
 
-typedef struct _op {
+typedef struct _operand {
     
     int value;
     OPTYPE type;
     
-} op_t;
+} operand_t;
 
 #endif
