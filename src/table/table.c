@@ -7,8 +7,6 @@
 // Project Headers
 #include "table/table.h"
 #include "table/breakpoint.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
 
 /* --- Public --- */
 
