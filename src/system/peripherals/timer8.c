@@ -35,6 +35,9 @@
 
 /* Forward Declarations of static Functions */
 
+static void timer8_setup_tc0(struct _timer8 *this, int8_t *memory);
+static void timer8_setup_tc2(struct _timer8 *this, int8_t *memory);
+
 static void timer8_tick_normal(struct _timer8 *this, irq_t *irq);
 static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq);
 static void timer8_tick_pwm_correct(struct _timer8 *this, irq_t *irq);
@@ -64,51 +67,10 @@ struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory) {
 
     switch(timer_id) {
 
-        case TC0:
+        case TC0: timer8_setup_tc0(timer, memory); break;
+        case TC2: timer8_setup_tc2(timer, memory); break;
 
-            timer->timsk = &memory[TIMSK0];
-            timer->tccra = &memory[TCCR0A];
-            timer->tccrb = &memory[TCCR0B];
-
-            timer->tcnt  = &memory[TCNT0];
-            timer->tifr  = &memory[TIFR0];
-            timer->ocra  = &memory[OCR0A];
-            timer->ocrb  = &memory[OCR0B];
-
-            timer->ocpa  = &memory[OC0A_P];
-            timer->ocpb  = &memory[OC0B_P];
-            
-            timer->ddrxa = &memory[OC0A_DDR];
-            timer->ddrxb = &memory[OC0B_DDR];
-
-            timer->oca   = OC0A;
-            timer->ocb   = OC0B;
-
-        break;
-
-        case TC2: 
-
-            timer->timsk = &memory[TIMSK2];
-            timer->tccra = &memory[TCCR2A];
-            timer->tccrb = &memory[TCCR2B];
-
-            timer->tcnt  = &memory[TCNT2];
-            timer->tifr  = &memory[TIFR2];
-            timer->ocra  = &memory[OCR2A];
-            timer->ocrb  = &memory[OCR2B];
-
-            timer->ocpa  = &memory[OC2A_P];
-            timer->ocpb  = &memory[OC2B_P];
-            
-            timer->ddrxa = &memory[OC2A_DDR];
-            timer->ddrxb = &memory[OC2B_DDR];
-
-            timer->oca   = OC2A;
-            timer->ocb   = OC2B;
-
-        break;
-
-        default: free(timer); return NULL;
+        default: free(timer);                return NULL;
     };
 
     timer->prescaler = 0;
@@ -212,6 +174,48 @@ void timer8_reboot(struct _timer8 *this) {
 }
 
 /* --- Static --- */
+
+static void timer8_setup_tc0(struct _timer8 *this, int8_t *memory) {
+
+    this->timsk = &memory[TIMSK0];
+    this->tccra = &memory[TCCR0A];
+    this->tccrb = &memory[TCCR0B];
+
+    this->tcnt  = &memory[TCNT0];
+    this->tifr  = &memory[TIFR0];
+    this->ocra  = &memory[OCR0A];
+    this->ocrb  = &memory[OCR0B];
+
+    this->ocpa  = &memory[OC0A_P];
+    this->ocpb  = &memory[OC0B_P];
+
+    this->ddrxa = &memory[OC0A_DDR];
+    this->ddrxb = &memory[OC0B_DDR];
+
+    this->oca   = OC0A;
+    this->ocb   = OC0B;
+}
+
+static void timer8_setup_tc2(struct _timer8 *this, int8_t *memory) {
+
+    this->timsk = &memory[TIMSK2];
+    this->tccra = &memory[TCCR2A];
+    this->tccrb = &memory[TCCR2B];
+
+    this->tcnt  = &memory[TCNT2];
+    this->tifr  = &memory[TIFR2];
+    this->ocra  = &memory[OCR2A];
+    this->ocrb  = &memory[OCR2B];
+
+    this->ocpa  = &memory[OC2A_P];
+    this->ocpb  = &memory[OC2B_P];
+
+    this->ddrxa = &memory[OC2A_DDR];
+    this->ddrxb = &memory[OC2B_DDR];
+
+    this->oca   = OC2A;
+    this->ocb   = OC2B;
+}
 
 static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
 

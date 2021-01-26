@@ -2,6 +2,7 @@
 
 # Unreleased
 
+- Minor refactor of timer8.
 - New Debugcommand: xeb - examine EEPROM as bitmap
 - Cleanup: unused Headers, unused variables
 
