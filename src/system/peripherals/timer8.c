@@ -232,7 +232,7 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
         setbit(*(this->tifr), OCFA);
 
         if(bit(*(this->timsk), OCFA) == 0x01)
-            irq_enable(irq, OC0A_VECT); // currently only tc0
+            irq_enable(irq, OC0A_VECT); // todo: tc2 support
 
         trigger_ocpa(this);
     }
@@ -242,7 +242,7 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
         setbit(*(this->tifr), OCFB);
         
         if(bit(*(this->timsk), OCFB) == 0x01)
-            irq_enable(irq, OC0B_VECT); // currently only tc0
+            irq_enable(irq, OC0B_VECT); // todo: tc2 support
             
         trigger_ocpb(this);
     }
@@ -269,7 +269,7 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
         setbit(*(this->tifr), OCFB);
         
         if(bit(*(this->timsk), OCFB) == 0x01)
-            irq_enable(irq, OC0B_VECT); // currently only tc0
+            irq_enable(irq, OC0B_VECT); // todo: tc2 support
             
         trigger_ocpb(this);
     }
@@ -280,7 +280,7 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
         *(this->tcnt) = 0x00;
 
         if(bit(*(this->timsk), OCFA) == 0x01)
-            irq_enable(irq, OC0A_VECT); // currently only tc0
+            irq_enable(irq, OC0A_VECT); // todo: tc2 support
 
         trigger_ocpa(this);
     }

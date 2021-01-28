@@ -2,6 +2,17 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.5.4
+
+- Added first Submodule for the Analyzer: Static SFR Analysis
+  - This submodule explores special function registers in disassembly
+  - once an address to a special function register has been detected 
+    by the module, an annotation will be created with its corresponding name
+    
+  - example: out 0x3f, r1 ; SREG
+
 - Minor refactor of timer8.
 - New Debugcommand: xeb - examine EEPROM as bitmap
 - Cleanup: unused Headers, unused variables

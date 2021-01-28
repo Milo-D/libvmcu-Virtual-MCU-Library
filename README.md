@@ -5,13 +5,13 @@
 [![GitHub stars](https://img.shields.io/github/stars/Milo-D/MDX-Assembly-Debugger.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Milo-D/MDX-Assembly-Debugger/stargazers/)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.gg/X9kmyyh)
 # MDX-Micro-Debugger (In Development)
-An easy and fast CLI Debugger and Disassembler for Atmel's 8-bit AVR
-Microcontrollers, including ATmega328P.
+An easy and fast CLI Debugger, Disassembler and Analyzer for Atmel's 8-bit AVR
+Microcontrollers, including the famous ATmega328P.
 
 # Overview
 ![mdx_debug](https://user-images.githubusercontent.com/46600932/104666434-33f9da80-56d4-11eb-882b-724b13536412.png)
 
-MDX is an easy and fast CLI Debugger for AVR programs, with a focus on accurate simulation. It has some useful 
+MDX is an easy and fast Debugger and Analyzer for AVR binaries (currently only Intel Hex), with a focus on accurate simulation. It has some useful 
 features built in like:
 
 - Backstepping
@@ -204,7 +204,7 @@ Note: You may open multiple files in interactive Debugging Mode.
 - [ ] Analyzer Submodules
    - [ ] Function analysis
    - [ ] ISR analysis
-   - [ ] SFR analysis
+   - [x] SFR analysis
    - [ ] ...
 
 # Instructions

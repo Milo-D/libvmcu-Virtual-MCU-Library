@@ -1,9 +1,5 @@
 /* Implementation of Opcode Table */
 
-// C++ Header
-#include <stdio.h>
-#include <stdlib.h>
-
 // Project Header
 #include "decoder/opcode.h"
 

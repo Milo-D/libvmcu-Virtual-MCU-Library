@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 // Project Headers
+#include "analyzer/report/ikey.h"
 #include "analyzer/report/operand.h"
 
 /* 
@@ -16,12 +17,14 @@
 
 typedef struct _plain {
 
+    IKEY key;
+
     int opcode;
     int addr;
-    int key;
     
     bool exec;
     bool dword;
+
     char *mnem;
 
     operand_t src;

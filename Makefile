@@ -9,6 +9,7 @@ TARGET   := mdx
 INCLUDE  := -I include
 SRC      :=                                	\
 	$(wildcard src/analyzer/*.c)			\
+	$(wildcard src/analyzer/modules/sfr/*.c)	\
 	$(wildcard src/analyzer/report/*.c)		\
 	$(wildcard src/cli/main/*.c)			\
    	$(wildcard src/cli/debug/*.c)           \

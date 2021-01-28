@@ -19,12 +19,18 @@ struct _plain* plain_cpy(const struct _plain *src) {
 
     struct _plain *dest = malloc(sizeof(struct _plain));
 
-    dest->opcode = src->opcode;
-    dest->addr = src->addr;
-    dest->key = src->key;
+    dest->opcode     = src->opcode;
+    dest->addr       = src->addr;
+    dest->key        = src->key;
 
-    dest->exec = src->exec;
-    dest->dword = src->dword;
+    dest->exec       = src->exec;
+    dest->dword      = src->dword;
+
+    dest->src.type   = src->src.type;
+    dest->src.value  = src->src.value;
+
+    dest->dest.type  = src->dest.type;
+    dest->dest.value = src->dest.value;
 
     if((dest->mnem = src->mnem) == NULL)
         return dest;

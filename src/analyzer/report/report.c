@@ -31,12 +31,18 @@ struct _report* report_ctor(const char *file) {
         report->disassembly[i].mnem = malloc(len * sizeof(char));
         strncpy(report->disassembly[i].mnem, p->mnem, len);
 
-        report->disassembly[i].opcode = p->opcode;
-        report->disassembly[i].addr   = p->addr;
-        report->disassembly[i].key    = p->key;
+        report->disassembly[i].opcode     = p->opcode;
+        report->disassembly[i].addr       = p->addr;
+        report->disassembly[i].key        = p->key;
         
-        report->disassembly[i].exec   = p->exec;
-        report->disassembly[i].dword  = p->dword;
+        report->disassembly[i].exec       = p->exec;
+        report->disassembly[i].dword      = p->dword;
+
+        report->disassembly[i].src.type   = p->src.type;
+        report->disassembly[i].src.value  = p->src.value;
+
+        report->disassembly[i].dest.type  = p->dest.type;
+        report->disassembly[i].dest.value = p->dest.value;
     }
 
     array_dtor(buffer);    
