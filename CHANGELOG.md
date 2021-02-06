@@ -4,6 +4,12 @@
 
 - nothing to log
 
+# v.0.5.5
+
+- Seperated Simulation Engine (engine/) from CLI (debugger/) 
+  - Might create a statically linked library out of engine/,
+  so that the core can be reused in different projects.
+
 # v.0.5.4
 
 - Added first Submodule for the Analyzer: Static SFR Analysis
