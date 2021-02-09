@@ -27,7 +27,7 @@ extern void flash_dtor(struct _flash *this);
 /* General FLASH Functions */
 
 extern progmem_t* flash_fetch(const struct _flash *this);
-extern progmem_t* flash_read_instr(const struct _flash *this, const int addr);
+extern progmem_t* flash_read_progmem(const struct _flash *this, const int addr);
 
 extern uint16_t flash_read(const struct _flash *this, const int addr);
 

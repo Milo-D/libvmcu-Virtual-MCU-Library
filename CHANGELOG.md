@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- nothing to log
+- renamed function sys_read_instr to sys_read_progmem
 
 # v.0.5.5
 

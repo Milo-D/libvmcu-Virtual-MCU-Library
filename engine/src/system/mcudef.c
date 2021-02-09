@@ -7,7 +7,7 @@
 
     const char *flags[SREG_SIZE] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
 
-    const char *sfreg[SFR_SIZE]  = {  
+    const char *sfreg[SFR_SIZE]  = {
 
         "reserved",
         "reserved",

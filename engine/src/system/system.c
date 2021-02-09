@@ -171,9 +171,9 @@ uint8_t sys_dump_sreg(const struct _system *this) {
     return sreg_dump(this->sreg);
 }
 
-progmem_t* sys_read_instr(const struct _system *this, const int addr) {
+progmem_t* sys_read_progmem(const struct _system *this, const int addr) {
 
-    return flash_read_instr(this->flash, addr);
+    return flash_read_progmem(this->flash, addr);
 }
 
 uint16_t sys_read_flash(const struct _system *this, const int addr) {

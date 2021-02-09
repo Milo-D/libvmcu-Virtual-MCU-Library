@@ -590,7 +590,7 @@ void sbis(system_t *sys, const int opcode) {
     }
 
     const int pc = sys_get_pc(sys);
-    progmem_t *p = sys_read_instr(sys, pc + 1);
+    progmem_t *p = sys_read_progmem(sys, pc + 1);
 
     sys_set_pc(sys, pc + 2 + p->dword);
     sys->cycles += (2 + p->dword);
@@ -612,7 +612,7 @@ void sbic(system_t *sys, const int opcode) {
     }
 
     const int pc = sys_get_pc(sys);
-    progmem_t *p = sys_read_instr(sys, pc + 1);
+    progmem_t *p = sys_read_progmem(sys, pc + 1);
 
     sys_set_pc(sys, pc + 2 + p->dword);
     sys->cycles += (2 + p->dword);
@@ -634,7 +634,7 @@ void sbrc(system_t *sys, const int opcode) {
     }
 
     const int pc = sys_get_pc(sys);
-    progmem_t *p = sys_read_instr(sys, pc + 1);
+    progmem_t *p = sys_read_progmem(sys, pc + 1);
 
     sys_set_pc(sys, pc + 2 + p->dword);
     sys->cycles += (2 + p->dword);
@@ -656,7 +656,7 @@ void sbrs(system_t *sys, const int opcode) {
     }
 
     const int pc = sys_get_pc(sys);
-    progmem_t *p = sys_read_instr(sys, pc + 1);
+    progmem_t *p = sys_read_progmem(sys, pc + 1);
 
     sys_set_pc(sys, pc + 2 + p->dword);
     sys->cycles += (2 + p->dword);
@@ -679,7 +679,7 @@ void cpse(system_t *sys, const int opcode) {
     }
 
     const int pc = sys_get_pc(sys);
-    progmem_t *p = sys_read_instr(sys, pc + 1);
+    progmem_t *p = sys_read_progmem(sys, pc + 1);
 
     sys_set_pc(sys, pc + 2 + p->dword);
     sys->cycles += (2 + p->dword);

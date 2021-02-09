@@ -71,7 +71,7 @@ progmem_t* flash_fetch(const struct _flash *this) {
     return &this->memory[this->pc % FLASH_SIZE];
 }
 
-progmem_t* flash_read_instr(const struct _flash *this, const int addr) {
+progmem_t* flash_read_progmem(const struct _flash *this, const int addr) {
 
     return &this->memory[addr % FLASH_SIZE];
 }
