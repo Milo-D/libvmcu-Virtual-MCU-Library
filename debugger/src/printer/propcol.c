@@ -1,7 +1,7 @@
 /* PropCol Implementation */
 
-// Project Headers
-#include "printer/propcol.h"
+// Project Headers (debugger)
+#include "debugger/include/printer/propcol.h"
 
 COLOR propcol(const MEMPROP prop) {
 

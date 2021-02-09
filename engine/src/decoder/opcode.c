@@ -1,7 +1,7 @@
 /* Implementation of Opcode Table */
 
-// Project Header
-#include "decoder/opcode.h"
+// Project Header (engine)
+#include "engine/include/decoder/opcode.h"
 
 const int opcode[SET_SIZE][WORD] = {
 

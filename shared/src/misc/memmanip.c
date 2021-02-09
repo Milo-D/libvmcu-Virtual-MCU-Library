@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-// Project Headers
-#include "misc/memmanip.h"
+// Project Headers (shared)
+#include "shared/include/misc/memmanip.h"
 
 void nfree(const int n, ...) {
 

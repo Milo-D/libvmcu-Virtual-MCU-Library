@@ -5,18 +5,21 @@
 #include <string.h>
 #include <unistd.h>
 
-// Project Headers
-#include "state/debug/debugcommands.h"
-#include "state/debug/stdmsg.h"
-#include "cli/debug/debugwindow.h"
-#include "system/mcudef.h"
-#include "dbg/dbg.h"
-#include "decoder/decoder.h"
-#include "printer/debugprinter.h"
-#include "misc/stringmanip.h"
-#include "misc/bitmanip.h"
-#include "misc/filemanip.h"
-#include "collections/array.h"
+// Project Headers (engine)
+#include "engine/include/decoder/decoder.h"
+
+// Project Headers (debugger)
+#include "debugger/include/state/debug/debugcommands.h"
+#include "debugger/include/state/debug/stdmsg.h"
+#include "debugger/include/cli/debug/debugwindow.h"
+#include "debugger/include/dbg/dbg.h"
+#include "debugger/include/printer/debugprinter.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/misc/bitmanip.h"
+#include "shared/include/misc/filemanip.h"
+#include "shared/include/collections/array.h"
 
 void command_rn(debugwindow_t *window) {
 

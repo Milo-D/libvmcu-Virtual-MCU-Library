@@ -3,13 +3,15 @@
 // C Headers
 #include <stdlib.h>
 
-// Project Headers
-#include "decomposer/decomposer.h"
-#include "decoder/decoder.h"
-#include "decoder/opcode.h"
-#include "analyzer/report/plain.h"
-#include "misc/bitmanip.h"
-#include "collections/array.h"
+// Project Headers (engine)
+#include "engine/include/decomposer/decomposer.h"
+#include "engine/include/decoder/decoder.h"
+#include "engine/include/decoder/opcode.h"
+#include "engine/include/analyzer/report/plain.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/bitmanip.h"
+#include "shared/include/collections/array.h"
 
 /* Forward Declaration of static Members */
 

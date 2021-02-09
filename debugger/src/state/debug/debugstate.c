@@ -5,15 +5,18 @@
 #include <string.h>
 #include <signal.h>
 
-// Project Headers
-#include "state/debug/debugstate.h"
-#include "state/debug/debugcommands.h"
-#include "state/debug/stdmsg.h"
-#include "cli/debug/debugwindow.h"
-#include "parser/parser.h"
-#include "printer/debugprinter.h"
-#include "misc/stringmanip.h"
-#include "collections/list.h"
+// Project Headers (debugger)
+#include "debugger/include/state/debug/debugstate.h"
+#include "debugger/include/state/debug/debugcommands.h"
+#include "debugger/include/state/debug/stdmsg.h"
+#include "debugger/include/dbg/dbg.h"
+#include "debugger/include/cli/debug/debugwindow.h"
+#include "debugger/include/parser/parser.h"
+#include "debugger/include/printer/debugprinter.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/collections/list.h"
 
 #define at(l, i) ls_at(l, i)
 

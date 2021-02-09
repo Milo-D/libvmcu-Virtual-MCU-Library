@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "collections/map.h"
+// Project Headers (shared)
+#include "shared/include/collections/map.h"
 
 typedef struct _pair {
 

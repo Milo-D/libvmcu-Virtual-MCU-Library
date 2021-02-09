@@ -4,11 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "analyzer/report/report.h"
-#include "analyzer/report/plain.h"
-#include "disassembler/disassembler.h"
-#include "collections/array.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/report/report.h"
+#include "engine/include/analyzer/report/plain.h"
+#include "engine/include/disassembler/disassembler.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/array.h"
 
 struct _report* report_ctor(const char *file) {
     

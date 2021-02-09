@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-// Project Headers
-#include "collections/tuple.h"
+// Project Headers (shared)
+#include "shared/include/collections/tuple.h"
 
 struct _private {
 

@@ -3,8 +3,8 @@
 #ifndef GPNL_H
 #define GPNL_H
 
-// Project Headers
-#include "cli/util/panel.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/util/panel.h"
 
 typedef struct _gpnl {
 

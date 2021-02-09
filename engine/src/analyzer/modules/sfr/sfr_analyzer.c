@@ -5,11 +5,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Project Headers
-#include "analyzer/modules/sfr/sfr_analyzer.h"
-#include "analyzer/report/report.h"
-#include "system/mcudef.h"
-#include "misc/stringmanip.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/modules/sfr/sfr_analyzer.h"
+#include "engine/include/analyzer/report/report.h"
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/stringmanip.h"
 
 /* Forward Declaration of static Functions */
 

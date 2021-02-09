@@ -5,14 +5,16 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Project Headers
-#include "parser/parser.h"
-#include "parser/commands.h"
-#include "collections/list.h"
-#include "collections/map.h"
-#include "misc/ehandling.h" 
-#include "misc/filemanip.h"
-#include "misc/stringmanip.h"
+// Project Headers (debugger)
+#include "debugger/include/parser/parser.h"
+#include "debugger/include/parser/commands.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/list.h"
+#include "shared/include/collections/map.h"
+#include "shared/include/misc/ehandling.h"
+#include "shared/include/misc/filemanip.h"
+#include "shared/include/misc/stringmanip.h"
 
 /* Forward Declaration of private Functions */
 

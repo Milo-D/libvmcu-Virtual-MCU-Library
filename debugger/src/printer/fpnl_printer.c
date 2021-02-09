@@ -3,12 +3,13 @@
 // C Headers
 #include <string.h>
 
-// Project Headers
-#include "printer/fpnl_printer.h"
-#include "cli/debug/debugwindow.h"
-#include "system/mcudef.h"
-#include "dbg/dbg.h"
-#include "collections/sstream.h"
+// Project Headers (debugger)
+#include "debugger/include/printer/fpnl_printer.h"
+#include "debugger/include/cli/debug/debugwindow.h"
+#include "debugger/include/dbg/dbg.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/sstream.h"
 
 /*
  * This file contains duplication of code, because of

@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/debug/opnl.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/opnl.h"
 
 /* Forward Declaration of static Functions */
 

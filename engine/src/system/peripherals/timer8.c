@@ -5,11 +5,13 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
-// Project Headers
-#include "system/peripherals/timer8.h"
-#include "system/core/irq.h"
-#include "system/mcudef.h"
-#include "misc/bitmanip.h"
+// Project Headers (engine)
+#include "engine/include/system/peripherals/timer8.h"
+#include "engine/include/system/core/irq.h"
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/bitmanip.h"
 
 /*
 *

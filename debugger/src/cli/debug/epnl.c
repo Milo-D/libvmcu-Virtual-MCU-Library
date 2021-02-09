@@ -4,9 +4,12 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/debug/epnl.h"
-#include "system/mcudef.h"
+// Project Headers (engine) (EEPROM_SIZE needed)
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/epnl.h"
+
 
 /* Forward Declaration of static Functions */
 

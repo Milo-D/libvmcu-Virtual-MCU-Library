@@ -3,8 +3,8 @@
 // C Headers
 #include <stdlib.h>
 
-// Project Headers
-#include "system/core/irq.h"
+// Project Headers (engine)
+#include "engine/include/system/core/irq.h"
 
 /* Forward Declaration of static Functions */
 

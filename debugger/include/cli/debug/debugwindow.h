@@ -5,8 +5,8 @@
 
 #define N_PANEL 7
 
-// Project Headers
-#include "cli/debug/color.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/color.h"
 
 /*************************************************************************
 

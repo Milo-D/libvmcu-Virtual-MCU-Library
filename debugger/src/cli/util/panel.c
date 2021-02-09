@@ -5,9 +5,9 @@
 #include <string.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/util/panel.h"
-#include "cli/util/highlighter.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/util/panel.h"
+#include "debugger/include/cli/util/highlighter.h"
 
 /* Forward Declaration of static Functions */
 

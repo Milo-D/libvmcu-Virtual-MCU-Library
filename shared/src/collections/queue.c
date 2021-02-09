@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-// Project Headers
-#include "collections/queue.h"
+// Project Headers (shared)
+#include "shared/include/collections/queue.h"
 
 #define INIT_SIZE 64
 

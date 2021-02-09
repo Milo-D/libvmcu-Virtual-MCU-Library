@@ -3,8 +3,8 @@
 #ifndef SPNL_H
 #define SPNL_H
 
-// Project Headers
-#include "cli/util/panel.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/util/panel.h"
 
 typedef struct _spnl {
 

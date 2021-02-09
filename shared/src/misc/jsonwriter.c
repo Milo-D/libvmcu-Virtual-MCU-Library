@@ -5,14 +5,16 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Project Headers
-#include "misc/jsonwriter.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
-#include "collections/tuple.h"
-#include "collections/queue.h"
-#include "system/mcudef.h"
-#include "system/system.h"
+// Project Headers (engine)
+#include "engine/include/system/mcudef.h"
+#include "engine/include/system/system.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/jsonwriter.h"
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/misc/memmanip.h"
+#include "shared/include/collections/tuple.h"
+#include "shared/include/collections/queue.h"
 
 #define CONST_TAB "    "
 

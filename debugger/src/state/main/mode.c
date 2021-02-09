@@ -6,21 +6,25 @@
 #include <string.h>
 #include <time.h>
 
-// Project Headers
-#include "state/main/mode.h"
-#include "state/debug/stdmsg.h"
-#include "misc/ehandling.h"
-#include "misc/filemanip.h"
-#include "misc/jsonwriter.h"
-#include "disassembler/disassembler.h"
-#include "analyzer/analyzer.h"
-#include "analyzer/report/report.h"
-#include "system/system.h"
-#include "parser/parser.h"
-#include "collections/array.h"
-#include "collections/list.h"
-#include "collections/tuple.h"
-#include "collections/queue.h"
+// Project Headers (engine)
+#include "engine/include/disassembler/disassembler.h"
+#include "engine/include/analyzer/analyzer.h"
+#include "engine/include/analyzer/report/report.h"
+#include "engine/include/system/system.h"
+
+// Project Headers (debugger)
+#include "debugger/include/state/main/mode.h"
+#include "debugger/include/state/debug/stdmsg.h"
+#include "debugger/include/parser/parser.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/ehandling.h"
+#include "shared/include/misc/filemanip.h"
+#include "shared/include/misc/jsonwriter.h"
+#include "shared/include/collections/array.h"
+#include "shared/include/collections/list.h"
+#include "shared/include/collections/tuple.h"
+#include "shared/include/collections/queue.h"
 
 #define TIMEOUT 5.00
 

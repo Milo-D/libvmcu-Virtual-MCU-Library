@@ -3,14 +3,15 @@
 // C Headers
 #include <string.h>
 
-// Project Headers
-#include "printer/spnl_printer.h"
-#include "printer/propcol.h"
-#include "cli/debug/debugwindow.h"
-#include "system/mcudef.h"
-#include "dbg/dbg.h"
-#include "collections/array.h"
-#include "collections/sstream.h"
+// Project Headers (debugger)
+#include "debugger/include/printer/spnl_printer.h"
+#include "debugger/include/printer/propcol.h"
+#include "debugger/include/cli/debug/debugwindow.h"
+#include "debugger/include/dbg/dbg.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/array.h"
+#include "shared/include/collections/sstream.h"
 
 #define GAP 13
 

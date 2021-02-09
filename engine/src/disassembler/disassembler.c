@@ -5,16 +5,18 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Project Headers
-#include "disassembler/disassembler.h"
-#include "disassembler/mnemonics.h"
-#include "disassembler/labelmap.h"
-#include "decomposer/decomposer.h"
-#include "analyzer/report/plain.h"
-#include "collections/array.h"
-#include "collections/queue.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
+// Project Headers (engine)
+#include "engine/include/disassembler/disassembler.h"
+#include "engine/include/disassembler/mnemonics.h"
+#include "engine/include/disassembler/labelmap.h"
+#include "engine/include/decomposer/decomposer.h"
+#include "engine/include/analyzer/report/plain.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/misc/memmanip.h"
+#include "shared/include/collections/array.h"
+#include "shared/include/collections/queue.h"
 
 /* Forward Declarations of private Functions */
 

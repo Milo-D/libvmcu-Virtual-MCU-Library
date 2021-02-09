@@ -7,11 +7,11 @@
 #include <inttypes.h>
 #include <math.h>
 
-// Project Header
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
-#include "collections/list.h"
-#include "collections/queue.h"
+// Project Header (shared)
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/misc/memmanip.h"
+#include "shared/include/collections/list.h"
+#include "shared/include/collections/queue.h"
 
 int strpos(const char *str, const char *sub) {
 

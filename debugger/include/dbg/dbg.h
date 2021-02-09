@@ -3,10 +3,12 @@
 #ifndef DBG_H
 #define DBG_H
 
-// Project Headers
-#include "analyzer/report/report.h"
-#include "table/table.h"
-#include "system/system.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/report/report.h"
+#include "engine/include/system/system.h"
+
+// Project Headers (debugger)
+#include "debugger/include/table/table.h"
 
 typedef struct _dbg {
 

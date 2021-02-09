@@ -3,12 +3,14 @@
 // C Headers
 #include <stdlib.h>
 
-// Project Headers
-#include "system/core/io.h"
-#include "system/core/irq.h"
-#include "system/peripherals/timer8.h"
-#include "system/peripherals/eeprom.h"
-#include "misc/bitmanip.h"
+// Project Headers (engine)
+#include "engine/include/system/core/io.h"
+#include "engine/include/system/core/irq.h"
+#include "engine/include/system/peripherals/timer8.h"
+#include "engine/include/system/peripherals/eeprom.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/bitmanip.h"
 
 struct _io* io_ctor(int8_t *io_start) {
 

@@ -5,17 +5,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "system/system.h"
-#include "system/mcudef.h"
-#include "system/core/gpr.h"
-#include "system/core/sreg.h"
-#include "system/core/data.h"
-#include "system/core/flash.h"
-#include "analyzer/report/report.h"
-#include "instructions/instructions.h"
-#include "collections/array.h"
-#include "collections/tuple.h"
+// Project Headers (engine)
+#include "engine/include/system/system.h"
+#include "engine/include/system/mcudef.h"
+#include "engine/include/system/core/gpr.h"
+#include "engine/include/system/core/sreg.h"
+#include "engine/include/system/core/data.h"
+#include "engine/include/system/core/flash.h"
+#include "engine/include/analyzer/report/report.h"
+#include "engine/include/instructions/instructions.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/array.h"
+#include "shared/include/collections/tuple.h"
 
 /* Forward Declaration of static Functions */
 

@@ -4,10 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 
-// Project Headers
-#include "misc/filemanip.h"
-#include "misc/stringmanip.h"
-#include "collections/array.h"
+// Project Headers (shared)
+#include "shared/include/misc/filemanip.h"
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/collections/array.h"
 
 long fbytes(const char *file) {
 

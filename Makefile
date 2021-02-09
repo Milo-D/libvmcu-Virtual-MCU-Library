@@ -6,7 +6,7 @@ BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
 TARGET   := mdx
-INCLUDE  := -I engine/include -I debugger/include -I shared/include
+INCLUDE  := -I.
 SRC      :=                                					\
 	$(wildcard engine/src/analyzer/*.c)						\
 	$(wildcard engine/src/analyzer/modules/sfr/*.c)			\

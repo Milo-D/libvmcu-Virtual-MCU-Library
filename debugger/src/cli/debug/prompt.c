@@ -7,8 +7,8 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/debug/prompt.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/prompt.h"
 
 /* Forward Declaration of static Functions */
 

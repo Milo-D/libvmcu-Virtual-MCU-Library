@@ -4,9 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "table/table.h"
-#include "table/breakpoint.h"
+// Project Headers (debugger)
+#include "debugger/include/table/table.h"
+#include "debugger/include/table/breakpoint.h"
 
 /* --- Public --- */
 

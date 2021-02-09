@@ -5,10 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "system/core/sreg.h"
-#include "system/mcudef.h"
-#include "collections/array.h"
+// Project Headers (engine)
+#include "engine/include/system/core/sreg.h"
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/array.h"
 
 /* Forward Declaration of static SREG Functions */
 

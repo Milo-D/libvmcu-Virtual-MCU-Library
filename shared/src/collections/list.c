@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "collections/list.h"
+// Project Headers (shared)
+#include "shared/include/collections/list.h"
 
 struct _node {
 

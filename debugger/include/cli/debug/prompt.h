@@ -5,8 +5,8 @@
 
 #define PLEN 64
 
-// Project Headers
-#include "cli/util/properties.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/util/properties.h"
 
 typedef struct _prompt {
 

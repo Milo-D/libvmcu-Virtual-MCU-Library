@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "collections/array.h"
+// Project Headers (shared)
+#include "shared/include/collections/array.h"
 
 struct _private {
 

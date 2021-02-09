@@ -7,18 +7,17 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/debug/debugwindow.h"
-#include "cli/debug/prompt.h"
-#include "cli/debug/gpnl.h"
-#include "cli/debug/spnl.h"
-#include "cli/debug/fpnl.h"
-#include "cli/debug/dpnl.h"
-#include "cli/debug/epnl.h"
-#include "cli/debug/opnl.h"
-#include "cli/debug/rpnl.h"
-#include "cli/util/panel.h"
-#include "system/mcudef.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/debugwindow.h"
+#include "debugger/include/cli/debug/prompt.h"
+#include "debugger/include/cli/debug/gpnl.h"
+#include "debugger/include/cli/debug/spnl.h"
+#include "debugger/include/cli/debug/fpnl.h"
+#include "debugger/include/cli/debug/dpnl.h"
+#include "debugger/include/cli/debug/epnl.h"
+#include "debugger/include/cli/debug/opnl.h"
+#include "debugger/include/cli/debug/rpnl.h"
+#include "debugger/include/cli/util/panel.h"
 
 /* Forward Declaration of static Functions */
 

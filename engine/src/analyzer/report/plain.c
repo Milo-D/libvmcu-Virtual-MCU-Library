@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "analyzer/report/plain.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/report/plain.h"
 
 void plain_dtor(struct _plain *this) {
 

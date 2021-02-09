@@ -1,7 +1,7 @@
 /* String Mnemonics Header */
 
-// Project Headers
-#include "misc/mnemstr.h"
+// Project Headers (shared)
+#include "shared/include/misc/mnemstr.h"
 
 const char *mnemstr[N_MAPS][32] = {
 

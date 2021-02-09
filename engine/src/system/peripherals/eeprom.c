@@ -5,11 +5,13 @@
 #include <string.h>
 #include <math.h>
 
-// Project Headers
-#include "system/peripherals/eeprom.h"
-#include "system/core/irq.h"
-#include "system/mcudef.h"
-#include "misc/bitmanip.h"
+// Project Headers (engine)
+#include "engine/include/system/peripherals/eeprom.h"
+#include "engine/include/system/core/irq.h"
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/bitmanip.h"
 
 #define NMOD 4
 #define UNDEFINED -1

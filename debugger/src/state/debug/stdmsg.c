@@ -5,10 +5,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "state/debug/stdmsg.h"
-#include "misc/stringmanip.h"
-#include "collections/queue.h"
+// Project Headers (debugger)
+#include "debugger/include/state/debug/stdmsg.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/collections/queue.h"
 
 char* sim_start(const char *file) {
 

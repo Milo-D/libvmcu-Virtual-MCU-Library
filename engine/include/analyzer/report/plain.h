@@ -6,9 +6,9 @@
 // C Headers
 #include <stdbool.h>
 
-// Project Headers
-#include "analyzer/report/ikey.h"
-#include "analyzer/report/operand.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/report/ikey.h"
+#include "engine/include/analyzer/report/operand.h"
 
 /* 
 *  plain_t is the main data-structure

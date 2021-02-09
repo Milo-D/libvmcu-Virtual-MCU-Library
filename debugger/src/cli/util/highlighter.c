@@ -5,13 +5,15 @@
 #include <string.h>
 #include <unistd.h>
 
-// Project Headers
-#include "cli/util/highlighter.h"
-#include "cli/util/panel.h"
-#include "misc/stringmanip.h"
-#include "misc/memmanip.h"
-#include "collections/strmap.h"
-#include "collections/list.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/util/highlighter.h"
+#include "debugger/include/cli/util/panel.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/misc/memmanip.h"
+#include "shared/include/collections/strmap.h"
+#include "shared/include/collections/list.h"
 
 #define CAPACITY 128
 

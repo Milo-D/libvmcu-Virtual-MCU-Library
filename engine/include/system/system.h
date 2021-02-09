@@ -7,9 +7,10 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
-// Project Headers (exposed)
-#include "system/util/progmem.h"
-#include "system/util/memprop.h"
+// Project Headers (engine) (exposed)
+#include "engine/include/system/util/progmem.h"
+#include "engine/include/system/util/memprop.h"
+#include "engine/include/system/mcudef.h"
 
 typedef struct _gpr gpr_t;
 typedef struct _sreg sreg_t;

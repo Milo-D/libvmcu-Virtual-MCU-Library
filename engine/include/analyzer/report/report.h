@@ -3,8 +3,8 @@
 #ifndef REPORT_H
 #define REPORT_H
 
-// Project Headers
-#include "analyzer/report/plain.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/report/plain.h"
 
 typedef struct _report {
     

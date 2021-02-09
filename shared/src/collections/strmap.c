@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "collections/strmap.h"
+// Project Headers (shared)
+#include "shared/include/collections/strmap.h"
 
 struct _private {
 

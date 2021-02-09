@@ -5,16 +5,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "state/main/mode.h"
-#include "state/debug/debugstate.h"
-#include "cli/main/mainwindow.h"
-#include "analyzer/analyzer.h"
-#include "system/mcudef.h"
-#include "misc/ehandling.h"
-#include "misc/stringmanip.h"
-#include "misc/filemanip.h"
-#include "collections/array.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/analyzer.h"
+
+// Project Headers (debugger)
+#include "debugger/include/state/main/mode.h"
+#include "debugger/include/state/debug/debugstate.h"
+#include "debugger/include/dbg/dbg.h"
+#include "debugger/include/cli/main/mainwindow.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/ehandling.h"
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/misc/filemanip.h"
+#include "shared/include/collections/array.h"
 
 #define MAX_FILE_REACH "Can not open more than 4 files."
 #define SYS_INIT_ERR "Could not initialize Debug Session."

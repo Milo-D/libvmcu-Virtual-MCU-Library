@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// Project Headers
-#include "analyzer/analyzer.h"
-#include "analyzer/modules/sfr/sfr_analyzer.h"
-#include "analyzer/report/report.h"
+// Project Headers (engine)
+#include "engine/include/analyzer/analyzer.h"
+#include "engine/include/analyzer/modules/sfr/sfr_analyzer.h"
+#include "engine/include/analyzer/report/report.h"
 
 /* --- Extern --- */
 

@@ -6,9 +6,11 @@
 #include <string.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/main/mainwindow.h"
-#include "collections/array.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/main/mainwindow.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/array.h"
 
 /* Forward Declaration of Private MainWindow Functions */
 

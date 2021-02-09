@@ -1,15 +1,15 @@
 /* (Debug CLI) Printer Implementation */
 
-// Project Headers
-#include "printer/debugprinter.h"
-#include "printer/dpnl_printer.h"
-#include "printer/epnl_printer.h"
-#include "printer/fpnl_printer.h"
-#include "printer/gpnl_printer.h"
-#include "printer/rpnl_printer.h"
-#include "printer/spnl_printer.h"
-#include "cli/debug/debugwindow.h"
-#include "dbg/dbg.h"
+// Project Headers (debugger)
+#include "debugger/include/printer/debugprinter.h"
+#include "debugger/include/printer/dpnl_printer.h"
+#include "debugger/include/printer/epnl_printer.h"
+#include "debugger/include/printer/fpnl_printer.h"
+#include "debugger/include/printer/gpnl_printer.h"
+#include "debugger/include/printer/rpnl_printer.h"
+#include "debugger/include/printer/spnl_printer.h"
+#include "debugger/include/cli/debug/debugwindow.h"
+#include "debugger/include/dbg/dbg.h"
 
 extern void print_debug(debugwindow_t *window, dbg_t *dbg) {
 

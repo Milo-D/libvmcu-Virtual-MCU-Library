@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdarg.h>
 
-// Project Headers
-#include "collections/sstream.h"
+// Project Headers (shared)
+#include "shared/include/collections/sstream.h"
 
 /*
  * This small but useful datastructure was inspired by

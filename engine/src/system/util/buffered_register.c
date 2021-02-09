@@ -1,7 +1,7 @@
 /* Double Buffered Register Implementation */
 
-// Project Headers
-#include "system/util/buffered_register.h"
+// Project Headers (engine)
+#include "engine/include/system/util/buffered_register.h"
 
 void buffered_register_write(struct _buffered_register *this, const int8_t value) {
 

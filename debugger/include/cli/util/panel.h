@@ -3,9 +3,9 @@
 #ifndef PANEL_H
 #define PANEL_H
 
-// Project Headers
-#include "cli/util/properties.h"
-#include "cli/debug/color.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/util/properties.h"
+#include "debugger/include/cli/debug/color.h"
 
 typedef struct _win_st WINDOW;
 typedef struct _highlighter highlighter_t;

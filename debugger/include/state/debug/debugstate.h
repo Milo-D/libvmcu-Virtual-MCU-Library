@@ -1,12 +1,9 @@
 /* DebugView Header */
 
-#ifndef DEBUGVIEW_H
-#define DEBUGVIEW_H
+#ifndef DEBUGSTATE_H
+#define DEBUGSTATE_H
 
-// Project Headers
-#include "dbg/dbg.h"
-
-typedef struct _system system_t;
+typedef struct _dbg dbg_t;
 
 extern void debug(dbg_t *dbg, const char *file);
 

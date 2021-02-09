@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/debug/spnl.h"
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/spnl.h"
 
 /* Forward Declaration of static Functions */
 

@@ -3,8 +3,8 @@
 #ifndef HIGHLIGHTER_H
 #define HIGHLIGHTER_H
 
-// Project Headers
-#include "misc/mnemstr.h"
+// Project Headers (shared)
+#include "shared/include/misc/mnemstr.h"
 
 typedef struct _panel panel_t;
 typedef	struct _strmap strmap_t;

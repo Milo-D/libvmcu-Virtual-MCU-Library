@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Project Headers
-#include "misc/ehandling.h"
+// Project Headers (shared)
+#include "shared/include/misc/ehandling.h"
 
 void print_status(const char *msg, const bool fatal) {
 

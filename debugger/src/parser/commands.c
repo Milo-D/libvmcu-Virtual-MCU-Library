@@ -1,7 +1,7 @@
 /* Commands Header */
 
-// Project Headers
-#include "parser/commands.h"
+// Project Headers (debugger)
+#include "debugger/include/parser/commands.h"
 
 const int ncmd[2] = { 3, NCOM };
 

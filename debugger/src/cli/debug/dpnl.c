@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/debug/dpnl.h"
-#include "system/mcudef.h"
+// Project Headers (engine) (RAM_END needed)
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/dpnl.h"
 
 /* Forward Declaration of static Functions */
 

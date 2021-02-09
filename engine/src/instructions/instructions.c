@@ -3,11 +3,13 @@
 // C++ Headers
 #include <stdbool.h>
 
-// Project Headers
-#include "instructions/instructions.h"
-#include "system/mcudef.h"
-#include "system/system.h"
-#include "misc/bitmanip.h"
+// Project Headers (engine)
+#include "engine/include/instructions/instructions.h"
+#include "engine/include/system/mcudef.h"
+#include "engine/include/system/system.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/bitmanip.h"
 
 void nop(system_t *sys, const int opcode) {
 

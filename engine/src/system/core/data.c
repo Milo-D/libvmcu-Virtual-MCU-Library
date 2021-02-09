@@ -4,13 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Project Headers
-#include "system/core/data.h"
-#include "system/core/io.h"
-#include "system/util/memprop.h"
-#include "system/mcudef.h"
-#include "collections/tuple.h"
-#include "misc/bitmanip.h"
+// Project Headers (engine)
+#include "engine/include/system/core/data.h"
+#include "engine/include/system/core/io.h"
+#include "engine/include/system/util/memprop.h"
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/tuple.h"
+#include "shared/include/misc/bitmanip.h"
 
 /* Forward Declaration of static DATA Functions */
 

@@ -6,9 +6,9 @@
 // C Headers
 #include <inttypes.h>
 
-// Project Headers
-#include "system/core/sfr.h"
-#include "system/mcudef.h"
+// Project Headers (engine)
+#include "engine/include/system/core/sfr.h"
+#include "engine/include/system/mcudef.h"
 
 #define io_set_sfr(this, addr, bit) (*sfr_set[addr - GPR_SIZE])(this, bit)
 #define io_clear_sfr(this, addr, bit) (*sfr_clear[addr - GPR_SIZE])(this, bit)

@@ -6,15 +6,17 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Project Headers
-#include "decoder/decoder.h"
-#include "decoder/opcode.h"
-#include "analyzer/report/report.h"
-#include "misc/ehandling.h"
-#include "misc/stringmanip.h"
-#include "misc/bitmanip.h"
-#include "misc/filemanip.h"
-#include "collections/array.h"
+// Project Headers (engine)
+#include "engine/include/decoder/decoder.h"
+#include "engine/include/decoder/opcode.h"
+#include "engine/include/analyzer/report/report.h"
+
+// Project Headers (shared)
+#include "shared/include/misc/ehandling.h"
+#include "shared/include/misc/stringmanip.h"
+#include "shared/include/misc/bitmanip.h"
+#include "shared/include/misc/filemanip.h"
+#include "shared/include/collections/array.h"
 
 #define FILE_INVALID_ERR "Could not open Hex File."
 #define WRONG_FORM_ERR "File contains wrong Hex Format."

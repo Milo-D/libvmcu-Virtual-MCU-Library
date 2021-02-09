@@ -3,11 +3,13 @@
 // C Headers
 #include <inttypes.h>
 
-// Project Headers
-#include "disassembler/mnemonics.h"
-#include "analyzer/report/plain.h"
-#include "system/mcudef.h"
-#include "collections/sstream.h"
+// Project Headers (engine)
+#include "engine/include/disassembler/mnemonics.h"
+#include "engine/include/analyzer/report/plain.h"
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (shared)
+#include "shared/include/collections/sstream.h"
 
 #define TAB 26
 

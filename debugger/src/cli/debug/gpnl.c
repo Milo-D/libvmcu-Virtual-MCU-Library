@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <ncurses.h>
 
-// Project Headers
-#include "cli/debug/gpnl.h"
-#include "system/mcudef.h"
+// Project Headers (engine) (GPR_SIZE needed)
+#include "engine/include/system/mcudef.h"
+
+// Project Headers (debugger)
+#include "debugger/include/cli/debug/gpnl.h"
 
 /* Forward Declaration of static Functions */
 

@@ -1,7 +1,7 @@
 /* Bitmanipulation Implementation */
 
-// Project Headers
-#include "misc/bitmanip.h"
+// Project Headers (shared)
+#include "shared/include/misc/bitmanip.h"
 
 int extract(const int opcode, int from, int to, int offs) {
 
