@@ -2,6 +2,7 @@
 
 # Unreleased
 
+- Added new example program (test/m328p/misc/delay.hex)
 - removed include path
 - renamed function sys_read_instr to sys_read_progmem
 
