@@ -73,7 +73,7 @@ struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory) {
         case TC2: timer8_setup_tc2(timer, memory); break;
 
         default: free(timer);                return NULL;
-    };
+    }
 
     timer->prescaler = 0;
     timer->countdown = 0;
