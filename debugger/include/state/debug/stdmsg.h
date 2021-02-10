@@ -17,6 +17,8 @@
 #define CYCLE_REACHED "(mdx) <--- Cycle reached --->\n"
 #define CYCLE_ERR "(mdx) Invalid cycle. Usage: jc <cycle offset>\n"
 
+#define CYCLE_ERR_JCB "(mdx) Invalid cycle. Usage: jcb <cycle offset>\n"
+
 #define MEM_CELL_ERR "(mdx) Illegal memory cell.\n"
 #define MEM_RANGE_ERR "(mdx) Literal length must be > 0.\n"
 #define EEP_DECODE_ERR "(mdx) Could not decode EEPROM Hex File.\n"

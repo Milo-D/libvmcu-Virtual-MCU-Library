@@ -89,6 +89,7 @@ void debug(dbg_t *dbg, const char *file) {
             case 26: command_jc(window, dbg, get_int(at(com, 1)));          break;
             case 27: command_cc(window, dbg, at(com, 1), at(com, 2));       break;
             case 28: command_xeb(window, dbg, at(com, 1));                  break;
+            case 29: command_jcb(window, dbg, get_int(at(com, 1)));         break;
 
             default: /* ignoring invalid input */                           break;
         }

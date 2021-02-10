@@ -459,6 +459,28 @@ void command_xeb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell) {
     free(msg);
 }
 
+void command_jcb(debugwindow_t *window, dbg_t *dbg, const int n){
+
+    system_t *sys = dbg->sys;
+
+    if(n < 0 || n > sys->cycles) {
+	
+	dwin_write(window, OPNL, CYCLE_ERR_JCB, D);
+	return;
+    }
+    
+    const uint64_t end = (sys->cycles - n);
+    dwin_write(window, OPNL, CYCLE_JUMP_START, D);
+
+    sys_reboot(sys);
+ 
+    while(sys->cycles < end)
+        sys_step(sys);
+
+
+    dwin_write(window, OPNL, CYCLE_REACHED, G);
+}
+
 void command_def(debugwindow_t *window) {
  
     dwin_write(window, OPNL, NOT_AVAIL, R);

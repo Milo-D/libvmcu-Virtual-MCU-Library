@@ -13,5 +13,5 @@ const char *commands[NCON][NCOM] = {
     /* DEBUG CONTEXT */
     { "n", "b", "rn", "rp", "dn", "dp", "jb", "en", "ep", "xd", "xe", "xdc",
       "xec", "leep", "clear", "q", "?", "break", "unbreak", "def", "pn",               
-      "pp", "cycles", "clock", "time", "xdb", "jc", "cc", "xeb" }
+      "pp", "cycles", "clock", "time", "xdb", "jc", "cc", "xeb", "jcb" }
 };
