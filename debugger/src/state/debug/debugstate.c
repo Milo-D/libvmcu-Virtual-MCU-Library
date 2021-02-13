@@ -30,7 +30,7 @@ static void sig_handler(int signal);
 
 void debug(dbg_t *dbg, const char *file) {
 
-    const int size = dbg->report->progsize;
+    const int32_t size = dbg->cdis->size;
 
     window = dwin_ctor(size);
     parser_t *parser = parser_ctor(DEBUG);

@@ -1,7 +1,6 @@
 /* MainState */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,10 +12,10 @@
 #include "debugger/include/state/debug/debugstate.h"
 #include "debugger/include/dbg/dbg.h"
 #include "debugger/include/cli/main/mainwindow.h"
+#include "debugger/include/composer/composer.h"
 
 // Project Headers (shared)
 #include "shared/include/misc/ehandling.h"
-#include "shared/include/misc/stringmanip.h"
 #include "shared/include/misc/filemanip.h"
 #include "shared/include/collections/array.h"
 
@@ -93,6 +92,7 @@ static dbg_t* create_dbg(array_t *files) {
         dbg[i].report = analyze(f);
         dbg[i].table  = table_ctor(FLASH_SIZE);
         dbg[i].sys    = sys_ctor(dbg[i].report);
+        dbg[i].cdis   = compose_disassembly(dbg[i].report);
     }
 
     return dbg;
@@ -104,6 +104,7 @@ static void destroy_dbg(dbg_t *dbg, const int n) {
         
         report_dtor(dbg[i].report);
         table_dtor(dbg[i].table);
+        cdis_dtor(dbg[i].cdis);
         sys_dtor(dbg[i].sys);
     }
 

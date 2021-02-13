@@ -13,9 +13,7 @@ typedef struct _report report_t;
 typedef struct _flash {
 
     int pc;
-    
     progmem_t *memory;
-    unsigned int mem_usage;
     
 } flash_t;
 

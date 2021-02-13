@@ -54,8 +54,6 @@ struct _flash* flash_ctor(const report_t *report) {
     }
 
     flash->pc = 0x0000;
-    flash->mem_usage = report->progsize;
-    
     return flash;
 }
 

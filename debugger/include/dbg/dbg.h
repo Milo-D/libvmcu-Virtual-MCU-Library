@@ -8,14 +8,17 @@
 #include "engine/include/system/system.h"
 
 // Project Headers (debugger)
+#include "debugger/include/composer/cdis.h"
 #include "debugger/include/table/table.h"
 
 typedef struct _dbg {
 
     report_t *report;
-    table_t *table;
     system_t *sys;
-    
+
+    table_t *table;
+    composed_disassembly_t *cdis;
+
 } dbg_t;
 
 #endif

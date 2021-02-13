@@ -2,6 +2,22 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.6.0 - 2021-02-13
+
+- Massive reduction of heap usage (Issue #47)
+  
+- Added: New Analyzer Submodule: Label-Analyzer
+  - This module analyzes jumps, branches and calls in order to
+    find possible labels in disassembly.
+  - it also discovers callers of labels
+  
+- Generated Labels are now sorted (ascending)
+- Fixed Bug in Disassembler (Issue #46)
+
+- Performance Enhancement (runtime) of Disassembler and Analyzer
+
 - Added new example program (test/m328p/misc/delay.hex)
 - removed include path
 - renamed function sys_read_instr to sys_read_progmem

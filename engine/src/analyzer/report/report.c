@@ -18,13 +18,16 @@ struct _report* report_ctor(const char *file) {
     
     if((report = malloc(sizeof(report_t))) == NULL)
         return NULL;
-    
+
     array_t *buffer = array_ctor(1, plain_dtor, plain_cpy);
     disassemble(file, buffer);
 
-    report->progsize = buffer->top;
     report->disassembly = malloc(buffer->top * sizeof(plain_t));
-    
+    report->labels      = NULL;
+
+    report->progsize = buffer->top;
+    report->nlabels  = 0;
+
     for(int i = 0; i < buffer->top; i++) {
     
         plain_t *p = array_at(buffer, i);
@@ -55,7 +58,16 @@ void report_dtor(struct _report *this) {
     
     for(int i = 0; i < this->progsize; i++)
         free(this->disassembly[i].mnem);
-    
+
+    for(int i = 0; i < this->nlabels; i++) {
+
+        if(this->labels[i].ncallers > 0)
+            free(this->labels[i].caller);
+    }
+
+    if(this->labels != NULL)
+        free(this->labels);
+
     free(this->disassembly);
     free(this);
 }

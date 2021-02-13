@@ -372,14 +372,9 @@ void command_xdb(debugwindow_t *window, dbg_t *dbg, const char *mem_cell) {
 }
 
 void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char *comment) {
-    
-    /* move this functionality to table_t */
 
-    report_t *report = dbg->report;
-    plain_t *disassembly = dbg->report->disassembly;
-
-    const int lnno = htoi(line);
-    const int len = strlen(comment);
+    const int32_t lnno = htoi(line);
+    const size_t len = strlen(comment);
 
     if(len > 32) {
         
@@ -389,12 +384,12 @@ void command_cc(debugwindow_t *window, dbg_t *dbg, const char *line, const char 
     
     char **mnem = NULL;
     
-    for(int i = 0; i < report->progsize; i++) {
+    for(int i = 0; i < dbg->cdis->size; i++) {
         
-        if(disassembly[i].addr != lnno)
+        if(dbg->cdis->line[i].addr != lnno)
             continue;
             
-        mnem = &(disassembly[i].mnem);
+        mnem = &(dbg->cdis->line[i].str);
         break;
     }
 

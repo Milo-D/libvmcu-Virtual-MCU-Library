@@ -3,11 +3,9 @@
 // C++ Headers
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 // Project Headers (engine)
-#include "engine/include/disassembler/disassembler.h"
 #include "engine/include/analyzer/analyzer.h"
 #include "engine/include/analyzer/report/report.h"
 #include "engine/include/system/system.h"
@@ -16,14 +14,14 @@
 #include "debugger/include/state/main/mode.h"
 #include "debugger/include/state/debug/stdmsg.h"
 #include "debugger/include/parser/parser.h"
+#include "debugger/include/composer/composer.h"
+#include "debugger/include/composer/cdis.h"
 
 // Project Headers (shared)
 #include "shared/include/misc/ehandling.h"
 #include "shared/include/misc/filemanip.h"
 #include "shared/include/misc/jsonwriter.h"
 #include "shared/include/collections/array.h"
-#include "shared/include/collections/list.h"
-#include "shared/include/collections/tuple.h"
 #include "shared/include/collections/queue.h"
 
 #define TIMEOUT 5.00
@@ -69,7 +67,7 @@ int call_mode(int argc, char **argv) {
             queue_dtor(stream);
             parser_dtor(parser);
             
-            print_status("Unknown argument...", true); 
+            print_status("Unknown argument...", true);
 
         break;
     }
@@ -85,16 +83,14 @@ int call_mode(int argc, char **argv) {
 
 static void mode_disassembler(const char *hex_file) {
 
-    array_t *source = array_ctor(1, plain_dtor, plain_cpy);
-    disassemble(hex_file, source);
+    report_t *report = analyze(hex_file);
+    composed_disassembly_t *cdis = compose_disassembly(report);
 
-    for(int i = 0; i < source->size; i++) {
+    for(int i = 0; i < cdis->size; i++)
+        printf("%s\n", cdis->line[i].str);
 
-        plain_t *p = (plain_t*) array_at(source, i);
-        printf("%s\n", p->mnem);
-    }
-
-    array_dtor(source);
+    report_dtor(report);
+    cdis_dtor(cdis);
 }
 
 static void mode_headless(const char *hex_file) {

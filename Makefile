@@ -10,6 +10,7 @@ INCLUDE  := -I.
 SRC      :=                                					\
 	$(wildcard engine/src/analyzer/*.c)						\
 	$(wildcard engine/src/analyzer/modules/sfr/*.c)			\
+	$(wildcard engine/src/analyzer/modules/labels/*.c)		\
 	$(wildcard engine/src/analyzer/report/*.c)				\
 	$(wildcard engine/src/decoder/*.c)						\
 	$(wildcard engine/src/decomposer/*.c)					\
@@ -22,6 +23,7 @@ SRC      :=                                					\
 	$(wildcard debugger/src/cli/main/*.c)					\
    	$(wildcard debugger/src/cli/debug/*.c)           		\
 	$(wildcard debugger/src/cli/util/*.c)					\
+	$(wildcard debugger/src/composer/*.c)					\
    	$(wildcard debugger/src/parser/*.c)              		\
    	$(wildcard debugger/src/printer/*.c)             		\
    	$(wildcard debugger/src/state/main/*.c)					\

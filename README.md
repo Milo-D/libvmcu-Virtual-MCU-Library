@@ -17,6 +17,7 @@ features built in like:
 - Backstepping
 - Peripheral Simulation (Timers, ...)
 - Annotations for IO-Registers
+- Label Generator  
 - Static Analysis
 - Dataflow Visualization
 - Headless Mode
@@ -58,8 +59,8 @@ features built in like:
 **Stage 1:** Once the binary has been decoded successfully, the data will be sent to the decomposer, so that 
 operands can be extracted and classified.  
 
-**Stage 2:** In this stage, the disassembler receives the result of Stage 1 and Stage 2 in order to generate 
-mnemonics, labels, comments and blank lines (blank lines help to improve readability).
+**Stage 2:** In this stage, the disassembler receives the result of Stage 0 and Stage 1 in order to generate 
+mnemonics and some comments.
 
 **Stage 3:** Now the analyzer comes into play. The analyzer takes all the data from the previous three steps 
 and performs a static analysis on it. It then generates a report and returns it, so that
@@ -198,10 +199,11 @@ Note: You may open multiple files in interactive Debugging Mode.
     - [ ] ...
     
 # Static Analysis
-- [x] Analyzer Core Module
+- [x] Analyzer Core Module (Driver)
 - [x] Report generator
 
 - [ ] Analyzer Submodules
+   - [x] Label analysis
    - [ ] Function analysis
    - [ ] ISR analysis
    - [x] SFR analysis

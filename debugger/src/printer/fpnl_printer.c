@@ -1,7 +1,7 @@
 /* FPNL Printer Implementation */
 
 // C Headers
-#include <string.h>
+#include <inttypes.h>
 
 // Project Headers (debugger)
 #include "debugger/include/printer/fpnl_printer.h"
@@ -24,27 +24,22 @@
 
 /* Forward Declaration of static Functions */
 
-static void add_address_column(debugwindow_t *window, sstream_t *ss, const int addr);
-static void add_opcode_column(debugwindow_t *window, report_t *report, sstream_t *ss, const int i);
+static void add_address_column(debugwindow_t *window, sstream_t *ss, const int32_t addr);
+static void add_opcode_column(debugwindow_t *window, composed_line_t *ln, sstream_t *ss);
 
 /* --- Extern --- */
 
 void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
-    
-    report_t *report = dbg->report;
+
     table_t *table = dbg->table;
     system_t *sys = dbg->sys;
     
     dwin_add(window, FPNL, "Flash:\n\n", D);
+    const int pc = sys_get_pc(sys); int k;
 
-    const int pc = sys_get_pc(sys);
-    plain_t *disassembly = report->disassembly;
+    for(k = 0; k < dbg->cdis->size; k++) {
 
-    int k;
-
-    for(k = 0; k < report->progsize; k++) {
-
-        if(disassembly[k].addr == pc)
+        if(dbg->cdis->line[k].addr == pc)
             break;
     }
     
@@ -53,16 +48,16 @@ void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
 
     for(int i = (k - 4); i <= (k + 4); i++) {
 
-        if(i < 0 || i > report->progsize - 1) {
+        if(i < 0 || i > dbg->cdis->size - 1) {
 
             dwin_add(window, FPNL, "\n", D);
             continue;
         }
 
-        const int addr = disassembly[i].addr;
+        int32_t addr = dbg->cdis->line[i].addr;
 
         add_address_column(window, &ss, addr);
-        add_opcode_column(window, report, &ss, i);
+        add_opcode_column(window, &dbg->cdis->line[i], &ss);
 
         if(i == k) {
 
@@ -81,14 +76,14 @@ void print_fpnl(debugwindow_t *window, dbg_t *dbg) {
             dwin_add(window, FPNL, "      ", D);
         }
 
-        dwin_highlight(window, FPNL, disassembly[i].mnem);
+        dwin_highlight(window, FPNL, dbg->cdis->line[i].str);
         dwin_add(window, FPNL, "\n", D);
     }
 }
 
 /* --- Static --- */
 
-static void add_address_column(debugwindow_t *window, sstream_t *ss, const int addr) {
+static void add_address_column(debugwindow_t *window, sstream_t *ss, const int32_t addr) {
     
     if(addr >= 0) {
 
@@ -103,32 +98,32 @@ static void add_address_column(debugwindow_t *window, sstream_t *ss, const int a
     }
 }
 
-static void add_opcode_column(debugwindow_t *window, report_t *report, sstream_t *ss, const int i) {
-    
-    if(report->disassembly[i].addr < 0) {
-     
+static void add_opcode_column(debugwindow_t *window, composed_line_t *ln, sstream_t *ss) {
+
+    if(ln->addr == CDIS_NO_ADDR) {
+
         dwin_add(window, FPNL, "               ", D);
         return;
     }
 
-    const uint32_t opc = report->disassembly[i].opcode;
-    
+    const uint32_t opc = ln->opc;
+
     const uint16_t opcl = (opc & 0x0000ffff);
     const uint16_t swpl = (opcl >> 8) | (opcl << 8);
-    
+
     const uint16_t opch = ((opc & 0xffff0000) >> 16);
     const uint16_t swph = (opch >> 8) | (opch << 8);
-    
-    if(report->disassembly[i].dword == false)
+
+    if(swph == 0x0000)
         sstream_put(ss, "      .... ");
     else
         sstream_put(ss, "      %04x ", swph);
-    
+
     dwin_add(window, FPNL, ss->str, G);
     sstream_flush(ss);
-    
+
     sstream_put(ss, "%04x", swpl);
-    
+
     dwin_add(window, FPNL, ss->str, Y);
     sstream_flush(ss);
 }
