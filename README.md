@@ -192,8 +192,10 @@ int main(void) {
         int32_t pc   = vmcu_system_get_pc(sys);         // read current pc
         uint16_t opc = vmcu_system_read_flash(sys, pc); // read current opcode
         
-        if(opc == 0xcfff)   // 0xcfff (big endian) = 'rjmp -1' (endless loop)
+        if(opc == 0xcfff)       // 0xcfff (big endian) = 'rjmp -1' (endless loop)
             break;
+        
+        vmcu_system_step(sys);
         
     } while(true);
     
