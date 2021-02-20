@@ -4,192 +4,277 @@
 [![GitHub license](https://img.shields.io/github/license/Milo-D/MDX-Assembly-Debugger.svg)](https://github.com/Milo-D/MDX-Assembly-Debugger.git/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/Milo-D/MDX-Assembly-Debugger.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Milo-D/MDX-Assembly-Debugger/stargazers/)
 [![Chat](https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true)](https://discord.gg/X9kmyyh)
-# MDX-Micro-Debugger (In Development)
-An easy and fast CLI Debugger, Disassembler and Analyzer for Atmel's 8-bit AVR
-Microcontrollers, including the famous ATmega328P.
+# libvmcu - Virtual MCU Library
+VMCU is a small engine for static and dynamic analysis of AVR Microcontroller binaries. **This library is
+still in development.**
 
-# Overview
-![mdx_debug](https://user-images.githubusercontent.com/46600932/104666434-33f9da80-56d4-11eb-882b-724b13536412.png)
+libvmcu can be used to
 
-MDX is an easy and fast Debugger and Analyzer for AVR binaries (currently only Intel Hex), with a focus on accurate simulation. It has some useful 
-features built in like:
-
-- Backstepping
-- Peripheral Simulation (Timers, ...)
-- Annotations for IO-Registers
-- Label Generator  
-- Static Analysis
-- Dataflow Visualization
-- Headless Mode
-- easy setup and easy usage
-
-(MDX is still in Developement. There might be issues, feel free to submit them in the issue segment.)
+- create (regression) tests for embedded systems
+- perform binary analysis on AVR programs
+- build debuggers and simulators
+- explore disassembly
 
 ##### Table of Contents
-[I How MDX works](#How-MDX-works)
+[I Features](#Features)
 
-[II Installation](#Installation)
+[II Examples](#Examples)
 
-[III Cheatsheet](#Cheatsheet)
+[III Showcase](#Showcase)
 
-[IV Troubleshooting](#Troubleshooting)
+[IV How VMCU works](#How-VMCU-works)
 
-[V Supported MCUs](#Supported-Microcontroller)
+[V Setup VMCU](#Setup)
 
-[VI Debugging](#Debugging)
+[VI Supported MCUs](#Supported-Microcontroller)
 
-[VII Static Analysis](#Static-Analysis)
+[VII Dynamic Analysis](#Dynamic-Analysis)
 
-[VIII Instruction Set](#Instructions)
+[VIII Static Analysis](#Static-Analysis)
 
-[IX Contributing](#Contributing)
+[IX Instruction-Set](#Instructions)
 
-[X Credits](#Credits)
+[X Bindings](#Bindings)
 
-[XI Screenshots](#Screenshots)
+[XI Contributing](#Contributing)
 
-[XII Wiki](#Wiki)
+[XII Credits](#Credits)
 
-# How MDX works
+[XIII Documentation](#Documentation)
+
+# Features
+
+### Take one step forward and one back
+
+VMCU supports backstepping. You'll be able to simulate both, forth and back.
+
+### Cycle accurate realtime Simulation
+
+Cycle accurate realtime simulation of the microcontroller including its peripherals.
+
+### Decode, Decompose, Disassemble, Analyze
+
+The pipeline offers an interface for each stage: decode, decompose, disassemble and analyze.
+Stages can either operate on a single opcode or a whole binary. 
+
+### Combine Static Analysis with Dynamic Analysis
+
+Perform a static analysis on your binary to receive additional information, 
+for example which SFRs are used by the program. Then, use this information
+to improve your dynamic analysis.
+
+### No further dependencies
+
+VMCU comes with no further dependencies, thus allowing easy setup and easy usage.
+
+# Examples
+
+#### Skeleton for libvmcu
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "libvmcu_analyzer.h"
+#include "libvmcu_system.h"
+
+vmcu_report_t *report = NULL;
+vmcu_system_t *sys    = NULL;
+
+static void cleanup(void);
+
+int main(const int argc, const char **argv) {
+    
+    if(argc != 2) {
+        
+        printf("Usage: ./skeleton <file.hex>\n");
+        return EXIT_FAILURE;
+    }
+    
+    atexit(cleanup);
+    
+    /* initializing report of file 'argv[1]' */
+    if((report = vmcu_analyze_ihex(argv[1])) == NULL)
+        return EXIT_FAILURE;
+    
+    /* initializing virtual microcontroller */
+    if((sys = vmcu_system_ctor(report)) == NULL)
+        return EXIT_FAILURE;
+    
+    /* do something */
+    
+    return EXIT_SUCCESS;
+}
+
+static void cleanup(void) {
+    
+    if(report != NULL)
+        vmcu_report_dtor(report);
+    
+    if(sys != NULL)
+        vmcu_system_dtor(sys);
+}
+```
+
+#### Printing disassembly of an intel hex file
+
+```c
+int main(void) {
+    
+    /* ignoring checks for this example */
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    
+    for(int32_t i = 0; i < report->progsize; i++)
+        printf("%s\n", report->disassembly[i].mnem);
+    
+    vmcu_report_dtor(report);
+    return EXIT_SUCCESS;
+}
+```
+
+#### Printing potential labels
+
+```c
+int main(void) {
+    
+    /* ignoring checks for this example */
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    
+    for(int32_t i = 0; i < report->nlabels; i++) {
+        
+        vmcu_label_t *lx = &report->labels[i];
+        
+        printf("Label ID: %d, ", lx->id);
+        printf("Address: 0x%04x\n", lx->addr);
+    }
+    
+    vmcu_report_dtor(report);
+    return EXIT_SUCCESS;
+}
+```
+
+#### Printing jumpers/callers of potential labels
+
+```c
+int main(void) {
+    
+    /* ignoring checks for this example */
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    
+    for(int32_t i = 0; i < report->nlabels; i++) {
+        
+        vmcu_label_t *lx = &report->labels[i];
+        printf("Label %d @ 0x%04x called/jumped by:\n", lx->id, lx->addr);
+        
+        for(int32_t j = 0; j < lx->ncallers; j++)
+            printf("0x%04x\n", lx->caller[j].addr);
+        
+        printf("\n\n");
+    }
+    
+    vmcu_report_dtor(report);
+    return EXIT_SUCCESS;
+}
+```
+
+#### Simulating until hitting endless loop 
+
+```c
+int main(void) {
+    
+    /* ignoring checks for this example */
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    vmcu_system_t *sys    = vmcu_system_ctor(report);
+    
+    do {
+        
+        int32_t pc   = vmcu_system_get_pc(sys);         // read current pc
+        uint16_t opc = vmcu_system_read_flash(sys, pc); // read current opcode
+        
+        if(opc == 0xcfff)   // 0xcfff (big endian) = 'rjmp -1' (endless loop)
+            break;
+        
+    } while(true);
+    
+    vmcu_report_dtor(report);
+    vmcu_system_dtor(sys);
+    
+    return EXIT_SUCCESS;
+}
+```
+
+# Showcase
+
+![mdx_debug](https://user-images.githubusercontent.com/46600932/104666434-33f9da80-56d4-11eb-882b-724b13536412.png)
+<sup>A small debugger written with libvmcu</sup>
+
+# How VMCU works
 
 <img src="https://raw.githubusercontent.com/Milo-D/MDX-Assembly-Debugger/master/images/mdx_analyzer_pipeline.svg" width="50%">
 
-**Stage 0:** MDX accepts AVR Hex Files (Intel Hex) as input. The decoder tries to decode the given Hex File.
+**Stage 0:** The very first stage is the decoder. The decoder tries to decode the given Hex File.
 
 **Stage 1:** Once the binary has been decoded successfully, the data will be sent to the decomposer, so that 
-operands can be extracted and classified.  
+operands can be extracted and classified.
 
 **Stage 2:** In this stage, the disassembler receives the result of Stage 0 and Stage 1 in order to generate 
 mnemonics and some comments.
 
 **Stage 3:** Now the analyzer comes into play. The analyzer takes all the data from the previous three steps 
 and performs a static analysis on it. It then generates a report and returns it, so that
-the virtual microcontroller can be initialized.
+a virtual microcontroller can be initialized in order to start a dynamic analysis.
 
-# Installation
-Setting up MDX isn't really difficult. Since the new CLI is based on NCurses,
-you will need to get NCurses before hitting make.
+# Setup
 
-After that, only 4 Steps are left:
+Currently this library comes with two headers, both can be found in engine/include/libvmcu:
 
-- Step 1: Clone this repo.
-```console
-You@Terminal:~$ git clone https://www.github.com/Milo-D/MDX-Micro-Debugger.git/
-```
+- libvmcu_analyzer.h  (static analysis)
+- libvmcu_system.h    (dynamic analysis, simulation)
 
-- Step 2: Run 'make' to compile MDX.
+Let's say, we have a file called driver.c on top level of this repository 
+and we want to link it with libvmcu:
+
+#### Build libvmcu
 ```console
 You@Terminal:~$ make clean all
 ```
 
-- Step 3: (Optional) Move mdx to /usr/bin/
+#### Build driver object
 ```console
-You@Terminal:~$ mv build/apps/mdx /usr/bin/
+You@Terminal:~$ gcc -Iengine/include/libvmcu/ -c driver.c -o driver.o
 ```
 
-- Step 4: Run MDX.
+#### Link with libvmcu (do not forget -lm)
 ```console
-You@Terminal:~$ mdx <file.hex>
+You@Terminal:~$ gcc -o driver driver.o -L/build/apps/ -lvmcu -lm
 ```
 
-# Cheatsheet
-
-Note: You may open multiple files in interactive Debugging Mode.
-
-| CL Options    | Arguments     | Description                 |
-| ------------- |:-------------:|:----------------------------|
-| none          | <file.hex>    | Interactive Debugging Mode  |
-| -d            | <file.hex>    | Disassembler                |
-| -hl           | <file.hex>    | Headless Mode               |
-| -h            | none          | Help (in progress)          |
-
-
-
-| Table Commands| Arguments     | Description                 |
-| ------------- |:-------------:|:----------------------------|
-| break         | address       | Setting a Debug Breakpoint  |
-| unbreak       | address       | Removing Debug Breakpoint   |
-| def           | alias seq     | Defining 'seq' as 'alias'   |
-| pn            | none          | Show next Table Page        |
-| pp            | none          | Show previous Table Page    |
-   
-   
-   
-| Debug Commands| Arguments     | Description                 |
-| ------------- |:-------------:|:----------------------------|
-| n             | none          | Single Step forward         |
-| b             | none          | Step backwards              |
-| rn            | none          | Show next GPR Page          |
-| rp            | none          | Show prev. GPR Page         |
-| dn            | none          | Scroll to next Data Cell    |
-| dp            | none          | Scroll to prev. Data Cell   |
-| jb            | delay in ms   | Jump to next Breakpoint     |
-| jc            | cycles        | Jump n Cycles forward       |
-| en            | none          | Scroll to next EEPROM Cell  |
-| ep            | none          | Scroll to prev. EEPROM Cell |
-| xd            | address       | Examine Data Memory         |
-| xe            | address       | Examine EEPROM Memory       |
-| xec           | start end     | EEP. Mem. as char literal   |
-| xdc           | start end     | Data Mem. as char literal   |
-| xdb           | address       | Data Mem. as Bitfield       |
-| xeb           | address       | EEP. Mem. as Bitfield       |
-| leep          | file.eep.hex  | Load .eep.hex into MCU      |
-| cycles        | none          | Show current Cycles         |
-| clock         | none          | Show Clock Frequency        |
-| time          | none          | Show elapsed Time           |
-| cc            | addr comment  | Create comment in disasm.   |
-| q             | none          | Back to File Selector       |
-| q + q         | none          | Quit                        |
-| ?             | none          | Show Help (in progress)     |
-
-
-# Troubleshooting
-
--  Issue: Stepping over a non-nop instruction has no effect on the MCU.
-
--  Solution: Some few instructions (like spm, wdr, break) require some further work.
-   For example, the 'wdr' (watchdog reset) instruction requires (obviously) a watchdog
-   timer, which MDX, currently, does not support. I will be working on adding functionality
-   to these few instructions, as soon as possible. For further information, see (#Instructions)
-   
-- Issue: Wrong Hex Format.
-
-- Solution: Currently, the Decoder accepts only capital hexadecimal letters. This, or any
-  other manipulation (adding useless space, new-lines, ...) could lead to such an exception.
-  Non-capital letters will be supported soon.
-
-- Issue: CLI Glitches
-
-- Solution: MDX has a new CLI, which is based on NCurses. There might be some glitches.
-  In general, if you experience some glitches, try resizing your terminal and hit a key.
-  This may trigger the Signal Handler, and the screen will be rewritten.
-  In case of serious glitches and issues, feel free to submit them in the Issue Segment.
+That's it. If you face issues, look at some examples in the driver/ directory.
 
 # Supported Microcontroller
+
+Static analysis can be performed on any AVR microcontroller type. The dynamic analysis supports
+the following microcontrollers
+
 - [x] ATmega328
 - [x] ATmega328P
+- [ ] ATmega48
+- [ ] ATmega88 
+- [ ] ATmega168
 - [ ] ATmega16
 - [ ] ATmega8
 - [ ] ...
 
-# Debugging
-- [x] Backwards Stepping
-- [x] Advanced Disassembler, recovering Labels
-- [x] Syntax Highlight for the disassembled Sourcecode
-- [x] Interrupts supported
-- [x] Open and debug more than one file in the same session
-- [x] Currently supporting ~ 133 assembly instructions
+# Dynamic Analysis
 
-- [x] Breakpoints
-- [ ] Watchpoints
-- [x] Examine Memory
-- [x] Create comments
+- [x] Backstepping
+- [x] Interrupt support
+- [x] cycle accurate realtime simulation
+- [x] Support for 133 AVR assembly instructions
+  
 
-- [x] Interactive Mode
-- [x] Disassembler Mode
-- [x] Headless Mode
-
-- [ ] Peripherals
+- [x] Accurate simulation of internal peripherals
     - [x] 8-bit Timer (partial)
     - [ ] 16-bit Timer
     - [x] EEPROM
@@ -199,8 +284,12 @@ Note: You may open multiple files in interactive Debugging Mode.
     - [ ] ...
     
 # Static Analysis
-- [x] Analyzer Core Module (Driver)
-- [x] Report generator
+
+- [x] Intel Hex decoder
+- [x] Decompose and classify instructions
+- [x] Disassembler
+- [x] Analyzer for AVR binaries
+
 
 - [ ] Analyzer Submodules
    - [x] Label analysis
@@ -210,7 +299,7 @@ Note: You may open multiple files in interactive Debugging Mode.
    - [ ] ...
 
 # Instructions
-Currently MDX supports: ~ 133 Instructions. Some few instructions are implemented as 'nop'
+Currently VMCU supports: ~ 133 Instructions. Some few instructions are implemented as 'nop'
 instructions, therefore, have no real functionality. These instructions will be implemented
 as soon as possible. Following instructions require further work:
 
@@ -223,32 +312,23 @@ as soon as possible. Following instructions require further work:
 
 All other assembly instructions are working just fine.
 
+# Bindings
+
+Bindings are planned for the following languages
+
+- [ ] Python
+- [ ] Java
+
 # Contributing
 
-Currently I wont merge Pull-Requests. This will change once I've organized the
-basic structure and architecture of this Project. But still bug reports (or any other report of an issue) 
-are welcome and if you have some changes/wishes in mind, do not hesitate to contact me.
+| Engine                                       | Drivers                                        | Bindings                                       |Testing                                       |
+|:--------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:--------------------------------------------:|
+| <span style="color:red">closed for PR</span> | <span style="color:green">open for PR</span>   | <span style="color:green">open for PR</span>   | <span style="color:red">closed for PR</span>
 
 # Credits
 
 1) Huge thanks to <a href="https://alexander-hansen.dev">Alexander Hansen</a> for the new logo and architecture diagram. :)
 
-# Screenshots
+# Documentation
 
-By the way: You will find more Screenshots in the 'img' directory of this Repo.
-
-Interactive Debugger:
-
-<img src="https://user-images.githubusercontent.com/46600932/104666514-5e4b9800-56d4-11eb-97dc-92c0ca62c3e2.png" width="75%">
-
-Disassembler:
-
-<img src="https://user-images.githubusercontent.com/46600932/92750758-aefa5f80-f387-11ea-9c2f-23b040b2b161.png" width="75%">
-
-Headless Mode:
-
-<img src="https://user-images.githubusercontent.com/46600932/72665868-e7ba8280-3a0c-11ea-9c0a-5482cd337d63.png" width="75%">
-
-# Wiki
-
-For more details and information on MDX, see https://github.com/Milo-D/MDX-Assembly-Debugger/wiki
+The wiki will be updated as soon as possible. The libvmcu header files are documented, too.

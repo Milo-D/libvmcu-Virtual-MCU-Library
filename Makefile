@@ -1,36 +1,28 @@
 CC		 := -gcc
 CFLAGS	 := -O1 -std=gnu11
-LDLIBS	 := -lm -lncurses
+LDLIBS	 := -lm
 MCU_ARCH := -D ATMEGA328P
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
-TARGET   := mdx
+TARGET   := libvmcu.a
 INCLUDE  := -I.
-SRC      :=                                					\
-	$(wildcard engine/src/analyzer/*.c)						\
-	$(wildcard engine/src/analyzer/modules/sfr/*.c)			\
-	$(wildcard engine/src/analyzer/modules/labels/*.c)		\
-	$(wildcard engine/src/analyzer/report/*.c)				\
-	$(wildcard engine/src/decoder/*.c)						\
-	$(wildcard engine/src/decomposer/*.c)					\
-   	$(wildcard engine/src/disassembler/*.c)        			\
-   	$(wildcard engine/src/instructions/*.c)        			\
-	$(wildcard engine/src/system/*.c)              			\
-   	$(wildcard engine/src/system/core/*.c)         			\
-   	$(wildcard engine/src/system/peripherals/*.c)  			\
-	$(wildcard engine/src/system/util/*.c)					\
-	$(wildcard debugger/src/cli/main/*.c)					\
-   	$(wildcard debugger/src/cli/debug/*.c)           		\
-	$(wildcard debugger/src/cli/util/*.c)					\
-	$(wildcard debugger/src/composer/*.c)					\
-   	$(wildcard debugger/src/parser/*.c)              		\
-   	$(wildcard debugger/src/printer/*.c)             		\
-   	$(wildcard debugger/src/state/main/*.c)					\
-   	$(wildcard debugger/src/state/debug/*.c)				\
-   	$(wildcard debugger/src/table/*.c)               		\
-   	$(wildcard shared/src/collections/*.c)         			\
-   	$(wildcard shared/src/misc/*.c)                			\
+SRC      :=                                                 \
+	$(wildcard engine/src/analyzer/*.c)                     \
+	$(wildcard engine/src/analyzer/modules/sfr/*.c)         \
+	$(wildcard engine/src/analyzer/modules/labels/*.c)      \
+	$(wildcard engine/src/analyzer/report/*.c)              \
+	$(wildcard engine/src/arch/*.c)                         \
+	$(wildcard engine/src/collections/*.c)                  \
+	$(wildcard engine/src/decoder/*.c)                      \
+	$(wildcard engine/src/decomposer/*.c)                   \
+   	$(wildcard engine/src/disassembler/*.c)                 \
+   	$(wildcard engine/src/instructions/*.c)                 \
+	$(wildcard engine/src/system/*.c)                       \
+   	$(wildcard engine/src/system/core/*.c)                  \
+   	$(wildcard engine/src/system/peripherals/*.c)           \
+   	$(wildcard engine/src/misc/*.c)                         \
+	$(wildcard engine/src/system/util/*.c)                  \
 
 OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)
 
@@ -42,7 +34,8 @@ $(OBJ_DIR)/%.o: %.c
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(MCU_ARCH) $(INCLUDE) -o $(APP_DIR)/$(TARGET) $(OBJECTS) $(LDLIBS)
+	ld -relocatable -o $(OBJ_DIR)/libvmcu.o $(OBJECTS)
+	ar rcs $(APP_DIR)/$(TARGET) $(OBJ_DIR)/libvmcu.o
 
 .PHONY: all build clean release
 

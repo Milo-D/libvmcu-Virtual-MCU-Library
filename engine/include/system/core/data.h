@@ -1,46 +1,42 @@
-/* AVR Data Memory Header */
+/* Data Memory Header */
 
-#ifndef DATA_H
-#define DATA_H
+#ifndef VMCU_DATA_H
+#define VMCU_DATA_H
 
 // C Headers
 #include <inttypes.h>
 
-typedef struct _io io_t;
-typedef struct _tuple tuple_t;
+typedef struct vmcu_io vmcu_io_t;
 
-typedef struct _data {
+typedef struct vmcu_data {
    
-    io_t *io;
-
+    vmcu_io_t *io;
     int8_t *memory;
-    tuple_t *coi;
     
-} data_t;
+} vmcu_data_t;
 
-extern struct _data* data_ctor(void);
-extern void data_dtor(struct _data *this);
+extern vmcu_data_t* vmcu_data_ctor(void);
+extern void vmcu_data_dtor(vmcu_data_t *this);
 
-/* General DATA Operations */
+/* General vmcu_data Operations */
 
-extern void data_push(struct _data *this, const int8_t value);
-extern int8_t data_pop(const struct _data *this);
-extern void data_write(struct _data *this, const uint16_t addr, const int8_t value);
-extern int8_t data_read(const struct _data *this, const uint16_t addr);
-extern void data_coi(const struct _data *this, tuple_t *buffer);
-extern int8_t* data_dump(const struct _data *this);
-extern void data_reboot(const struct _data *this);
+extern void vmcu_data_push(vmcu_data_t *this, const int8_t value);
+extern int8_t vmcu_data_pop(const vmcu_data_t *this);
+extern void vmcu_data_write(vmcu_data_t *this, const uint16_t addr, const int8_t value);
+extern int8_t vmcu_data_read(const vmcu_data_t *this, const uint16_t addr);
+extern int8_t* vmcu_data_dump(const vmcu_data_t *this);
+extern void vmcu_data_reboot(const vmcu_data_t *this);
 
 /* IO/SFR Operations */
 
-extern void data_update_io(const struct _data *this, const uint32_t cpu_clk, const uint64_t dc);
-extern int data_check_irq(const struct _data *this);
+extern void vmcu_data_update_io(const vmcu_data_t *this, const uint32_t cpu_clk, const uint64_t dc);
+extern int vmcu_data_check_irq(const vmcu_data_t *this);
 
-extern void data_set_sfr(struct _data *this, const uint16_t addr, const int bit);
-extern void data_clear_sfr(struct _data *this, const uint16_t addr, const int bit);
+extern void vmcu_data_set_sfr(vmcu_data_t *this, const uint16_t addr, const int bit);
+extern void vmcu_data_clear_sfr(vmcu_data_t *this, const uint16_t addr, const int bit);
 
 /* EEPROM Operations */
 
-extern int8_t* data_dump_eeprom(const struct _data *this);
+extern int8_t* vmcu_data_dump_eeprom(const vmcu_data_t *this);
 
 #endif

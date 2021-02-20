@@ -9,56 +9,56 @@
 #include "engine/include/system/peripherals/timer8.h"
 #include "engine/include/system/peripherals/eeprom.h"
 
-// Project Headers (shared)
-#include "shared/include/misc/bitmanip.h"
+// Project Headers (engine utilities)
+#include "engine/include/misc/bitmanip.h"
 
-struct _io* io_ctor(int8_t *io_start) {
+vmcu_io_t* vmcu_io_ctor(int8_t *io_start) {
 
-    struct _io *io;
+    vmcu_io_t *io;
 
-    if((io = malloc(sizeof(struct _io))) == NULL)
+    if((io = malloc(sizeof(vmcu_io_t))) == NULL)
         return NULL;
 
     io->memory = io_start;
-    io->irq = irq_ctor();
+    io->irq = vmcu_irq_ctor();
     
     /* Peripherals */
     
-    io->timer0 = timer8_ctor(TC0, io->memory);
-    io->eeprom = eeprom_ctor(io->memory);
+    io->timer0 = vmcu_timer8_ctor(VMCU_TC0, io->memory);
+    io->eeprom = vmcu_eeprom_ctor(io->memory);
 
     return io;
 }
 
-void io_dtor(struct _io *this) {
+void vmcu_io_dtor(vmcu_io_t *this) {
 
-    timer8_dtor(this->timer0);
-    eeprom_dtor(this->eeprom);
-    irq_dtor(this->irq);
+    vmcu_timer8_dtor(this->timer0);
+    vmcu_eeprom_dtor(this->eeprom);
+    vmcu_irq_dtor(this->irq);
 
     free(this);
 }
 
-void io_update(struct _io *this, const uint32_t cpu_clk, const uint64_t dc) {
+void vmcu_io_update(vmcu_io_t *this, const uint32_t cpu_clk, const uint64_t dc) {
 
     /* Timer0 Update */
 
-    if(timer8_is_busy(this->timer0) == true)
-        timer8_update(this->timer0, this->irq, dc);
+    if(vmcu_timer8_is_busy(this->timer0) == true)
+        vmcu_timer8_update(this->timer0, this->irq, dc);
 
     /* EEPROM Update */
 
-    if(eeprom_is_busy(this->eeprom) == true)
-        eeprom_update(this->eeprom, this->irq, cpu_clk, dc);
+    if(vmcu_eeprom_is_busy(this->eeprom) == true)
+        vmcu_eeprom_update(this->eeprom, this->irq, cpu_clk, dc);
 }
 
-int io_check_irq(const struct _io *this) {
+int vmcu_io_check_irq(const vmcu_io_t *this) {
 
     if(this->irq->size < 1)
         return -1;
 
     uint16_t isr = 0x0000;
-    irq_pop(this->irq, &isr);
+    vmcu_irq_pop(this->irq, &isr);
 
     switch(isr) {
 
@@ -93,16 +93,16 @@ int io_check_irq(const struct _io *this) {
     return (int) isr;
 }
 
-void io_reboot(const struct _io *this) {
+void vmcu_io_reboot(const vmcu_io_t *this) {
 
-    irq_reboot(this->irq);
+    vmcu_irq_reboot(this->irq);
     
-    timer8_reboot(this->timer0);
-    eeprom_reboot(this->eeprom);
+    vmcu_timer8_reboot(this->timer0);
+    vmcu_eeprom_reboot(this->eeprom);
 }
 
-int8_t* io_dump_eeprom(const struct _io *this) {
+int8_t* vmcu_io_dump_eeprom(const vmcu_io_t *this) {
 
-    return eeprom_dump(this->eeprom);
+    return vmcu_eeprom_dump(this->eeprom);
 }
 

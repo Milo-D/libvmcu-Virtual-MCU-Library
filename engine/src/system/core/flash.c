@@ -6,26 +6,28 @@
 // Project Headers (engine)
 #include "engine/include/system/core/flash.h"
 #include "engine/include/system/util/progmem.h"
-#include "engine/include/system/mcudef.h"
 #include "engine/include/analyzer/report/report.h"
+
+// Project Headers (engine utilities)
+#include "engine/include/arch/mcudef.h"
 
 /* Forward Declaration of static Functions */
 
-static void flash_erase_memory(struct _flash *this);
+static void flash_erase_memory(vmcu_flash_t *this);
 
 /* --- Extern --- */
 
-struct _flash* flash_ctor(const report_t *report) {
+vmcu_flash_t* vmcu_flash_ctor(const vmcu_report_t *report) {
 
-    struct _flash *flash;
+    vmcu_flash_t *flash;
 
-    if((flash = malloc(sizeof(struct _flash))) == NULL)
+    if((flash = malloc(sizeof(vmcu_flash_t))) == NULL)
         return NULL;
 
-    flash->memory = malloc(FLASH_SIZE * sizeof(progmem_t));
+    flash->memory = malloc(FLASH_SIZE * sizeof(vmcu_progmem_t));
     flash_erase_memory(flash);
 
-    plain_t *p = report->disassembly;
+    vmcu_plain_t *p = report->disassembly;
 
     for(int i = 0; i < report->progsize; i++) {
 
@@ -57,50 +59,50 @@ struct _flash* flash_ctor(const report_t *report) {
     return flash;
 }
 
-void flash_dtor(struct _flash *this) {
+void vmcu_flash_dtor(vmcu_flash_t *this) {
     
     free(this->memory);
     free(this);
 }
 
-progmem_t* flash_fetch(const struct _flash *this) {
+vmcu_progmem_t* vmcu_flash_fetch(const vmcu_flash_t *this) {
 
     return &this->memory[this->pc % FLASH_SIZE];
 }
 
-progmem_t* flash_read_progmem(const struct _flash *this, const int addr) {
+vmcu_progmem_t* vmcu_flash_read_progmem(const vmcu_flash_t *this, const int addr) {
 
     return &this->memory[addr % FLASH_SIZE];
 }
 
-uint16_t flash_read(const struct _flash *this, const int addr) {
+uint16_t vmcu_flash_read(const vmcu_flash_t *this, const int addr) {
 
     return this->memory[addr % FLASH_SIZE].opcode;
 }
 
-void flash_move_pc(struct _flash *this, const int inc) {
+void vmcu_flash_move_pc(vmcu_flash_t *this, const int inc) {
 
     this->pc = ((this->pc + inc) % FLASH_SIZE);
 }
 
-void flash_set_pc(struct _flash *this, const int addr) {
+void vmcu_flash_set_pc(vmcu_flash_t *this, const int addr) {
 
     this->pc = (addr % FLASH_SIZE);
 }
 
-int flash_get_pc(const struct _flash *this) {
+int vmcu_flash_get_pc(const vmcu_flash_t *this) {
 
     return this->pc;
 }
 
-void flash_reboot(struct _flash *this) {
+void vmcu_flash_reboot(vmcu_flash_t *this) {
 
     this->pc = 0x0000;
 }
 
 /* --- Static --- */
 
-static void flash_erase_memory(struct _flash *this) {
+static void flash_erase_memory(vmcu_flash_t *this) {
 
     for(int i = 0; i < FLASH_SIZE; i++) {
 

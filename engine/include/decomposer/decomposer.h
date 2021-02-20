@@ -1,10 +1,14 @@
 /* Instruction Decomposer Header */
 
-#ifndef DECOMPOSER_H
-#define DECOMPOSER_H
+#ifndef VMCU_DECOMPOSER_H
+#define VMCU_DECOMPOSER_H
 
-typedef struct _array array_t;
+// C Headers
+#include <inttypes.h>
 
-extern int decompose(const char *hex_file, array_t *buffer);
+typedef struct vmcu_plain vmcu_plain_t;
+
+extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_plain_t *p);
+extern vmcu_plain_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size);
 
 #endif

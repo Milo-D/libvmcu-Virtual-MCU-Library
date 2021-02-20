@@ -1,51 +1,53 @@
 /* IO Memory Header */
 
-#ifndef IO_H
-#define IO_H
+#ifndef VMCU_IO_H
+#define VMCU_IO_H
 
 // C Headers
 #include <inttypes.h>
 
 // Project Headers (engine)
 #include "engine/include/system/core/sfr.h"
-#include "engine/include/system/mcudef.h"
 
-#define io_set_sfr(this, addr, bit) (*sfr_set[addr - GPR_SIZE])(this, bit)
-#define io_clear_sfr(this, addr, bit) (*sfr_clear[addr - GPR_SIZE])(this, bit)
+// Project Headers (engine utilities)
+#include "engine/include/arch/mcudef.h"
 
-#define io_write_sfr(this, addr, value) (*sfr_write[addr - GPR_SIZE])(this, value)
-#define io_read_sfr(this, addr) (*sfr_read[addr - GPR_SIZE])(this)
+#define vmcu_io_set_sfr(this, addr, bit) (*vmcu_sfr_set[addr - GPR_SIZE])(this, bit)
+#define vmcu_io_clear_sfr(this, addr, bit) (*vmcu_sfr_clear[addr - GPR_SIZE])(this, bit)
 
-typedef struct _irq irq_t;
+#define vmcu_io_write_sfr(this, addr, value) (*vmcu_sfr_write[addr - GPR_SIZE])(this, value)
+#define vmcu_io_read_sfr(this, addr) (*vmcu_sfr_read[addr - GPR_SIZE])(this)
 
-typedef struct _timer8 timer8_t;
-typedef struct _eeprom eeprom_t;
+typedef struct vmcu_irq vmcu_irq_t;
 
-typedef struct _io {
+typedef struct vmcu_timer8 vmcu_timer8_t;
+typedef struct vmcu_eeprom vmcu_eeprom_t;
+
+typedef struct vmcu_io {
 
     /* IRQ-Handler */
-    irq_t *irq;
+    vmcu_irq_t *irq;
 
     /* Peripherals */
-    timer8_t *timer0;
-    eeprom_t *eeprom;
+    vmcu_timer8_t *timer0;
+    vmcu_eeprom_t *eeprom;
 
     /* IO Memory */
     int8_t *memory;
 
-} io_t;
+} vmcu_io_t;
 
-extern struct _io* io_ctor(int8_t *io_start);
-extern void io_dtor(struct _io *this);
+extern vmcu_io_t* vmcu_io_ctor(int8_t *io_start);
+extern void vmcu_io_dtor(vmcu_io_t *this);
 
 /* IO Operations */
 
-extern void io_update(struct _io *this, const uint32_t cpu_clk, const uint64_t dc);
-extern int io_check_irq(const struct _io *this);
-extern void io_reboot(const struct _io *this);
+extern void vmcu_io_update(vmcu_io_t *this, const uint32_t cpu_clk, const uint64_t dc);
+extern int vmcu_io_check_irq(const vmcu_io_t *this);
+extern void vmcu_io_reboot(const vmcu_io_t *this);
 
 /* EEPROM Operations */
 
-extern int8_t* io_dump_eeprom(const struct _io *this);
+extern int8_t* vmcu_io_dump_eeprom(const vmcu_io_t *this);
 
 #endif

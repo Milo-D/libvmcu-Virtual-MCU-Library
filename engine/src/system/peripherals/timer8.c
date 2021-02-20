@@ -8,10 +8,10 @@
 // Project Headers (engine)
 #include "engine/include/system/peripherals/timer8.h"
 #include "engine/include/system/core/irq.h"
-#include "engine/include/system/mcudef.h"
 
-// Project Headers (shared)
-#include "shared/include/misc/bitmanip.h"
+// Project Headers (engine utilities)
+#include "engine/include/arch/mcudef.h"
+#include "engine/include/misc/bitmanip.h"
 
 /*
 *
@@ -37,42 +37,42 @@
 
 /* Forward Declarations of static Functions */
 
-static void timer8_setup_tc0(struct _timer8 *this, int8_t *memory);
-static void timer8_setup_tc2(struct _timer8 *this, int8_t *memory);
+static void timer8_setup_tc0(vmcu_timer8_t *this, int8_t *memory);
+static void timer8_setup_tc2(vmcu_timer8_t *this, int8_t *memory);
 
-static void timer8_tick_normal(struct _timer8 *this, irq_t *irq);
-static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq);
-static void timer8_tick_pwm_correct(struct _timer8 *this, irq_t *irq);
-static void timer8_tick_pwm_fast(struct _timer8 *this, irq_t *irq);
+static void timer8_tick_normal(vmcu_timer8_t *this, vmcu_irq_t *irq);
+static void timer8_tick_ctc(vmcu_timer8_t *this, vmcu_irq_t *irq);
+static void timer8_tick_pwm_correct(vmcu_timer8_t *this, vmcu_irq_t *irq);
+static void timer8_tick_pwm_fast(vmcu_timer8_t *this, vmcu_irq_t *irq);
 
-static void trigger_ocpa(struct _timer8 *this);
-static void trigger_ocpb(struct _timer8 *this);
+static void trigger_ocpa(vmcu_timer8_t *this);
+static void trigger_ocpb(vmcu_timer8_t *this);
 
-static void trigger_ocpa_pwm_fast(struct _timer8 *this);
-static void trigger_ocpb_pwm_fast(struct _timer8 *this);
+static void trigger_ocpa_pwm_fast(vmcu_timer8_t *this);
+static void trigger_ocpb_pwm_fast(vmcu_timer8_t *this);
 
-static void trigger_ocpa_pwm_correct(struct _timer8 *this);
-static void trigger_ocpb_pwm_correct(struct _timer8 *this);
+static void trigger_ocpa_pwm_correct(vmcu_timer8_t *this);
+static void trigger_ocpb_pwm_correct(vmcu_timer8_t *this);
 
 /* Forward Declarations of static Members */
 
-static void (*tick[NMODT8]) (struct _timer8 *this, irq_t *irq);
+static void (*tick[NMODT8]) (vmcu_timer8_t *this, vmcu_irq_t *irq);
 
 /* --- Extern --- */
 
-struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory) {
+vmcu_timer8_t* vmcu_timer8_ctor(const VMCU_TCX timer_id, int8_t *memory) {
 
-    struct _timer8 *timer;
+    vmcu_timer8_t *timer;
 
-    if((timer = malloc(sizeof(struct _timer8))) == NULL)
+    if((timer = malloc(sizeof(vmcu_timer8_t))) == NULL)
         return NULL;
 
     switch(timer_id) {
 
-        case TC0: timer8_setup_tc0(timer, memory); break;
-        case TC2: timer8_setup_tc2(timer, memory); break;
+        case VMCU_TC0: timer8_setup_tc0(timer, memory); break;
+        case VMCU_TC2: timer8_setup_tc2(timer, memory); break;
 
-        default: free(timer);                return NULL;
+        default:       free(timer);               return NULL;
     }
 
     timer->prescaler = 0;
@@ -81,12 +81,12 @@ struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory) {
     return timer;
 }
 
-void timer8_dtor(struct _timer8 *this) {
+void vmcu_timer8_dtor(vmcu_timer8_t *this) {
 
     free(this);
 }
 
-void timer8_update(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
+void vmcu_timer8_update(vmcu_timer8_t *this, vmcu_irq_t *irq, uint64_t dc) {
 
     if(this->prescaler == 0)
         return;
@@ -104,7 +104,7 @@ void timer8_update(struct _timer8 *this, irq_t *irq, const uint64_t dc) {
     }
 }
 
-void timer8_update_prescaler(struct _timer8 *this) {
+void vmcu_timer8_update_prescaler(vmcu_timer8_t *this) {
 
     uint16_t csx_table[8] = {
         
@@ -124,7 +124,7 @@ void timer8_update_prescaler(struct _timer8 *this) {
     this->countdown = csx_table[p];
 }
 
-void timer8_force_ocpa(struct _timer8 *this) {
+void vmcu_timer8_force_ocpa(vmcu_timer8_t *this) {
 
     const uint8_t a = *(this->tccra);
     const uint8_t b = *(this->tccrb);
@@ -144,7 +144,7 @@ void timer8_force_ocpa(struct _timer8 *this) {
     trigger_ocpa(this);
 }
 
-void timer8_force_ocpb(struct _timer8 *this) {
+void vmcu_timer8_force_ocpb(vmcu_timer8_t *this) {
     
     const uint8_t a = *(this->tccra);
     const uint8_t b = *(this->tccrb);
@@ -164,12 +164,12 @@ void timer8_force_ocpb(struct _timer8 *this) {
     trigger_ocpb(this);
 }
 
-bool timer8_is_busy(struct _timer8 *this) {
+bool vmcu_timer8_is_busy(vmcu_timer8_t *this) {
     
     return ((*(this->tccrb) & CSX_MSK) != 0x00);
 }
 
-void timer8_reboot(struct _timer8 *this) {
+void vmcu_timer8_reboot(vmcu_timer8_t *this) {
 
     this->prescaler = 0;
     this->countdown = 0;
@@ -177,7 +177,7 @@ void timer8_reboot(struct _timer8 *this) {
 
 /* --- Static --- */
 
-static void timer8_setup_tc0(struct _timer8 *this, int8_t *memory) {
+static void timer8_setup_tc0(vmcu_timer8_t *this, int8_t *memory) {
 
     this->timsk = &memory[TIMSK0];
     this->tccra = &memory[TCCR0A];
@@ -198,7 +198,7 @@ static void timer8_setup_tc0(struct _timer8 *this, int8_t *memory) {
     this->ocb   = OC0B;
 }
 
-static void timer8_setup_tc2(struct _timer8 *this, int8_t *memory) {
+static void timer8_setup_tc2(vmcu_timer8_t *this, int8_t *memory) {
 
     this->timsk = &memory[TIMSK2];
     this->tccra = &memory[TCCR2A];
@@ -219,14 +219,14 @@ static void timer8_setup_tc2(struct _timer8 *this, int8_t *memory) {
     this->ocb   = OC2B;
 }
 
-static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
+static void timer8_tick_normal(vmcu_timer8_t *this, vmcu_irq_t *irq) {
 
     if(++(*(this->tcnt)) == 0x00) {
 
         setbit(*(this->tifr), TOV);
 
         if(bit(*(this->timsk), TOV) == 0x01)
-            irq_enable(irq, OVF0_VECT);
+            vmcu_irq_enable(irq, OVF0_VECT);
     }
 
     if(*(this->tcnt) == *(this->ocra)) {
@@ -234,7 +234,7 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
         setbit(*(this->tifr), OCFA);
 
         if(bit(*(this->timsk), OCFA) == 0x01)
-            irq_enable(irq, OC0A_VECT); // todo: tc2 support
+            vmcu_irq_enable(irq, OC0A_VECT); // todo: tc2 support
 
         trigger_ocpa(this);
     }
@@ -244,26 +244,26 @@ static void timer8_tick_normal(struct _timer8 *this, irq_t *irq) {
         setbit(*(this->tifr), OCFB);
         
         if(bit(*(this->timsk), OCFB) == 0x01)
-            irq_enable(irq, OC0B_VECT); // todo: tc2 support
+            vmcu_irq_enable(irq, OC0B_VECT); // todo: tc2 support
             
         trigger_ocpb(this);
     }
 }
 
-static void timer8_tick_pwm_correct(struct _timer8 *this, irq_t *irq) {
+static void timer8_tick_pwm_correct(vmcu_timer8_t *this, vmcu_irq_t *irq) {
 
     /* in progress */
     return;
 }
 
-static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
+static void timer8_tick_ctc(vmcu_timer8_t *this, vmcu_irq_t *irq) {
     
     if(++(*(this->tcnt)) == 0x00) {
 
         setbit(*(this->tifr), TOV);
 
         if(bit(*(this->timsk), TOV) == 0x01)
-            irq_enable(irq, OVF0_VECT);
+            vmcu_irq_enable(irq, OVF0_VECT);
     }
 
     if(*(this->tcnt) == *(this->ocrb)) {
@@ -271,7 +271,7 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
         setbit(*(this->tifr), OCFB);
         
         if(bit(*(this->timsk), OCFB) == 0x01)
-            irq_enable(irq, OC0B_VECT); // todo: tc2 support
+            vmcu_irq_enable(irq, OC0B_VECT); // todo: tc2 support
             
         trigger_ocpb(this);
     }
@@ -282,25 +282,25 @@ static void timer8_tick_ctc(struct _timer8 *this, irq_t *irq) {
         *(this->tcnt) = 0x00;
 
         if(bit(*(this->timsk), OCFA) == 0x01)
-            irq_enable(irq, OC0A_VECT); // todo: tc2 support
+            vmcu_irq_enable(irq, OC0A_VECT); // todo: tc2 support
 
         trigger_ocpa(this);
     }
 }
 
-static void timer8_tick_pwm_fast(struct _timer8 *this, irq_t *irq) {
+static void timer8_tick_pwm_fast(vmcu_timer8_t *this, vmcu_irq_t *irq) {
 
     /* in progress */
     return;
 }
 
-static void timer8_tick_reserved(struct _timer8 *this, irq_t *irq) {
+static void timer8_tick_reserved(vmcu_timer8_t *this, vmcu_irq_t *irq) {
     
     /* accessing reserved waveform generation mode */
     return;
 }
 
-static void trigger_ocpa(struct _timer8 *this) {
+static void trigger_ocpa(vmcu_timer8_t *this) {
 
     if(bit(*(this->ddrxa), this->oca) == 0x00)
         return;
@@ -316,7 +316,7 @@ static void trigger_ocpa(struct _timer8 *this) {
     }
 }
 
-static void trigger_ocpb(struct _timer8 *this) {
+static void trigger_ocpb(vmcu_timer8_t *this) {
 
     if(bit(*(this->ddrxb), this->ocb) == 0x00)
         return;
@@ -332,7 +332,7 @@ static void trigger_ocpb(struct _timer8 *this) {
     }
 }
 
-static void trigger_ocpa_pwm_fast(struct _timer8 *this) {
+static void trigger_ocpa_pwm_fast(vmcu_timer8_t *this) {
 
     if(bit(*(this->ddrxa), this->oca) == 0x00)
         return;
@@ -348,7 +348,7 @@ static void trigger_ocpa_pwm_fast(struct _timer8 *this) {
     }
 }
 
-static void trigger_ocpb_pwm_fast(struct _timer8 *this) {
+static void trigger_ocpb_pwm_fast(vmcu_timer8_t *this) {
 
     if(bit(*(this->ddrxb), this->ocb) == 0x00)
         return;
@@ -364,7 +364,7 @@ static void trigger_ocpb_pwm_fast(struct _timer8 *this) {
     }
 }
 
-static void trigger_ocpa_pwm_correct(struct _timer8 *this) {
+static void trigger_ocpa_pwm_correct(vmcu_timer8_t *this) {
 
     if(bit(*(this->ddrxa), this->oca) == 0x00)
         return;
@@ -380,7 +380,7 @@ static void trigger_ocpa_pwm_correct(struct _timer8 *this) {
     }
 }
 
-static void trigger_ocpb_pwm_correct(struct _timer8 *this) {
+static void trigger_ocpb_pwm_correct(vmcu_timer8_t *this) {
 
     if(bit(*(this->ddrxb), this->ocb) == 0x00)
         return;
@@ -396,7 +396,7 @@ static void trigger_ocpb_pwm_correct(struct _timer8 *this) {
     }
 }
 
-static void (*tick[NMODT8]) (struct _timer8 *this, irq_t *irq) = {
+static void (*tick[NMODT8]) (vmcu_timer8_t *this, vmcu_irq_t *irq) = {
 
     timer8_tick_normal,
     timer8_tick_pwm_correct,

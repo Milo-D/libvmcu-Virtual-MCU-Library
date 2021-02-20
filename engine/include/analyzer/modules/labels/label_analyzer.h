@@ -1,10 +1,10 @@
 /* Label Analyzer Submodule Header */
 
-#ifndef LABEL_ANALYZER_H
-#define LABEL_ANALYZER_H
+#ifndef VMCU_LABEL_ANALYZER_H
+#define VMCU_LABEL_ANALYZER_H
 
-typedef struct _report report_t;
+typedef struct vmcu_report vmcu_report_t;
 
-extern int analyze_labels(report_t *report);
+extern int vmcu_analyze_labels(vmcu_report_t *report);
 
 #endif

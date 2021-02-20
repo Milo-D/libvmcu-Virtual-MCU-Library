@@ -3,16 +3,16 @@
 // Project Headers (engine)
 #include "engine/include/system/util/buffered_register.h"
 
-void buffered_register_write(struct _buffered_register *this, const int8_t value) {
+void vmcu_buffered_register_write(vmcu_buffered_register_t *this, const int8_t value) {
 
     this->buffer = value;
 }
 
-int buffered_register_update(struct _buffered_register *this) {
+int buffered_register_update(vmcu_buffered_register_t *this) {
 
     if(*(this->cmp_with) != this->condition)
-        return REGISTER_NOT_WRITTEN;
+        return VMCU_BUFFERED_REGISTER_NOT_WRITTEN;
 
     *(this->reg) = this->buffer;
-    return REGISTER_WRITTEN;
+    return VMCU_BUFFERED_REGISTER_WRITTEN;
 }

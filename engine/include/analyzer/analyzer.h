@@ -1,10 +1,10 @@
 /* Analyzer Header */
 
-#ifndef ANALYZER_H
-#define ANALYZER_H
+#ifndef VMCU_ANALYZER_H
+#define VMCU_ANALYZER_H
 
-typedef struct _report report_t;
+typedef struct vmcu_report vmcu_report_t;
 
-extern report_t* analyze(const char *hex_file);
+extern vmcu_report_t* vmcu_analyze_ihex(const char *hex_file);
 
 #endif

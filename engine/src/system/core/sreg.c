@@ -1,49 +1,37 @@
 /* Status Register Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Project Headers (engine)
 #include "engine/include/system/core/sreg.h"
-#include "engine/include/system/mcudef.h"
 
-// Project Headers (shared)
-#include "shared/include/collections/array.h"
+// Project Headers (engine utilities)
+#include "engine/include/arch/mcudef.h"
 
-/* Forward Declaration of static SREG Functions */
+/* --- Extern --- */
 
-static void sreg_clear_coi(const struct _sreg *this);
+vmcu_sreg_t* vmcu_sreg_ctor(void) {
 
-/* --- Public --- */
-
-struct _sreg* sreg_ctor(void) {
-
-    struct _sreg *sreg;
+    vmcu_sreg_t *sreg;
     
-    if((sreg = malloc(sizeof(struct _sreg))) == NULL)
+    if((sreg = malloc(sizeof(vmcu_sreg_t))) == NULL)
         return NULL;
-
-    sreg->coi = malloc(SREG_SIZE * sizeof(MEMPROP));
-    memset(sreg->coi, NONE, SREG_SIZE * sizeof(MEMPROP));
     
     sreg->status = 0x00;
     return sreg;
 }
 
-void sreg_dtor(struct _sreg *this) {
-    
-    free(this->coi);
+void vmcu_sreg_dtor(vmcu_sreg_t *this) {
+
     free(this);
 }
 
-void sreg_write(struct _sreg *this, const int flag, const bool bit) {
+void vmcu_sreg_write(vmcu_sreg_t *this, const int flag, const bool bit) {
 
     if(flag < 0 || flag >= SREG_SIZE)
         return;
-
-    this->coi[flag] = DEST;
 
     if(bit == true) {
     
@@ -54,74 +42,36 @@ void sreg_write(struct _sreg *this, const int flag, const bool bit) {
     this->status &= ~(0x01 << flag);
 }
 
-bool sreg_read(const struct _sreg *this, const int flag) {
+bool vmcu_sreg_read(const vmcu_sreg_t *this, const int flag) {
 
     if(flag < 0 || flag >= SREG_SIZE)
         return false;
-    
-    this->coi[flag] = SRC;
+
     return ((this->status >> flag) & 0x01); 
 }
 
-void sreg_write_byte(struct _sreg *this, const uint8_t byte) {
-
-    this->coi[CF] = DEST;
-    this->coi[ZF] = DEST;
-    this->coi[NF] = DEST;
-    this->coi[VF] = DEST;
-    this->coi[SF] = DEST;
-    this->coi[HF] = DEST;
-    this->coi[TF] = DEST;
-    this->coi[IF] = DEST;
+void vmcu_sreg_write_byte(vmcu_sreg_t *this, const uint8_t byte) {
 
     this->status = byte;
 }
 
-uint8_t sreg_read_byte(struct _sreg *this) {
-    
-    this->coi[CF] = SRC;
-    this->coi[ZF] = SRC;
-    this->coi[NF] = SRC;
-    this->coi[VF] = SRC;
-    this->coi[SF] = SRC;
-    this->coi[HF] = SRC;
-    this->coi[TF] = SRC;
-    this->coi[IF] = SRC;
+uint8_t vmcu_sreg_read_byte(vmcu_sreg_t *this) {
 
     return this->status;
 }
 
-void sreg_clear(struct _sreg *this) {
+void vmcu_sreg_clear(vmcu_sreg_t *this) {
 
     this->status = 0x00;
 }
 
-void sreg_coi(const struct _sreg *this, array_t *buffer) {
-
-    for(int i = 0; i < SREG_SIZE; i++) {
-    
-        const MEMPROP prop = this->coi[i];
-        array_push(buffer, (void*) &prop, sizeof(MEMPROP));
-    }
-
-    sreg_clear_coi(this);
-}
-
-uint8_t sreg_dump(const struct _sreg *this) {
+uint8_t vmcu_sreg_dump(const vmcu_sreg_t *this) {
 
     return this->status;
 }
 
-void sreg_reboot(struct _sreg *this) {
+void vmcu_sreg_reboot(vmcu_sreg_t *this) {
 
     this->status = 0x00;
-    memset(this->coi, NONE, SREG_SIZE * sizeof(MEMPROP));
 }
 
-/* --- Private --- */
-
-static void sreg_clear_coi(const struct _sreg *this) {
-
-    for(int i = 0; i < SREG_SIZE; i++)
-        this->coi[i] = NONE;
-}

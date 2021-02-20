@@ -1,10 +1,10 @@
 /* SFR-Analyzer Submodule Header */
 
-#ifndef SFR_ANALYZER_H
-#define SFR_ANALYZER_H
+#ifndef VMCU_SFR_ANALYZER_H
+#define VMCU_SFR_ANALYZER_H
 
-typedef struct _report report_t;
+typedef struct vmcu_report vmcu_report_t;
 
-extern int analyze_sfr(report_t *report);
+extern int vmcu_analyze_sfr(vmcu_report_t *report);
 
 #endif

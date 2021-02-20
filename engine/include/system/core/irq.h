@@ -1,34 +1,34 @@
 /* IRQ Header */
 
-#ifndef IRQ_H
-#define IRQ_H
+#ifndef VMCU_IRQ_H
+#define VMCU_IRQ_H
 
 // C Headers
 #include <inttypes.h>
 
-typedef struct _request {
+typedef struct vmcu_request {
 
     uint16_t isr;
-    struct _request *next;
+    struct vmcu_request *next;
 
-} request_t;
+} vmcu_request_t;
 
-typedef struct _irq {
+typedef struct vmcu_irq {
 
     int size;
-    struct _request *head;
+    vmcu_request_t *head;
 
-} irq_t;
+} vmcu_irq_t;
 
-extern struct _irq* irq_ctor(void);
-extern void irq_dtor(struct _irq *this);
+extern vmcu_irq_t* vmcu_irq_ctor(void);
+extern void vmcu_irq_dtor(vmcu_irq_t *this);
 
-extern int irq_enable(struct _irq *this, const uint16_t isr_vect);
-extern int irq_disable(struct _irq *this, const uint16_t isr_vect);
+extern int vmcu_irq_enable(vmcu_irq_t *this, const uint16_t isr_vect);
+extern int vmcu_irq_disable(vmcu_irq_t *this, const uint16_t isr_vect);
 
-extern int irq_pop(struct _irq *this, uint16_t *buffer);
-extern int irq_contains(const struct _irq *this, const uint16_t isr_vect);
+extern int vmcu_irq_pop(vmcu_irq_t *this, uint16_t *buffer);
+extern int vmcu_irq_contains(const vmcu_irq_t *this, const uint16_t isr_vect);
 
-extern void irq_reboot(struct _irq *this);
+extern void vmcu_irq_reboot(vmcu_irq_t *this);
 
 #endif

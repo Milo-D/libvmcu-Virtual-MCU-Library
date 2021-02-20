@@ -3,7 +3,15 @@
 // Project Header (engine)
 #include "engine/include/decoder/opcode.h"
 
-const int opcode[SET_SIZE][WORD] = {
+#define D 2
+#define R 3
+#define K 4
+#define A 5
+#define S 6
+#define B 7
+#define Q 8
+
+const int vmcu_opcode[VMCU_SET_SIZE][VMCU_WORD] = {
 
 /* <----------------- 16 bit -----------------> */
 

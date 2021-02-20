@@ -1,12 +1,12 @@
 /* Progmem (Data-Structure) Header */
 
-#ifndef PROGMEM_H
-#define PROGMEM_H
+#ifndef VMCU_PROGMEM_H
+#define VMCU_PROGMEM_H
 
 // C Headers
 #include <stdbool.h>
 
-typedef struct _progmem {
+typedef struct vmcu_progmem {
     
     int opcode;
     int addr;
@@ -15,6 +15,6 @@ typedef struct _progmem {
     bool exec;
     bool dword;
     
-} progmem_t;
+} vmcu_progmem_t;
 
 #endif

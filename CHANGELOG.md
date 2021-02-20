@@ -4,6 +4,26 @@
 
 - nothing to log
 
+# v.0.7.0
+
+- MDX is now a library for static and dynamic analysis of
+  AVR binaries called libvmcu
+  
+- rename MDX to libvmcu (VMCU)
+
+- removed CLI and debugger from engine
+  - debugger will be available in another repository
+  
+Comment: I don't like working on graphical user interfaces so I've decided
+to kick out the GUI, so that I can focus on the interesting part: the engine.
+
+The engine is available as a statically linked library, called libvmcu. It offers
+static analysis of AVR source code on assembly level. It is possible to analyze
+potential labels and their callers/jumpers, special functions register analysis,
+instruction decomposing, and more. Besides that, libvmcu offers dynamic analysis in
+the form of cycle accurate realtime simulation of the ATmega328(P) family, including
+its peripherals.
+
 # v.0.6.0 - 2021-02-13
 
 - Massive reduction of heap usage (Issue #47)

@@ -1,18 +1,14 @@
 /* Disassembler Header */
 
-#ifndef DISASSEMBLER_H
-#define DISASSEMBLER_H
+#ifndef VMCU_DISASSEMBLER_H
+#define VMCU_DISASSEMBLER_H
 
-/*
-* This Disassembler re-creates the Assembly
-* Source Code out of the Hexcode found in Hex File.
-* Then it automatically generates Labels after
-* Jumps and Branches and replaces the relative addresses
-* of these instructions.s
-*/
+// C Headers
+#include <inttypes.h>
 
-typedef struct _array array_t;
+typedef struct vmcu_plain vmcu_plain_t;
 
-extern int disassemble(const char *hex_file, array_t *buffer);
+extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p);
+extern vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size);
 
 #endif

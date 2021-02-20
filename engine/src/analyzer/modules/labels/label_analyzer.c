@@ -13,28 +13,29 @@
 
 /* Forward Declaration of static Functions */
 
-static uint16_t* preprocess_labels(const report_t *report, int32_t *size);
-static caller_t* get_callers(const report_t *report, label_t *lx, int32_t *size);
+static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size);
+static vmcu_caller_t* get_callers(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size);
 
-static bool is_branch(const IKEY key);
-static bool in_disasm(const report_t *report, const int addr);
+static bool is_branch(const VMCU_IKEY key);
+static bool in_disasm(const vmcu_report_t *report, const int addr);
 static bool label_exists(const uint16_t *field, const uint16_t addr, const int k);
 
-static int get_abs_addr(const plain_t *p);
+static int get_abs_addr(const vmcu_plain_t *p);
 static int cmp_u16(const void *a, const void *b);
 
 /* --- Extern --- */
 
-int analyze_labels(report_t *report) {
+int vmcu_analyze_labels(vmcu_report_t *report) {
 
     uint16_t *field = preprocess_labels(report, &report->nlabels);
     qsort(field, report->nlabels, sizeof(uint16_t), cmp_u16);
 
-    report->labels = malloc(report->nlabels * sizeof(label_t));
+    size_t bytes = report->nlabels * sizeof(vmcu_label_t);
+    report->labels = malloc(bytes);
 
     for(int i = 0; i < report->nlabels; i++) {
 
-        label_t *lx = &report->labels[i];
+        vmcu_label_t *lx = &report->labels[i];
 
         lx->id       = i;
         lx->addr     = field[i];
@@ -50,7 +51,7 @@ int analyze_labels(report_t *report) {
 
 /* --- Static --- */
 
-static uint16_t* preprocess_labels(const report_t *report, int32_t *size) {
+static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size) {
 
     int addr;
 
@@ -59,7 +60,7 @@ static uint16_t* preprocess_labels(const report_t *report, int32_t *size) {
 
     for(int i = 0; i < report->progsize; i++) {
 
-        plain_t *p = &report->disassembly[i];
+        vmcu_plain_t *p = &report->disassembly[i];
 
         if(is_branch(p->key) == false)
             continue;
@@ -80,14 +81,14 @@ static uint16_t* preprocess_labels(const report_t *report, int32_t *size) {
     return field;
 }
 
-static caller_t* get_callers(const report_t *report, label_t *lx, int32_t *size) {
+static vmcu_caller_t* get_callers(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size) {
 
     int32_t nc = NCALL;
-    caller_t *callers = malloc(nc * sizeof(caller_t));
+    vmcu_caller_t *callers = malloc(nc * sizeof(vmcu_caller_t));
 
     for(int i = 0; i < report->progsize; i++) {
 
-        plain_t *p = &report->disassembly[i];
+        vmcu_plain_t *p = &report->disassembly[i];
 
         if(is_branch(p->key) == false)
             continue;
@@ -97,7 +98,7 @@ static caller_t* get_callers(const report_t *report, label_t *lx, int32_t *size)
 
         if(*size >= nc) {
 
-            size_t bytes = (nc * 2) * sizeof(caller_t);
+            size_t bytes = (nc * 2) * sizeof(vmcu_caller_t);
             callers = realloc(callers, bytes);
 
             nc *= 2;
@@ -113,47 +114,47 @@ static caller_t* get_callers(const report_t *report, label_t *lx, int32_t *size)
         return NULL;
     }
 
-    size_t bytes = *size * sizeof(caller_t);
+    size_t bytes = *size * sizeof(vmcu_caller_t);
     callers = realloc(callers, bytes);
 
     return callers;
 }
 
-static bool is_branch(const IKEY key) {
+static bool is_branch(const VMCU_IKEY key) {
 
     switch(key) {
 
-        case RJMP:  return true;
-        case JMP:   return true;
+        case VMCU_RJMP:  return true;
+        case VMCU_JMP:   return true;
 
-        case RCALL: return true;
-        case CALL:  return true;
+        case VMCU_RCALL: return true;
+        case VMCU_CALL:  return true;
 
-        case BRNE:  return true;
-        case BREQ:  return true;
+        case VMCU_BRNE:  return true;
+        case VMCU_BREQ:  return true;
 
-        case BRGE:  return true;
-        case BRLO:  return true;
+        case VMCU_BRGE:  return true;
+        case VMCU_BRLO:  return true;
 
-        case BRPL:  return true;
-        case BRMI:  return true;
+        case VMCU_BRPL:  return true;
+        case VMCU_BRMI:  return true;
 
-        case BRCC:  return true;
-        case BRCS:  return true;
+        case VMCU_BRCC:  return true;
+        case VMCU_BRCS:  return true;
 
-        case BRVS:  return true;
-        case BRVC:  return true;
+        case VMCU_BRVS:  return true;
+        case VMCU_BRVC:  return true;
 
-        case BRTS:  return true;
-        case BRTC:  return true;
+        case VMCU_BRTS:  return true;
+        case VMCU_BRTC:  return true;
 
-        case BRHS:  return true;
-        case BRHC:  return true;
+        case VMCU_BRHS:  return true;
+        case VMCU_BRHC:  return true;
 
-        case BRIE:  return true;
-        case BRID:  return true;
+        case VMCU_BRIE:  return true;
+        case VMCU_BRID:  return true;
 
-        case BRLT:  return true;
+        case VMCU_BRLT:  return true;
 
         default:          break;
     }
@@ -161,7 +162,7 @@ static bool is_branch(const IKEY key) {
     return false;
 }
 
-static bool in_disasm(const report_t *report, const int addr) {
+static bool in_disasm(const vmcu_report_t *report, const int addr) {
 
     for(int i = 0; i < report->progsize; i++) {
 
@@ -183,9 +184,9 @@ static bool label_exists(const uint16_t *field, const uint16_t addr, const int k
     return false;
 }
 
-static int get_abs_addr(const plain_t *p) {
+static int get_abs_addr(const vmcu_plain_t *p) {
 
-    if(p->key == CALL || p->key == JMP)
+    if(p->key == VMCU_CALL || p->key == VMCU_JMP)
         return p->src.value;
 
     if(p->src.value < 0) {

@@ -1,32 +1,24 @@
 /* (G)eneral (P)urpose (R)egisters Header */
 
-#ifndef GPR_H
-#define GPR_H
+#ifndef VMCU_GPR_H
+#define VMCU_GPR_H
 
 // C Headers
 #include <inttypes.h>
 
-// Project Headers (engine)
-#include "engine/include/system/util/memprop.h"
-
-typedef struct _array array_t;
-
-typedef struct _gpr {
+typedef struct vmcu_gpr {
 
     int8_t *regfile;
-    MEMPROP *coi;
     
-} gpr_t;
+} vmcu_gpr_t;
 
-extern struct _gpr* gpr_ctor(void);
-extern void gpr_dtor(struct _gpr *this);
+extern vmcu_gpr_t* vmcu_gpr_ctor(void);
+extern void vmcu_gpr_dtor(vmcu_gpr_t *this);
 
-extern void gpr_write(struct _gpr *this, const int rx, const int8_t data);
-extern int8_t gpr_read(const struct _gpr *this, const int rx);
+extern void vmcu_gpr_write(vmcu_gpr_t *this, const int rx, const int8_t data);
+extern int8_t vmcu_gpr_read(const vmcu_gpr_t *this, const int rx);
 
-extern void gpr_coi(const struct _gpr *this, array_t *buffer);
-extern int8_t* gpr_dump(const struct _gpr *this);
-
-extern void gpr_reboot(const struct _gpr *this);
+extern int8_t* vmcu_gpr_dump(const vmcu_gpr_t *this);
+extern void vmcu_gpr_reboot(const vmcu_gpr_t *this);
 
 #endif

@@ -1,85 +1,53 @@
 /* GPR Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // Project Headers (engine)
 #include "engine/include/system/core/gpr.h"
-#include "engine/include/system/mcudef.h"
 
-// Project Headers (shared)
-#include "shared/include/collections/array.h"
+// Project Headers (engine utilities)
+#include "engine/include/arch/mcudef.h"
 
-/* Forward Declaration of static GPR Functions */
+/* --- Extern --- */
 
-static void gpr_clear_coi(const struct _gpr *this);
+vmcu_gpr_t* vmcu_gpr_ctor(void) {
 
-/* --- Public --- */
-
-struct _gpr* gpr_ctor(void) {
-
-    struct _gpr *gpr;
+    vmcu_gpr_t *gpr;
     
-    if((gpr = malloc(sizeof(struct _gpr))) == NULL)
+    if((gpr = malloc(sizeof(vmcu_gpr_t))) == NULL)
         return NULL;
     
     gpr->regfile = malloc(GPR_SIZE * sizeof(int8_t));
     memset(gpr->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
-    
-    gpr->coi = malloc(GPR_SIZE * sizeof(MEMPROP));
-    memset(gpr->coi, NONE, GPR_SIZE * sizeof(MEMPROP));
 	
     return gpr;
 }
 
-void gpr_dtor(struct _gpr *this) {
+void vmcu_gpr_dtor(vmcu_gpr_t *this) {
 
     free(this->regfile);
-    free(this->coi);
     free(this);
 }
 
-void gpr_write(struct _gpr *this, const int rx, const int8_t data) {
+void vmcu_gpr_write(vmcu_gpr_t *this, const int rx, const int8_t data) {
 
-    this->coi[rx] = DEST;
     this->regfile[rx] = data;
 }
 
-int8_t gpr_read(const struct _gpr *this, const int rx) {
+int8_t vmcu_gpr_read(const vmcu_gpr_t *this, const int rx) {
 
-    this->coi[rx] = SRC;
     return this->regfile[rx];
 }
 
-void gpr_coi(const struct _gpr *this, array_t *buffer) {
-
-    for(int i = 0; i < GPR_SIZE; i++) {
-	
-        const MEMPROP prop = this->coi[i];
-        array_push(buffer, (void*) &prop, sizeof(MEMPROP));
-    }
-
-    gpr_clear_coi(this);
-}
-
-int8_t* gpr_dump(const struct _gpr *this) {
+int8_t* vmcu_gpr_dump(const vmcu_gpr_t *this) {
 
     return this->regfile;
 }
 
-void gpr_reboot(const struct _gpr *this) {
+void vmcu_gpr_reboot(const vmcu_gpr_t *this) {
 
     memset(this->regfile, 0x00, GPR_SIZE * sizeof(int8_t));
-    memset(this->coi, NONE, GPR_SIZE * sizeof(MEMPROP));
-}
-
-/* --- Private --- */
-
-static void gpr_clear_coi(const struct _gpr *this) {
-
-    for(int i = 0; i < GPR_SIZE; i++)
-        this->coi[i] = NONE;
 }
 

@@ -1,7 +1,7 @@
 /* System Header */
 
-#ifndef SYSTEM_H
-#define SYSTEM_H
+#ifndef VMCU_SYSTEM_H
+#define VMCU_SYSTEM_H
 
 // C Headers
 #include <stdbool.h>
@@ -9,83 +9,75 @@
 
 // Project Headers (engine) (exposed)
 #include "engine/include/system/util/progmem.h"
-#include "engine/include/system/util/memprop.h"
-#include "engine/include/system/mcudef.h"
 
-typedef struct _gpr gpr_t;
-typedef struct _sreg sreg_t;
-typedef struct _flash flash_t;
-typedef struct _data data_t;
+typedef struct vmcu_gpr vmcu_gpr_t;
+typedef struct vmcu_sreg vmcu_sreg_t;
+typedef struct vmcu_flash vmcu_flash_t;
+typedef struct vmcu_data vmcu_data_t;
 
-typedef struct _array array_t;
-typedef struct _tuple tuple_t;
+typedef struct vmcu_report vmcu_report_t;
 
-typedef struct _report report_t;
-
-typedef struct _system {
+typedef struct vmcu_system {
     
-    gpr_t *gpr;
-    sreg_t *sreg;
+    vmcu_gpr_t *gpr;
+    vmcu_sreg_t *sreg;
 
-    flash_t *flash;
-    data_t *data;
+    vmcu_flash_t *flash;
+    vmcu_data_t *data;
 
     uint64_t cycles;
     uint32_t clock;
     
     int steps;
 
-} system_t;
+} vmcu_system_t;
 
 /* System Constructor + Destructor */
 
-extern struct _system* sys_ctor(const report_t *report);
-extern void sys_dtor(struct _system *this);
+extern vmcu_system_t* vmcu_system_ctor(const vmcu_report_t *report);
+extern void vmcu_system_dtor(vmcu_system_t *this);
 
 /* General System Functions */
 
-extern int sys_step(struct _system *this);
-extern void sys_backstep(struct _system *this);
-extern void sys_reboot(struct _system *this);
+extern int vmcu_system_step(vmcu_system_t *this);
+extern void vmcu_system_backstep(vmcu_system_t *this);
+extern void vmcu_system_reboot(vmcu_system_t *this);
 
 /* GPR Operations */
 
-extern void sys_write_gpr(struct _system *this, const int rx, const int8_t data);
-extern int8_t sys_read_gpr(const struct _system *this, const int rx);
-extern void sys_gpr_coi(const struct _system *this, array_t *buffer);
-extern int8_t* sys_dump_gpr(const struct _system *this);
+extern void vmcu_system_write_gpr(vmcu_system_t *this, const int rx, const int8_t data);
+extern int8_t vmcu_system_read_gpr(const vmcu_system_t *this, const int rx);
+extern int8_t* vmcu_system_dump_gpr(const vmcu_system_t *this);
 
 /* SREG Operations */
 
-extern void sys_write_sreg(struct _system *this, const int flag, const bool bit);
-extern bool sys_read_sreg(const struct _system *this, const int flag);
-extern void sys_sreg_coi(const struct _system *this, array_t *buffer);
-extern uint8_t sys_dump_sreg(const struct _system *this);
+extern void vmcu_system_write_sreg(vmcu_system_t *this, const int flag, const bool bit);
+extern bool vmcu_system_read_sreg(const vmcu_system_t *this, const int flag);
+extern uint8_t vmcu_system_dump_sreg(const vmcu_system_t *this);
 
 /* FLASH Operations */
 
-extern progmem_t* sys_read_progmem(const struct _system *this, const int addr);
-extern uint16_t sys_read_flash(const struct _system *this, const int addr);
-extern void sys_move_pc(const struct _system *this, const int inc);
-extern void sys_set_pc(struct _system *this, const int addr);
-extern int sys_get_pc(const struct _system *this);
+extern vmcu_progmem_t* vmcu_system_read_progmem(const vmcu_system_t *this, const int addr);
+extern uint16_t vmcu_system_read_flash(const vmcu_system_t *this, const int addr);
+extern void vmcu_system_move_pc(const vmcu_system_t *this, const int inc);
+extern void vmcu_system_set_pc(vmcu_system_t *this, const int addr);
+extern int vmcu_system_get_pc(const vmcu_system_t *this);
 
 /* DATA Operations */
 
-extern void sys_push_stack(struct _system *this, const int8_t value);
-extern int8_t sys_pop_stack(const struct _system *this);
-extern void sys_write_data(struct _system *this, const uint16_t addr, const int8_t value);
-extern int8_t sys_read_data(const struct _system *this, const uint16_t addr);
-extern void sys_data_coi(const struct _system *this, tuple_t *buffer);
-extern int8_t* sys_dump_data(const struct _system *this);
+extern void vmcu_system_push_stack(vmcu_system_t *this, const int8_t value);
+extern int8_t vmcu_system_pop_stack(const vmcu_system_t *this);
+extern void vmcu_system_write_data(vmcu_system_t *this, const uint16_t addr, const int8_t value);
+extern int8_t vmcu_system_read_data(const vmcu_system_t *this, const uint16_t addr);
+extern int8_t* vmcu_system_dump_data(const vmcu_system_t *this);
 
 /* IO/SFR Operations */
 
-extern void sys_set_sfr(struct _system *this, const uint16_t addr, const int bit);
-extern void sys_clear_sfr(struct _system *this, const uint16_t addr, const int bit);
+extern void vmcu_system_set_sfr(vmcu_system_t *this, const uint16_t addr, const int bit);
+extern void vmcu_system_clear_sfr(vmcu_system_t *this, const uint16_t addr, const int bit);
 
 /* EEPROM Operations */
 
-extern int8_t* sys_dump_eeprom(const struct _system *this);
+extern int8_t* vmcu_system_dump_eeprom(const vmcu_system_t *this);
 
 #endif

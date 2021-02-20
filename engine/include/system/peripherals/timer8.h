@@ -1,16 +1,16 @@
 /* 8-bit Timer Header */
 
-#ifndef TIMER8_H
-#define TIMER8_H
+#ifndef VMCU_TIMER8_H
+#define VMCU_TIMER8_H
 
 // C Headers
 #include <stdbool.h>
 #include <inttypes.h>
 
-typedef struct _irq irq_t;
-typedef enum { TC0, TC2 } TCX;
+typedef struct vmcu_irq vmcu_irq_t;
+typedef enum { VMCU_TC0, VMCU_TC2 } VMCU_TCX;
 
-typedef struct _timer8 {
+typedef struct vmcu_timer8 {
 
     uint8_t *tcnt;			/* Timer/Counter */
     
@@ -35,18 +35,18 @@ typedef struct _timer8 {
     uint16_t prescaler;		/* Clocksource's Prescaler */
     uint16_t countdown;		/* Timer Countdown */
 
-} timer8_t;
+} vmcu_timer8_t;
 
-extern struct _timer8* timer8_ctor(const TCX timer_id, int8_t *memory);
-extern void timer8_dtor(struct _timer8 *this);
+extern vmcu_timer8_t* vmcu_timer8_ctor(const VMCU_TCX timer_id, int8_t *memory);
+extern void vmcu_timer8_dtor(vmcu_timer8_t *this);
 
-extern void timer8_update(struct _timer8 *this, irq_t *irq, const uint64_t dc);
-extern void timer8_update_prescaler(struct _timer8 *this);
+extern void vmcu_timer8_update(vmcu_timer8_t *this, vmcu_irq_t *irq, uint64_t dc);
+extern void vmcu_timer8_update_prescaler(vmcu_timer8_t *this);
 
-extern void timer8_force_ocpa(struct _timer8 *this);
-extern void timer8_force_ocpb(struct _timer8 *this);
+extern void vmcu_timer8_force_ocpa(vmcu_timer8_t *this);
+extern void vmcu_timer8_force_ocpb(vmcu_timer8_t *this);
 
-extern bool timer8_is_busy(struct _timer8 *this);
-extern void timer8_reboot(struct _timer8 *this);
+extern bool vmcu_timer8_is_busy(vmcu_timer8_t *this);
+extern void vmcu_timer8_reboot(vmcu_timer8_t *this);
 
 #endif

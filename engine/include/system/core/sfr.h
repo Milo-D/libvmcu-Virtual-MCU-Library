@@ -1,13 +1,13 @@
 /* SFR Header */
 
-#ifndef SFR_H
-#define SFR_H
+#ifndef VMCU_SFR_H
+#define VMCU_SFR_H
 
 // C Headers
 #include <inttypes.h>
 
-// Project Headers (engine)
-#include "engine/include/system/mcudef.h"
+// Project Headers (engine utilities)
+#include "engine/include/arch/mcudef.h"
 
 /*
  * This file belongs to the IO Module but is
@@ -19,12 +19,12 @@
  * 
  **/
 
-typedef struct _io io_t;
+typedef struct vmcu_io vmcu_io_t;
 
-extern void (*sfr_set[SFRL_SIZE]) (io_t *this, const int bit);
-extern void (*sfr_clear[SFRL_SIZE]) (io_t *this, const int bit);
+extern void (*vmcu_sfr_set[SFRL_SIZE]) (vmcu_io_t *this, const int bit);
+extern void (*vmcu_sfr_clear[SFRL_SIZE]) (vmcu_io_t *this, const int bit);
 
-extern void (*sfr_write[SFR_SIZE]) (io_t *this, const int8_t value);
-extern int8_t (*sfr_read[SFR_SIZE]) (io_t *this);
+extern void (*vmcu_sfr_write[SFR_SIZE]) (vmcu_io_t *this, const int8_t value);
+extern int8_t (*vmcu_sfr_read[SFR_SIZE]) (vmcu_io_t *this);
 
 #endif

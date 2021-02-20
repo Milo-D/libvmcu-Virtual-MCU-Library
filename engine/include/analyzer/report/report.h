@@ -1,7 +1,7 @@
 /* Report (Data-Structure) Header */
 
-#ifndef REPORT_H
-#define REPORT_H
+#ifndef VMCU_REPORT_H
+#define VMCU_REPORT_H
 
 // C Headers
 #include <inttypes.h>
@@ -10,17 +10,17 @@
 #include "engine/include/analyzer/report/plain.h"
 #include "engine/include/analyzer/report/label.h"
 
-typedef struct _report {
+typedef struct vmcu_report {
     
     int32_t progsize;
-    plain_t *disassembly;
+    vmcu_plain_t *disassembly;
 
     int32_t nlabels;
-    label_t *labels;
+    vmcu_label_t *labels;
 
-} report_t;
+} vmcu_report_t;
 
-extern struct _report* report_ctor(const char *file);
-extern void report_dtor(struct _report *this);
+extern vmcu_report_t* vmcu_report_ctor(const char *file);
+extern void vmcu_report_dtor(vmcu_report_t *this);
 
 #endif

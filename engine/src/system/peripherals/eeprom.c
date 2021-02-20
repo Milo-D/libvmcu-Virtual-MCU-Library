@@ -8,32 +8,32 @@
 // Project Headers (engine)
 #include "engine/include/system/peripherals/eeprom.h"
 #include "engine/include/system/core/irq.h"
-#include "engine/include/system/mcudef.h"
 
-// Project Headers (shared)
-#include "shared/include/misc/bitmanip.h"
+// Project Headers (engine utilities)
+#include "engine/include/arch/mcudef.h"
+#include "engine/include/misc/bitmanip.h"
 
 #define NMOD 4
 #define UNDEFINED -1
 
 /* Forward Declaration of static Functions */
 
-static void eeprom_exec_atomic_ew(struct _eeprom *this);
-static void eeprom_exec_erase(struct _eeprom *this);
-static void eeprom_exec_write(struct _eeprom *this);
-static void eeprom_exec_reserved(struct _eeprom *this);
+static void eeprom_exec_atomic_ew(vmcu_eeprom_t *this);
+static void eeprom_exec_erase(vmcu_eeprom_t *this);
+static void eeprom_exec_write(vmcu_eeprom_t *this);
+static void eeprom_exec_reserved(vmcu_eeprom_t *this);
 
 /* Forward Declaration of static Members */
 
-static void (*exec[NMOD]) (struct _eeprom *this);
+static void (*exec[NMOD]) (vmcu_eeprom_t *this);
 
 /* --- Extern --- */
 
-struct _eeprom* eeprom_ctor(int8_t *io_memory) {
+vmcu_eeprom_t* vmcu_eeprom_ctor(int8_t *io_memory) {
 
-    struct _eeprom *eeprom;
+    vmcu_eeprom_t *eeprom;
     
-    if((eeprom = malloc(sizeof(struct _eeprom))) == NULL)
+    if((eeprom = malloc(sizeof(vmcu_eeprom_t))) == NULL)
         return NULL;
         
     eeprom->memory = malloc(EEPROM_SIZE * sizeof(int8_t));    
@@ -60,13 +60,13 @@ struct _eeprom* eeprom_ctor(int8_t *io_memory) {
     return eeprom;
 }
 
-void eeprom_dtor(struct _eeprom *this) {
+void vmcu_eeprom_dtor(vmcu_eeprom_t *this) {
 
     free(this->memory);
     free(this);
 }
 
-void eeprom_update(struct _eeprom *this, irq_t *irq, const uint32_t cpu_clk, const uint64_t dc) {
+void vmcu_eeprom_update(vmcu_eeprom_t *this, vmcu_irq_t *irq, uint32_t cpu_clk, uint64_t dc) {
 
     this->cycle += (((double) EEP_CLK / (double) cpu_clk) * (double) dc);
     const int rounded = floor(this->cycle);
@@ -96,21 +96,21 @@ void eeprom_update(struct _eeprom *this, irq_t *irq, const uint32_t cpu_clk, con
     if(bit(*(this->eecr), EERIE) == 0x01) {
 
         if(bit(*(this->eecr), EEPE) == 0x00)
-            irq_enable(irq, ERDY_VECT);
+            vmcu_irq_enable(irq, ERDY_VECT);
     }
 
     this->mw_lock = false;
     this->cycle -= rounded;
 }
 
-void eeprom_enable_write(struct _eeprom *this) {
+void vmcu_eeprom_enable_write(vmcu_eeprom_t *this) {
     
     this->mw_counter = 4;
     this->mw_enabled = true;
     this->mw_lock = true;
 }
 
-void eeprom_try_read(struct _eeprom *this) {
+void vmcu_eeprom_try_read(vmcu_eeprom_t *this) {
 
     if(bit(*(this->eecr), EEPE) == 0x01)
         return;
@@ -126,7 +126,7 @@ void eeprom_try_read(struct _eeprom *this) {
     /* missing: cpu halt (4 cycles) */
 }
 
-int eeprom_try_write(struct _eeprom *this) {
+int vmcu_eeprom_try_write(vmcu_eeprom_t *this) {
 
     if(bit(*(this->eecr), EEPE) == 0x00)
         return -1;
@@ -163,7 +163,7 @@ int eeprom_try_write(struct _eeprom *this) {
     return 0;
 }
 
-bool eeprom_is_busy(struct _eeprom *this) {
+bool vmcu_eeprom_is_busy(vmcu_eeprom_t *this) {
 
     if((*(this->eecr) & (0x01 << EEPE)) != 0x00)
         return true;
@@ -173,16 +173,16 @@ bool eeprom_is_busy(struct _eeprom *this) {
 
     if(this->mw_enabled == true)
         return true;
-        
+
     return false;
 }
 
-int8_t* eeprom_dump(const struct _eeprom *this) {
+int8_t* vmcu_eeprom_dump(const vmcu_eeprom_t *this) {
     
     return this->memory;
 }
 
-void eeprom_reboot(struct _eeprom *this) {
+void vmcu_eeprom_reboot(vmcu_eeprom_t *this) {
     
     memset(this->memory, 0xff, EEPROM_SIZE * sizeof(int8_t));
     
@@ -199,7 +199,7 @@ void eeprom_reboot(struct _eeprom *this) {
 
 /* --- Static --- */
 
-static void eeprom_exec_atomic_ew(struct _eeprom *this) {
+static void eeprom_exec_atomic_ew(vmcu_eeprom_t *this) {
     
     if(this->addr >= EEPROM_SIZE)
         return;
@@ -207,7 +207,7 @@ static void eeprom_exec_atomic_ew(struct _eeprom *this) {
     this->memory[ this->addr ] = this->data;
 }
 
-static void eeprom_exec_erase(struct _eeprom *this) {
+static void eeprom_exec_erase(vmcu_eeprom_t *this) {
 
     if(this->addr >= EEPROM_SIZE)
         return;
@@ -215,7 +215,7 @@ static void eeprom_exec_erase(struct _eeprom *this) {
     this->memory[ this->addr ] = 0xff;
 }
 
-static void eeprom_exec_write(struct _eeprom *this) {
+static void eeprom_exec_write(vmcu_eeprom_t *this) {
     
     if(this->addr >= EEPROM_SIZE)
         return;
@@ -223,13 +223,13 @@ static void eeprom_exec_write(struct _eeprom *this) {
     this->memory[ this->addr ] &= this->data;
 }
 
-static void eeprom_exec_reserved(struct _eeprom *this) {
+static void eeprom_exec_reserved(vmcu_eeprom_t *this) {
     
     /* reserved EEPROM mode */
     return;
 }
 
-static void (*exec[NMOD]) (struct _eeprom *this) = {
+static void (*exec[NMOD]) (vmcu_eeprom_t *this) = {
     
     eeprom_exec_atomic_ew,
     eeprom_exec_erase,

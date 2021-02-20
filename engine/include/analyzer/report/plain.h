@@ -1,7 +1,7 @@
 /* Plain (Data-Structure) Header */
 
-#ifndef PLAIN_H
-#define PLAIN_H
+#ifndef VMCU_PLAIN_H
+#define VMCU_PLAIN_H
 
 // C Headers
 #include <stdbool.h>
@@ -10,29 +10,26 @@
 #include "engine/include/analyzer/report/ikey.h"
 #include "engine/include/analyzer/report/operand.h"
 
-/* 
+/*
 *  plain_t is the main data-structure
 *  for the analyzer pipeline.
 */
 
-typedef struct _plain {
-
-    IKEY key;
+typedef struct vmcu_plain {
 
     int opcode;
     int addr;
-    
+
     bool exec;
     bool dword;
 
     char *mnem;
 
-    operand_t src;
-    operand_t dest;
+    VMCU_IKEY key;
 
-} plain_t;
+    vmcu_operand_t src;
+    vmcu_operand_t dest;
 
-extern void plain_dtor(struct _plain *this);
-extern struct _plain* plain_cpy(const struct _plain *src);
+} vmcu_plain_t;
 
 #endif

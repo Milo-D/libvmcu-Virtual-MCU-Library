@@ -1,15 +1,15 @@
 /* EEPROM Header */
 
-#ifndef EEPROM_H
-#define EEPROM_H
+#ifndef VMCU_EEPROM_H
+#define VMCU_EEPROM_H
 
 // C Headers
 #include <stdbool.h>
 #include <inttypes.h>
 
-typedef struct _irq irq_t;
+typedef struct vmcu_irq vmcu_irq_t;
 
-typedef struct _eeprom {
+typedef struct vmcu_eeprom {
 
     uint8_t *eecr;          /* EEPROM Control Register */
     uint8_t *spmcsr;        /* Store Program Memory Control Register */
@@ -30,20 +30,20 @@ typedef struct _eeprom {
     bool mw_lock;           /* Master Write Tick Enabled */
     int8_t mw_counter;      /* Master Write Counter */
     
-} eeprom_t;
+} vmcu_eeprom_t;
 
-extern struct _eeprom* eeprom_ctor(int8_t *memory);
-extern void eeprom_dtor(struct _eeprom *this);
+extern vmcu_eeprom_t* vmcu_eeprom_ctor(int8_t *memory);
+extern void vmcu_eeprom_dtor(vmcu_eeprom_t *this);
 
-extern void eeprom_update(struct _eeprom *this, irq_t *irq, const uint32_t cpu_clk, const uint64_t dc);
-extern void eeprom_enable_write(struct _eeprom *this);
+extern void vmcu_eeprom_update(vmcu_eeprom_t *this, vmcu_irq_t *irq, uint32_t cpu_clk, uint64_t dc);
+extern void vmcu_eeprom_enable_write(vmcu_eeprom_t *this);
 
-extern void eeprom_try_read(struct _eeprom *this);
-extern int eeprom_try_write(struct _eeprom *this);
+extern void vmcu_eeprom_try_read(vmcu_eeprom_t *this);
+extern int vmcu_eeprom_try_write(vmcu_eeprom_t *this);
 
-extern bool eeprom_is_busy(struct _eeprom *this);
-extern int8_t* eeprom_dump(const struct _eeprom *this);
+extern bool vmcu_eeprom_is_busy(vmcu_eeprom_t *this);
+extern int8_t* vmcu_eeprom_dump(const vmcu_eeprom_t *this);
 
-extern void eeprom_reboot(struct _eeprom *this);
+extern void vmcu_eeprom_reboot(vmcu_eeprom_t *this);
 
 #endif
