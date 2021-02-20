@@ -83,12 +83,6 @@
 * be used instead.
 *
 *
-* [8] Macros (Architecture Macros)
-*
-*
-* [9] Important Note: remove shared opaque structures (array_t, etc.)
-* [10] Important Note: remove early exits
-*
 *
 *
 /******************************************************************************************/
