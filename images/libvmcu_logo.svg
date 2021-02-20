@@ -12,7 +12,7 @@
    viewBox="0 0 200 100"
    height="100mm"
    width="200mm"
-   sodipodi:docname="mdx-logo.svg"
+   sodipodi:docname="libvmcu_logo.svg"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -27,9 +27,9 @@
      inkscape:window-height="1016"
      id="namedview1031"
      showgrid="false"
-     inkscape:zoom="0.85725"
-     inkscape:cx="414.86817"
-     inkscape:cy="65.795646"
+     inkscape:zoom="0.60616729"
+     inkscape:cx="131.37097"
+     inkscape:cy="320.78073"
      inkscape:window-x="72"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
@@ -129,13 +129,13 @@
      id="layer4">
     <text
        id="text4675"
-       y="63.468391"
-       x="30.309683"
-       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48.17017365px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:#444241;stroke-width:0.55274951;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       y="61.831627"
+       x="30.180225"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:31.73696518px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:#444241;stroke-width:0.36417955;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:48.17017365px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#f9f9f9;fill-opacity:1;stroke:#444241;stroke-width:0.55274951;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         y="63.468391"
-         x="30.309683"
-         id="tspan4673">vmcu</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:31.73696518px;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;writing-mode:lr-tb;text-anchor:start;fill:#f9f9f9;fill-opacity:1;stroke:#444241;stroke-width:0.36417955;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         y="61.831627"
+         x="30.180225"
+         id="tspan4673">libvmcu</tspan></text>
   </g>
 </svg>
