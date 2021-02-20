@@ -211,7 +211,7 @@ int main(void) {
 
 # How VMCU works
 
-<img src="https://raw.githubusercontent.com/Milo-D/MDX-Assembly-Debugger/master/images/mdx_analyzer_pipeline.svg" width="50%">
+<img src="https://raw.githubusercontent.com/Milo-D/libvmcu-Virtual-MCU-Library/master/images/vmcu_analyzer_pipeline.svg" width="50%">
 
 **Stage 0:** The very first stage is the decoder. The decoder tries to decode the given Hex File.
 
