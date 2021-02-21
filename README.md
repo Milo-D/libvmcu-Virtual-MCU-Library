@@ -69,52 +69,47 @@ VMCU comes with no further dependencies, thus allowing easy setup and easy usage
 
 # Examples
 
-#### Skeleton for libvmcu
+#### Unit-Test: timer0 interrupt frequency
 
 ```c
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#define PORTB     0x0025
+#define PB5       0x05
 
-#include "libvmcu_analyzer.h"
-#include "libvmcu_system.h"
+#define TESTFILE  "../../driver/led/led.hex"
 
-vmcu_report_t *report = NULL;
-vmcu_system_t *sys    = NULL;
-
-static void cleanup(void);
+#define bit(v, b) ((v & (1 << b)) >> b)
 
 int main(const int argc, const char **argv) {
+
+    uint8_t led;
     
-    if(argc != 2) {
-        
-        printf("Usage: ./skeleton <file.hex>\n");
-        return EXIT_FAILURE;
-    }
+    /* ignoring checks for this example */
+    vmcu_report_t *report = vmcu_analyze_ihex(TESTFILE);
+    vmcu_system_t *sys    = vmcu_system_ctor(report);
     
-    atexit(cleanup);
+    do {
+
+        vmcu_system_step(sys);
+        led = vmcu_system_read_data(sys, PORTB);
+
+    } while(bit(led, PB5) == 0x00);
+
+    const double f    = 16000000U;
+    const double c    = sys->cycles;
+    const double time = (c / f);
+
+    printf("Time between LED toggle: %lf [s]\n", time);
+    assert((0.95 <= time) && (time <= 1.05));
     
-    /* initializing report of file 'argv[1]' */
-    if((report = vmcu_analyze_ihex(argv[1])) == NULL)
-        return EXIT_FAILURE;
-    
-    /* initializing virtual microcontroller */
-    if((sys = vmcu_system_ctor(report)) == NULL)
-        return EXIT_FAILURE;
-    
-    /* do something */
-    
+    vmcu_report_dtor(report);
+    vmcu_system_dtor(sys);
+
     return EXIT_SUCCESS;
 }
+```
 
-static void cleanup(void) {
-    
-    if(report != NULL)
-        vmcu_report_dtor(report);
-    
-    if(sys != NULL)
-        vmcu_system_dtor(sys);
-}
+```console
+[Test Result] Time between LED toggle: 1.000021 [s]
 ```
 
 #### Printing disassembly of an intel hex file
