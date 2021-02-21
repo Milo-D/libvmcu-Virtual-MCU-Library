@@ -57,7 +57,7 @@ Cycle accurate realtime simulation of the microcontroller including its peripher
 The pipeline offers an interface for each stage: decode, decompose, disassemble and analyze.
 Stages can either operate on a single opcode or a whole binary. 
 
-### Combine Static Analysis with Dynamic Analysis
+### Combine Static and Dynamic Analysis
 
 Perform a static analysis on your binary to receive additional information, 
 for example which SFRs are used by the program. Then, use this information
@@ -237,6 +237,17 @@ Currently this library comes with two headers, both can be found in engine/inclu
 Let's say, we have a file called driver.c on top level of this repository 
 and we want to link it with libvmcu:
 
+#### Include libvmcu headers
+```c
+#include "libvmcu_analyzer.h"
+#include "libvmcu_system.h"
+
+int main(void) {
+    
+    return 0;
+}
+```
+
 #### Build libvmcu
 ```console
 You@Terminal:~$ make clean all
@@ -252,7 +263,7 @@ You@Terminal:~$ gcc -Iengine/include/libvmcu/ -c driver.c -o driver.o
 You@Terminal:~$ gcc -o driver driver.o -L/build/apps/ -lvmcu -lm
 ```
 
-That's it. If you face issues, look at some examples in the driver/ directory.
+That's it. If you face issues, take look at some examples in the driver/ directory.
 
 # Supported Microcontroller
 
