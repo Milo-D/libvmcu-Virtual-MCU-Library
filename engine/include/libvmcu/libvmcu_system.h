@@ -3,6 +3,10 @@
 #ifndef LIBVMCU_SYSTEM_INTERFACE_H
 #define LIBVMCU_SYSTEM_INTERFACE_H
 
+// C Headers
+#include <stdbool.h>
+#include <inttypes.h>
+
 /*
  * libvmcu - Virtual Microcontroller Library
  *
@@ -17,12 +21,16 @@
  *
  * */
 
-/* <------------------------------------------- Structures --------------------------------------------> */
+/* <-------------------------------------- Forward Declarations ---------------------------------------> */
+
+typedef struct vmcu_report vmcu_report_t;     ///< analyzer report (forward declared)
 
 typedef struct vmcu_gpr   vmcu_gpr_t;         ///< general purpose register (forward declared) (hidden)
 typedef struct vmcu_sreg  vmcu_sreg_t;        ///< status register (forward declared) (hidden)
 typedef struct vmcu_flash vmcu_flash_t;       ///< FLASH memory (forward declared) (hidden)
 typedef struct vmcu_data  vmcu_data_t;        ///< data space memory (forward declared) (hidden)
+
+/* <------------------------------------------- Structures --------------------------------------------> */
 
 typedef struct vmcu_progmem {                 ///< program memory single
 

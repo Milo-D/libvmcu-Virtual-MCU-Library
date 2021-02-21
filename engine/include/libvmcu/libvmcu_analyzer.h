@@ -23,7 +23,7 @@
 
 /* <------------------------------------------- Enumeration -------------------------------------------> */
 
-typedef enum {                                /// instruction keys
+typedef enum {                                ///< instruction keys
 
     VMCU_DATA = -1,                           ///< data (.dw)
 
@@ -164,7 +164,7 @@ typedef enum {                                /// instruction keys
 
 } VMCU_IKEY;
 
-typedef enum {                                /// operand types
+typedef enum {                                ///< operand types
 
     VMCU_IMM,                                 ///< immediate type (> 8-bit, < 16-bit)
     VMCU_IMM8,                                ///< 8-bit immediate type (signed)
