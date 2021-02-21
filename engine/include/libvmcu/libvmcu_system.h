@@ -8,9 +8,9 @@
  *
  * Copyright (C) 2021 David Milosevic - All Rights Reserved
  * You may use, distribute and modify this code under the
- * terms of the BDS 3-Clause license.
+ * terms of the GPLv2 license.
  *
- * You should have received a copy of the BSD-3 license with
+ * You should have received a copy of the GPLv2 license with
  * this file. If not, please contact me.
  *
  * Email: David.Milosevic@web.de
