@@ -32,10 +32,18 @@ $(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) $(MCU_ARCH) $(INCLUDE) -o $@ -c $<
 
-$(APP_DIR)/$(TARGET): $(OBJECTS)
+
+$(OBJ_DIR)/libvmcu.o: $(OBJECTS)
 	@mkdir -p $(@D)
 	ld -relocatable -o $(OBJ_DIR)/libvmcu.o $(OBJECTS)
+
+$(APP_DIR)/$(TARGET): $(OBJ_DIR)/libvmcu.o
+	@mkdir -p $(@D)
 	ar rcs $(APP_DIR)/$(TARGET) $(OBJ_DIR)/libvmcu.o
+
+shared: CFLAGS += -fPIC
+shared: $(OBJ_DIR)/libvmcu.o
+	ld -shared -fPIC -o $(OBJ_DIR)/libvmcu.so $(OBJECTS)
 
 .PHONY: all build clean release
 
