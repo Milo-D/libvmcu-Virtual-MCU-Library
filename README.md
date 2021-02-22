@@ -322,10 +322,11 @@ All other assembly instructions are working just fine.
 
 # Bindings
 
-Bindings are planned for the following languages
-
+- [x] Java
 - [ ] Python
-- [ ] Java
+
+libvmcu has Java bindings for basic functionalities. For more information
+take a look at bindings/java/
 
 # Contributing
 

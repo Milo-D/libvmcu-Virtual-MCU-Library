@@ -1,11 +1,8 @@
-
 # Java Binding for libvmcu
 
 ## Disclaimer
 This binding is still unfinished but it supports basic library calls for 
-vmcu_system_t and vmcu_report_t.
-
-It is not yet fully tested.
+vmcu_system_t and vmcu_report_t. It is not yet fully tested.
 
 ## Supported libvmcu Features
 - basic System Support (stepping, reading gprs, ...)
@@ -25,6 +22,10 @@ cd driver/basic
 make
 ./run.sh
 ```
+
+## Requirements
+
+- This binding works with libvmcu v.0.7.1
 
 ## Other
 
