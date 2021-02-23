@@ -24,6 +24,12 @@ MODULE_REPORT := src/VMCUReport.h src/VMCUReport.c src/VMCUReport.java
 
 H_INCLUDE := -I../../engine/include/libvmcu
 
+all: wrapper tests
+	cd src; java -Djava.library.path="/home/alex/libvmcu-Virtual-MCU-Library/bindings/java" Tests
+	
+tests: wrapper
+	cd src; javac *.java
+
 wrapper: $(MODULE_SYSTEM) $(MODULE_REPORT) 
 	#create shared lib from the jni wrapper
 	#and libvmcu.so
