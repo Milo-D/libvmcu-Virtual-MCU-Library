@@ -2,6 +2,7 @@
 
 # Unreleased
 
+- Added: Integration tests
 - minor refactor of the ihex decoder
 
 # v.0.7.1 - 2021-02-22
