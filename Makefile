@@ -18,10 +18,11 @@ SRC      :=                                                 \
 	$(wildcard engine/src/decomposer/*.c)                   \
    	$(wildcard engine/src/disassembler/*.c)                 \
    	$(wildcard engine/src/instructions/*.c)                 \
+   	$(wildcard engine/src/misc/*.c)                         \
+   	$(wildcard engine/src/reader/*.c)						\
 	$(wildcard engine/src/system/*.c)                       \
    	$(wildcard engine/src/system/core/*.c)                  \
    	$(wildcard engine/src/system/peripherals/*.c)           \
-   	$(wildcard engine/src/misc/*.c)                         \
 	$(wildcard engine/src/system/util/*.c)                  \
 
 OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)

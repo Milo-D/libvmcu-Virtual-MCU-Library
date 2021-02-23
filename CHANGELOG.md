@@ -2,9 +2,18 @@
 
 # Unreleased
 
-- nothing to log
+- minor refactor of the ihex decoder
 
-# v.0.7.0
+# v.0.7.1 - 2021-02-22
+
+- Added Java Bindings for libvmcu
+    - supports basic functionalities of libvmcu
+
+- Added example of a possible firmware unit test with libvmcu (driver/led/)
+
+- Added option to build libvmcu as a dynamic library
+
+# v.0.7.0 - 2021-02-20
 
 - MDX is now a library for static and dynamic analysis of
   AVR binaries called libvmcu

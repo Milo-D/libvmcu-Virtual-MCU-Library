@@ -72,10 +72,10 @@ VMCU comes with no further dependencies, thus allowing easy setup and easy usage
 #### Unit-Test: timer0 interrupt frequency
 
 ```c
+#define TESTFILE  "../../driver/led/led.hex"
+
 #define PORTB     0x0025
 #define PB5       0x05
-
-#define TESTFILE  "../../driver/led/led.hex"
 
 #define bit(v, b) ((v & (1 << b)) >> b)
 
