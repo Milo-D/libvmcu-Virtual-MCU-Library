@@ -48,8 +48,8 @@ class VMCUReport {
 	public boolean get_disassembly_plain_dword(int addr){
 		return c_report_get_disassembly_plain_dword(c_report, addr);
 	}
-	public String get_disassembly_plain_mnem(int addr){
-		return c_report_get_disassembly_plain_mnem(c_report, addr);
+	public String get_disassembly_plain_mnem(int index){
+		return c_report_get_disassembly_plain_mnem(c_report, index);
 	}
 	public int get_disassembly_plain_key(int addr){
 		return c_report_get_disassembly_plain_key(c_report, addr);
@@ -108,7 +108,7 @@ class VMCUReport {
 	
 	private static native boolean c_report_get_disassembly_plain_dword(long c_report, int addr);
 	
-	private static native String c_report_get_disassembly_plain_mnem(long c_report, int addr);
+	private static native String c_report_get_disassembly_plain_mnem(long c_report, int index);
 	
 	private static native int c_report_get_disassembly_plain_key(long c_report, int addr);
 	

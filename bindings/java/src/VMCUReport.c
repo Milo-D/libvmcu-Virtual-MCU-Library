@@ -136,14 +136,14 @@ JNIEXPORT jboolean JNICALL Java_VMCUReport_c_1report_1get_1disassembly_1plain_1d
  * Signature: (JI)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_VMCUReport_c_1report_1get_1disassembly_1plain_1mnem
-  (JNIEnv* env, jclass obj, jlong ptr, jint addr){
+  (JNIEnv* env, jclass obj, jlong ptr, jint index){
 
 	(void)env;
 	(void)obj;
 
 	vmcu_report_t* report = (vmcu_report_t*)ptr;
 	
-	char* outCStr = report->disassembly[(int)addr].mnem;
+	char* outCStr = report->disassembly[(int)index].mnem;
 	
 	return (*env)->NewStringUTF(env, outCStr);
 }

@@ -31,6 +31,8 @@ public class VMCUSystem {
 	
 	public void backstep(){ c_system_backstep(c_system); }
 	
+	public int get_steps(){ return c_system_get_steps(c_system); }
+	
 	public void reboot(){ c_system_reboot(c_system); }
 	
 	public void write_gpr(int rx, int data){ 
@@ -138,6 +140,7 @@ public class VMCUSystem {
 	//-------------------------------------------------------
 	private static native int c_system_step(long ptr);
 	private static native void c_system_backstep(long ptr);
+	private static native int c_system_get_steps(long ptr);
 	
 	private static native void c_system_reboot(long ptr);
 	private static native void c_system_write_gpr(long ptr, int rx, int data);

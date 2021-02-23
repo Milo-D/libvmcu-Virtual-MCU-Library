@@ -123,6 +123,22 @@ JNIEXPORT void JNICALL Java_VMCUSystem_c_1system_1backstep
 
 /*
  * Class:     VMCUSystem
+ * Method:    c_system_get_steps
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_VMCUSystem_c_1system_1get_1steps
+  (JNIEnv *env, jclass obj, jlong ptr){
+  
+	(void)env;
+	(void)obj;
+
+	vmcu_system_t* sys = (vmcu_system_t*)ptr;
+	return (jint) sys->steps;
+}
+
+
+/*
+ * Class:     VMCUSystem
  * Method:    c_system_reboot
  * Signature: (J)V
  */
