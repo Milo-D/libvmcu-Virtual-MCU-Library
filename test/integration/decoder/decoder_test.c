@@ -14,7 +14,11 @@
 #define DFL   "\033[0m"
 #define GREEN "\033[32;1m"
 
+#define PASSED printf("%s PASSED %s\n", GREEN, DFL)
+
 /* Forward Declaration of static Functions */
+
+static void test_decode_ihex_no_file(void);
 
 static void test_decode_bytes_ffcf(void);
 static void test_decode_bytes_0000(void);
@@ -24,6 +28,11 @@ static void test_decode_bytes_0000(void);
 void test_decoder(void) {
 
     printf("\nCurrently testing: Decoder\n");
+
+    printf("|\n");
+    printf("|---- ");
+
+    test_decode_ihex_no_file();
 
     printf("|\n");
     printf("|---- ");
@@ -40,9 +49,22 @@ void test_decoder(void) {
 
 /* --- Static --- */
 
+static void test_decode_ihex_no_file(void) {
+
+    printf("vmcu_decode_ihex() - nofile");
+
+    int32_t size = 0;
+    const char *f = " ";
+
+    vmcu_plain_t *buffer = vmcu_decode_ihex(f, &size);
+    assert(buffer == NULL);
+
+    PASSED;
+}
+
 static void test_decode_bytes_ffcf(void) {
 
-    printf("vmcu_decode_bytes(0xffcf)");
+    printf("vmcu_decode_bytes() - 0xffcf");
 
     vmcu_plain_t instr;
     vmcu_decode_bytes(0xffcf, &instr);
@@ -53,12 +75,12 @@ static void test_decode_bytes_ffcf(void) {
     assert(instr.exec   == true);
     assert(instr.dword  == false);
 
-    printf("%s PASSED %s\n", GREEN, DFL);
+    PASSED;
 }
 
 static void test_decode_bytes_0000(void) {
 
-    printf("vmcu_decode_bytes(0x0000)");
+    printf("vmcu_decode_bytes() - 0x0000");
 
     vmcu_plain_t instr;
     vmcu_decode_bytes(0x0000, &instr);
@@ -69,6 +91,6 @@ static void test_decode_bytes_0000(void) {
     assert(instr.exec   == true);
     assert(instr.dword  == false);
 
-    printf("%s PASSED %s\n", GREEN, DFL);
+    PASSED;
 }
 
