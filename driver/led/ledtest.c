@@ -53,8 +53,8 @@ int main(const int argc, const char **argv) {
     const double c    = sys->cycles;
     const double time = (c / f);
 
-    printf("Time between LED toggle: %lf [s]\n", time);
     assert((0.90 <= time) && (time <= 1.10));
+    printf("Time between LED toggle: %lf [s]\n", time);
 
     return EXIT_SUCCESS;
 }

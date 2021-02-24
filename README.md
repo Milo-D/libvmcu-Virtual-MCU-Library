@@ -97,9 +97,9 @@ int main(const int argc, const char **argv) {
     const double f    = 16000000U;
     const double c    = sys->cycles;
     const double time = (c / f);
-
-    printf("Time between LED toggle: %lf [s]\n", time);
+    
     assert((0.95 <= time) && (time <= 1.05));
+    printf("Time between LED toggle: %lf [s]\n", time);
     
     vmcu_report_dtor(report);
     vmcu_system_dtor(sys);
