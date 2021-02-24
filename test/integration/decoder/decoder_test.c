@@ -16,6 +16,14 @@
 
 #define PASSED printf("%s PASSED %s\n", GREEN, DFL)
 
+/*
+ * brlo shadows brcs.
+ * cl<x> shadows bclr.
+ *
+ * todo: remove brcs, bclr
+ *
+ * */
+
 /* Forward Declaration of static Functions */
 
 static void test_decode_bytes_adc(void);
@@ -25,6 +33,7 @@ static void test_decode_bytes_and(void);
 static void test_decode_bytes_andi(void);
 static void test_decode_bytes_asr(void);
 static void test_decode_bytes_bld(void);
+static void test_decode_bytes_brcc(void);
 
 /* --- Extern --- */
 
@@ -66,6 +75,11 @@ void test_decoder(void) {
     printf("|---- ");
 
     test_decode_bytes_bld();
+
+    printf("|\n");
+    printf("|---- ");
+
+    test_decode_bytes_brcc();
 
     printf("\n");
 }
@@ -233,6 +247,30 @@ static void test_decode_bytes_bld(void) {
 
     assert(instr.key    == VMCU_BLD);
     assert(instr.opcode == 0xf807);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    PASSED;
+}
+
+static void test_decode_bytes_brcc(void) {
+
+    printf("vmcu_decode_bytes() - BRCC");
+
+    vmcu_plain_t instr;
+    vmcu_decode_bytes(0x00f4, &instr);
+
+    assert(instr.key    == VMCU_BRCC);
+    assert(instr.opcode == 0xf400);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x08f4, &instr);
+
+    assert(instr.key    == VMCU_BRCC);
+    assert(instr.opcode == 0xf408);
     assert(instr.addr   == 0x0000);
     assert(instr.exec   == true);
     assert(instr.dword  == false);
