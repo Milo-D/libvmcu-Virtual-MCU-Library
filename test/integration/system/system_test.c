@@ -19,14 +19,16 @@
 
 /* Test Files for the dynamic analysis */
 
-#define IHEX_KMP  "../../examples/m328p/algo/kmp.hex"
-#define IHEX_ERDY "../../examples/m328p/peripherals/eeprom/erdy.hex"
-#define IHEX_DFS  "../../examples/m32/smalldragon/dfs.hex"
+#define IHEX_KMP   "../../examples/m328p/algo/kmp.hex"
+#define IHEX_ERDY  "../../examples/m328p/peripherals/eeprom/erdy.hex"
+#define IHEX_EONLY "../../examples/m328p/peripherals/eeprom/eonly.hex"
+#define IHEX_DFS   "../../examples/m32/smalldragon/dfs.hex"
 
 /* Forward Declaration of static Functions */
 
 static void test_ihex_kmp(void);
 static void test_ihex_erdy(void);
+static void test_ihex_eonly(void);
 static void test_ihex_dfs(void);
 
 /* --- Extern --- */
@@ -44,6 +46,11 @@ void test_system(void) {
     printf("|---- ");
 
     test_ihex_erdy();
+
+    printf("|\n");
+    printf("|---- ");
+
+    test_ihex_eonly();
 
     printf("|\n");
     printf("|---- ");
@@ -99,6 +106,38 @@ static void test_ihex_erdy(void) {
     };
 
     assert(strcmp(msg, "ERDY_Test") == 0);
+
+    vmcu_report_dtor(report);
+    vmcu_system_dtor(sys);
+
+    PASSED;
+}
+
+static void test_ihex_eonly(void) {
+
+    printf("Simulating eonly.hex");
+
+    vmcu_report_t *report = vmcu_analyze_ihex(IHEX_EONLY);
+    vmcu_system_t *sys = vmcu_system_ctor(report);
+
+    while(vmcu_system_get_pc(sys) != 0x001e)
+        vmcu_system_step(sys);
+
+    uint8_t *eep = vmcu_system_dump_eeprom(sys);
+
+    char msg[6] = {
+
+        eep[0], eep[1], eep[2],
+        eep[3], eep[4], '\0'
+    };
+
+    assert(strcmp(msg, "EEPRO") == 0);
+
+    while(vmcu_system_get_pc(sys) != 0x0036)
+        vmcu_system_step(sys);
+
+    for(int32_t i = 0x0000; i <= 0x0004; i++)
+        assert(eep[i] == 0xff);
 
     vmcu_report_dtor(report);
     vmcu_system_dtor(sys);
