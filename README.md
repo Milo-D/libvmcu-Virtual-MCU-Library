@@ -47,6 +47,7 @@ libvmcu can be used to
 ### Take one step forward and one back
 
 VMCU supports backstepping. You'll be able to simulate both, forth and back.
+Note that backstepping will erase externally (via write_gpr, ...) added data.
 
 ### Cycle accurate realtime Simulation
 
