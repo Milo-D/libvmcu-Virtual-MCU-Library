@@ -23,6 +23,8 @@ static void test_decode_bytes_add(void);
 static void test_decode_bytes_adiw(void);
 static void test_decode_bytes_and(void);
 static void test_decode_bytes_andi(void);
+static void test_decode_bytes_asr(void);
+static void test_decode_bytes_bld(void);
 
 /* --- Extern --- */
 
@@ -54,6 +56,16 @@ void test_decoder(void) {
     printf("|---- ");
 
     test_decode_bytes_andi();
+
+    printf("|\n");
+    printf("|---- ");
+
+    test_decode_bytes_asr();
+
+    printf("|\n");
+    printf("|---- ");
+
+    test_decode_bytes_bld();
 
     printf("\n");
 }
@@ -173,6 +185,54 @@ static void test_decode_bytes_andi(void) {
 
     assert(instr.key    == VMCU_ANDI);
     assert(instr.opcode == 0x72c8);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    PASSED;
+}
+
+static void test_decode_bytes_asr(void) {
+
+    printf("vmcu_decode_bytes() - ASR");
+
+    vmcu_plain_t instr;
+    vmcu_decode_bytes(0x0594, &instr);
+
+    assert(instr.key    == VMCU_ASR);
+    assert(instr.opcode == 0x9405);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0xf595, &instr);
+
+    assert(instr.key    == VMCU_ASR);
+    assert(instr.opcode == 0x95f5);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    PASSED;
+}
+
+static void test_decode_bytes_bld(void) {
+
+    printf("vmcu_decode_bytes() - BLD");
+
+    vmcu_plain_t instr;
+    vmcu_decode_bytes(0x00f8, &instr);
+
+    assert(instr.key    == VMCU_BLD);
+    assert(instr.opcode == 0xf800);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x07f8, &instr);
+
+    assert(instr.key    == VMCU_BLD);
+    assert(instr.opcode == 0xf807);
     assert(instr.addr   == 0x0000);
     assert(instr.exec   == true);
     assert(instr.dword  == false);
