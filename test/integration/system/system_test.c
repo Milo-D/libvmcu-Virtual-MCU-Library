@@ -19,10 +19,11 @@
 
 /* Test Files for the dynamic analysis */
 
-#define IHEX_KMP   "../../examples/m328p/algo/kmp.hex"
-#define IHEX_ERDY  "../../examples/m328p/peripherals/eeprom/erdy.hex"
-#define IHEX_EONLY "../../examples/m328p/peripherals/eeprom/eonly.hex"
-#define IHEX_DFS   "../../examples/m32/smalldragon/dfs.hex"
+#define IHEX_KMP    "../../examples/m328p/algo/kmp.hex"
+#define IHEX_ERDY   "../../examples/m328p/peripherals/eeprom/erdy.hex"
+#define IHEX_EONLY  "../../examples/m328p/peripherals/eeprom/eonly.hex"
+#define IHEX_DFS    "../../examples/m32/smalldragon/dfs.hex"
+#define IHEX_TOV    "../../examples/m328p/peripherals/timer0/tov.hex"
 
 /* Forward Declaration of static Functions */
 
@@ -30,6 +31,7 @@ static void test_ihex_kmp(void);
 static void test_ihex_erdy(void);
 static void test_ihex_eonly(void);
 static void test_ihex_dfs(void);
+static void test_ihex_tov(void);
 
 /* --- Extern --- */
 
@@ -56,6 +58,11 @@ void test_system(void) {
     printf("    |---- ");
 
     test_ihex_dfs();
+
+    printf("    |\n");
+    printf("    |---- ");
+
+    test_ihex_tov();
 
     printf("\n");
 }
@@ -157,6 +164,41 @@ static void test_ihex_dfs(void) {
 
     uint8_t *ds = vmcu_system_dump_data(sys);
     assert(ds[0x015a] == 0x0b);
+
+    vmcu_report_dtor(report);
+    vmcu_system_dtor(sys);
+
+    PASSED;
+}
+
+static void test_ihex_tov(void) {
+
+    printf("Simulating tov.hex");
+
+    vmcu_report_t *report = vmcu_analyze_ihex(IHEX_TOV);
+    vmcu_system_t *sys = vmcu_system_ctor(report);
+
+    uint8_t irqc = 0;
+
+    const uint16_t resolution = 0x100;
+    const uint8_t prescaler = 64;
+    const uint8_t irq_max = 2;
+    const uint8_t start = 26;
+
+    uint32_t timeout = (resolution * prescaler * irq_max);
+    timeout += start;
+
+    while(irqc != 2) {
+
+        if(vmcu_system_get_pc(sys) == 0x0040)
+            irqc += 1;
+
+        if(irqc == irq_max)
+            break;
+
+        assert(sys->cycles < timeout);
+        vmcu_system_step(sys);
+    }
 
     vmcu_report_dtor(report);
     vmcu_system_dtor(sys);
