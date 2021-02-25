@@ -37,23 +37,23 @@ void test_system(void) {
 
     printf("\nCurrently testing: System\n");
 
-    printf("|\n");
-    printf("|---- ");
+    printf("    |\n");
+    printf("    |---- ");
 
     test_ihex_kmp();
 
-    printf("|\n");
-    printf("|---- ");
+    printf("    |\n");
+    printf("    |---- ");
 
     test_ihex_erdy();
 
-    printf("|\n");
-    printf("|---- ");
+    printf("    |\n");
+    printf("    |---- ");
 
     test_ihex_eonly();
 
-    printf("|\n");
-    printf("|---- ");
+    printf("    |\n");
+    printf("    |---- ");
 
     test_ihex_dfs();
 
