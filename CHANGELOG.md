@@ -2,8 +2,16 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.7.2 - 2021-02-26
+
 - Improved stepper driver
+  
 - Added: Integration tests
+  - system integration tests
+  - decoder integration tests
+  
 - minor refactor of the ihex decoder
 
 # v.0.7.1 - 2021-02-22
