@@ -6,7 +6,7 @@ INCLUDE  := -I../../engine/include/libvmcu/
 LIBS	 := -lvmcu -lm
 
 driver: sandbox.c
-	@cd ..;cd ..;make clean all
+	@cd ..;cd ..;make all
 	@mkdir -p $(OBJ_DIR)/driver/$(TARGET)
 	gcc $(INCLUDE) -c sandbox.c -o $(OBJ_DIR)/driver/$(TARGET)/$(TARGET).o
 	gcc -o $(APP_DIR)/$(TARGET) $(OBJ_DIR)/driver/$(TARGET)/$(TARGET).o -L$(APP_DIR)/ $(LIBS)

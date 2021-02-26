@@ -2,6 +2,7 @@
 
 # Unreleased
 
+- Improved stepper driver
 - Added: Integration tests
 - minor refactor of the ihex decoder
 

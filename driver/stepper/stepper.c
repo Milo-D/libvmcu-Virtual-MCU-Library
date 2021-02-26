@@ -10,6 +10,8 @@
 #include "libvmcu_analyzer.h"
 #include "libvmcu_system.h"
 
+#define MAX 20
+
 /* libvmcu Structures */
 
 vmcu_report_t *report = NULL;
@@ -18,6 +20,7 @@ vmcu_system_t *sys    = NULL;
 /* Forward Declaration of static Functions */
 
 static void print_disassembly(const int32_t pc);
+static int find_pc(const int32_t pc);
 static void cleanup(void);
 
 /* --- Extern --- */
@@ -60,10 +63,22 @@ int main(const int argc, const char **argv) {
 
 static void print_disassembly(const int32_t pc) {
 
-    for(int i = 0; i < report->progsize; i++) {
+    int index;
+
+    if((index = find_pc(pc)) < 0)
+        return;
+
+    system("clear");
+
+    for(int i = (index - MAX); i <= (index + MAX) ; i++) {
+
+        if(i < 0 || i >= report->progsize) {
+
+            printf("\n");
+            continue;
+        }
 
         vmcu_plain_t *p = &report->disassembly[i];
-
         printf("0x%04x", p->addr);
 
         if(p->addr == pc)
@@ -73,6 +88,17 @@ static void print_disassembly(const int32_t pc) {
 
         printf("%s\n", p->mnem);
     }
+}
+
+static int find_pc(const int32_t pc) {
+
+    for(int i = 0; i < report->progsize; i++) {
+
+        if(report->disassembly[i].addr == pc)
+            return i;
+    }
+
+    return -1;
 }
 
 static void cleanup(void) {
