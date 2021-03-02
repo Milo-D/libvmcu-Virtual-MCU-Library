@@ -1947,7 +1947,15 @@ void execute_or(vmcu_system_t *sys, const int opcode) {
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
 
-    vmcu_system_write_gpr(sys, dest, dest_val | src_val);
+    const int8_t result = dest_val | src_val;
+    const int8_t nf_res = bit(result, 7);
+
+    vmcu_system_write_sreg(sys, VF, 0x00);
+    vmcu_system_write_sreg(sys, NF, nf_res);
+    vmcu_system_write_sreg(sys, SF, nf_res ^ 0);
+    vmcu_system_write_sreg(sys, ZF, (result == 0x00));
+
+    vmcu_system_write_gpr(sys, dest, result);
 
     vmcu_system_move_pc(sys, 1);
     sys->cycles += 1;
