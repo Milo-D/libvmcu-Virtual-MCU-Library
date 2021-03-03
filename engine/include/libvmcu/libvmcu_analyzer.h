@@ -189,22 +189,6 @@ typedef struct vmcu_operand {                 ///< operand structure
 
 } vmcu_operand_t;
 
-typedef struct vmcu_caller {                  ///< caller/jumper structure
-
-    uint16_t addr;                            ///< address of caller/jumper
-
-} vmcu_caller_t;
-
-typedef struct vmcu_label {                   ///< label structure
-
-    uint16_t id;                              ///< unique label identifier
-    uint16_t addr;                            ///< label address
-
-    int32_t ncallers;                         ///< caller/jumper count
-    vmcu_caller_t *caller;                    ///< caller/jumper list
-
-} vmcu_label_t;
-
 typedef struct vmcu_plain {                   ///< plain structure (represents an instruction)
 
     int opcode;                               ///< 16-bit or 32-bit opcode (todo: change type to uint32)
@@ -221,6 +205,22 @@ typedef struct vmcu_plain {                   ///< plain structure (represents a
     vmcu_operand_t dest;                      ///< destination operand (left operand)
 
 } vmcu_plain_t;
+
+typedef struct vmcu_xref {                    ///< xref (from) structure
+
+    vmcu_plain_t *p;                          ///< cross reference to plain
+
+} vmcu_xref_t;
+
+typedef struct vmcu_label {                   ///< label structure
+
+    uint16_t id;                              ///< unique label identifier
+    uint16_t addr;                            ///< label address
+
+    int32_t nxrefs;                           ///< xref (from) count
+    vmcu_xref_t *xrefs;                       ///< xref list
+
+} vmcu_label_t;
 
 typedef struct vmcu_report {                  ///< report summary of the analyzer pipeline
 

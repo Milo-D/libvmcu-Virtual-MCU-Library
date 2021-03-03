@@ -4,6 +4,20 @@
 
 - nothing to log
 
+# v.0.7.3
+
+- Added: xrefs (xref-from)
+  - a xref holds a reference to vmcu_plain_t, so that
+    all instruction-specific details can be accessed
+    through an instance of vmcu_xref_t
+  - for example: xref->p->mnem, xref->p->addr, etc.
+    
+  - replaced vmcu_caller_t with vmcu_xref_t
+  - labels now have xrefs
+
+- Bug fix in 'or' assembly instruction
+  - forgot to set flags. Sorry :(
+
 # v.0.7.2 - 2021-02-26
 
 - Improved stepper driver

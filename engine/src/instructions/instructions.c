@@ -128,7 +128,7 @@ void execute_fmuls(vmcu_system_t *sys, const int opcode) {
 
     const uint8_t rl = (res_shift & 0x00ff);
     const uint8_t rh = ((uint16_t) (res_shift & 0xff00)) >> 8;
-    
+
     vmcu_system_write_sreg(sys, CF, bit(result, 15));
     vmcu_system_write_sreg(sys, ZF, (res_shift == 0x00));
     

@@ -150,7 +150,7 @@ int main(void) {
 }
 ```
 
-#### Printing jumpers/callers of potential labels
+#### Printing xrefs of potential labels
 
 ```c
 int main(void) {
@@ -159,14 +159,19 @@ int main(void) {
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
     
     for(int32_t i = 0; i < report->nlabels; i++) {
-        
+
         vmcu_label_t *lx = &report->labels[i];
-        printf("Label %d @ 0x%04x called/jumped by:\n", lx->id, lx->addr);
-        
-        for(int32_t j = 0; j < lx->ncallers; j++)
-            printf("0x%04x\n", lx->caller[j].addr);
-        
-        printf("\n\n");
+        printf("0x%04x\tL%d\n\n", lx->addr, lx->id);
+
+        for(int32_t j = 0; j < lx->nxrefs; j++) {
+
+            vmcu_xref_t *x = &lx->xrefs[j];
+
+            printf(" xref from 0x%04x ", x->p->addr);
+            printf("(%s)\n", x->p->mnem);
+        }
+
+        printf("\n");
     }
     
     vmcu_report_dtor(report);
@@ -298,6 +303,7 @@ the following microcontrollers
 - [x] Decompose and classify instructions
 - [x] Disassembler
 - [x] Analyzer for AVR binaries
+- [x] Cross references (xref-from)
 
 
 - [ ] Analyzer Submodules
@@ -328,6 +334,9 @@ All other assembly instructions are working just fine.
 
 libvmcu has Java bindings for basic functionalities. For more information
 take a look at bindings/java/
+
+Also note that, bindings might not always work with the latest version due to development
+of the engine.
 
 # Contributing
 

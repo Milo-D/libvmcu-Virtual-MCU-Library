@@ -33,8 +33,8 @@ void vmcu_report_dtor(vmcu_report_t *this) {
 
     for(int i = 0; i < this->nlabels; i++) {
 
-        if(this->labels[i].ncallers > 0)
-            free(this->labels[i].caller);
+        if(this->labels[i].nxrefs > 0)
+            free(this->labels[i].xrefs);
     }
 
     if(this->labels != NULL)

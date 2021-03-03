@@ -9,12 +9,12 @@
 #include "engine/include/analyzer/modules/labels/label_analyzer.h"
 #include "engine/include/analyzer/report/report.h"
 
-#define NCALL 10
+#define NXREF 10
 
 /* Forward Declaration of static Functions */
 
 static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size);
-static vmcu_caller_t* get_callers(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size);
+static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size);
 
 static bool is_branch(const VMCU_IKEY key);
 static bool in_disasm(const vmcu_report_t *report, const int addr);
@@ -39,10 +39,10 @@ int vmcu_analyze_labels(vmcu_report_t *report) {
 
         lx->id       = i;
         lx->addr     = field[i];
-        lx->ncallers = 0;
+        lx->nxrefs   = 0;
 
-        int32_t *size = &lx->ncallers;
-        lx->caller = get_callers(report, lx, size);
+        int32_t *size = &lx->nxrefs;
+        lx->xrefs = get_xrefs(report, lx, size);
     }
 
     free(field);
@@ -81,10 +81,10 @@ static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size) {
     return field;
 }
 
-static vmcu_caller_t* get_callers(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size) {
+static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size) {
 
-    int32_t nc = NCALL;
-    vmcu_caller_t *callers = malloc(nc * sizeof(vmcu_caller_t));
+    int32_t nc = NXREF;
+    vmcu_xref_t *xrefs = malloc(nc * sizeof(vmcu_xref_t));
 
     for(int i = 0; i < report->progsize; i++) {
 
@@ -98,26 +98,26 @@ static vmcu_caller_t* get_callers(vmcu_report_t *report, vmcu_label_t *lx, int32
 
         if(*size >= nc) {
 
-            size_t bytes = (nc * 2) * sizeof(vmcu_caller_t);
-            callers = realloc(callers, bytes);
+            size_t bytes = (nc * 2) * sizeof(vmcu_xref_t);
+            xrefs = realloc(xrefs, bytes);
 
             nc *= 2;
         }
 
-        callers[*size].addr = p->addr;
+        xrefs[*size].p = p;
         *size += 1;
     }
 
     if(*size == 0) {
 
-        free(callers);
+        free(xrefs);
         return NULL;
     }
 
-    size_t bytes = *size * sizeof(vmcu_caller_t);
-    callers = realloc(callers, bytes);
+    size_t bytes = *size * sizeof(vmcu_xref_t);
+    xrefs = realloc(xrefs, bytes);
 
-    return callers;
+    return xrefs;
 }
 
 static bool is_branch(const VMCU_IKEY key) {

@@ -7,16 +7,17 @@
 #include <inttypes.h>
 
 // Project Headers
-#include "engine/include/analyzer/report/caller.h"
+#include "engine/include/analyzer/report/xref.h"
 
 typedef struct vmcu_label {
 
     uint16_t id;
     uint16_t addr;
 
-    int32_t ncallers;
-    vmcu_caller_t *caller;
+    int32_t nxrefs;
+    vmcu_xref_t *xrefs;
 
 } vmcu_label_t;
 
 #endif
+
