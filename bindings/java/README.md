@@ -25,7 +25,7 @@ make
 
 ## Requirements
 
-- This binding works with libvmcu v.0.7.1
+- This binding works with libvmcu v.0.7.2
 
 ## Other
 

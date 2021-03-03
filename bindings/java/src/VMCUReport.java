@@ -84,12 +84,7 @@ class VMCUReport {
 	}
 	//------------------
 	static {
-		//it expects libvmcu.so
 		System.loadLibrary("vmcu_wrapped");
-		
-		//for it to find the library:
-		//java -Djava.library.path="/home/alex/libvmcu-Virtual-MCU-Library/bindings/" Main2
-
 	}
 	
 	private static native long c_report_ctor(String filename);
