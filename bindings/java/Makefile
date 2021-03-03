@@ -4,10 +4,9 @@
 
 #https://www3.ntu.edu.sg/home/ehchua/programming/java/JavaNativeInterface.html
 
-#-Djava.library.path must be an absolute path. idk why.
-#java -Djava.library.path="/home/alex/libvmcu-Virtual-MCU-Library/bindings/" Main 
+#-Djava.library.path must be an absolute path
 
-#TODO: make it unspecific to the java version
+#header include paths might have to be adjusted for your java version
 INCLUDE3 := /usr/lib/jvm/java-14-openjdk-amd64/include
 INCLUDE4 := /usr/lib/jvm/java-14-openjdk-amd64/include/linux
 
@@ -25,7 +24,7 @@ MODULE_REPORT := src/VMCUReport.h src/VMCUReport.c src/VMCUReport.java
 H_INCLUDE := -I../../engine/include/libvmcu
 
 all: wrapper tests
-	cd src; java -Djava.library.path="/home/alex/libvmcu-Virtual-MCU-Library/bindings/java" Tests
+	cd src; java -Djava.library.path="$(shell pwd)" Tests
 	
 tests: wrapper
 	cd src; javac *.java
