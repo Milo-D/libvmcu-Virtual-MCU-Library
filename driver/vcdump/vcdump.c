@@ -111,7 +111,7 @@ static void vcdump(vmcu_system_t* sys, uint64_t cycles){
 
 static void vcdump_inner(vmcu_system_t* sys, uint64_t cycles, FILE* fout){
 
-	printf("starting value change dump inner loop...\n");
+	printf("starting vcd trace...\n");
 
 	//watch for changes of values at 'addresses'
 	uint8_t* values = malloc(sizeof(uint8_t)*count_addresses);

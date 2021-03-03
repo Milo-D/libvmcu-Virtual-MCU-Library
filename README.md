@@ -212,6 +212,9 @@ int main(void) {
 ![mdx_debug](https://user-images.githubusercontent.com/46600932/104666434-33f9da80-56d4-11eb-882b-724b13536412.png)
 <sup>A small debugger written with libvmcu</sup>
 
+![vcd_showcase](https://user-images.githubusercontent.com/46600932/109825592-430ffa00-7c3a-11eb-9af3-26175b962ef2.png)
+<sup>VCD-Trace Tool by pointbazaar</sup>
+
 # How VMCU works
 
 <img src="https://raw.githubusercontent.com/Milo-D/libvmcu-Virtual-MCU-Library/master/images/vmcu_analyzer_pipeline.svg" width="50%">

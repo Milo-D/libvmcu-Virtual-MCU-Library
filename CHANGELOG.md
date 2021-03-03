@@ -18,6 +18,8 @@
 - Bug fix in 'or' assembly instruction
   - forgot to set flags. Sorry :(
 
+- Thanks to pointbazaar for the VCD driver
+
 # v.0.7.2 - 2021-02-26
 
 - Improved stepper driver
