@@ -5,6 +5,9 @@
 [![GitHub stars](https://img.shields.io/github/stars/Milo-D/MDX-Assembly-Debugger.svg?style=social&label=Star&maxAge=2592000)](https://GitHub.com/Milo-D/MDX-Assembly-Debugger/stargazers/)
 
 # libvmcu - Virtual MCU Library
+
+<img src="https://raw.githubusercontent.com/Milo-D/libvmcu-Virtual-MCU-Library/master/images/libvmcu_architecture.svg" width="75%">
+
 VMCU is a small engine for static and dynamic analysis of AVR Microcontroller binaries. **This library is
 still in development.**
 
@@ -217,7 +220,7 @@ int main(void) {
 
 # How VMCU works
 
-<img src="https://raw.githubusercontent.com/Milo-D/libvmcu-Virtual-MCU-Library/master/images/libvmcu_architecture.svg" width="75%">
+### Analyzer Pipeline
 
 **Stage 0:** The very first stage is the decoder. The decoder tries to decode the given Hex File.
 
@@ -302,7 +305,6 @@ the following microcontrollers
     
 # Static Analysis
 
-- [x] Intel Hex decoder
 - [x] Decompose and classify instructions
 - [x] Disassembler
 - [x] Analyzer for AVR binaries
@@ -315,6 +317,12 @@ the following microcontrollers
    - [ ] ISR analysis
    - [x] SFR analysis
    - [ ] ...
+
+- [ ] Format Reader
+    - [x] intel hex
+    - [ ] motorola hex
+    - [ ] bin
+    - [ ] elf 
 
 # Instructions
 Currently VMCU supports: ~ 133 Instructions. Some few instructions are implemented as 'nop'
