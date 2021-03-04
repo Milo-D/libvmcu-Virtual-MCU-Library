@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- nothing to log
+- COMn(A/B)x bits are now overriding normal port function
 
 # v.0.7.3
 

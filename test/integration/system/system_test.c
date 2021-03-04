@@ -1,4 +1,4 @@
-//* System Integration Test Implementation */
+/* System Integration Test Implementation */
 
 // C Headers
 #include <stdio.h>

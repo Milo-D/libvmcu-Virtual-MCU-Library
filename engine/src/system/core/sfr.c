@@ -71,7 +71,20 @@ static void set_DDRD(vmcu_io_t *io, const int bit) {
 
 static void set_PORTD(vmcu_io_t *io, const int bit) {
 
-    setbit(io->memory[0x0b], bit);
+    const uint8_t com0a = comtc8a((uint8_t) io->memory[TCCR0A]);
+    const uint8_t com0b = comtc8b((uint8_t) io->memory[TCCR0A]);
+
+    if(bit == OC0A && com0a != 0x00)
+        return;
+
+    if(bit == OC0B && com0b != 0x00)
+        return;
+
+    if(bit(io->memory[DDRD], bit) == 0)
+        return;
+
+    /* todo: once tc2 is available, override this port */
+    setbit(io->memory[PORTD], bit);
 }
 
 static void set_TIFR0(vmcu_io_t *io, const int bit) {
@@ -228,7 +241,20 @@ static void clear_DDRD(vmcu_io_t *io, const int bit) {
 
 static void clear_PORTD(vmcu_io_t *io, const int bit) {
 
-    clearbit(io->memory[0x0b], bit);
+    const uint8_t com0a = comtc8a((uint8_t) io->memory[TCCR0A]);
+    const uint8_t com0b = comtc8b((uint8_t) io->memory[TCCR0A]);
+
+    if(bit == OC0A && com0a != 0x00)
+        return;
+
+    if(bit == OC0B && com0b != 0x00)
+        return;
+
+    if(bit(io->memory[DDRD], bit) == 0)
+        return;
+
+    /* todo: once tc2 is available, override this port */
+    clearbit(io->memory[PORTD], bit);
 }
 
 static void clear_TIFR0(vmcu_io_t *io, const int bit) {
@@ -341,7 +367,14 @@ static void write_DDRD(vmcu_io_t *io, const int8_t value) {
 
 static void write_PORTD(vmcu_io_t *io, const int8_t value) {
 
-    io->memory[0x0b] = value;
+    void (*bitop[2]) (vmcu_io_t *io, const int bit) = {
+
+        clear_PORTD,
+        set_PORTD
+    };
+
+    for(int i = 0; i < 8; i++)
+        (*bitop[ bit(value, i) ])(io, i);
 }
 
 static void write_TIFR0(vmcu_io_t *io, const int8_t value) {
@@ -387,7 +420,11 @@ static void write_GPIOR0(vmcu_io_t *io, const int8_t value) {
 
 static void write_EECR(vmcu_io_t *io, const int8_t value) {
 
-    void (*bitop[2]) (vmcu_io_t *io, const int bit) = { clear_EECR, set_EECR };
+    void (*bitop[2]) (vmcu_io_t *io, const int bit) = {
+
+        clear_EECR,
+        set_EECR
+    };
 
     for(int i = EERE; i <= EEPM1; i++)
         (*bitop[ bit(value, i) ])(io, i);
