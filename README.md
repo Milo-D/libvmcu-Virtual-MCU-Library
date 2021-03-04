@@ -234,6 +234,24 @@ mnemonics and some comments.
 and performs a static analysis on it. It then generates a report and returns it, so that
 a virtual microcontroller can be initialized in order to start a dynamic analysis.
 
+### Virtual System - Core
+
+The virtual system core consists of following components:
+
+**GPRs -** A set of general purpose registers (r0 - r31)
+
+**SREG -** Status Register of the microcontroller
+
+**FLASH -** Storage for program data.
+
+**DATA -** The dataspace contains mapped GPRs, mapped SFRs and SRAM.
+
+**I/O -** This module updates the peripherals and interrupts.
+
+### Virtual System - Peripherals
+
+Peripherals and interrupts are managed by the I/O module (core).
+
 # Setup
 
 Currently this library comes with two headers, both can be found in engine/include/libvmcu:
