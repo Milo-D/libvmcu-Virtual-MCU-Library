@@ -64,7 +64,7 @@ void bubblesort(void **array, int length, int (*compar)(const void *, const void
 
 int main(int argc, char* argv[]) {
 
-    if(argc < 2) {
+    if(argc != 2) {
         printf("Expected hex file argument. exiting.\n");
         return 1;
     }
@@ -91,7 +91,7 @@ int main(int argc, char* argv[]) {
 
         //because VMCU_DATA is -1
         if(p->key == VMCU_DATA) {
-            break;
+            continue;
         }
 
         struct pair* mp = list[p->key];

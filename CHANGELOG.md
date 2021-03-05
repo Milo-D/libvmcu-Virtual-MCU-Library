@@ -2,6 +2,7 @@
 
 # Unreleased
 
+- Bugfix in occurence driver
 - COMn(A/B)x bits are now overriding normal port function
 
 # v.0.7.3
