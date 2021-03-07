@@ -217,8 +217,8 @@ typedef struct vmcu_label {                   ///< label structure
     uint16_t id;                              ///< unique label identifier
     uint16_t addr;                            ///< label address
 
-    int32_t nxrefs;                           ///< xref (from) count
-    vmcu_xref_t *xrefs;                       ///< xref list
+    int32_t n_xref;                           ///< xref (from) count
+    vmcu_xref_t *xref;                        ///< xref list
 
 } vmcu_label_t;
 
@@ -227,8 +227,8 @@ typedef struct vmcu_report {                  ///< report summary of the analyze
     int32_t progsize;                         ///< instruction count
     vmcu_plain_t *disassembly;                ///< instruction list
 
-    int32_t nlabels;                          ///< label count
-    vmcu_label_t *labels;                     ///< label list
+    int32_t n_label;                          ///< label count
+    vmcu_label_t *label;                      ///< label list
 
 } vmcu_report_t;
 

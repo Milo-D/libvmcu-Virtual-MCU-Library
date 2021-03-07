@@ -14,8 +14,8 @@ typedef struct vmcu_label {
     uint16_t id;
     uint16_t addr;
 
-    int32_t nxrefs;
-    vmcu_xref_t *xrefs;
+    int32_t n_xref;
+    vmcu_xref_t *xref;
 
 } vmcu_label_t;
 

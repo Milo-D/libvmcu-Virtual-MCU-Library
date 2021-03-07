@@ -15,8 +15,8 @@ typedef struct vmcu_report {
     int32_t progsize;
     vmcu_plain_t *disassembly;
 
-    int32_t nlabels;
-    vmcu_label_t *labels;
+    int32_t n_label;
+    vmcu_label_t *label;
 
 } vmcu_report_t;
 

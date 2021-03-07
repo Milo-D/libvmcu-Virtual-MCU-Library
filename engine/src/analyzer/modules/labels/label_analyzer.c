@@ -27,22 +27,22 @@ static int cmp_u16(const void *a, const void *b);
 
 int vmcu_analyze_labels(vmcu_report_t *report) {
 
-    uint16_t *field = preprocess_labels(report, &report->nlabels);
-    qsort(field, report->nlabels, sizeof(uint16_t), cmp_u16);
+    uint16_t *field = preprocess_labels(report, &report->n_label);
+    qsort(field, report->n_label, sizeof(uint16_t), cmp_u16);
 
-    size_t bytes = report->nlabels * sizeof(vmcu_label_t);
-    report->labels = malloc(bytes);
+    size_t bytes = report->n_label * sizeof(vmcu_label_t);
+    report->label = malloc(bytes);
 
-    for(int i = 0; i < report->nlabels; i++) {
+    for(int i = 0; i < report->n_label; i++) {
 
-        vmcu_label_t *lx = &report->labels[i];
+        vmcu_label_t *lx = &report->label[i];
 
         lx->id       = i;
         lx->addr     = field[i];
-        lx->nxrefs   = 0;
+        lx->n_xref   = 0;
 
-        int32_t *size = &lx->nxrefs;
-        lx->xrefs = get_xrefs(report, lx, size);
+        int32_t *size = &lx->n_xref;
+        lx->xref = get_xrefs(report, lx, size);
     }
 
     free(field);

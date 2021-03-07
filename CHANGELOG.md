@@ -2,6 +2,12 @@
 
 # Unreleased
 
+- Minor change in naming convention
+  - using singular of structnames instead of plural
+  - using prefix n_ for list counts
+  - example: lists of structs in report: structname
+  - example: list count of structs in report: n_structname
+
 - Bugfix in occurence driver
 - COMn(A/B)x bits are now overriding normal port function
 

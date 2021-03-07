@@ -21,14 +21,14 @@ int main(const int argc, const char **argv) {
     if(report == NULL)
         return EXIT_FAILURE;
 
-    for(int32_t i = 0; i < report->nlabels; i++) {
+    for(int32_t i = 0; i < report->n_label; i++) {
 
-        vmcu_label_t *lx = &report->labels[i];
+        vmcu_label_t *lx = &report->label[i];
         printf("0x%04x\tL%d\n\n", lx->addr, lx->id);
 
-        for(int32_t j = 0; j < lx->nxrefs; j++) {
+        for(int32_t j = 0; j < lx->n_xref; j++) {
 
-            vmcu_xref_t *x = &lx->xrefs[j];
+            vmcu_xref_t *x = &lx->xref[j];
 
             printf("  xref from 0x%04x ", x->p->addr);
             printf("(%s)\n", x->p->mnem);

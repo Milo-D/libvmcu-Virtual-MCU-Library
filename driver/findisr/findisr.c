@@ -15,11 +15,13 @@ vmcu_report_t *report = NULL;
 
 static void cleanup(void);
 
+/* --- Extern --- */
+
 vmcu_label_t* find_label(int address, vmcu_report_t* report) {
 
-    for(int i=0; i < report->nlabels; i++) {
+    for(int i=0; i < report->n_label; i++) {
 
-        vmcu_label_t* label = &report->labels[i];
+        vmcu_label_t* label = &report->label[i];
 
         if(label->addr == address)
             return label;

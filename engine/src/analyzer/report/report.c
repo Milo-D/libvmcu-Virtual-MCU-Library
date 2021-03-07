@@ -17,8 +17,8 @@ vmcu_report_t* vmcu_report_ctor(const char *file) {
     report->progsize    = 0;
     report->disassembly = NULL;
 
-    report->nlabels  = 0;
-    report->labels   = NULL;
+    report->n_label = 0;
+    report->label   = NULL;
 
     return report; 
 }
@@ -31,14 +31,14 @@ void vmcu_report_dtor(vmcu_report_t *this) {
             free(this->disassembly[i].mnem);
     }
 
-    for(int i = 0; i < this->nlabels; i++) {
+    for(int i = 0; i < this->n_label; i++) {
 
-        if(this->labels[i].nxrefs > 0)
-            free(this->labels[i].xrefs);
+        if(this->label[i].n_xref > 0)
+            free(this->label[i].xref);
     }
 
-    if(this->labels != NULL)
-        free(this->labels);
+    if(this->label != NULL)
+        free(this->label);
 
     if(this->disassembly != NULL)
         free(this->disassembly);
