@@ -2,9 +2,10 @@
 
 # Unreleased
 
-- nothing to log
+- moved sfr_lookup[] table to a separate file. 
+- adjusting readme ;)
 
-# v.0.7.4
+# v.0.7.4 - 2021-03-09
 
 - Improved SFR analyzer module
   - added vmcu_sfr_t to vmcu_report_t

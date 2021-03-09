@@ -292,8 +292,14 @@ That's it. If you face issues, take look at some examples in the driver/ directo
 
 # Supported Microcontroller
 
-Static analysis can be performed on any AVR microcontroller type. The dynamic analysis supports
-the following microcontrollers
+The analyzer consists of architecture unspecific (called archless) and 
+architecture specific submodules. Thus you can perform an analysis on any 
+AVR microcontroller type.
+
+Flags to enable/disable architecture specific analysis
+and in general submodules will be added as soon as possible.
+
+Simulation and architecture specific analysis are supported for following microcontrollers:
 
 - [x] ATmega328(P)
 - [ ] ATmega168
@@ -323,6 +329,7 @@ the following microcontrollers
 - [x] Disassembler
 - [x] Analyzer for AVR binaries
 - [x] Cross references (xref-from)
+- [ ] analyzer flags
 
 
 - [ ] Analyzer Submodules
