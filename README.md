@@ -374,7 +374,7 @@ of the engine.
 
 | Engine                                       | Drivers                                        | Bindings                                       |Testing                                       |
 |:--------------------------------------------:|:----------------------------------------------:|:----------------------------------------------:|:--------------------------------------------:|
-| <span style="color:red">closed for PR</span> | <span style="color:green">open for PR</span>   | <span style="color:green">open for PR</span>   | <span style="color:red">closed for PR</span>
+| <span style="color:red">closed for PR</span> | <span style="color:green">open for PR</span>   | <span style="color:green">open for PR</span>   | <span style="color:green">open for PR</span>
 
 # Credits
 
