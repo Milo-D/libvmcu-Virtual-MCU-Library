@@ -854,10 +854,10 @@ static void test_decode_bytes_call(void) {
     assert(instr.exec   == true);
     assert(instr.dword  == true);
 
-    vmcu_decode_bytes(0x0e940100, &instr);
+    vmcu_decode_bytes(0x0e950100, &instr);
 
     assert(instr.key    == VMCU_CALL);
-    assert(instr.opcode == 0x940e0001);
+    assert(instr.opcode == 0x950e0001);
     assert(instr.addr   == 0x0000);
     assert(instr.exec   == true);
     assert(instr.dword  == true);
