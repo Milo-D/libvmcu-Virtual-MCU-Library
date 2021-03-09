@@ -23,8 +23,8 @@ vmcu_report_t* vmcu_analyze_ihex(const char *hex_file) {
         return NULL;
     }
 
-    vmcu_analyze_labels(report);
     vmcu_analyze_sfr(report);
+    vmcu_analyze_labels(report);
     
     return report;
 }

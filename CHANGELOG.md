@@ -2,6 +2,16 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.7.4
+
+- Improved SFR analyzer module
+  - added vmcu_sfr_t to vmcu_report_t
+  - added vmcu_xref_t to vmcu_sfr_t
+  - removed mnemonic manipulation in sfr analyzer
+  - sfr analyzer is now collecting SFRs and storing xrefs
+
 - Minor change in naming convention
   - using singular of structnames instead of plural
   - using prefix n_ for list counts

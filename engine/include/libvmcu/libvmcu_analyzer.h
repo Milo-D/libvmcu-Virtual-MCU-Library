@@ -164,6 +164,102 @@ typedef enum {                                ///< instruction keys
 
 } VMCU_IKEY;
 
+typedef enum {                                ///< special function register id's
+
+    VMCU_SFREGISTER_NONE = -1,                ///< no sfr (used as error code)
+
+    VMCU_RESERVED,                            ///< reserved i/o memory
+    VMCU_PINB,                                ///< pinb
+    VMCU_DDRB,                                ///< ddrb
+    VMCU_PORTB,                               ///< portb
+    VMCU_PINC,                                ///< pinc
+    VMCU_DDRC,                                ///< ddrc
+    VMCU_PORTC,                               ///< portc
+    VMCU_PIND,                                ///< pind
+    VMCU_DDRD,                                ///< ddrd
+    VMCU_PORTD,                               ///< portd
+    VMCU_TIFR0,                               ///< tifr0
+    VMCU_TIFR1,                               ///< tifr1
+    VMCU_TIFR2,                               ///< tifr2
+    VMCU_PCIFR,                               ///< pcifr
+    VMCU_EIFR,                                ///< eifr
+    VMCU_EIMSK,                               ///< eimsk
+    VMCU_GPIOR0,                              ///< gpior0
+    VMCU_EECR,                                ///< eecr
+    VMCU_EEDR,                                ///< eedr
+    VMCU_EEARL,                               ///< eearl
+    VMCU_EEARH,                               ///< eearh
+    VMCU_GTCCR,                               ///< gtccr
+    VMCU_TCCR0A,                              ///< tccr0a
+    VMCU_TCCR0B,                              ///< tccr0b
+    VMCU_TCNT0,                               ///< tcnt0
+    VMCU_OCR0A,                               ///< ocr0a
+    VMCU_OCR0B,                               ///< ocr0b
+    VMCU_GPIOR1,                              ///< gpior1
+    VMCU_GPIOR2,                              ///< gpior2
+    VMCU_SPCR0,                               ///< spcr0
+    VMCU_SPSR0,                               ///< spsr0
+    VMCU_SPDR0,                               ///< spdr0
+    VMCU_ACSR,                                ///< acsr
+    VMCU_DWDR,                                ///< dwdr
+    VMCU_SMCR,                                ///< smcr
+    VMCU_MCUSR,                               ///< mcusr
+    VMCU_MCUCR,                               ///< mcucr
+    VMCU_SPMCSR,                              ///< spmcsr
+    VMCU_SPL,                                 ///< spl
+    VMCU_SPH,                                 ///< sph
+    VMCU_SREG,                                ///< sreg
+    VMCU_WDTCSR,                              ///< wdtcsr
+    VMCU_CLKPR,                               ///< clkpr
+    VMCU_PRR,                                 ///< prr
+    VMCU_OSCCAL,                              ///< osccal
+    VMCU_PCICR,                               ///< pcicr
+    VMCU_EICRA,                               ///< eicra
+    VMCU_PCMSK0,                              ///< pcmsk0
+    VMCU_PCMSK1,                              ///< pcmsk1
+    VMCU_PCMSK2,                              ///< pcmsk2
+    VMCU_TIMSK0,                              ///< timsk0
+    VMCU_TIMSK1,                              ///< timsk1
+    VMCU_TIMSK2,                              ///< timsk2
+    VMCU_ADCL,                                ///< adcl
+    VMCU_ADCH,                                ///< adch
+    VMCU_ADCSRA,                              ///< adcsra
+    VMCU_ADCSRB,                              ///< adcsrb
+    VMCU_ADMUX,                               ///< admux
+    VMCU_DIDR0,                               ///< didr0
+    VMCU_DIDR1,                               ///< didr1
+    VMCU_TCCR1A,                              ///< tccr1a
+    VMCU_TCCR1B,                              ///< tccr1b
+    VMCU_TCCR1C,                              ///< tccr1c
+    VMCU_TCNT1L,                              ///< tcnt1l
+    VMCU_TCNT1H,                              ///< tcnt1h
+    VMCU_ICR1L,                               ///< icr1l
+    VMCU_ICR1H,                               ///< icr1h
+    VMCU_OCR1AL,                              ///< ocr1al
+    VMCU_OCR1AH,                              ///< ocr1ah
+    VMCU_OCR1BL,                              ///< ocr1bl
+    VMCU_OCR1BH,                              ///< ocr1bh
+    VMCU_TCCR2A,                              ///< tccr2a
+    VMCU_TCCR2B,                              ///< tccr2b
+    VMCU_TCNT2,                               ///< tcnt2
+    VMCU_OCR2A,                               ///< ocr2a
+    VMCU_OCR2B,                               ///< ocr2b
+    VMCU_ASSR,                                ///< assr
+    VMCU_TWBR,                                ///< twbr
+    VMCU_TWSR,                                ///< twsr
+    VMCU_TWAR,                                ///< twar
+    VMCU_TWDR,                                ///< twdr
+    VMCU_TWCR,                                ///< twcr
+    VMCU_TWAMR,                               ///< twamr
+    VMCU_UCSR0A,                              ///< ucsr0a
+    VMCU_UCSR0B,                              ///< ucsr0b
+    VMCU_UCSR0C,                              ///< ucsr0c
+    VMCU_UBRR0L,                              ///< ubbr0l
+    VMCU_UBRR0H,                              ///< ubbr0h
+    VMCU_UDR0                                 ///< udr0
+
+} VMCU_SFREGISTER;
+
 typedef enum {                                ///< operand types
 
     VMCU_IMM,                                 ///< immediate type (> 8-bit, < 16-bit)
@@ -212,23 +308,35 @@ typedef struct vmcu_xref {                    ///< xref (from) structure
 
 } vmcu_xref_t;
 
+typedef struct vmcu_sfr {                     ///< sfr (special function register) structure
+
+    VMCU_SFREGISTER id;                       ///< sfr id (for example id = VMCU_UCSR0A)
+
+    int32_t n_xref;                           ///< xref (from) count
+    vmcu_xref_t *xref;                        ///< xref (from) list
+
+} vmcu_sfr_t;
+
 typedef struct vmcu_label {                   ///< label structure
 
     uint16_t id;                              ///< unique label identifier
     uint16_t addr;                            ///< label address
 
     int32_t n_xref;                           ///< xref (from) count
-    vmcu_xref_t *xref;                        ///< xref list
+    vmcu_xref_t *xref;                        ///< xref (from) list
 
 } vmcu_label_t;
 
-typedef struct vmcu_report {                  ///< report summary of the analyzer pipeline
+typedef struct vmcu_report {                  ///< report (summary) of the binary
 
     int32_t progsize;                         ///< instruction count
     vmcu_plain_t *disassembly;                ///< instruction list
 
+    int32_t n_sfr;                            ///< sfr count
+    vmcu_sfr_t *sfr;                          ///< sfr list (sorted, ascending)
+
     int32_t n_label;                          ///< label count
-    vmcu_label_t *label;                      ///< label list
+    vmcu_label_t *label;                      ///< label list (sorted, ascending)
 
 } vmcu_report_t;
 

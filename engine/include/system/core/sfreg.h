@@ -1,7 +1,7 @@
-/* SFR Header */
+/* SF-Register (SFR) Header */
 
-#ifndef VMCU_SFR_H
-#define VMCU_SFR_H
+#ifndef VMCU_SFREG_H
+#define VMCU_SFREG_H
 
 // C Headers
 #include <inttypes.h>

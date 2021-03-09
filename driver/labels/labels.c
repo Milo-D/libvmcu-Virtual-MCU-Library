@@ -24,13 +24,13 @@ int main(const int argc, const char **argv) {
     for(int32_t i = 0; i < report->n_label; i++) {
 
         vmcu_label_t *lx = &report->label[i];
-        printf("0x%04x\tL%d\n\n", lx->addr, lx->id);
+        printf("0x%04x\tL%d\n", lx->addr, lx->id);
 
         for(int32_t j = 0; j < lx->n_xref; j++) {
 
             vmcu_xref_t *x = &lx->xref[j];
 
-            printf("  xref from 0x%04x ", x->p->addr);
+            printf(" xref from 0x%04x ", x->p->addr);
             printf("(%s)\n", x->p->mnem);
         }
 

@@ -295,14 +295,10 @@ That's it. If you face issues, take look at some examples in the driver/ directo
 Static analysis can be performed on any AVR microcontroller type. The dynamic analysis supports
 the following microcontrollers
 
-- [x] ATmega328
-- [x] ATmega328P
-- [ ] ATmega48
-- [ ] ATmega88 
+- [x] ATmega328(P)
 - [ ] ATmega168
-- [ ] ATmega16
-- [ ] ATmega8
-- [ ] ...
+- [ ] ATmega88
+- [ ] ATmega48
 
 # Dynamic Analysis
 

@@ -7,7 +7,7 @@
 #include <inttypes.h>
 
 // Project Headers (engine)
-#include "engine/include/system/core/sfr.h"
+#include "engine/include/system/core/sfreg.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/arch/mcudef.h"

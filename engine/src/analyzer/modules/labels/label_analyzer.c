@@ -30,6 +30,9 @@ int vmcu_analyze_labels(vmcu_report_t *report) {
     uint16_t *field = preprocess_labels(report, &report->n_label);
     qsort(field, report->n_label, sizeof(uint16_t), cmp_u16);
 
+    if(report->n_label <= 0)
+        return -1;
+
     size_t bytes = report->n_label * sizeof(vmcu_label_t);
     report->label = malloc(bytes);
 
@@ -202,7 +205,6 @@ static int cmp_u16(const void *a, const void *b) {
 
     return (*((uint16_t*) a) - *((uint16_t*) b));
 }
-
 
 
 

@@ -8,12 +8,16 @@
 
 // Project Headers (engine)
 #include "engine/include/analyzer/report/plain.h"
+#include "engine/include/analyzer/report/sfr.h"
 #include "engine/include/analyzer/report/label.h"
 
 typedef struct vmcu_report {
     
     int32_t progsize;
     vmcu_plain_t *disassembly;
+
+    int32_t n_sfr;
+    vmcu_sfr_t *sfr;
 
     int32_t n_label;
     vmcu_label_t *label;
