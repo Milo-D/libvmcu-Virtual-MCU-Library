@@ -189,7 +189,7 @@ int main(const int argc, const char **argv) {
             vmcu_xref_t *x = &lx->xref[j];
 
             printf(" xref from 0x%04x ", x->p->addr);
-            printf("(%s)\n", x->p->mnem);
+            printf("%s\n", x->p->mnem);
         }
 
         printf("\n");
@@ -203,17 +203,17 @@ int main(const int argc, const char **argv) {
 ```assembly
 0x04c6  L75
 
- xref from 0x04a1 (call +1222 ; PC <- 0x4c6)
- xref from 0x0a84 (call +1222 ; PC <- 0x4c6)
- xref from 0x0b5c (call +1222 ; PC <- 0x4c6)
+ xref from 0x04a1 call +1222                ; PC <- 0x4c6
+ xref from 0x0a84 call +1222                ; PC <- 0x4c6
+ xref from 0x0b5c call +1222                ; PC <- 0x4c6
 
 0x04e2  L76
 
- xref from 0x05d4 (rjmp -243 ; PC <- PC - 0xf3 + 1)
+ xref from 0x05d4 rjmp -243                 ; PC <- PC - 0xf3 + 1
 
 0x05d0  L77
 
- xref from 0x04e1 (rjmp +238 ; PC <- PC + 0xee + 1)
+ xref from 0x04e1 rjmp +238                 ; PC <- PC + 0xee + 1
 ```
 
 #### Printing xrefs of special function registers 
@@ -234,7 +234,7 @@ int main(const int argc, const char **argv) {
             vmcu_xref_t *x = &sfr->xref[j];
 
             printf(" xref from 0x%04x ", x->p->addr);
-            printf("(%s)\n", x->p->mnem);
+            printf("%s\n", x->p->mnem);
         }
 
         printf("\n");
@@ -247,15 +247,15 @@ int main(const int argc, const char **argv) {
 
 ```assembly
 SFR ID: 17
-
- xref from 0x00f4 (sbi 0x1f, 2 ; IO[1f, 2] <- 0x01)
- xref from 0x00f5 (sbi 0x1f, 1 ; IO[1f, 1] <- 0x01)
+       
+ xref from 0x00f4 sbi 0x1f, 2               ; IO[1f, 2] <- 0x01
+ xref from 0x00f5 sbi 0x1f, 1               ; IO[1f, 1] <- 0x01
  
 SFR ID: 50
 
- xref from 0x004c (sts 0x006e, r1 ; DATA[0x6e] <- R1)
- xref from 0x0051 (lds r24, 0x006e ; R24 <- DATA[0x6e])
- xref from 0x0054 (sts 0x006e, r24 ; DATA[0x6e] <- R24)
+ xref from 0x004c sts 0x006e, r1            ; DATA[0x6e] <- R1
+ xref from 0x0051 lds r24, 0x006e           ; R24 <- DATA[0x6e]
+ xref from 0x0054 sts 0x006e, r24           ; DATA[0x6e] <- R24
 ```
 
 # Showcase
