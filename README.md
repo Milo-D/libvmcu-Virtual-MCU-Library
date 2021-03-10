@@ -133,10 +133,10 @@ int main(const int argc, const char **argv) {
 ```
 
 ```assembly
-ldd r24, Y+1              ; R24 <- DATA[Y+1]                                                                                                                                                                      
-ldd r25, Y+2              ; R25 <- DATA[Y+2]                                                                                                                                                                      
-sbiw r25:r24, 0x14        ; R25:R24 <- R25:R24 - 0x14                                                                                                                                                             
-brlt -55                  ; (N ^ V = 1): PC <- PC - 0x37 + 1                                                                                                                                                      
+ldd r24, Y+1              ; R24 <- DATA[Y+1]
+ldd r25, Y+2              ; R25 <- DATA[Y+2]
+sbiw r25:r24, 0x14        ; R25:R24 <- R25:R24 - 0x14
+brlt -55                  ; (N ^ V = 1): PC <- PC - 0x37 + 1
 ldi r24, 0x00             ; R24 <- 0x00
 ldi r25, 0x00             ; R25 <- 0x00
 ```
