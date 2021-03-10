@@ -16,6 +16,9 @@
 
 #define PASSED printf("%s PASSED %s\n", GREEN, DFL)
 
+#define start(fn) printf("    |\n");    \
+                  printf("    |---- "); \
+                  fn()
 /*
  * brlo shadows brcs.
  * cl<x> shadows bclr.
@@ -79,230 +82,51 @@ void test_decoder(void) {
 
     printf("\nCurrently testing: Decoder\n");
 
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_adc();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_add();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_adiw();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_and();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_andi();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_asr();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_bld();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brcc();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_break();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_breq();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brge();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brhc();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brhs();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brid();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brie();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brlo();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brlt();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brmi();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brne();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brpl();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brtc();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brts();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_brvc();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_brvs();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_bst();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_call();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_cbi();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_clc();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_clh();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_cli();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_cln();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_cls();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_clt();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_clv();
-    
-    printf("    |\n");
-    printf("    |---- ");
-    
-    test_decode_bytes_clz();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_com();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_cp();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_cpc();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_cpi();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_cpse();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_dec();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_des();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_eicall();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_eijmp();
-
-    printf("    |\n");
-    printf("    |---- ");
-
-    test_decode_bytes_elpm();
+    start(test_decode_bytes_adc);
+    start(test_decode_bytes_add);
+    start(test_decode_bytes_adiw);
+    start(test_decode_bytes_and);
+    start(test_decode_bytes_andi);
+    start(test_decode_bytes_asr);
+    start(test_decode_bytes_bld);
+    start(test_decode_bytes_brcc);
+    start(test_decode_bytes_break);
+    start(test_decode_bytes_breq);
+    start(test_decode_bytes_brge);
+    start(test_decode_bytes_brhc);
+    start(test_decode_bytes_brhs);
+    start(test_decode_bytes_brid);
+    start(test_decode_bytes_brie);
+    start(test_decode_bytes_brlo);
+    start(test_decode_bytes_brlt);
+    start(test_decode_bytes_brmi);
+    start(test_decode_bytes_brne);
+    start(test_decode_bytes_brpl);
+    start(test_decode_bytes_brtc);
+    start(test_decode_bytes_brts);
+    start(test_decode_bytes_brvc);
+    start(test_decode_bytes_brvs);
+    start(test_decode_bytes_bst);
+    start(test_decode_bytes_call);
+    start(test_decode_bytes_cbi);
+    start(test_decode_bytes_clc);
+    start(test_decode_bytes_clh);
+    start(test_decode_bytes_cli);
+    start(test_decode_bytes_cln);
+    start(test_decode_bytes_cls);
+    start(test_decode_bytes_clt);
+    start(test_decode_bytes_clv);
+    start(test_decode_bytes_clz);
+    start(test_decode_bytes_com);
+    start(test_decode_bytes_cp);
+    start(test_decode_bytes_cpc);
+    start(test_decode_bytes_cpi);
+    start(test_decode_bytes_cpse);
+    start(test_decode_bytes_dec);
+    start(test_decode_bytes_des);
+    start(test_decode_bytes_eicall);
+    start(test_decode_bytes_eijmp);
+    start(test_decode_bytes_elpm);
 
     printf("\n");
 }
