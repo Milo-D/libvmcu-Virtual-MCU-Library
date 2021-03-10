@@ -227,7 +227,7 @@ int main(const int argc, const char **argv) {
     for(int32_t i = 0; i < report->n_sfr; i++) {
 
         vmcu_sfr_t *sfr = &report->sfr[i];
-        printf("SFR ID: %d\n", sfr->id);
+        printf("SFR ID: %d\n\n", sfr->id);
 
         for(int32_t j = 0; j < sfr->n_xref; j++) {
 
@@ -247,10 +247,12 @@ int main(const int argc, const char **argv) {
 
 ```assembly
 SFR ID: 17
+
  xref from 0x00f4 (sbi 0x1f, 2 ; IO[1f, 2] <- 0x01)
  xref from 0x00f5 (sbi 0x1f, 1 ; IO[1f, 1] <- 0x01)
  
 SFR ID: 50
+
  xref from 0x004c (sts 0x006e, r1 ; DATA[0x6e] <- R1)
  xref from 0x0051 (lds r24, 0x006e ; R24 <- DATA[0x6e])
  xref from 0x0054 (sts 0x006e, r24 ; DATA[0x6e] <- R24)
