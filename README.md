@@ -119,7 +119,7 @@ int main(const int argc, const char **argv) {
 #### Printing disassembly of an intel hex file
 
 ```c
-int main(void) {
+int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
@@ -132,10 +132,19 @@ int main(void) {
 }
 ```
 
+```assembly
+ldd r24, Y+1              ; R24 <- DATA[Y+1]                                                                                                                                                                      
+ldd r25, Y+2              ; R25 <- DATA[Y+2]                                                                                                                                                                      
+sbiw r25:r24, 0x14        ; R25:R24 <- R25:R24 - 0x14                                                                                                                                                             
+brlt -55                  ; (N ^ V = 1): PC <- PC - 0x37 + 1                                                                                                                                                      
+ldi r24, 0x00             ; R24 <- 0x00
+ldi r25, 0x00             ; R25 <- 0x00
+```
+
 #### Printing potential labels
 
 ```c
-int main(void) {
+int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
@@ -153,10 +162,19 @@ int main(void) {
 }
 ```
 
+```console
+Label ID: 0, Address: 0x0000
+Label ID: 1, Address: 0x011b
+Label ID: 2, Address: 0x014d
+Label ID: 3, Address: 0x0159
+Label ID: 4, Address: 0x015b
+Label ID: 5, Address: 0x0162
+```
+
 #### Printing xrefs of potential labels
 
 ```c
-int main(void) {
+int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
@@ -182,32 +200,60 @@ int main(void) {
 }
 ```
 
-#### Simulating until hitting endless loop 
+```assembly
+0x04c6  L75
+
+ xref from 0x04a1 (call +1222 ; PC <- 0x4c6)
+ xref from 0x0a84 (call +1222 ; PC <- 0x4c6)
+ xref from 0x0b5c (call +1222 ; PC <- 0x4c6)
+
+0x04e2  L76
+
+ xref from 0x05d4 (rjmp -243 ; PC <- PC - 0xf3 + 1)
+
+0x05d0  L77
+
+ xref from 0x04e1 (rjmp +238 ; PC <- PC + 0xee + 1)
+```
+
+#### Printing xrefs of special function registers 
 
 ```c
-int main(void) {
-    
+int main(const int argc, const char **argv) {
+
     /* ignoring checks for this example */
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
-    vmcu_system_t *sys    = vmcu_system_ctor(report);
-    
-    do {
-        
-        int32_t pc   = vmcu_system_get_pc(sys);         // read current pc
-        uint16_t opc = vmcu_system_read_flash(sys, pc); // read current opcode
-        
-        if(opc == 0xcfff)       // 0xcfff (big endian) = 'rjmp -1' (endless loop)
-            break;
-        
-        vmcu_system_step(sys);
-        
-    } while(true);
-    
+
+    for(int32_t i = 0; i < report->n_sfr; i++) {
+
+        vmcu_sfr_t *sfr = &report->sfr[i];
+        printf("SFR ID: %d\n", sfr->id);
+
+        for(int32_t j = 0; j < sfr->n_xref; j++) {
+
+            vmcu_xref_t *x = &sfr->xref[j];
+
+            printf(" xref from 0x%04x ", x->p->addr);
+            printf("(%s)\n", x->p->mnem);
+        }
+
+        printf("\n");
+    }
+
     vmcu_report_dtor(report);
-    vmcu_system_dtor(sys);
-    
     return EXIT_SUCCESS;
 }
+```
+
+```assembly
+SFR ID: 17
+ xref from 0x00f4 (sbi 0x1f, 2 ; IO[1f, 2] <- 0x01)
+ xref from 0x00f5 (sbi 0x1f, 1 ; IO[1f, 1] <- 0x01)
+ 
+SFR ID: 50
+ xref from 0x004c (sts 0x006e, r1 ; DATA[0x6e] <- R1)
+ xref from 0x0051 (lds r24, 0x006e ; R24 <- DATA[0x6e])
+ xref from 0x0054 (sts 0x006e, r24 ; DATA[0x6e] <- R24)
 ```
 
 # Showcase
