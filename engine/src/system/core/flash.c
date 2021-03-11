@@ -10,6 +10,7 @@
 
 // Project Headers (engine utilities)
 #include "engine/include/arch/mcudef.h"
+#include "engine/include/misc/nummanip.h"
 
 /* Forward Declaration of static Functions */
 
@@ -67,27 +68,27 @@ void vmcu_flash_dtor(vmcu_flash_t *this) {
 
 vmcu_progmem_t* vmcu_flash_fetch(const vmcu_flash_t *this) {
 
-    return &this->memory[this->pc % FLASH_SIZE];
+    return &this->memory[ mod(this->pc, FLASH_SIZE) ];
 }
 
 vmcu_progmem_t* vmcu_flash_read_progmem(const vmcu_flash_t *this, const int addr) {
 
-    return &this->memory[addr % FLASH_SIZE];
+    return &this->memory[ mod(addr, FLASH_SIZE) ];
 }
 
 uint16_t vmcu_flash_read(const vmcu_flash_t *this, const int addr) {
 
-    return this->memory[addr % FLASH_SIZE].opcode;
+    return this->memory[ mod(addr, FLASH_SIZE) ].opcode;
 }
 
 void vmcu_flash_move_pc(vmcu_flash_t *this, const int inc) {
 
-    this->pc = ((this->pc + inc) % FLASH_SIZE);
+    this->pc = mod((this->pc + inc), FLASH_SIZE);
 }
 
 void vmcu_flash_set_pc(vmcu_flash_t *this, const int addr) {
 
-    this->pc = (addr % FLASH_SIZE);
+    this->pc = mod(addr, FLASH_SIZE);
 }
 
 int vmcu_flash_get_pc(const vmcu_flash_t *this) {

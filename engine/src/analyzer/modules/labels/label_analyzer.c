@@ -31,7 +31,7 @@ int vmcu_analyze_labels(vmcu_report_t *report) {
     qsort(field, report->n_label, sizeof(uint16_t), cmp_u16);
 
     if(report->n_label <= 0)
-        return -1;
+        goto cleanup;
 
     size_t bytes = report->n_label * sizeof(vmcu_label_t);
     report->label = malloc(bytes);
@@ -48,6 +48,7 @@ int vmcu_analyze_labels(vmcu_report_t *report) {
         lx->xref = get_xrefs(report, lx, size);
     }
 
+cleanup:
     free(field);
     return 0;
 }

@@ -103,6 +103,9 @@ static int find_pc(const int32_t pc) {
 
 static void cleanup(void) {
 
-    vmcu_report_dtor(report);
-    vmcu_system_dtor(sys);
+    if(report != NULL)
+        vmcu_report_dtor(report);
+
+    if(sys != NULL)
+        vmcu_system_dtor(sys);
 }
