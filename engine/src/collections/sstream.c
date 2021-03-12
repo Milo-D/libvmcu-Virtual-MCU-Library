@@ -16,12 +16,12 @@
  * https://github.com/aquynh/capstone/blob/master/SStream.h
  * */
 
-void sstream_ctor(sstream_t *this) {
+void vmcu_sstream_ctor(vmcu_sstream_t *this) {
 
-    sstream_flush(this);
+    vmcu_sstream_flush(this);
 }
 
-void sstream_put(sstream_t *this, const char *fmt, ...) {
+void vmcu_sstream_put(vmcu_sstream_t *this, const char *fmt, ...) {
 
     va_list var;
     va_start(var, fmt);
@@ -33,7 +33,7 @@ void sstream_put(sstream_t *this, const char *fmt, ...) {
     va_end(var);
 }
 
-void sstream_put04x(sstream_t *this, const unsigned int decimal) {
+void vmcu_sstream_put04x(vmcu_sstream_t *this, const unsigned int decimal) {
 
     char *s = (this->str + this->length);
     size_t n = sizeof(this->str) - (this->length + 1);
@@ -41,7 +41,7 @@ void sstream_put04x(sstream_t *this, const unsigned int decimal) {
     this->length += snprintf(s, n, "0x%04x", decimal);
 }
 
-void sstream_put02x(sstream_t *this, const uint8_t decimal) {
+void vmcu_sstream_put02x(vmcu_sstream_t *this, const uint8_t decimal) {
 
     char *s = (this->str + this->length);
     size_t n = sizeof(this->str) - (this->length + 1);
@@ -49,7 +49,7 @@ void sstream_put02x(sstream_t *this, const uint8_t decimal) {
     this->length += snprintf(s, n, "0x%02x", decimal);
 }
 
-void sstream_pad(sstream_t *this, const int padding) {
+void vmcu_sstream_pad(vmcu_sstream_t *this, const int padding) {
 
     char *s = (this->str + this->length);
     size_t n = sizeof(this->str) - (this->length + 1);
@@ -60,7 +60,7 @@ void sstream_pad(sstream_t *this, const int padding) {
     this->length += snprintf(s, n, "%*s", padding, "");
 }
 
-char* sstream_alloc(const sstream_t *this) {
+char* vmcu_sstream_alloc(const vmcu_sstream_t *this) {
     
     char *string = malloc((this->length + 1) * sizeof(char));
     
@@ -70,7 +70,7 @@ char* sstream_alloc(const sstream_t *this) {
     return string;
 }
 
-void sstream_flush(sstream_t *this) {
+void vmcu_sstream_flush(vmcu_sstream_t *this) {
     
     this->length = 0;
     this->str[0] = '\0';

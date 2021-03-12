@@ -7,7 +7,7 @@
 // Project Headers (engine)
 #include "engine/include/misc/filemanip.h"
 
-long fbytes(const char *file) {
+long vmcu_fbytes(const char *file) {
 
     FILE *fp = fopen(file, "r");
 

@@ -7,7 +7,7 @@
 // Project Header (engine)
 #include "engine/include/misc/stringmanip.h"
 
-int strpos(const char *str, const char *sub) {
+int vmcu_strpos(const char *str, const char *sub) {
 
     char *c = NULL;
 
@@ -17,7 +17,7 @@ int strpos(const char *str, const char *sub) {
     return (c - str);
 }
 
-char* substr(const char *str, const int from, const int to) {
+char* vmcu_substr(const char *str, const int from, const int to) {
 
     char *sub = NULL;
     const int diff = (to - from);
@@ -34,7 +34,7 @@ char* substr(const char *str, const int from, const int to) {
     return sub;
 }
 
-int htoi(const char *input) {
+int vmcu_htoi(const char *input) {
 
     unsigned int len = strlen(input);
     int dec = 0; int base = 1; int end = 0;
@@ -73,20 +73,3 @@ int htoi(const char *input) {
     return dec;
 }
 
-int swap_bytes(char *buffer, const char *bytes, const int pos) {
-
-    const int order[4] = { 2, 3, 0, 1 };
-
-    if((8 + (pos * 4) + 3) >= strlen(bytes))
-        return -1;
-
-    for(int i = 0; i < 4; i++) {
-
-        const int index = (8 + (pos * 4) + order[i]);
-        buffer[i] = bytes[index];
-    }
-
-    buffer[4] = '\0';
-
-    return 0;
-}

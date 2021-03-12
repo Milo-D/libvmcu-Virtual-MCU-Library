@@ -3,7 +3,7 @@
 // Project Headers (engine)
 #include "engine/include/misc/bitmanip.h"
 
-int extract(const int opcode, int from, int to, int offs) {
+int vmcu_extr(const int opcode, int from, int to, int offs) {
 
     int res = 0;
 

@@ -6,28 +6,28 @@
 // C Headers
 #include <inttypes.h>
 
-struct private;
+typedef struct vmcu_array_private vmcu_array_private_t;
 
-typedef struct array {
+typedef struct vmcu_array {
 
     int top;
     int size;
 
-    struct private *p;
+    vmcu_array_private_t *p;
 
-} array_t;
+} vmcu_array_t;
 
-extern array_t* array_ctor(const int size, const void *ffp, const void *cfp);
-extern void array_dtor(array_t *this);
+extern vmcu_array_t* vmcu_array_ctor(const int size, const void *ffp, const void *cfp);
+extern void vmcu_array_dtor(vmcu_array_t *this);
 
-extern int array_push(array_t *this, void *value, const size_t bytes);
-extern void** array_pop(array_t *this);
+extern int vmcu_array_push(vmcu_array_t *this, void *value, const size_t bytes);
+extern void** vmcu_array_pop(vmcu_array_t *this);
 
-extern int array_set(array_t *this, void *value, const size_t bytes, const int index);
-extern void array_delete(array_t *this, const int index);
-extern int array_insert(array_t *this, void *value, const size_t bytes, const int index);
-extern void array_swap(array_t *this, const int i, const int j);
+extern int vmcu_array_set(vmcu_array_t *this, void *value, const size_t bytes, const int index);
+extern void vmcu_array_delete(vmcu_array_t *this, const int index);
+extern int vmcu_array_insert(vmcu_array_t *this, void *value, const size_t bytes, const int index);
+extern void vmcu_array_swap(vmcu_array_t *this, const int i, const int j);
 
-extern void* array_at(const array_t *this, const int index);
+extern void* vmcu_array_at(const vmcu_array_t *this, const int index);
 
 #endif

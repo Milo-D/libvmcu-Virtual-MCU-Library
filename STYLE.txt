@@ -20,9 +20,7 @@
 *
 * Every static function must not use the vmcu_ namespace.
 *
-* Exception to this rule: Files in the misc/, collections/ and arch/ directory do not use
-* the vmcu_ namespace, because there will be no need to export these functions, since these
-* files are just utilities for the library.
+* Exception to this rule: Macros in arch/ and internal macros.
 *
 *
 * [3] Braces

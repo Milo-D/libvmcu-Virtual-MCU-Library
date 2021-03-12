@@ -24,6 +24,6 @@
 #define low16(v)   (v & 0x0000ffff)
 #define high16(v) ((v & 0xffff0000) >> 16)
 
-extern int extract(const int opcode, const int from, const int to, const int offs);
+extern int vmcu_extr(const int opcode, const int from, const int to, const int offs);
 
 #endif

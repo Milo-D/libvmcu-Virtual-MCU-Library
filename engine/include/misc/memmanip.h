@@ -3,6 +3,6 @@
 #ifndef VMCU_MEMMANIP_H
 #define VMCU_MEMMANIP_H
 
-extern void nfree(const int n, ...);
+extern void vmcu_nfree(const int n, ...);
 
 #endif

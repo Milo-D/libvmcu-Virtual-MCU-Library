@@ -5,9 +5,9 @@
 
 #ifdef ATMEGA328P
 
-    const char *flags[SREG_SIZE] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
+    const char *vmcu_status_flags[SREG_SIZE] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
 
-    const char *sfreg[SFR_SIZE]  = {
+    const char *vmcu_sfr_str[SFR_SIZE]  = {
 
         "reserved",
         "reserved",
@@ -177,26 +177,6 @@
         "UBRR0H",
         "UDR0"
     };
-
-#endif
-
-#ifdef ATMEGA16
-
-/* currently not supported */
-
-#endif
-
-#ifdef ATMEGA8
-
-/* currenlty not supported */
-
-#endif
-
-#ifdef ATTINY45
-
-    /* Warning: experimental Architecture */
-
-    const char *flags[SREG_SIZE] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
 
 #endif
 

@@ -7,31 +7,32 @@
 // Project Headers (engine)
 #include "engine/include/collections/array.h"
 
-struct private {
+typedef struct vmcu_array_private {
 
     int size;
     void **block;
 
     void (*ffp)(void *fp);
     void* (*cfp)(void *cp);
-};
+
+} vmcu_array_private_t;
 
 /* Forward Declaration of private Functions */
 
-static int set(array_t *this, void *e, const size_t bytes, const int index);
+static int set(vmcu_array_t *this, void *e, const size_t bytes, const int index);
 static void delete(void **e, void (*ffp)(void *fp));
-static inline void sync(array_t *this);
+static inline void sync(vmcu_array_t *this);
 
 /* --- Extern --- */
 
-array_t* array_ctor(const int size, const void *ffp, const void *cfp) {
+vmcu_array_t* vmcu_array_ctor(const int size, const void *ffp, const void *cfp) {
 
-    array_t *array;
+    vmcu_array_t *array;
 
-    if((array = malloc(sizeof(array_t))) == NULL)
+    if((array = malloc(sizeof(vmcu_array_t))) == NULL)
         return NULL;
 
-    if((array->p = malloc(sizeof(struct private))) == NULL) {
+    if((array->p = malloc(sizeof(vmcu_array_private_t))) == NULL) {
 
         free(array);
         return NULL;
@@ -53,7 +54,7 @@ array_t* array_ctor(const int size, const void *ffp, const void *cfp) {
     return array;
 }
 
-void array_dtor(array_t *this) {
+void vmcu_array_dtor(vmcu_array_t *this) {
 
     sync(this);
 
@@ -70,7 +71,7 @@ void array_dtor(array_t *this) {
     free(this);
 }
 
-int array_push(array_t *this, void *value, const size_t bytes) {
+int vmcu_array_push(vmcu_array_t *this, void *value, const size_t bytes) {
 
     sync(this);
 
@@ -80,7 +81,7 @@ int array_push(array_t *this, void *value, const size_t bytes) {
     return set(this, value, bytes, this->top++);
 }
 
-void** array_pop(array_t *this) {
+void** vmcu_array_pop(vmcu_array_t *this) {
 
     sync(this);
     this->top -= 1;
@@ -88,7 +89,7 @@ void** array_pop(array_t *this) {
     return &this->p->block[this->top];
 }
 
-int array_set(array_t *this, void *value, const size_t bytes, const int index) {
+int vmcu_array_set(vmcu_array_t *this, void *value, const size_t bytes, const int index) {
 
     sync(this);
 
@@ -98,13 +99,13 @@ int array_set(array_t *this, void *value, const size_t bytes, const int index) {
     return set(this, value, bytes, index);
 }
 
-void array_delete(array_t *this, const int index) {
+void vmcu_array_delete(vmcu_array_t *this, const int index) {
 
     sync(this);
     delete(&this->p->block[index], this->p->ffp);
 }
 
-int array_insert(array_t *this, void *value, const size_t bytes, const int index) {
+int vmcu_array_insert(vmcu_array_t *this, void *value, const size_t bytes, const int index) {
 
     sync(this);
 
@@ -125,7 +126,7 @@ int array_insert(array_t *this, void *value, const size_t bytes, const int index
     return set(this, value, bytes, index);
 }
 
-void array_swap(array_t *this, const int i, const int j) {
+void vmcu_array_swap(vmcu_array_t *this, const int i, const int j) {
 
     sync(this);
 
@@ -134,14 +135,14 @@ void array_swap(array_t *this, const int i, const int j) {
     this->p->block[j] = tmp;
 }
 
-void* array_at(const array_t *this, const int index) {
+void* vmcu_array_at(const vmcu_array_t *this, const int index) {
 
     return this->p->block[index];
 }
 
 /* --- Static --- */
 
-static int set(array_t *this, void *e, const size_t bytes, const int index) {
+static int set(vmcu_array_t *this, void *e, const size_t bytes, const int index) {
 
     if(this->p->cfp != NULL) {
 
@@ -166,7 +167,7 @@ static void delete(void **e, void (*ffp)(void *fp)) {
     *e = NULL;
 }
 
-static inline void sync(array_t *this) {
+static inline void sync(vmcu_array_t *this) {
 
     if(this->size == this->p->size)
         return;

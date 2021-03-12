@@ -8,22 +8,22 @@
 // C Headers
 #include <inttypes.h>
 
-typedef struct sstream {
+typedef struct vmcu_sstream {
 
     int length;
     char str[SSLEN];
 
-} sstream_t;
+} vmcu_sstream_t;
 
-extern void sstream_ctor(sstream_t *this);
+extern void vmcu_sstream_ctor(vmcu_sstream_t *this);
 
-extern void sstream_put(sstream_t *this, const char *fmt, ...);
-extern void sstream_put04x(sstream_t *this, const unsigned int decimal);
-extern void sstream_put02x(sstream_t *this, const uint8_t decimal);
+extern void vmcu_sstream_put(vmcu_sstream_t *this, const char *fmt, ...);
+extern void vmcu_sstream_put04x(vmcu_sstream_t *this, const unsigned int decimal);
+extern void vmcu_sstream_put02x(vmcu_sstream_t *this, const uint8_t decimal);
 
-extern void sstream_pad(sstream_t *this, const int padding);
-extern char* sstream_alloc(const sstream_t *this);
+extern void vmcu_sstream_pad(vmcu_sstream_t *this, const int padding);
+extern char* vmcu_sstream_alloc(const vmcu_sstream_t *this);
 
-extern void sstream_flush(sstream_t *this);
+extern void vmcu_sstream_flush(vmcu_sstream_t *this);
 
 #endif

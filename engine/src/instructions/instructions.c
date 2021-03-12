@@ -11,7 +11,7 @@
 #include "engine/include/arch/mcudef.h"
 #include "engine/include/misc/bitmanip.h"
 
-void execute_nop(vmcu_system_t *sys, const int opcode) {
+static void execute_nop(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_move_pc(sys, 1);
     sys->cycles += 1;
@@ -19,10 +19,10 @@ void execute_nop(vmcu_system_t *sys, const int opcode) {
     return;
 }
 
-void execute_movw(vmcu_system_t *sys, const int opcode) {
+static void execute_movw(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0) * 2;
-    const int src = extract(opcode, 0, 4, 0) * 2;
+    const int dest = vmcu_extr(opcode, 4, 8, 0) * 2;
+    const int src = vmcu_extr(opcode, 0, 4, 0) * 2;
 
     const int high = vmcu_system_read_gpr(sys, src);
     const int low = vmcu_system_read_gpr(sys, src + 1);
@@ -34,10 +34,10 @@ void execute_movw(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_mul(vmcu_system_t *sys, const int opcode) {
+static void execute_mul(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const uint8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const uint8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -54,10 +54,10 @@ void execute_mul(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_muls(vmcu_system_t *sys, const int opcode) {
+static void execute_muls(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int src = extract(opcode, 0, 4, 0) + 16;
+    const int dest = vmcu_extr(opcode, 4, 8, 0) + 16;
+    const int src = vmcu_extr(opcode, 0, 4, 0) + 16;
 
     const int16_t result = vmcu_system_read_gpr(sys, dest) * vmcu_system_read_gpr(sys, src);
 
@@ -71,10 +71,10 @@ void execute_muls(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_mulsu(vmcu_system_t *sys, const int opcode) {
+static void execute_mulsu(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int dest = vmcu_extr(opcode, 4, 7, 0) + 16;
+    const int src = vmcu_extr(opcode, 0, 3, 0) + 16;
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const uint8_t src_val = (uint8_t) vmcu_system_read_gpr(sys, src);
@@ -91,10 +91,10 @@ void execute_mulsu(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_fmul(vmcu_system_t *sys, const int opcode) {
+static void execute_fmul(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int dest = vmcu_extr(opcode, 4, 7, 0) + 16;
+    const int src = vmcu_extr(opcode, 0, 3, 0) + 16;
 
     const uint8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const uint8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -115,10 +115,10 @@ void execute_fmul(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_fmuls(vmcu_system_t *sys, const int opcode) {
+static void execute_fmuls(vmcu_system_t *sys, const int opcode) {
     
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int dest = vmcu_extr(opcode, 4, 7, 0) + 16;
+    const int src = vmcu_extr(opcode, 0, 3, 0) + 16;
     
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -139,10 +139,10 @@ void execute_fmuls(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_fmulsu(vmcu_system_t *sys, const int opcode) {
+static void execute_fmulsu(vmcu_system_t *sys, const int opcode) {
     
-    const int dest = extract(opcode, 4, 7, 0) + 16;
-    const int src = extract(opcode, 0, 3, 0) + 16;
+    const int dest = vmcu_extr(opcode, 4, 7, 0) + 16;
+    const int src = vmcu_extr(opcode, 0, 3, 0) + 16;
     
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const uint8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -163,10 +163,10 @@ void execute_fmulsu(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_ldi(vmcu_system_t *sys, const int opcode) {
+static void execute_ldi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int dest = vmcu_extr(opcode, 4, 8, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 12, 4);
 
     vmcu_system_write_gpr(sys, dest + 16, src);
 
@@ -174,9 +174,9 @@ void execute_ldi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_rjmp(vmcu_system_t *sys, const int opcode) {
+static void execute_rjmp(vmcu_system_t *sys, const int opcode) {
 
-    int offs = extract(opcode, 0, 12, 0);
+    int offs = vmcu_extr(opcode, 0, 12, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 11) & offs) != 0x00) {
@@ -193,7 +193,7 @@ void execute_rjmp(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_jmp(vmcu_system_t *sys, const int opcode) {
+static void execute_jmp(vmcu_system_t *sys, const int opcode) {
 
     const int addr = (opcode & 0x1ffff) +
                     ((opcode & 0x1f00000) >> 3);
@@ -202,7 +202,7 @@ void execute_jmp(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_ijmp(vmcu_system_t *sys, const int opcode) {
+static void execute_ijmp(vmcu_system_t *sys, const int opcode) {
 
     const uint8_t zl = vmcu_system_read_data(sys, ZL);
     const uint8_t zh = vmcu_system_read_data(sys, ZH);
@@ -213,10 +213,10 @@ void execute_ijmp(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_mov(vmcu_system_t *sys, const int opcode) {
+static void execute_mov(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t value = vmcu_system_read_gpr(sys, src);
     vmcu_system_write_gpr(sys, dest, value);
@@ -225,9 +225,9 @@ void execute_mov(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_dec(vmcu_system_t *sys, const int opcode) {
+static void execute_dec(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
     const int8_t value = vmcu_system_read_gpr(sys, dest);
 
     const int8_t result = value - 0x01;
@@ -248,9 +248,9 @@ void execute_dec(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_inc(vmcu_system_t *sys, const int opcode) {
+static void execute_inc(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
     const int8_t value = vmcu_system_read_gpr(sys, dest);
 
     const int8_t result = value + 1;
@@ -271,10 +271,10 @@ void execute_inc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_add(vmcu_system_t *sys, const int opcode) {
+static void execute_add(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -304,10 +304,10 @@ void execute_add(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_adc(vmcu_system_t *sys, const int opcode) {
+static void execute_adc(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -339,10 +339,10 @@ void execute_adc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_adiw(vmcu_system_t *sys, const int opcode) {
+static void execute_adiw(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
-    const uint8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
+    const int dest = (2 * vmcu_extr(opcode, 4, 6, 0)) + 24;
+    const uint8_t src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 6, 8, 4);
 
     const uint8_t rdl = vmcu_system_read_gpr(sys, dest);
     const uint8_t rdh = vmcu_system_read_gpr(sys, dest + 1);
@@ -366,10 +366,10 @@ void execute_adiw(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sub(vmcu_system_t *sys, const int opcode) {
+static void execute_sub(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -399,10 +399,10 @@ void execute_sub(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_subi(vmcu_system_t *sys, const int opcode) {
+static void execute_subi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int dest = vmcu_extr(opcode, 4, 8, 0) + 16;
+    const int8_t src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 12, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t result = dest_val - src;
@@ -431,10 +431,10 @@ void execute_subi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sbc(vmcu_system_t *sys, const int opcode) {
+static void execute_sbc(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -468,10 +468,10 @@ void execute_sbc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sbci(vmcu_system_t *sys, const int opcode) {
+static void execute_sbci(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int dest = vmcu_extr(opcode, 4, 8, 0) + 16;
+    const int8_t src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 12, 4);
 
     const bool carry = vmcu_system_read_sreg(sys, CF);
     const bool zero = vmcu_system_read_sreg(sys, ZF);
@@ -503,10 +503,10 @@ void execute_sbci(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sbiw(vmcu_system_t *sys, const int opcode) {
+static void execute_sbiw(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = (2 * extract(opcode, 4, 6, 0)) + 24;
-    const uint8_t src = extract(opcode, 0, 4, 0) + extract(opcode, 6, 8, 4);
+    const int dest = (2 * vmcu_extr(opcode, 4, 6, 0)) + 24;
+    const uint8_t src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 6, 8, 4);
 
     const uint8_t rdl = vmcu_system_read_gpr(sys, dest);
     const uint8_t rdh = vmcu_system_read_gpr(sys, dest + 1);
@@ -530,9 +530,9 @@ void execute_sbiw(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_push(vmcu_system_t *sys, const int opcode) {
+static void execute_push(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
     const int8_t val = vmcu_system_read_gpr(sys, src);
 
     vmcu_system_push_stack(sys, val);
@@ -541,9 +541,9 @@ void execute_push(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_pop(vmcu_system_t *sys, const int opcode) {
+static void execute_pop(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
     const int8_t val = vmcu_system_pop_stack(sys);
 
     vmcu_system_write_gpr(sys, dest, val);
@@ -552,10 +552,10 @@ void execute_pop(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_in(vmcu_system_t *sys, const int opcode) {
+static void execute_in(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 11, 4);
 
     const int8_t val = vmcu_system_read_data(sys, GPR_SIZE + src);
     vmcu_system_write_gpr(sys, dest, val);
@@ -564,10 +564,10 @@ void execute_in(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_out(vmcu_system_t *sys, const int opcode) {
+static void execute_out(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 0, 4, 0) + extract(opcode, 9, 11, 4);
-    const int src = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 11, 4);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const int8_t val = vmcu_system_read_gpr(sys, src);
     vmcu_system_write_data(sys, GPR_SIZE + dest, val);
@@ -576,10 +576,10 @@ void execute_out(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sbis(vmcu_system_t *sys, const int opcode) {
+static void execute_sbis(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bitpos = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 3, 8, 0);
+    const int bitpos = vmcu_extr(opcode, 0, 3, 0);
 
     const uint8_t val = vmcu_system_read_data(sys, GPR_SIZE + dest);
 
@@ -598,10 +598,10 @@ void execute_sbis(vmcu_system_t *sys, const int opcode) {
     sys->cycles += (2 + p->dword);
 }
 
-void execute_sbic(vmcu_system_t *sys, const int opcode) {
+static void execute_sbic(vmcu_system_t *sys, const int opcode) {
     
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bitpos = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 3, 8, 0);
+    const int bitpos = vmcu_extr(opcode, 0, 3, 0);
 
     const uint8_t val = vmcu_system_read_data(sys, GPR_SIZE + dest);
 
@@ -620,10 +620,10 @@ void execute_sbic(vmcu_system_t *sys, const int opcode) {
     sys->cycles += (2 + p->dword);
 }
 
-void execute_sbrc(vmcu_system_t *sys, const int opcode) {
+static void execute_sbrc(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bit = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int bit = vmcu_extr(opcode, 0, 3, 0);
 
     const uint8_t val = vmcu_system_read_gpr(sys, dest);
 
@@ -642,10 +642,10 @@ void execute_sbrc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += (2 + p->dword);
 }
 
-void execute_sbrs(vmcu_system_t *sys, const int opcode) {
+static void execute_sbrs(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bit = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int bit = vmcu_extr(opcode, 0, 3, 0);
 
     const uint8_t val = vmcu_system_read_gpr(sys, dest);
 
@@ -664,10 +664,10 @@ void execute_sbrs(vmcu_system_t *sys, const int opcode) {
     sys->cycles += (2 + p->dword);
 }
 
-void execute_cpse(vmcu_system_t *sys, const int opcode) {
+static void execute_cpse(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -687,10 +687,10 @@ void execute_cpse(vmcu_system_t *sys, const int opcode) {
     sys->cycles += (2 + p->dword);
 }
 
-void execute_eor(vmcu_system_t *sys, const int opcode) {
+static void execute_eor(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const uint8_t val_dest = vmcu_system_read_gpr(sys, dest);
     const uint8_t val_src = vmcu_system_read_gpr(sys, src);
@@ -709,9 +709,9 @@ void execute_eor(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_ld_x(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_x(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t xl = vmcu_system_read_gpr(sys, XL);
     const uint8_t xh = vmcu_system_read_gpr(sys, XH);
@@ -723,9 +723,9 @@ void execute_ld_x(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_ld_xi(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_xi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t xl = vmcu_system_read_gpr(sys, XL);
     const uint8_t xh = vmcu_system_read_gpr(sys, XH);
@@ -741,9 +741,9 @@ void execute_ld_xi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_ld_dx(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_dx(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t xl = vmcu_system_read_gpr(sys, XL);
     const uint8_t xh = vmcu_system_read_gpr(sys, XH);
@@ -759,9 +759,9 @@ void execute_ld_dx(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_ld_y(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_y(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -773,9 +773,9 @@ void execute_ld_y(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_ld_yi(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_yi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -791,9 +791,9 @@ void execute_ld_yi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_ld_dy(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_dy(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -809,12 +809,12 @@ void execute_ld_dy(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_ldd_yq(vmcu_system_t *sys, const int opcode) {
+static void execute_ldd_yq(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
+    const int disp = vmcu_extr(opcode, 0, 3, 0) + vmcu_extr(opcode, 10, 12, 3)
+                   + vmcu_extr(opcode, 13, 14, 5);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -826,12 +826,12 @@ void execute_ldd_yq(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_ldd_zq(vmcu_system_t *sys, const int opcode) {
+static void execute_ldd_zq(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
+    const int disp = vmcu_extr(opcode, 0, 3, 0) + vmcu_extr(opcode, 10, 12, 3)
+                   + vmcu_extr(opcode, 13, 14, 5);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -843,9 +843,9 @@ void execute_ldd_zq(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_ld_z(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_z(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -857,9 +857,9 @@ void execute_ld_z(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_ld_zi(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_zi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -875,9 +875,9 @@ void execute_ld_zi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_ld_dz(vmcu_system_t *sys, const int opcode) {
+static void execute_ld_dz(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -893,9 +893,9 @@ void execute_ld_dz(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_st_x(vmcu_system_t *sys, const int opcode) {
+static void execute_st_x(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t xl = vmcu_system_read_gpr(sys, XL);
     const uint8_t xh = vmcu_system_read_gpr(sys, XH);
@@ -907,9 +907,9 @@ void execute_st_x(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_xi(vmcu_system_t *sys, const int opcode) {
+static void execute_st_xi(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t xl = vmcu_system_read_gpr(sys, XL);
     const uint8_t xh = vmcu_system_read_gpr(sys, XH);
@@ -925,9 +925,9 @@ void execute_st_xi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_dx(vmcu_system_t *sys, const int opcode) {
+static void execute_st_dx(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t xl = vmcu_system_read_gpr(sys, XL);
     const uint8_t xh = vmcu_system_read_gpr(sys, XH);
@@ -943,9 +943,9 @@ void execute_st_dx(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_y(vmcu_system_t *sys, const int opcode) {
+static void execute_st_y(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -957,9 +957,9 @@ void execute_st_y(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_yi(vmcu_system_t *sys, const int opcode) {
+static void execute_st_yi(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -975,9 +975,9 @@ void execute_st_yi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_dy(vmcu_system_t *sys, const int opcode) {
+static void execute_st_dy(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -993,12 +993,12 @@ void execute_st_dy(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_std_yq(vmcu_system_t *sys, const int opcode) {
+static void execute_std_yq(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
+    const int disp = vmcu_extr(opcode, 0, 3, 0) + vmcu_extr(opcode, 10, 12, 3)
+                   + vmcu_extr(opcode, 13, 14, 5);
 
     const uint8_t yl = vmcu_system_read_gpr(sys, YL);
     const uint8_t yh = vmcu_system_read_gpr(sys, YH);
@@ -1010,9 +1010,9 @@ void execute_std_yq(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_z(vmcu_system_t *sys, const int opcode) {
+static void execute_st_z(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -1024,9 +1024,9 @@ void execute_st_z(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_zi(vmcu_system_t *sys, const int opcode) {
+static void execute_st_zi(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -1042,9 +1042,9 @@ void execute_st_zi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_st_dz(vmcu_system_t *sys, const int opcode) {
+static void execute_st_dz(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -1060,12 +1060,12 @@ void execute_st_dz(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_std_zq(vmcu_system_t *sys, const int opcode) {
+static void execute_std_zq(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
-    const int disp = extract(opcode, 0, 3, 0) + extract(opcode, 10, 12, 3)
-                   + extract(opcode, 13, 14, 5);
+    const int disp = vmcu_extr(opcode, 0, 3, 0) + vmcu_extr(opcode, 10, 12, 3)
+                   + vmcu_extr(opcode, 13, 14, 5);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -1077,10 +1077,10 @@ void execute_std_zq(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_sts(vmcu_system_t *sys, const int opcode) {
+static void execute_sts(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 8, 0);
-    const int dest = extract(opcode, 0, 4, 0) + extract(opcode, 8, 11, 4);
+    const int src = vmcu_extr(opcode, 4, 8, 0);
+    const int dest = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 11, 4);
 
     const int8_t value = vmcu_system_read_gpr(sys, src + 16);
 
@@ -1094,10 +1094,10 @@ void execute_sts(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sts32(vmcu_system_t *sys, const int opcode) {
+static void execute_sts32(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 0, 16, 0);
-    const int src = extract(opcode, 20, 25, 0);
+    const int dest = vmcu_extr(opcode, 0, 16, 0);
+    const int src = vmcu_extr(opcode, 20, 25, 0);
 
     const int8_t value = vmcu_system_read_gpr(sys, src);
     vmcu_system_write_data(sys, (uint16_t) dest, value);
@@ -1106,10 +1106,10 @@ void execute_sts32(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_lds(vmcu_system_t *sys, const int opcode) {
+static void execute_lds(vmcu_system_t *sys, const int opcode) {
     
-    const int dest = extract(opcode, 4, 8, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 8, 11, 4);
+    const int dest = vmcu_extr(opcode, 4, 8, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 11, 4);
     
     int addr = (~(0x10 & src) << 3) | ((0x10 & src) << 2) | 
                 ((0x40 & src) >> 1) | ((0x20 & src) >> 1) |
@@ -1122,10 +1122,10 @@ void execute_lds(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_lds32(vmcu_system_t *sys, const int opcode) {
+static void execute_lds32(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 20, 25, 0);
-    const int src = extract(opcode, 0, 16, 0);
+    const int dest = vmcu_extr(opcode, 20, 25, 0);
+    const int src = vmcu_extr(opcode, 0, 16, 0);
 
     const int8_t value = vmcu_system_read_data(sys, src);
     vmcu_system_write_gpr(sys, dest, value);
@@ -1134,9 +1134,9 @@ void execute_lds32(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_xch(vmcu_system_t *sys, const int opcode) {
+static void execute_xch(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
 
     const int8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -1151,7 +1151,7 @@ void execute_xch(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brne(vmcu_system_t *sys, const int opcode) {
+static void execute_brne(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, ZF) == 0x01) {
 
@@ -1161,7 +1161,7 @@ void execute_brne(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1178,7 +1178,7 @@ void execute_brne(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_breq(vmcu_system_t *sys, const int opcode) {
+static void execute_breq(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, ZF) == 0x00) {
 
@@ -1188,7 +1188,7 @@ void execute_breq(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1205,7 +1205,7 @@ void execute_breq(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brge(vmcu_system_t *sys, const int opcode) {
+static void execute_brge(vmcu_system_t *sys, const int opcode) {
 
     if((vmcu_system_read_sreg(sys, NF) ^ vmcu_system_read_sreg(sys, VF)) == 0x01) {
 
@@ -1215,7 +1215,7 @@ void execute_brge(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1232,7 +1232,7 @@ void execute_brge(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brpl(vmcu_system_t *sys, const int opcode) {
+static void execute_brpl(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, NF) == 0x01) {
 
@@ -1242,7 +1242,7 @@ void execute_brpl(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1259,7 +1259,7 @@ void execute_brpl(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brlo(vmcu_system_t *sys, const int opcode) {
+static void execute_brlo(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, CF) == 0x00) {
 
@@ -1269,7 +1269,7 @@ void execute_brlo(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1286,7 +1286,7 @@ void execute_brlo(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brlt(vmcu_system_t *sys, const int opcode) {
+static void execute_brlt(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, SF) == 0x00) {
 
@@ -1296,7 +1296,7 @@ void execute_brlt(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1313,7 +1313,7 @@ void execute_brlt(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brcc(vmcu_system_t *sys, const int opcode) {
+static void execute_brcc(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, CF) == 0x01) {
 
@@ -1323,7 +1323,7 @@ void execute_brcc(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1340,7 +1340,7 @@ void execute_brcc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brcs(vmcu_system_t *sys, const int opcode) {
+static void execute_brcs(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, CF) == 0x00) {
 
@@ -1350,7 +1350,7 @@ void execute_brcs(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1367,7 +1367,7 @@ void execute_brcs(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brvs(vmcu_system_t *sys, const int opcode) {
+static void execute_brvs(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, VF) == 0x00) {
 
@@ -1377,7 +1377,7 @@ void execute_brvs(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1394,7 +1394,7 @@ void execute_brvs(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brts(vmcu_system_t *sys, const int opcode) {
+static void execute_brts(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, TF) == 0x00) {
 
@@ -1404,7 +1404,7 @@ void execute_brts(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1421,7 +1421,7 @@ void execute_brts(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brtc(vmcu_system_t *sys, const int opcode) {
+static void execute_brtc(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, TF) == 0x01) {
 
@@ -1431,7 +1431,7 @@ void execute_brtc(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1448,7 +1448,7 @@ void execute_brtc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brmi(vmcu_system_t *sys, const int opcode) {
+static void execute_brmi(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, NF) == 0x00) {
 
@@ -1458,7 +1458,7 @@ void execute_brmi(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1475,7 +1475,7 @@ void execute_brmi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brhc(vmcu_system_t *sys, const int opcode) {
+static void execute_brhc(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, HF) == 0x01) {
 
@@ -1485,7 +1485,7 @@ void execute_brhc(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1502,7 +1502,7 @@ void execute_brhc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brhs(vmcu_system_t *sys, const int opcode) {
+static void execute_brhs(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, HF) == 0x00) {
 
@@ -1512,7 +1512,7 @@ void execute_brhs(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1529,7 +1529,7 @@ void execute_brhs(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brid(vmcu_system_t *sys, const int opcode) {
+static void execute_brid(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, IF) == 0x01) {
 
@@ -1539,7 +1539,7 @@ void execute_brid(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1556,7 +1556,7 @@ void execute_brid(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brie(vmcu_system_t *sys, const int opcode) {
+static void execute_brie(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, IF) == 0x00) {
 
@@ -1566,7 +1566,7 @@ void execute_brie(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1583,7 +1583,7 @@ void execute_brie(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_brvc(vmcu_system_t *sys, const int opcode) {
+static void execute_brvc(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, VF) == 0x01) {
 
@@ -1593,7 +1593,7 @@ void execute_brvc(vmcu_system_t *sys, const int opcode) {
         return;
     }
 
-    int offs = extract(opcode, 3, 10, 0);
+    int offs = vmcu_extr(opcode, 3, 10, 0);
     const int prog_counter = vmcu_system_get_pc(sys);
 
     if(((0x01 << 6) & offs) != 0x00) {
@@ -1610,9 +1610,9 @@ void execute_brvc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_rcall(vmcu_system_t *sys, const int opcode) {
+static void execute_rcall(vmcu_system_t *sys, const int opcode) {
 
-    int offs = extract(opcode, 0, 12, 0);
+    int offs = vmcu_extr(opcode, 0, 12, 0);
     const int pc = vmcu_system_get_pc(sys);
 
     switch(PC_BIT) {
@@ -1642,7 +1642,7 @@ void execute_rcall(vmcu_system_t *sys, const int opcode) {
     vmcu_system_set_pc(sys, pc + offs + 1);
 }
 
-void execute_ret(vmcu_system_t *sys, const int opcode) {
+static void execute_ret(vmcu_system_t *sys, const int opcode) {
 
     uint8_t pcl, pch, pcm;
 
@@ -1664,7 +1664,7 @@ void execute_ret(vmcu_system_t *sys, const int opcode) {
     }
 }
 
-void execute_reti(vmcu_system_t *sys, const int opcode) {
+static void execute_reti(vmcu_system_t *sys, const int opcode) {
 
     uint8_t pcl, pch, pcm;
 
@@ -1688,7 +1688,7 @@ void execute_reti(vmcu_system_t *sys, const int opcode) {
     vmcu_system_write_sreg(sys, IF, 0x01);
 }
 
-void execute_icall(vmcu_system_t *sys, const int opcode) {
+static void execute_icall(vmcu_system_t *sys, const int opcode) {
 
     const int pc = vmcu_system_get_pc(sys);
 
@@ -1715,7 +1715,7 @@ void execute_icall(vmcu_system_t *sys, const int opcode) {
     vmcu_system_set_pc(sys, addr);
 }
 
-void execute_call(vmcu_system_t *sys, const int opcode) {
+static void execute_call(vmcu_system_t *sys, const int opcode) {
 
     const int addr = (opcode & 0x1ffff) 
                    + (opcode & 0x1f00000);
@@ -1741,10 +1741,10 @@ void execute_call(vmcu_system_t *sys, const int opcode) {
     vmcu_system_set_pc(sys, addr);
 }
 
-void execute_cp(vmcu_system_t *sys, const int opcode) {
+static void execute_cp(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t value = vmcu_system_read_gpr(sys, dest);
     const int8_t comp = vmcu_system_read_gpr(sys, src);
@@ -1772,10 +1772,10 @@ void execute_cp(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_cpi(vmcu_system_t *sys, const int opcode) {
+static void execute_cpi(vmcu_system_t *sys, const int opcode) {
 
-    const int reg = extract(opcode, 4, 8, 0);
-    const uint8_t comp = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int reg = vmcu_extr(opcode, 4, 8, 0);
+    const uint8_t comp = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 12, 4);
 
     const uint8_t value = vmcu_system_read_gpr(sys, 16 + reg);
     const int8_t result = value - comp;
@@ -1802,10 +1802,10 @@ void execute_cpi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_cpc(vmcu_system_t *sys, const int opcode) {
+static void execute_cpc(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t value = vmcu_system_read_gpr(sys, dest);
     const int8_t comp = vmcu_system_read_gpr(sys, src);
@@ -1836,31 +1836,9 @@ void execute_cpc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_lsr(vmcu_system_t *sys, const int opcode) {
+static void execute_lsr(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-
-    const uint8_t value = vmcu_system_read_gpr(sys, dest);
-    const uint8_t result = (value >> 1);
-
-    const int8_t cf_res = bit(value, 0);
-    const int8_t vf_res = cf_res ^ 0;
-
-    vmcu_system_write_sreg(sys, CF, cf_res);
-    vmcu_system_write_sreg(sys, VF, vf_res);
-    vmcu_system_write_sreg(sys, NF, 0x00);
-    vmcu_system_write_sreg(sys, SF, vf_res ^ 0);
-    vmcu_system_write_sreg(sys, ZF, (result == 0x00));
-
-    vmcu_system_write_gpr(sys, dest, result);
-
-    vmcu_system_move_pc(sys, 1);
-    sys->cycles += 1;
-}
-
-void execute_asr(vmcu_system_t *sys, const int opcode) {
-
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t value = vmcu_system_read_gpr(sys, dest);
     const uint8_t result = (value >> 1);
@@ -1880,9 +1858,31 @@ void execute_asr(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_ror(vmcu_system_t *sys, const int opcode) {
+static void execute_asr(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+
+    const uint8_t value = vmcu_system_read_gpr(sys, dest);
+    const uint8_t result = (value >> 1);
+
+    const int8_t cf_res = bit(value, 0);
+    const int8_t vf_res = cf_res ^ 0;
+
+    vmcu_system_write_sreg(sys, CF, cf_res);
+    vmcu_system_write_sreg(sys, VF, vf_res);
+    vmcu_system_write_sreg(sys, NF, 0x00);
+    vmcu_system_write_sreg(sys, SF, vf_res ^ 0);
+    vmcu_system_write_sreg(sys, ZF, (result == 0x00));
+
+    vmcu_system_write_gpr(sys, dest, result);
+
+    vmcu_system_move_pc(sys, 1);
+    sys->cycles += 1;
+}
+
+static void execute_ror(vmcu_system_t *sys, const int opcode) {
+
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t value = vmcu_system_read_gpr(sys, dest);
     const bool carry = vmcu_system_read_sreg(sys, CF);
@@ -1905,9 +1905,9 @@ void execute_ror(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_swap(vmcu_system_t *sys, const int opcode) {
+static void execute_swap(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t value = vmcu_system_read_gpr(sys, dest);
     const uint8_t result = ((value & 0x0f) << 4) | ((value & 0xf0) >> 4);
@@ -1918,10 +1918,10 @@ void execute_swap(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_ori(vmcu_system_t *sys, const int opcode) {
+static void execute_ori(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0);
-    const uint8_t val = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int dest = vmcu_extr(opcode, 4, 8, 0);
+    const uint8_t val = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 12, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, 16 + dest);
     const int8_t result = dest_val | val;
@@ -1939,10 +1939,10 @@ void execute_ori(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_or(vmcu_system_t *sys, const int opcode) {
+static void execute_or(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -1961,10 +1961,10 @@ void execute_or(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_and(vmcu_system_t *sys, const int opcode) {
+static void execute_and(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int src = extract(opcode, 0, 4, 0) + extract(opcode, 9, 10, 4);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 9, 10, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const int8_t src_val = vmcu_system_read_gpr(sys, src);
@@ -1983,10 +1983,10 @@ void execute_and(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_andi(vmcu_system_t *sys, const int opcode) {
+static void execute_andi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 8, 0) + 16;
-    const int value = extract(opcode, 0, 4, 0) + extract(opcode, 8, 12, 4);
+    const int dest = vmcu_extr(opcode, 4, 8, 0) + 16;
+    const int value = vmcu_extr(opcode, 0, 4, 0) + vmcu_extr(opcode, 8, 12, 4);
 
     const int8_t dest_val = vmcu_system_read_gpr(sys, dest);
     const uint8_t result = dest_val & value;
@@ -2004,9 +2004,9 @@ void execute_andi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_las(vmcu_system_t *sys, const int opcode) {
+static void execute_las(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
     const uint8_t value = vmcu_system_read_gpr(sys, src);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
@@ -2024,9 +2024,9 @@ void execute_las(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_lac(vmcu_system_t *sys, const int opcode) {
+static void execute_lac(vmcu_system_t *sys, const int opcode) {
 
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
     const uint8_t value = vmcu_system_read_gpr(sys, src);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
@@ -2044,9 +2044,9 @@ void execute_lac(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_lat(vmcu_system_t *sys, const int opcode) {
+static void execute_lat(vmcu_system_t *sys, const int opcode) {
     
-    const int src = extract(opcode, 4, 9, 0);
+    const int src = vmcu_extr(opcode, 4, 9, 0);
     const uint8_t value = vmcu_system_read_gpr(sys, src);
     
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
@@ -2064,9 +2064,9 @@ void execute_lat(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_com(vmcu_system_t *sys, const int opcode) {
+static void execute_com(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const int8_t value = vmcu_system_read_gpr(sys, dest);
     const int8_t result = (0xff - value);
@@ -2084,9 +2084,9 @@ void execute_com(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_neg(vmcu_system_t *sys, const int opcode) {
+static void execute_neg(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t value = vmcu_system_read_gpr(sys, dest);
     const uint8_t result = ~value + 0x01;
@@ -2110,10 +2110,10 @@ void execute_neg(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_bld(vmcu_system_t *sys, const int opcode) {
+static void execute_bld(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int bpos = vmcu_extr(opcode, 0, 3, 0);
 
     const bool t_flag = vmcu_system_read_sreg(sys, TF);
     const int8_t val = vmcu_system_read_gpr(sys, dest);
@@ -2134,10 +2134,10 @@ void execute_bld(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_bst(vmcu_system_t *sys, const int opcode) {
+static void execute_bst(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
+    const int bpos = vmcu_extr(opcode, 0, 3, 0);
 
     const int8_t val = vmcu_system_read_gpr(sys, dest);
     vmcu_system_write_sreg(sys, TF, ((0x01 << bpos) & val) >> bpos);
@@ -2146,10 +2146,10 @@ void execute_bst(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sbi(vmcu_system_t *sys, const int opcode) {
+static void execute_sbi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 3, 8, 0);
+    const int bpos = vmcu_extr(opcode, 0, 3, 0);
     
     vmcu_system_set_sfr(sys, (GPR_SIZE + dest), bpos);
     
@@ -2157,10 +2157,10 @@ void execute_sbi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_cbi(vmcu_system_t *sys, const int opcode) {
+static void execute_cbi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 3, 8, 0);
-    const int bpos = extract(opcode, 0, 3, 0);
+    const int dest = vmcu_extr(opcode, 3, 8, 0);
+    const int bpos = vmcu_extr(opcode, 0, 3, 0);
 
     vmcu_system_clear_sfr(sys, (GPR_SIZE + dest), bpos);
     
@@ -2168,7 +2168,7 @@ void execute_cbi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_lpm(vmcu_system_t *sys, const int opcode) {
+static void execute_lpm(vmcu_system_t *sys, const int opcode) {
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -2185,9 +2185,9 @@ void execute_lpm(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_lpm_z(vmcu_system_t *sys, const int opcode) {
+static void execute_lpm_z(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -2204,9 +2204,9 @@ void execute_lpm_z(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_lpm_zi(vmcu_system_t *sys, const int opcode) {
+static void execute_lpm_zi(vmcu_system_t *sys, const int opcode) {
 
-    const int dest = extract(opcode, 4, 9, 0);
+    const int dest = vmcu_extr(opcode, 4, 9, 0);
 
     const uint8_t zl = vmcu_system_read_gpr(sys, ZL);
     const uint8_t zh = vmcu_system_read_gpr(sys, ZH);
@@ -2227,7 +2227,7 @@ void execute_lpm_zi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_eicall(vmcu_system_t *sys, const int opcode) {
+static void execute_eicall(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2235,7 +2235,7 @@ void execute_eicall(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 4;
 }
 
-void execute_eijmp(vmcu_system_t *sys, const int opcode) {
+static void execute_eijmp(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2243,7 +2243,7 @@ void execute_eijmp(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-void execute_elpm(vmcu_system_t *sys, const int opcode) {
+static void execute_elpm(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2251,7 +2251,7 @@ void execute_elpm(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_elpm_z(vmcu_system_t *sys, const int opcode) {
+static void execute_elpm_z(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2259,7 +2259,7 @@ void execute_elpm_z(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_elpm_zi(vmcu_system_t *sys, const int opcode) {
+static void execute_elpm_zi(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2267,7 +2267,7 @@ void execute_elpm_zi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 3;
 }
 
-void execute_des(vmcu_system_t *sys, const int opcode) {
+static void execute_des(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2275,7 +2275,7 @@ void execute_des(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sleep(vmcu_system_t *sys, const int opcode) {
+static void execute_sleep(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2283,7 +2283,7 @@ void execute_sleep(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_wdr(vmcu_system_t *sys, const int opcode) {
+static void execute_wdr(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2291,7 +2291,7 @@ void execute_wdr(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_break(vmcu_system_t *sys, const int opcode) {
+static void execute_break(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2299,7 +2299,7 @@ void execute_break(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_spm(vmcu_system_t *sys, const int opcode) {
+static void execute_spm(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2307,7 +2307,7 @@ void execute_spm(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_spm_zi(vmcu_system_t *sys, const int opcode) {
+static void execute_spm_zi(vmcu_system_t *sys, const int opcode) {
     
     /* currently not supported */
     
@@ -2315,7 +2315,7 @@ void execute_spm_zi(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_ses(vmcu_system_t *sys, const int opcode) {
+static void execute_ses(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, SF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2323,7 +2323,7 @@ void execute_ses(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_set(vmcu_system_t *sys, const int opcode) {
+static void execute_set(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, TF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2331,7 +2331,7 @@ void execute_set(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sev(vmcu_system_t *sys, const int opcode) {
+static void execute_sev(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, VF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2339,7 +2339,7 @@ void execute_sev(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sez(vmcu_system_t *sys, const int opcode) {
+static void execute_sez(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, ZF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2347,7 +2347,7 @@ void execute_sez(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_seh(vmcu_system_t *sys, const int opcode) {
+static void execute_seh(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, HF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2355,7 +2355,7 @@ void execute_seh(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sec(vmcu_system_t *sys, const int opcode) {
+static void execute_sec(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, CF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2363,7 +2363,7 @@ void execute_sec(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sei(vmcu_system_t *sys, const int opcode) {
+static void execute_sei(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, IF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2371,7 +2371,7 @@ void execute_sei(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_sen(vmcu_system_t *sys, const int opcode) {
+static void execute_sen(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, NF, 0x01);
     vmcu_system_move_pc(sys, 1);
@@ -2379,7 +2379,7 @@ void execute_sen(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_cls(vmcu_system_t *sys, const int opcode) {
+static void execute_cls(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, SF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2387,7 +2387,7 @@ void execute_cls(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_clt(vmcu_system_t *sys, const int opcode) {
+static void execute_clt(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, TF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2395,7 +2395,7 @@ void execute_clt(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_clv(vmcu_system_t *sys, const int opcode) {
+static void execute_clv(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, VF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2403,7 +2403,7 @@ void execute_clv(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_clz(vmcu_system_t *sys, const int opcode) {
+static void execute_clz(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, ZF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2411,7 +2411,7 @@ void execute_clz(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_clh(vmcu_system_t *sys, const int opcode) {
+static void execute_clh(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, HF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2419,7 +2419,7 @@ void execute_clh(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_clc(vmcu_system_t *sys, const int opcode) {
+static void execute_clc(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, CF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2427,7 +2427,7 @@ void execute_clc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_cli(vmcu_system_t *sys, const int opcode) {
+static void execute_cli(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, IF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2435,7 +2435,7 @@ void execute_cli(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_cln(vmcu_system_t *sys, const int opcode) {
+static void execute_cln(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_write_sreg(sys, NF, 0x00);
     vmcu_system_move_pc(sys, 1);
@@ -2443,18 +2443,18 @@ void execute_cln(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-void execute_bclr(vmcu_system_t *sys, const int opcode) {
+static void execute_bclr(vmcu_system_t *sys, const int opcode) {
 
-    int s_bit = extract(opcode, 4, 7, 0);
+    int s_bit = vmcu_extr(opcode, 4, 7, 0);
     vmcu_system_write_sreg(sys, s_bit, 0x00);
 
     vmcu_system_move_pc(sys, 1);
     sys->cycles += 1;
 }
 
-void execute_bset(vmcu_system_t *sys, const int opcode) {
+static void execute_bset(vmcu_system_t *sys, const int opcode) {
 
-    int s_bit = extract(opcode, 4, 7, 0);
+    int s_bit = vmcu_extr(opcode, 4, 7, 0);
     vmcu_system_write_sreg(sys, s_bit, 0x01);
 
     vmcu_system_move_pc(sys, 1);

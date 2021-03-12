@@ -2,6 +2,9 @@
 
 # Unreleased
 
+- added missing vmcu_ prefix in exposed functions
+  - no name collisions possible anymore
+
 - added more decoder integration tests (com -> elpm)
   - added decoder tests (elpm -> lpm)
   - added decoder tests (lsr -> push)

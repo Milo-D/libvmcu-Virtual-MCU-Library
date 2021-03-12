@@ -48,8 +48,8 @@
     #define ZL 30
     #define ZH 31
 
-    extern const char *flags[SREG_SIZE];
-    extern const char *sfreg[SFR_SIZE];
+    extern const char *vmcu_status_flags[SREG_SIZE];
+    extern const char *vmcu_sfr_str[SFR_SIZE];
 
     /* PIN/PORT B */
 
@@ -311,18 +311,6 @@
     #define ADC_VECT        0x002a
     #define ERDY_VECT       0x002c
     #define ACOMP_VECT      0x002e
-
-#endif
-
-#ifdef ATMEGA16
-
-/* currently not supported */
-
-#endif
-
-#ifdef ATMEGA8
-
-/* currently not supported */
 
 #endif
 

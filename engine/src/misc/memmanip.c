@@ -8,7 +8,7 @@
 // Project Headers (engine)
 #include "engine/include/misc/memmanip.h"
 
-void nfree(const int n, ...) {
+void vmcu_nfree(const int n, ...) {
 
     va_list var;
     va_start(var, n);

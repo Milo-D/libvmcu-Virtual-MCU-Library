@@ -45,7 +45,7 @@ vmcu_plain_t* vmcu_read_ihex(const char *hex_file, int32_t *size) {
 
     long bytes; *size = 0;
 
-    if((bytes = fbytes(hex_file)) < 4)
+    if((bytes = vmcu_fbytes(hex_file)) < 4)
         return NULL;
 
     FILE *file = fopen(hex_file, "r");
@@ -124,7 +124,7 @@ static int read_ihex_line(char *line, vmcu_plain_t *buffer, int32_t *size) {
         if(strcmp(current, "") == 0)
             goto error;
 
-        if((instr = htoi(current)) < 0)
+        if((instr = vmcu_htoi(current)) < 0)
             goto error;
 
         buffer[top + i] = (vmcu_plain_t) {
@@ -149,25 +149,25 @@ static int get_ihex_properties(const char *line, ihex_properties_t *buffer) {
     char *bytes; char *addr;
     const size_t hex_len = strlen(line);
 
-    if((buffer->line = substr(line, 1, hex_len)) == NULL)
+    if((buffer->line = vmcu_substr(line, 1, hex_len)) == NULL)
         return -1;
 
-    if((bytes = substr(buffer->line, 0, 1)) == NULL) {
+    if((bytes = vmcu_substr(buffer->line, 0, 1)) == NULL) {
 
         free(buffer->line);
         return -1;
     }
 
-    if((addr = substr(buffer->line, 2, 5)) == NULL) {
+    if((addr = vmcu_substr(buffer->line, 2, 5)) == NULL) {
 
-        nfree(2, buffer->line, bytes);
+        vmcu_nfree(2, buffer->line, bytes);
         return -1;
     }
 
-    buffer->s_addr = htoi(addr);
-    buffer->byte_count = htoi(bytes);
+    buffer->s_addr = vmcu_htoi(addr);
+    buffer->byte_count = vmcu_htoi(bytes);
 
-    nfree(2, bytes, addr);
+    vmcu_nfree(2, bytes, addr);
     return 0;
 }
 
