@@ -3,6 +3,8 @@
 # Unreleased
 
 - added more decoder integration tests (com -> elpm)
+  - added decoder tests (elpm -> lpm)
+  - added decoder tests (lsr -> push)
 
 - moved sfr_lookup[] table to a separate file. 
 - adjusting readme ;)
