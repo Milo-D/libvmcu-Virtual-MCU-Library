@@ -16,7 +16,8 @@ int main(const int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-    vmcu_report_t *report = vmcu_analyze_ihex(argv[1]);
+    vmcu_model_t *m328p   = vmcu_model_ctor(VMCU_M328P);
+    vmcu_report_t *report = vmcu_analyze_ihex(argv[1], m328p);
 
     if(report == NULL)
         return EXIT_FAILURE;
@@ -38,5 +39,7 @@ int main(const int argc, const char **argv) {
     }
 
     vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+
     return EXIT_SUCCESS;
 }

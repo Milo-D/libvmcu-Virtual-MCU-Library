@@ -3,21 +3,8 @@
 #ifndef VMCU_OPERAND_H
 #define VMCU_OPERAND_H
 
-typedef enum {
-    
-    VMCU_IMM,
-    VMCU_IMM8,
-    VMCU_UIMM8,
-    VMCU_UIMM16,
-    VMCU_REGISTER,
-    VMCU_REGISTERPAIR,
-    VMCU_IODIRECT,
-    VMCU_XPTR,
-    VMCU_YPTR,
-    VMCU_ZPTR,
-    VMCU_EMPTY
-    
-} VMCU_OPTYPE;
+// Project Headers (engine utilities)
+#include "engine/include/arch/enum/optype.h"
 
 typedef struct vmcu_operand {
     

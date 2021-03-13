@@ -22,6 +22,7 @@
 
 /* libvmcu Structures */
 
+vmcu_model_t  *m328p  = NULL;
 vmcu_report_t *report = NULL;
 vmcu_system_t *sys    = NULL;
 
@@ -36,7 +37,10 @@ int main(const int argc, const char **argv) {
     uint8_t led;
     atexit(cleanup);
 
-    if((report = vmcu_analyze_ihex(TESTFILE)) == NULL)
+    if((m328p = vmcu_model_ctor(VMCU_M328P)) == NULL)
+        return EXIT_FAILURE;
+
+    if((report = vmcu_analyze_ihex(TESTFILE, m328p)) == NULL)
         return EXIT_FAILURE;
 
     if((sys = vmcu_system_ctor(report)) == NULL)
@@ -68,4 +72,7 @@ static void cleanup(void) {
 
     if(sys != NULL)
         vmcu_system_dtor(sys);
+
+    if(m328p != NULL)
+        vmcu_model_dtor(m328p);
 }

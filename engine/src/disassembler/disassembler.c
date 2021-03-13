@@ -11,7 +11,6 @@
 #include "engine/include/analyzer/report/plain.h"
 
 // Project Headers (engine utilities)
-#include "engine/include/arch/mcudef.h"
 #include "engine/include/collections/sstream.h"
 
 #define TAB 26
@@ -26,9 +25,9 @@ static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_plain_t *p);
 
 /* --- Extern --- */
 
-int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p) {
+int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu) {
 
-    if(vmcu_decompose_bytes(bytes, p) < 0)
+    if(vmcu_decompose_bytes(bytes, p, mcu) < 0)
         return -1;
 
     if(p->exec == false) {
@@ -41,14 +40,14 @@ int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p) {
     return 0;
 }
 
-vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size) {
+vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
 
     vmcu_plain_t *p;
 
-    if((p = vmcu_decompose_ihex(hex_file, size)) == NULL)
+    if((p = vmcu_decompose_ihex(hex_file, size, mcu)) == NULL)
         return NULL;
 
-    for(int i = 0; i < *size; i++) {
+    for(int32_t i = 0; i < *size; i++) {
 
         vmcu_plain_t *pi = &(p[i]);
 
@@ -2197,7 +2196,7 @@ static char* disassemble_bclr(vmcu_plain_t *p) {
     vmcu_sstream_put(&ss, "bclr 0x0%d", src);
 
     vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; %s <- 0x00", vmcu_sreg_str[src]);
+    vmcu_sstream_put(&ss, "; SREG[%d] <- 0x00", src);
 
     return vmcu_sstream_alloc(&ss);
 }
@@ -2212,7 +2211,7 @@ static char* disassemble_bset(vmcu_plain_t *p) {
     vmcu_sstream_put(&ss, "bset 0x0%d", src);
 
     vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; %s <- 0x01", vmcu_sreg_str[src]);
+    vmcu_sstream_put(&ss, "; SREG[%d] <- 0x01", src);
 
     return vmcu_sstream_alloc(&ss);
 }

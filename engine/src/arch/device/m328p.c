@@ -1,9 +1,69 @@
-/* SFR Lookup Table Header */
+/* ATmega328P Device Loader Implementation */
 
-// Project Headers (engine)
-#include "engine/include/analyzer/modules/sfr/sfr_lookup.h"
+// Project Headers (engine utilites)
+#include "engine/include/arch/device/m328p.h"
+#include "engine/include/arch/enum/device.h"
+#include "engine/include/arch/enum/device_core.h"
+#include "engine/include/arch/enum/sfregister.h"
+#include "engine/include/arch/model.h"
 
-const VMCU_SFREGISTER vmcu_sfr_lookup[SFR_LOOKUP_SIZE] = {
+/* Forward Declaration of ATmega328P specific fields */
+
+VMCU_SFREGISTER m328p_sfr_layout[167];
+
+/* --- Extern --- */
+
+void load_device_m328p(vmcu_model_t *model) {
+
+    /* <----------------- GENERAL -----------------> */
+
+    model->device                  = VMCU_M328P;
+    model->core                    = VMCU_AVRep;
+
+    /* <------------------ FLASH ------------------> */
+
+    model->flash.size              = 0x4000;
+    model->flash.start             = 0x0000;
+    model->flash.end               = 0x3fff;
+
+    /* <----------------- EEPROM ------------------> */
+
+    model->eeprom.size             = 0x0400;
+    model->eeprom.start            = 0x0000;
+    model->eeprom.end              = 0x03ff;
+
+    /* <------------------- DS --------------------> */
+
+    model->ds.size                 = 0x0900;
+
+    model->ds.registers.size       = 0x20;
+    model->ds.registers.start      = 0x0000;
+    model->ds.registers.end        = 0x001f;
+
+    model->ds.internal_io.size     = 0x40;
+    model->ds.internal_io.start    = 0x0020;
+    model->ds.internal_io.end      = 0x5f;
+
+    model->ds.external_io.size     = 0xa0;
+    model->ds.external_io.start    = 0x0060;
+    model->ds.external_io.end      = 0x00ff;
+
+    model->ds.sram.size            = 0x0800;
+    model->ds.sram.start           = 0x0100;
+    model->ds.sram.end             = 0x08ff;
+
+    /* <------------------ SFR --------------------> */
+
+    model->sfr.section.size        = 0xa7;
+    model->sfr.section.start       = 0x0020;
+    model->sfr.section.end         = 0x00c6;
+
+    model->sfr.layout              = m328p_sfr_layout;
+}
+
+/* --- ATmega328P specific fields --- */
+
+VMCU_SFREGISTER m328p_sfr_layout[167] = {
 
     VMCU_RESERVED,
     VMCU_RESERVED,

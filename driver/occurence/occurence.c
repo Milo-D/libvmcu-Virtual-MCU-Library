@@ -5,12 +5,8 @@
 #include "libvmcu_analyzer.h"
 #include "libvmcu_system.h"
 
-//first idea: count instruction occurrences
-//SPM 3
-//IRET 4
-//...
-
 struct pair {
+
     int ikey;
     int hits;
     char mnem[10];
@@ -25,6 +21,7 @@ int compare(const void* a, const void* b) {
 }
 
 int spaceIndex(char* mnem) {
+
     char* end = strchr(mnem, ' ');
     return end - mnem;
 }
@@ -44,6 +41,7 @@ void init_list(struct pair** list, int nKeys) {
 }
 
 void bubblesort(void **array, int length, int (*compar)(const void *, const void *)) {
+
     int i, j;
     void* tmp;
 
@@ -71,10 +69,16 @@ int main(int argc, char* argv[]) {
 
     //instructions to filter for
     int countFilters = argc-2;
-
     const char* fname = argv[argc-1];
 
-    vmcu_report_t* report = vmcu_analyze_ihex(fname);
+    vmcu_model_t* m328p   = vmcu_model_ctor(VMCU_M328P);
+    vmcu_report_t* report = vmcu_analyze_ihex(fname, m328p);
+
+    if(report == NULL) {
+
+        vmcu_model_dtor(m328p);
+        return EXIT_FAILURE;
+    }
 
     vmcu_system_t* sys = vmcu_system_ctor(report);
 
@@ -137,6 +141,7 @@ int main(int argc, char* argv[]) {
 
     vmcu_report_dtor(report);
     vmcu_system_dtor(sys);
+    vmcu_model_dtor(m328p);
 
     free(list);
 

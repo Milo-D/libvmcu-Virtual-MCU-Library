@@ -21,7 +21,7 @@
  *
  * */
 
-/* <------------------------------------------- Enumeration -------------------------------------------> */
+/* <--------------------------------------- Enumeration (arch/) ---------------------------------------> */
 
 typedef enum {                                ///< instruction keys
 
@@ -276,6 +276,16 @@ typedef enum {                                ///< operand types
 
 } VMCU_OPTYPE;
 
+typedef enum {                                ///< supported devices for the analyzer
+
+    VMCU_M328P                                ///< ATmega328(P) with AVRe+ device core
+
+} VMCU_DEVICE;
+
+/* <--------------------------------------- Structures (arch/) ----------------------------------------> */
+
+typedef struct vmcu_model vmcu_model_t;       ///< device model (opaque, details not relevant for user)
+
 /* <------------------------------------------- Structures --------------------------------------------> */
 
 typedef struct vmcu_operand {                 ///< operand structure
@@ -340,13 +350,28 @@ typedef struct vmcu_report {                  ///< report (summary) of the binar
 
 } vmcu_report_t;
 
+/* <------------------------------- Functions - Model Loader (arch/) ----------------------------------> */
+
+/*
+ * vmcu_model_ctor - constructor of vmcu_model_t
+ * @device: device to be loaded (for example VMCU_M328P)
+ * */
+extern vmcu_model_t* vmcu_model_ctor(const VMCU_DEVICE device);
+
+/*
+ * vmcu_model_dtor - destructor of vmcu_model_t
+ * @this:   pointer to vmcu_model_t
+ * */
+extern void vmcu_model_dtor(vmcu_model_t *this);
+
 /* <---------------------------------- Functions - Analyzer Stage -------------------------------------> */
 
 /*
  * vmcu_analyze_ihex - analyze an intel hex file
  * @hex_file:   intel hex file to analyze
+ * @mcu:        analyze for this device model
  * */
-extern vmcu_report_t* vmcu_analyze_ihex(const char *hex_file);
+extern vmcu_report_t* vmcu_analyze_ihex(const char *hex_file, vmcu_model_t *mcu);
 
 /*
  * vmcu_report_dtor - destructor of vmcu_report_t
@@ -360,15 +385,17 @@ extern void vmcu_report_dtor(vmcu_report_t *this);
  * vmcu_disassemble_bytes - disassemble 16/32-bit opcode
  * @bytes:  opcode to disassemble (little endian)
  * @p:      pointer to a single instance of vmcu_plain_t
+ * @mcu:    disassemble for this device model
  * */
-extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p);
+extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu);
 
 /*
  * vmcu_disassemble_ihex - disassemble an intel hex file
  * @hex_file:   intel hex file to disassemble
  * @size:       size of vmcu_plain_t* after disassembling
+ * @mcu:        disassemble for this device model
  * */
-extern vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size);
+extern vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
 
 /* <--------------------------------- Functions - Decomposer Stage ------------------------------------> */
 
@@ -376,15 +403,17 @@ extern vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size);
  * vmcu_decompose_bytes - decompose 16/32-bit opcode
  * @bytes:  opcode to decompose (little endian)
  * @p:      pointer to a single instance of vmcu_plain_t
+ * @mcu:    decompose for this device model
  * */
-extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_plain_t *p);
+extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu);
 
 /*
  * vmcu_decompose_ihex - decompose an intel hex file
  * @hex_file:   intel hex file to decompose
  * @size:       size of vmcu_plain_t* after decomposing
+ * @mcu:        decompose for this device model
  * */
-extern vmcu_plain_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size);
+extern vmcu_plain_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
 
 /* <---------------------------------- Functions - Decoder Stage --------------------------------------> */
 
@@ -392,14 +421,16 @@ extern vmcu_plain_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size);
  * vmcu_decode_bytes - decode 16/32-bit opcode
  * @bytes:  opcode to decode (little endian)
  * @p:      pointer to a single instance of vmcu_plain_t
+ * @mcu:    decode for this device model
  * */
-extern int vmcu_decode_bytes(const uint32_t bytes, vmcu_plain_t *p);
+extern int vmcu_decode_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu);
 
 /*
  * vmcu_decode_ihex - decode an intel hex file
  * @hex_file:   intel hex file to decode
  * @size:       size of vmcu_plain_t* after decoding
+ * @mcu:        decode for this device model
  * */
-extern vmcu_plain_t* vmcu_decode_ihex(const char *hex_file, int32_t *size);
+extern vmcu_plain_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
 
 #endif

@@ -1,7 +1,6 @@
 /* Instruction Decoder Implementation */
 
 // C Headers
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -23,7 +22,7 @@ static void copy_plain(vmcu_plain_t *dest, vmcu_plain_t *src);
 
 /* --- Extern --- */
 
-int vmcu_decode_bytes(const uint32_t bytes, vmcu_plain_t *p) {
+int vmcu_decode_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu) {
 
     uint32_t be = big_endian32(bytes);
 
@@ -50,7 +49,7 @@ int vmcu_decode_bytes(const uint32_t bytes, vmcu_plain_t *p) {
     return ((p->dword == false) && (be > 0xffff)) ? -1 : 0;
 }
 
-vmcu_plain_t* vmcu_decode_ihex(const char *hex_file, int32_t *size) {
+vmcu_plain_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
 
     vmcu_plain_t *read, *result;
 

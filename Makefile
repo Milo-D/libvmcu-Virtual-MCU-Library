@@ -13,6 +13,7 @@ SRC      :=                                                 \
 	$(wildcard engine/src/analyzer/modules/labels/*.c)      \
 	$(wildcard engine/src/analyzer/report/*.c)              \
 	$(wildcard engine/src/arch/*.c)                         \
+	$(wildcard engine/src/arch/device/*.c)					\
 	$(wildcard engine/src/collections/*.c)                  \
 	$(wildcard engine/src/decoder/*.c)                      \
 	$(wildcard engine/src/decomposer/*.c)                   \

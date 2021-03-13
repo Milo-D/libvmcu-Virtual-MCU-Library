@@ -88,7 +88,9 @@ int main(const int argc, const char **argv) {
     uint8_t led;
     
     /* ignoring checks for this example */
-    vmcu_report_t *report = vmcu_analyze_ihex(TESTFILE);
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P);
+    vmcu_report_t *report = vmcu_analyze_ihex(TESTFILE, m328p);
+    
     vmcu_system_t *sys    = vmcu_system_ctor(report);
     
     do {
@@ -106,6 +108,7 @@ int main(const int argc, const char **argv) {
     printf("Time between LED toggle: %lf [s]\n", time);
     
     vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
     vmcu_system_dtor(sys);
 
     return EXIT_SUCCESS;
@@ -122,12 +125,15 @@ int main(const int argc, const char **argv) {
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
     for(int32_t i = 0; i < report->progsize; i++)
         printf("%s\n", report->disassembly[i].mnem);
     
     vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+    
     return EXIT_SUCCESS;
 }
 ```
@@ -147,7 +153,8 @@ ldi r25, 0x00             ; R25 <- 0x00
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
     for(int32_t i = 0; i < report->n_label; i++) {
         
@@ -158,6 +165,8 @@ int main(const int argc, const char **argv) {
     }
     
     vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+    
     return EXIT_SUCCESS;
 }
 ```
@@ -177,7 +186,8 @@ Label ID: 5, Address: 0x0162
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
     for(int32_t i = 0; i < report->n_label; i++) {
 
@@ -196,6 +206,8 @@ int main(const int argc, const char **argv) {
     }
     
     vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+    
     return EXIT_SUCCESS;
 }
 ```
@@ -222,7 +234,8 @@ int main(const int argc, const char **argv) {
 int main(const int argc, const char **argv) {
 
     /* ignoring checks for this example */
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex");
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
     for(int32_t i = 0; i < report->n_sfr; i++) {
 
@@ -241,6 +254,8 @@ int main(const int argc, const char **argv) {
     }
 
     vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+    
     return EXIT_SUCCESS;
 }
 ```
@@ -266,7 +281,16 @@ SFR ID: 50
 ![vcd_showcase](https://user-images.githubusercontent.com/46600932/109825592-430ffa00-7c3a-11eb-9af3-26175b962ef2.png)
 <sup>VCD-Trace Tool by pointbazaar</sup>
 
-# How VMCU works
+# How libvmcu works
+
+### Device Models
+
+A device model is an abstraction over a microcontroller type. It contains MCU specific
+data, like memory sections and layouts.
+
+Each implementation of a microcontroller has a device loader which fills the 
+device model with data. The device model is then used to supply the
+analyzer pipeline with all the relevant data it needs.
 
 ### Analyzer Pipeline
 
@@ -340,14 +364,40 @@ That's it. If you face issues, take look at some examples in the driver/ directo
 
 # Supported Microcontroller
 
-The analyzer consists of architecture unspecific (called archless) and 
-architecture specific submodules. Thus you can perform an analysis on any 
-AVR microcontroller type.
+libvmcu tries to support as many AVR types as possible for static analysis. The
+dynamic analysis is currently only planned for the ATmega328 family but may be extended
+in the future.
 
-Flags to enable/disable architecture specific analysis
-and in general submodules will be added as soon as possible.
+It should be pretty easy to add new microcontrollers to the static analysis. For more information
+take a look at engine/*/arch/
 
-Simulation and architecture specific analysis are supported for following microcontrollers:
+#### Supported MCUs for static analysis
+
+- [ ] AVR Device Core
+  - [ ] ATtiny15
+  - [ ] ...
+  
+- [ ] AVRe Device Core
+  - [ ] ATtiny1634
+  - [ ] ...
+  
+- [ ] AVRe+ Device Core
+  - [x] ATmega328(P)
+  - [ ] ...
+  
+- [ ] AVRxm Device Core
+  - [ ] ATxmega128A1
+  - [ ] ...
+  
+- [ ] AVRxt Device Core
+  - [ ] ATtiny827
+  - [ ] ...
+  
+- [ ] AVRrc Device Core
+  - [ ] ATtiny10
+  - [ ] ...
+
+#### Supported MCUs for static analysis
 
 - [x] ATmega328(P)
 - [ ] ATmega168

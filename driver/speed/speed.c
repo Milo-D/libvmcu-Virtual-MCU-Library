@@ -19,6 +19,7 @@
 
 /* --- libvmcu structures --- */
 
+vmcu_model_t  *m328p  = NULL;
 vmcu_report_t *report = NULL;
 vmcu_system_t *sys    = NULL;
 
@@ -38,14 +39,13 @@ int main(const int argc, const char **argv) {
 
     atexit(cleanup);
 
-    /* Initialize libvmcu */
+    m328p = vmcu_model_ctor(VMCU_M328P);
+    report = vmcu_analyze_ihex(argv[1], m328p);
 
-    if((report = vmcu_analyze_ihex(argv[1])) == NULL)
+    if(report == NULL)
         return EXIT_FAILURE;
 
     sys = vmcu_system_ctor(report);
-
-    /* Do something... */
 
     int32_t pc; double start, end;
     clock_t timer = clock();
@@ -76,4 +76,7 @@ static void cleanup(void) {
 
     if(sys != NULL)
         vmcu_system_dtor(sys);
+
+    if(m328p != NULL)
+        vmcu_model_dtor(m328p);
 }

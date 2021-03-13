@@ -2,6 +2,13 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.8.0 - 2021-03-14
+
+- added devices and device models
+  - in order to support (easily) more AVR types for static analysis
+
 - added missing vmcu_ prefix in exposed functions
   - no name collisions possible anymore
 

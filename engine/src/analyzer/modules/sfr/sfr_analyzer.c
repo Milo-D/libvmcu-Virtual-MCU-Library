@@ -7,37 +7,32 @@
 
 // Project Headers (engine)
 #include "engine/include/analyzer/modules/sfr/sfr_analyzer.h"
-#include "engine/include/analyzer/modules/sfr/sfr_lookup.h"
 #include "engine/include/analyzer/report/report.h"
 
 // Project Headers (engine utilities)
-#include "engine/include/arch/mcudef.h"
-
-#define IO_OFFSET GPR_SIZE
+#include "engine/include/arch/model.h"
 
 /* Forward Declaration of static Functions */
 
 static vmcu_operand_t* instr_is_sfr_related(vmcu_plain_t *p);
-static inline bool operand_is_sfr_related(vmcu_operand_t *op);
+static inline bool operand_is_sfr_related(vmcu_operand_t *op, vmcu_model_t *mcu);
 
-static VMCU_SFREGISTER get_id_by_instr(vmcu_plain_t *p);
+static VMCU_SFREGISTER get_id_by_instr(vmcu_plain_t *p, vmcu_model_t *mcu);
 
-static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size);
-static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr);
+static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *mcu);
+static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr, vmcu_model_t *mcu);
 
 /* --- Extern --- */
 
-int vmcu_analyze_sfr(vmcu_report_t *report) {
+int vmcu_analyze_sfr(vmcu_report_t *report, vmcu_model_t *mcu) {
 
-    int32_t sfr_map[SFR_SIZE];
-
-    size_t bytes = SFR_SIZE * sizeof(int32_t);
-    memset(sfr_map, 0, bytes);
+    int32_t *sfr_map = malloc(mcu->sfr.section.size * sizeof(int32_t));
+    memset(sfr_map, 0, mcu->sfr.section.size * sizeof(int32_t));
 
     for(int32_t i = 0; i < report->progsize; i++) {
 
         vmcu_plain_t *p = &report->disassembly[i];
-        VMCU_SFREGISTER id = get_id_by_instr(p);
+        VMCU_SFREGISTER id = get_id_by_instr(p, mcu);
 
         if(id == VMCU_SFREGISTER_NONE)
             continue;
@@ -49,18 +44,20 @@ int vmcu_analyze_sfr(vmcu_report_t *report) {
     }
 
     if(report->n_sfr <= 0)
-        return -1;
+        goto cleanup;
 
-    report->sfr = get_sfrs(sfr_map, report->n_sfr);
+    report->sfr = get_sfrs(sfr_map, report->n_sfr, mcu);
 
     for(int32_t i = 0; i < report->n_sfr; i++) {
 
         vmcu_sfr_t *sfr = &report->sfr[i];
 
         sfr->n_xref = sfr_map[sfr->id];
-        sfr->xref   = get_xrefs(report, sfr);
+        sfr->xref   = get_xrefs(report, sfr, mcu);
     }
 
+cleanup:
+    free(sfr_map);
     return 0;
 }
 
@@ -87,31 +84,34 @@ static vmcu_operand_t* instr_is_sfr_related(vmcu_plain_t *p) {
     }
 }
 
-static inline bool operand_is_sfr_related(vmcu_operand_t *op) {
+static inline bool operand_is_sfr_related(vmcu_operand_t *op, vmcu_model_t *mcu) {
 
-    const int offs = ((op->type == VMCU_IODIRECT) * IO_OFFSET);
-    return ((op->value + offs) >= SFR_START && (op->value + offs) <= SFR_END);
+    const uint32_t section_start = mcu->sfr.section.start;
+    const uint32_t section_end   = mcu->sfr.section.end;
+
+    const int32_t offs = ((op->type == VMCU_IODIRECT) * section_start);
+    return ((op->value + offs) >= section_start && (op->value + offs) <= section_end);
 }
 
-static VMCU_SFREGISTER get_id_by_instr(vmcu_plain_t *p) {
+static VMCU_SFREGISTER get_id_by_instr(vmcu_plain_t *p, vmcu_model_t *mcu) {
 
     vmcu_operand_t *op;
 
     if((op = instr_is_sfr_related(p)) == NULL)
         return VMCU_SFREGISTER_NONE;
 
-    if(operand_is_sfr_related(op) == false)
+    if(operand_is_sfr_related(op, mcu) == false)
         return VMCU_SFREGISTER_NONE;
 
-    int offs = ((op->type != VMCU_IODIRECT) * IO_OFFSET);
-    return vmcu_sfr_lookup[op->value - offs];
+    int32_t offs = ((op->type != VMCU_IODIRECT) * mcu->sfr.section.start);
+    return mcu->sfr.layout[op->value - offs];
 }
 
-static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size) {
+static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *mcu) {
 
     vmcu_sfr_t *sfrs = malloc(size * sizeof(vmcu_sfr_t));
 
-    for(int32_t i = 0, j = 0; i < SFR_SIZE; i++) {
+    for(int32_t i = 0, j = 0; i < mcu->sfr.section.size; i++) {
 
         if(sfr_map[i] == 0)
             continue;
@@ -127,7 +127,7 @@ static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size) {
     return sfrs;
 }
 
-static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr) {
+static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr, vmcu_model_t *mcu) {
 
     vmcu_xref_t *xrefs = malloc(sfr->n_xref * sizeof(vmcu_xref_t));
 
@@ -135,7 +135,7 @@ static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr) {
 
         vmcu_plain_t *p = &report->disassembly[i];
 
-        if(get_id_by_instr(p) != sfr->id)
+        if(get_id_by_instr(p, mcu) != sfr->id)
             continue;
 
         xrefs[j++].p = p;

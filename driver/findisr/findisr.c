@@ -9,6 +9,7 @@
 #include "libvmcu_analyzer.h"
 
 /* libvmcu Structures */
+vmcu_model_t  *m328p  = NULL;
 vmcu_report_t *report = NULL;
 
 /* Forward Declaration of static Functions */
@@ -47,7 +48,6 @@ void print_addresses(vmcu_report_t* report, int start_index, int end_index) {
     for(int i=start_index; i <= end_index; i++) {
 
         vmcu_plain_t* p = &report->disassembly[i];
-
         analyze_isr(p, report);
     }
 }
@@ -64,6 +64,7 @@ int main(const int argc, const char **argv) {
     //the desired table size to search for
 
     int table_size = -1;
+
     if(argc == 3) {
         table_size = atoi(argv[1]);
     }
@@ -73,8 +74,9 @@ int main(const int argc, const char **argv) {
     /* Initialize libvmcu */
 
     const char* filename = argv[argc-1];
+    m328p = vmcu_model_ctor(VMCU_M328P);
 
-    if((report = vmcu_analyze_ihex(filename)) == NULL)
+    if((report = vmcu_analyze_ihex(filename, m328p)) == NULL)
         return EXIT_FAILURE;
 
     int start_index = -1;
@@ -102,10 +104,8 @@ int main(const int argc, const char **argv) {
 
         int end_index = start_index + count - 1;
 
-        if(case1 || case2) {
+        if(case1 || case2)
             print_addresses(report, start_index, end_index);
-
-        }
 
         start_index = -1;
 
@@ -120,4 +120,7 @@ static void cleanup(void) {
 
     if(report != NULL)
         vmcu_report_dtor(report);
+
+    if(m328p != NULL)
+        vmcu_model_dtor(m328p);
 }

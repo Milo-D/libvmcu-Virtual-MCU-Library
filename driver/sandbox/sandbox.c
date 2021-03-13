@@ -9,12 +9,6 @@
 
 // libvmcu
 #include "libvmcu_analyzer.h"
-#include "libvmcu_system.h"
-
-/* libvmcu Structures */
-
-vmcu_report_t *report = NULL;
-vmcu_system_t *sys    = NULL;
 
 /* Forward Declaration of static Functions */
 
@@ -34,14 +28,19 @@ int main(const int argc, const char **argv) {
     const uint32_t opc = htoi(argv[1]);
 
     vmcu_plain_t p;
+    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_M328P);
 
-    if(vmcu_disassemble_bytes(opc, &p) < 0) {
+    if(vmcu_disassemble_bytes(opc, &p, m328p) < 0) {
 
         printf("Could not decode.\n");
+        vmcu_model_dtor(m328p);
+
         return EXIT_FAILURE;
     }
 
     print_plain_struct(&p, opc);
+
+    vmcu_model_dtor(m328p);
     free(p.mnem);
 
     return EXIT_SUCCESS;

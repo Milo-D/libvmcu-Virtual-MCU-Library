@@ -22,9 +22,9 @@ static void (*decompose_opcode[VMCU_SET_SIZE]) (vmcu_plain_t *p);
 
 /* --- Extern --- */
 
-int vmcu_decompose_bytes(const uint32_t bytes, vmcu_plain_t *p) {
+int vmcu_decompose_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu) {
 
-    if(vmcu_decode_bytes(bytes, p) < 0)
+    if(vmcu_decode_bytes(bytes, p, mcu) < 0)
         return -1;
 
     if(p->exec == false) {
@@ -37,14 +37,14 @@ int vmcu_decompose_bytes(const uint32_t bytes, vmcu_plain_t *p) {
     return 0;
 }
 
-vmcu_plain_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size) {
+vmcu_plain_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
 
     vmcu_plain_t *p;
 
-    if((p = vmcu_decode_ihex(hex_file, size)) == NULL)
+    if((p = vmcu_decode_ihex(hex_file, size, mcu)) == NULL)
         return NULL;
 
-    for(int i = 0; i < *size; i++) {
+    for(int32_t i = 0; i < *size; i++) {
 
         vmcu_plain_t *pi = &(p[i]);
 

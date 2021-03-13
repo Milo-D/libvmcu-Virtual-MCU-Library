@@ -15,6 +15,7 @@
 #include "libvmcu_system.h"
 
 /* libvmcu Structures */
+vmcu_model_t  *m328p  = NULL;
 vmcu_report_t *report = NULL;
 vmcu_system_t *sys    = NULL;
 
@@ -50,7 +51,9 @@ int main(const int argc, const char **argv) {
     	sscanf(str, "%hx", &addresses[i-3]);
     }
 
-    if((report = vmcu_analyze_ihex(filename)) == NULL)
+    m328p = vmcu_model_ctor(VMCU_M328P);
+
+    if((report = vmcu_analyze_ihex(filename, m328p)) == NULL)
         return EXIT_FAILURE;
 
     sys = vmcu_system_ctor(report);
@@ -150,6 +153,8 @@ static void update_values(uint8_t* values) {
 static void cleanup(void) {
 
     vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
     vmcu_system_dtor(sys);
+
     free(addresses);
 }
