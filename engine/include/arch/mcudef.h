@@ -48,7 +48,7 @@
     #define ZL 30
     #define ZH 31
 
-    extern const char *vmcu_status_flags[SREG_SIZE];
+    extern const char *vmcu_sreg_str[SREG_SIZE];
     extern const char *vmcu_sfr_str[SFR_SIZE];
 
     /* PIN/PORT B */

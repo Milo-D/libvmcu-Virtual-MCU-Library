@@ -5,7 +5,7 @@
 
 #ifdef ATMEGA328P
 
-    const char *vmcu_status_flags[SREG_SIZE] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
+    const char *vmcu_sreg_str[SREG_SIZE] = { "CF", "ZF", "NF", "VF", "SF", "HF", "TF", "IF" };
 
     const char *vmcu_sfr_str[SFR_SIZE]  = {
 

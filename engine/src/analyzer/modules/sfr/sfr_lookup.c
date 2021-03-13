@@ -3,7 +3,7 @@
 // Project Headers (engine)
 #include "engine/include/analyzer/modules/sfr/sfr_lookup.h"
 
-const VMCU_SFREGISTER sfregister_lookup[SFR_LOOKUP_SIZE] = {
+const VMCU_SFREGISTER vmcu_sfr_lookup[SFR_LOOKUP_SIZE] = {
 
     VMCU_RESERVED,
     VMCU_RESERVED,

@@ -2197,7 +2197,7 @@ static char* disassemble_bclr(vmcu_plain_t *p) {
     vmcu_sstream_put(&ss, "bclr 0x0%d", src);
 
     vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; %s <- 0x00", vmcu_status_flags[src]);
+    vmcu_sstream_put(&ss, "; %s <- 0x00", vmcu_sreg_str[src]);
 
     return vmcu_sstream_alloc(&ss);
 }
@@ -2212,7 +2212,7 @@ static char* disassemble_bset(vmcu_plain_t *p) {
     vmcu_sstream_put(&ss, "bset 0x0%d", src);
 
     vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; %s <- 0x01", vmcu_status_flags[src]);
+    vmcu_sstream_put(&ss, "; %s <- 0x01", vmcu_sreg_str[src]);
 
     return vmcu_sstream_alloc(&ss);
 }

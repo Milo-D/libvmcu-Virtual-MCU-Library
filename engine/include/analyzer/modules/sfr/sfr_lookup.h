@@ -13,12 +13,12 @@
  * special function registers. It maps I/O addresses
  * to VMCU_SFREGISTER.
  *
- * todo: move VMCU_SFREGISTER and sfregister_lookup[] to
+ * todo: move VMCU_SFREGISTER and vmcu_sfr_lookup[] to
  *       engine/include/arch/ and engine/src/arch/ in order
  *       to avoid architecture specific definitions in the
  *       analyzer pipeline.
  * */
 
-extern const VMCU_SFREGISTER sfregister_lookup[SFR_LOOKUP_SIZE];
+extern const VMCU_SFREGISTER vmcu_sfr_lookup[SFR_LOOKUP_SIZE];
 
 #endif

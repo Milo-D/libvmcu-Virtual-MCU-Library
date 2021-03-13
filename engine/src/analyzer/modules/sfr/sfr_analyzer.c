@@ -104,7 +104,7 @@ static VMCU_SFREGISTER get_id_by_instr(vmcu_plain_t *p) {
         return VMCU_SFREGISTER_NONE;
 
     int offs = ((op->type != VMCU_IODIRECT) * IO_OFFSET);
-    return sfregister_lookup[op->value - offs];
+    return vmcu_sfr_lookup[op->value - offs];
 }
 
 static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size) {
