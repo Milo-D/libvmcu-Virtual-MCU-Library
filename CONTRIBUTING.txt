@@ -1,0 +1,53 @@
+Engine (core)
+-----------------
+
+Currently closed for pull requests.
+
+Engine (arch)
+-----------------
+
+Adding new architectures to the static analysis will be open for pull requests soon.
+
+Bindings
+-----------------
+
+I am planning a binding for python. A python binding would allow us
+to examine and simulate AVR binaries (or parts of it) without having to
+compile and link a program. It would be a very interactive way of analyzing
+and simulating binaries.
+
+Bindings need to be maintained, since the libvcmu interface can change over time.
+
+In general, a binding forms a subsystem of the repository for which
+you would be responsible.
+
+If the binding can not be built for a longer time, it is no problem, the binding becomes
+archived until someone agrees to resume.
+
+Bindings for other languages are not planned, but I would have
+nothing against it, as long as these are also maintained. Currently pointbazaar maintains the Java Binding.
+
+Bindings require in general, because the library interface can change and you have to adjust the binding, high effort.
+
+Driver
+-----------------
+
+Drivers, on the other hand, are less expensive in time. If you have little time
+but still want to contribute, creating a driver might be the right choice.
+
+A driver is an utility or example program, that fulfills certain functions by using the libvmcu library.
+
+An example of a driver would be the "findisr" driver, which
+locates ISRs in an AVR binary by using libvmcu.
+
+There are no precise specifications for the drivers. You can create anything you want as long as
+it combines libvmcu functions in order to achieve something new.
+
+I will maintain the drivers afterwards to ensure that they withstand library changes.
+
+Tests
+-----------------
+
+More testing.
+
+Generally there are so many tests needed that I won't be able to keep up with it on my own.
