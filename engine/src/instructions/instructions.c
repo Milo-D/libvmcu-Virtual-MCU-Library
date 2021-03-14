@@ -1644,7 +1644,7 @@ static void execute_rcall(vmcu_system_t *sys, const int opcode) {
 
 static void execute_ret(vmcu_system_t *sys, const int opcode) {
 
-    uint8_t pcl, pch, pcm;
+    uint8_t pcl, pch;
 
     switch(PC_BIT) {
 
@@ -1666,7 +1666,7 @@ static void execute_ret(vmcu_system_t *sys, const int opcode) {
 
 static void execute_reti(vmcu_system_t *sys, const int opcode) {
 
-    uint8_t pcl, pch, pcm;
+    uint8_t pcl, pch;
 
     switch(PC_BIT) {
 

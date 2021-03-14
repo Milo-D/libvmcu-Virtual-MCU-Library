@@ -397,7 +397,7 @@ take a look at engine/*/arch/
   - [ ] ATtiny10
   - [ ] ...
 
-#### Supported MCUs for static analysis
+#### Supported MCUs for dynamic analysis
 
 - [x] ATmega328(P)
 - [ ] ATmega168

@@ -150,7 +150,7 @@ static int set(vmcu_array_t *this, void *e, const size_t bytes, const int index)
         return 0;
     }
 
-    if((this->p->block[index] = malloc(bytes)) < 0)
+    if((this->p->block[index] = malloc(bytes)) == NULL)
         return -1;
 
     memcpy(this->p->block[index], e, bytes);
