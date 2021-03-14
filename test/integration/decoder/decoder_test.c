@@ -25,7 +25,7 @@
  * se<x> shadows bset.
  *
  * todo: remove brcs, bclr, bset
- *
+ * note: spm and spm #2
  * */
 
 /* Forward Declaration of static Functions */
@@ -128,6 +128,10 @@ static void test_decode_bytes_ses(vmcu_model_t *mcu);
 static void test_decode_bytes_set(vmcu_model_t *mcu);
 static void test_decode_bytes_sev(vmcu_model_t *mcu);
 static void test_decode_bytes_sez(vmcu_model_t *mcu);
+static void test_decode_bytes_sleep(vmcu_model_t *mcu);
+static void test_decode_bytes_spm(vmcu_model_t *mcu);
+static void test_decode_bytes_stx(vmcu_model_t *mcu);
+static void test_decode_bytes_sty(vmcu_model_t *mcu);
 
 /* --- Extern --- */
 
@@ -239,6 +243,10 @@ void test_decoder(void) {
     start(test_decode_bytes_set, m328p);
     start(test_decode_bytes_sev, m328p);
     start(test_decode_bytes_sez, m328p);
+    start(test_decode_bytes_sleep, m328p);
+    start(test_decode_bytes_spm, m328p);
+    start(test_decode_bytes_stx, m328p);
+    start(test_decode_bytes_sty, m328p);
 
     /* destroy device model */
 
@@ -2593,4 +2601,178 @@ static void test_decode_bytes_sez(vmcu_model_t *mcu) {
     PASSED;
 }
 
+static void test_decode_bytes_sleep(vmcu_model_t *mcu) {
+
+    printf("vmcu_decode_bytes() - SLEEP");
+
+    vmcu_plain_t instr;
+    vmcu_decode_bytes(0x8895, &instr, mcu);
+
+    assert(instr.key    == VMCU_SLEEP);
+    assert(instr.opcode == 0x9588);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    PASSED;
+}
+
+static void test_decode_bytes_spm(vmcu_model_t *mcu) {
+
+    printf("vmcu_decode_bytes() - SPM");
+
+    vmcu_plain_t instr;
+    vmcu_decode_bytes(0xe895, &instr, mcu);
+
+    /* (i) - (iii) */
+    assert(instr.key    == VMCU_SPM);
+    assert(instr.opcode == 0x95e8);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    /* (iv) - (vi) */
+    vmcu_decode_bytes(0xf895, &instr, mcu);
+
+    assert(instr.key    == VMCU_SPMZI);
+    assert(instr.opcode == 0x95f8);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    PASSED;
+}
+
+static void test_decode_bytes_stx(vmcu_model_t *mcu) {
+
+    printf("vmcu_decode_bytes() - ST_X");
+
+    vmcu_plain_t instr;
+    vmcu_decode_bytes(0x0c92, &instr, mcu);
+
+    /* (i) - base */
+    assert(instr.key    == VMCU_STX);
+    assert(instr.opcode == 0x920c);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x7c92, &instr, mcu);
+
+    /* (i) */
+    assert(instr.key    == VMCU_STX);
+    assert(instr.opcode == 0x927c);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x0d92, &instr, mcu);
+
+    /* (ii) - base */
+    assert(instr.key    == VMCU_STXI);
+    assert(instr.opcode == 0x920d);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x3d92, &instr, mcu);
+
+    /* (ii) */
+    assert(instr.key    == VMCU_STXI);
+    assert(instr.opcode == 0x923d);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x0e92, &instr, mcu);
+
+    /* (iii) - base */
+    assert(instr.key    == VMCU_STDX);
+    assert(instr.opcode == 0x920e);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x5e92, &instr, mcu);
+
+    /* (iii) */
+    assert(instr.key    == VMCU_STDX);
+    assert(instr.opcode == 0x925e);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    PASSED;
+}
+
+static void test_decode_bytes_sty(vmcu_model_t *mcu) {
+
+    printf("vmcu_decode_bytes() - ST_Y");
+
+    vmcu_plain_t instr;
+    vmcu_decode_bytes(0x0882, &instr, mcu);
+
+    /* (i) - base */
+    assert(instr.key    == VMCU_STY);
+    assert(instr.opcode == 0x8208);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0xf883, &instr, mcu);
+
+    /* (i) */
+    assert(instr.key    == VMCU_STY);
+    assert(instr.opcode == 0x83f8);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x0992, &instr, mcu);
+
+    /* (ii) - base */
+    assert(instr.key    == VMCU_STYI);
+    assert(instr.opcode == 0x9209);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x1992, &instr, mcu);
+
+    /* (ii) */
+    assert(instr.key    == VMCU_STYI);
+    assert(instr.opcode == 0x9219);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x0a92, &instr, mcu);
+
+    /* (iii) - base */
+    assert(instr.key    == VMCU_STDY);
+    assert(instr.opcode == 0x920a);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x1a92, &instr, mcu);
+
+    /* (iii) */
+    assert(instr.key    == VMCU_STDY);
+    assert(instr.opcode == 0x921a);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    vmcu_decode_bytes(0x3fa2, &instr, mcu);
+
+    /* (iv) (no base, (q = 0) => 0x8208 => st_y */
+    assert(instr.key    == VMCU_STDYQ);
+    assert(instr.opcode == 0xa23f);
+    assert(instr.addr   == 0x0000);
+    assert(instr.exec   == true);
+    assert(instr.dword  == false);
+
+    PASSED;
+}
 

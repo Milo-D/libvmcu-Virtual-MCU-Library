@@ -2,7 +2,8 @@
 
 # Unreleased
 
-- nothing to log
+- added decoder tests (sbis -> sez)
+  - added decoder tests (sleep -> st(Y))
 
 # v.0.8.0 - 2021-03-14
 
