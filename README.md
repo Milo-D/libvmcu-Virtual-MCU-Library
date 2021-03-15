@@ -86,15 +86,6 @@ int main(const int argc, const char **argv) {
     vmcu_instr_t instr;
     vmcu_disassemble_bytes(0xd8e0, &instr, m328p);
     
-    printf("<----- Instruction details of 0xd8e0 ----->\n\n");
-
-    printf("mnemonic:   %s\n\n",   instr.mnem);
-    printf("opcode:     0x%04x\n", instr.opcode);
-    printf("address:    0x%04x\n", instr.addr);
-    
-    printf("executable: %s\n", str(instr.exec));
-    printf("32-bit:     %s\n", str(instr.dword));
-    
     vmcu_operand_t *src    = &instr.src;    // source operand
     vmcu_operand_t *dest   = &instr.dest;   // destination operand
 
@@ -104,6 +95,15 @@ int main(const int argc, const char **argv) {
     const uint8_t src_val  = src->value;    // 0x08
     const uint8_t dest_val = dest->value;   // (R)29
     
+    printf("<----- Instruction details of 0xd8e0 ----->\n\n");
+
+    printf("mnemonic:   %s\n\n",   instr.mnem);
+    printf("opcode:     0x%04x\n", instr.opcode);
+    printf("address:    0x%04x\n", instr.addr);
+    
+    printf("executable: %s\n", str(instr.exec));
+    printf("32-bit:     %s\n", str(instr.dword));
+    
     free(instr.mnem);
     vmcu_model_dtor(m328p);
     
@@ -111,7 +111,7 @@ int main(const int argc, const char **argv) {
 }
 ```
 
-```console
+```asm
 <----- Instruction details of 0xd8e0 ----->
 
 mnemonic:   ldi r29, 0x08 ; R29 <- 0x08
