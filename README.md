@@ -76,7 +76,7 @@ VMCU comes with no further dependencies, thus allowing easy setup and easy usage
 #### Extracting details from opcode
 
 ```c
-#define str(b) (b == true) ? "true" : "false"
+/* 0xd8e0 (little endian) <=> ldi r29, 0x08 */
 
 int main(const int argc, const char **argv) {
     
@@ -86,40 +86,31 @@ int main(const int argc, const char **argv) {
     vmcu_instr_t instr;
     vmcu_disassemble_bytes(0xd8e0, &instr, m328p);
     
-    vmcu_operand_t *src    = &instr.src;    // source operand
-    vmcu_operand_t *dest   = &instr.dest;   // destination operand
-
-    VMCU_OPTYPE src_type   = src->type;     // VMCU_IMM8
-    VMCU_OPTYPE dest_type  = dest->type;    // VMCU_REGISTER
-
-    const uint8_t src_val  = src->value;    // 0x08
-    const uint8_t dest_val = dest->value;   // (R)29
+    const VMCU_IKEY key    = instr.key;      // VMCU_LDI
+    const VMCU_GROUP grp   = instr.group;    // VMCU_GROUP_TRANSFER
     
-    printf("<----- Instruction details of 0xd8e0 ----->\n\n");
+    const uint32_t opcode  = instr.opcode;   // 0xe0d8 (big endian)
+    const uint16_t addr    = instr.addr;     // 0x0000 (undefined)
 
-    printf("mnemonic:   %s\n\n",   instr.mnem);
-    printf("opcode:     0x%04x\n", instr.opcode);
-    printf("address:    0x%04x\n", instr.addr);
-    
-    printf("executable: %s\n", str(instr.exec));
-    printf("32-bit:     %s\n", str(instr.dword));
+    const bool dword       = instr.dword;    // false
+    const bool exec        = instr.exec;     // true
+
+    const char *mnemonic   = instr.mnem;     // ldi r29, 0x08
+
+    vmcu_operand_t *src    = &instr.src;     // source operand
+    vmcu_operand_t *dest   = &instr.dest;    // destination operand
+
+    VMCU_OPTYPE src_type   = src->type;      // VMCU_IMM8
+    VMCU_OPTYPE dest_type  = dest->type;     // VMCU_REGISTER
+
+    const uint8_t src_val  = src->value;     // 0x08
+    const uint8_t dest_val = dest->value;    // (R)29
     
     free(instr.mnem);
     vmcu_model_dtor(m328p);
     
     return EXIT_SUCCESS;
 }
-```
-
-```asm
-<----- Instruction details of 0xd8e0 ----->
-
-mnemonic:   ldi r29, 0x08 ; R29 <- 0x08
-
-opcode:     0xe0d8
-address:    0x0000
-executable: true
-32-bit:     false
 ```
 
 #### Printing disassembly of an intel hex file
@@ -407,6 +398,30 @@ take a look at engine/*/arch/
 - [ ] ATmega88
 - [ ] ATmega48
 
+# Static Analysis
+
+- [x] Disassembler
+- [x] Cross references (xref-from)
+- [ ] analyzer flags
+
+- [x] Decompose and classify instructions
+  - [x] instruction groups
+  - [x] operands and operand types
+
+- [x] Analyzer for AVR binaries
+   - [x] Label analysis
+   - [ ] Function analysis
+   - [ ] ISR analysis
+   - [x] SFR analysis
+   - [ ] cycle analysis
+   - [ ] ...
+
+- [ ] Format Reader
+    - [x] intel hex
+    - [ ] motorola hex
+    - [ ] bin
+    - [ ] elf 
+
 # Dynamic Analysis
 
 - [x] Backstepping
@@ -423,28 +438,6 @@ take a look at engine/*/arch/
     - [ ] SPI
     - [ ] WDT
     - [ ] ...
-    
-# Static Analysis
-
-- [x] Decompose and classify instructions
-- [x] Disassembler
-- [x] Analyzer for AVR binaries
-- [x] Cross references (xref-from)
-- [ ] analyzer flags
-
-
-- [ ] Analyzer Submodules
-   - [x] Label analysis
-   - [ ] Function analysis
-   - [ ] ISR analysis
-   - [x] SFR analysis
-   - [ ] ...
-
-- [ ] Format Reader
-    - [x] intel hex
-    - [ ] motorola hex
-    - [ ] bin
-    - [ ] elf 
 
 # Instructions
 Currently VMCU supports: ~ 133 Instructions. Some few instructions are implemented as 'nop'

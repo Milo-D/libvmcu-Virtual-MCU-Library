@@ -37,8 +37,8 @@ int main(const int argc, const char **argv) {
 
             vmcu_xref_t *x = &sfr->xref[j];
 
-            printf("  xref from 0x%04x ", x->p->addr);
-            printf("(%s)\n", x->p->mnem);
+            printf("  xref from 0x%04x ", x->i->addr);
+            printf("(%s)\n", x->i->mnem);
         }
 
         printf("\n");

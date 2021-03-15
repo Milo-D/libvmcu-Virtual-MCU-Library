@@ -43,6 +43,7 @@ int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *m
 
     instr->exec      = (instr->key >= 0);
 
+    instr->group     = VMCU_GROUP_NONE;
     instr->src.type  = VMCU_EMPTY;
     instr->dest.type = VMCU_EMPTY;
 
@@ -155,6 +156,7 @@ static void copy_instr(vmcu_instr_t *dest, vmcu_instr_t *src) {
 
     dest->mnem      = NULL;
 
+    dest->group     = VMCU_GROUP_NONE;
     dest->src.type  = VMCU_EMPTY;
     dest->dest.type = VMCU_EMPTY;
 }

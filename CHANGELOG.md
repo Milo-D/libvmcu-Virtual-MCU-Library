@@ -2,6 +2,22 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.8.1 - 2021-03-15
+
+- Added: Instruction Groups
+  - arithmetic/logic instructions (VMCU_GROUP_MATH_LOGIC)
+  - data transfer instructions    (VMCU_GROUP_TRANSFER)
+  - MCU control instructions      (VMCU_GROUP_SYS_CTRL)
+  - flow control instructions     (VMCU_GROUP_FLOW)
+  - bit and bit-test instructions (VMCU_GROUP_BIT)
+
+- rename vmcu_plain_t to vmcu_instr_t
+  - this might be a more obvious name than "plain"
+
+- fixed some bugs
+
 - added decoder tests (sbis -> sez)
   - added decoder tests (sleep -> st(Y))
 

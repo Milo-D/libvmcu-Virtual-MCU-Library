@@ -276,6 +276,18 @@ typedef enum {                                ///< operand types
 
 } VMCU_OPTYPE;
 
+typedef enum {                                ///< instruction groups (see official I.S.M.)
+
+    VMCU_GROUP_NONE = -1,                     ///< no instruction group
+
+    VMCU_GROUP_MATH_LOGIC,                    ///< arithmetic and logic instructions (add, cp, ...)
+    VMCU_GROUP_SYS_CTRL,                      ///< mcu control instructions (sleep, wdr, ...)
+    VMCU_GROUP_TRANSFER,                      ///< data transfer instructions (lds, st, ...)
+    VMCU_GROUP_FLOW,                          ///< controlflow instructions (rjmp, call, ...)
+    VMCU_GROUP_BIT,                           ///< bit and bit-test instructions (sbi, sbic, ...)
+
+} VMCU_GROUP;
+
 typedef enum {                                ///< supported devices for the analyzer
 
     VMCU_M328P                                ///< ATmega328(P) with AVRe+ device core
@@ -297,6 +309,12 @@ typedef struct vmcu_operand {                 ///< operand structure
 
 typedef struct vmcu_instr {                   ///< instruction structure
 
+    struct {                                  ///< instruction core
+
+        VMCU_IKEY key;                        ///< instruction key (instruction identifier)
+        VMCU_GROUP group;                     ///< instruction group
+    };
+
     int opcode;                               ///< 16-bit or 32-bit opcode (todo: change type to uint32)
     int addr;
 
@@ -304,8 +322,6 @@ typedef struct vmcu_instr {                   ///< instruction structure
     bool dword;                               ///< 32-bit instruction ?
 
     char *mnem;                               ///< disassembled mnemonic of instruction
-
-    VMCU_IKEY key;                            ///< instruction key (numerical instruction identifier)
 
     vmcu_operand_t src;                       ///< source operand (right operand)
     vmcu_operand_t dest;                      ///< destination operand (left operand)
