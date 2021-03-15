@@ -73,50 +73,53 @@ VMCU comes with no further dependencies, thus allowing easy setup and easy usage
 
 # Examples
 
-#### Unit-Test: timer0 interrupt frequency
+#### Extracting details from opcode
 
 ```c
-#define TESTFILE  "../../driver/led/led.hex"
-
-#define PORTB     0x0025
-#define PB5       0x05
-
-#define bit(v, b) ((v & (1 << b)) >> b)
+#define str(b) (b == true) ? "true" : "false"
 
 int main(const int argc, const char **argv) {
+    
+    /* initialize a device model */
+    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_M328P);
+    
+    vmcu_instr_t instr;
+    vmcu_disassemble_bytes(0xd8e0, &instr, m328p);
+    
+    printf("<----- Instruction details of 0xd8e0 ----->\n\n");
 
-    uint8_t led;
+    printf("mnemonic:   %s\n\n",   instr.mnem);
+    printf("opcode:     0x%04x\n", instr.opcode);
+    printf("address:    0x%04x\n", instr.addr);
     
-    /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P);
-    vmcu_report_t *report = vmcu_analyze_ihex(TESTFILE, m328p);
+    printf("executable: %s\n", str(instr.exec));
+    printf("32-bit:     %s\n", str(instr.dword));
     
-    vmcu_system_t *sys    = vmcu_system_ctor(report);
-    
-    do {
+    vmcu_operand_t *src    = &instr.src;    // source operand
+    vmcu_operand_t *dest   = &instr.dest;   // destination operand
 
-        vmcu_system_step(sys);
-        led = vmcu_system_read_data(sys, PORTB);
+    VMCU_OPTYPE src_type   = src->type;     // VMCU_IMM8
+    VMCU_OPTYPE dest_type  = dest->type;    // VMCU_REGISTER
 
-    } while(bit(led, PB5) == 0x00);
-
-    const double f    = 16000000U;
-    const double c    = sys->cycles;
-    const double time = (c / f);
+    const uint8_t src_val  = src->value;    // 0x08
+    const uint8_t dest_val = dest->value;   // (R)29
     
-    assert((0.95 <= time) && (time <= 1.05));
-    printf("Time between LED toggle: %lf [s]\n", time);
-    
-    vmcu_report_dtor(report);
+    free(instr.mnem);
     vmcu_model_dtor(m328p);
-    vmcu_system_dtor(sys);
-
+    
     return EXIT_SUCCESS;
 }
 ```
 
 ```console
-[Test Result] Time between LED toggle: 1.000021 [s]
+<----- Instruction details of 0xd8e0 ----->
+
+mnemonic:   ldi r29, 0x08 ; R29 <- 0x08
+
+opcode:     0xe0d8
+address:    0x0000
+executable: true
+32-bit:     false
 ```
 
 #### Printing disassembly of an intel hex file

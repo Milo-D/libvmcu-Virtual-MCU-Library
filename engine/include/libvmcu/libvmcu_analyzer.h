@@ -295,7 +295,7 @@ typedef struct vmcu_operand {                 ///< operand structure
 
 } vmcu_operand_t;
 
-typedef struct vmcu_plain {                   ///< plain structure (represents an instruction)
+typedef struct vmcu_instr {                   ///< instruction structure
 
     int opcode;                               ///< 16-bit or 32-bit opcode (todo: change type to uint32)
     int addr;
@@ -310,11 +310,11 @@ typedef struct vmcu_plain {                   ///< plain structure (represents a
     vmcu_operand_t src;                       ///< source operand (right operand)
     vmcu_operand_t dest;                      ///< destination operand (left operand)
 
-} vmcu_plain_t;
+} vmcu_instr_t;
 
 typedef struct vmcu_xref {                    ///< xref (from) structure
 
-    vmcu_plain_t *p;                          ///< cross reference to plain
+    vmcu_instr_t *i;                          ///< cross reference to a single instruction
 
 } vmcu_xref_t;
 
@@ -340,7 +340,7 @@ typedef struct vmcu_label {                   ///< label structure
 typedef struct vmcu_report {                  ///< report (summary) of the binary
 
     int32_t progsize;                         ///< instruction count
-    vmcu_plain_t *disassembly;                ///< instruction list
+    vmcu_instr_t *disassembly;                ///< instruction list
 
     int32_t n_sfr;                            ///< sfr count
     vmcu_sfr_t *sfr;                          ///< sfr list (sorted, ascending)
@@ -384,53 +384,53 @@ extern void vmcu_report_dtor(vmcu_report_t *this);
 /*
  * vmcu_disassemble_bytes - disassemble 16/32-bit opcode
  * @bytes:  opcode to disassemble (little endian)
- * @p:      pointer to a single instance of vmcu_plain_t
+ * @p:      pointer to a single instance of vmcu_instr_t
  * @mcu:    disassemble for this device model
  * */
-extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu);
+extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 /*
  * vmcu_disassemble_ihex - disassemble an intel hex file
  * @hex_file:   intel hex file to disassemble
- * @size:       size of vmcu_plain_t* after disassembling
+ * @size:       size of vmcu_instr_t* after disassembling
  * @mcu:        disassemble for this device model
  * */
-extern vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
 
 /* <--------------------------------- Functions - Decomposer Stage ------------------------------------> */
 
 /*
  * vmcu_decompose_bytes - decompose 16/32-bit opcode
  * @bytes:  opcode to decompose (little endian)
- * @p:      pointer to a single instance of vmcu_plain_t
+ * @p:      pointer to a single instance of vmcu_instr_t
  * @mcu:    decompose for this device model
  * */
-extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu);
+extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 /*
  * vmcu_decompose_ihex - decompose an intel hex file
  * @hex_file:   intel hex file to decompose
- * @size:       size of vmcu_plain_t* after decomposing
+ * @size:       size of vmcu_instr_t* after decomposing
  * @mcu:        decompose for this device model
  * */
-extern vmcu_plain_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
 
 /* <---------------------------------- Functions - Decoder Stage --------------------------------------> */
 
 /*
  * vmcu_decode_bytes - decode 16/32-bit opcode
  * @bytes:  opcode to decode (little endian)
- * @p:      pointer to a single instance of vmcu_plain_t
+ * @p:      pointer to a single instance of vmcu_instr_t
  * @mcu:    decode for this device model
  * */
-extern int vmcu_decode_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu);
+extern int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 /*
  * vmcu_decode_ihex - decode an intel hex file
  * @hex_file:   intel hex file to decode
- * @size:       size of vmcu_plain_t* after decoding
+ * @size:       size of vmcu_instr_t* after decoding
  * @mcu:        decode for this device model
  * */
-extern vmcu_plain_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
 
 #endif

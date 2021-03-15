@@ -81,15 +81,15 @@ static void print_disassembly(const int32_t pc) {
             continue;
         }
 
-        vmcu_plain_t *p = &report->disassembly[i];
-        printf("0x%04x", p->addr);
+        vmcu_instr_t *instr = &report->disassembly[i];
+        printf("0x%04x", instr->addr);
 
-        if(p->addr == pc)
+        if(instr->addr == pc)
             printf(" [->] ");
         else
             printf("      ");
 
-        printf("%s\n", p->mnem);
+        printf("%s\n", instr->mnem);
     }
 }
 

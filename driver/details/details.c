@@ -1,4 +1,4 @@
-/* A sandbox for quick driver tests */
+/* Instruction Details Driver */
 
 // C Headers
 #include <stdio.h>
@@ -12,7 +12,7 @@
 
 /* Forward Declaration of static Functions */
 
-static void print_plain_struct(vmcu_plain_t *p, const uint32_t opcode);
+static void print_instr(vmcu_instr_t *instr, const uint32_t opcode);
 static int htoi(const char *input);
 
 /* --- Extern --- */
@@ -21,16 +21,16 @@ int main(const int argc, const char **argv) {
 
     if(argc != 2) {
 
-        printf("Usage: ./sandbox <opcode>\n");
+        printf("Usage: ./details <opcode>\n");
         return EXIT_FAILURE;
     }
 
     const uint32_t opc = htoi(argv[1]);
 
-    vmcu_plain_t p;
+    vmcu_instr_t instr;
     vmcu_model_t *m328p = vmcu_model_ctor(VMCU_M328P);
 
-    if(vmcu_disassemble_bytes(opc, &p, m328p) < 0) {
+    if(vmcu_disassemble_bytes(opc, &instr, m328p) < 0) {
 
         printf("Could not decode.\n");
         vmcu_model_dtor(m328p);
@@ -38,33 +38,33 @@ int main(const int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-    print_plain_struct(&p, opc);
+    print_instr(&instr, opc);
 
     vmcu_model_dtor(m328p);
-    free(p.mnem);
+    free(instr.mnem);
 
     return EXIT_SUCCESS;
 }
 
 /* --- Static --- */
 
-static void print_plain_struct(vmcu_plain_t *p, const uint32_t opcode) {
+static void print_instr(vmcu_instr_t *instr, const uint32_t opcode) {
 
-    printf("---- Plain representation of 0x%04x ----\n", opcode);
+    printf("---- Instruction details of 0x%04x ----\n", opcode);
 
-    printf("opcode:     0x%04x\n", p->opcode);
-    printf("address:    0x%04x\n", p->addr);
-    printf("mnemonic:   %s\n", p->mnem);
+    printf("opcode:     0x%04x\n", instr->opcode);
+    printf("address:    0x%04x\n", instr->addr);
+    printf("mnemonic:   %s\n", instr->mnem);
     printf("executable: ");
 
-    if(p->exec == true)
+    if(instr->exec == true)
         printf("yes\n");
     else
         printf("no\n");
 
     printf("size:       ");
 
-    if(p->dword == true)
+    if(instr->dword == true)
         printf("32-bit\n");
     else
         printf("16-bit\n");

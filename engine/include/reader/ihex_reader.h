@@ -6,8 +6,8 @@
 // C Headers
 #include <inttypes.h>
 
-typedef struct vmcu_plain vmcu_plain_t;
+typedef struct vmcu_instr vmcu_instr_t;
 
-extern vmcu_plain_t* vmcu_read_ihex(const char *hex_file, int32_t *size);
+extern vmcu_instr_t* vmcu_read_ihex(const char *hex_file, int32_t *size);
 
 #endif

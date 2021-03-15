@@ -1,7 +1,7 @@
-/* Plain (Data-Structure) Header */
+/* Instruction (Datastructure) Header */
 
-#ifndef VMCU_PLAIN_H
-#define VMCU_PLAIN_H
+#ifndef VMCU_INSTR_H
+#define VMCU_INSTR_H
 
 // C Headers
 #include <stdbool.h>
@@ -10,12 +10,7 @@
 #include "engine/include/arch/enum/ikey.h"
 #include "engine/include/analyzer/report/operand.h"
 
-/*
-*  plain_t is the main data-structure
-*  for the analyzer pipeline.
-*/
-
-typedef struct vmcu_plain {
+typedef struct vmcu_instr {
 
     int opcode;
     int addr;
@@ -30,6 +25,6 @@ typedef struct vmcu_plain {
     vmcu_operand_t src;
     vmcu_operand_t dest;
 
-} vmcu_plain_t;
+} vmcu_instr_t;
 
 #endif

@@ -8,7 +8,7 @@
 
 // Project Headers (engine)
 #include "engine/include/reader/ihex_reader.h"
-#include "engine/include/analyzer/report/plain.h"
+#include "engine/include/analyzer/report/instr.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/misc/filemanip.h"
@@ -36,12 +36,12 @@ typedef struct ihex_properties {
 /* Forward Declaration of static Functions */
 
 static bool check_ihex(const char *line);
-static int read_ihex_line(char *line, vmcu_plain_t *buffer, int32_t *size);
+static int read_ihex_line(char *line, vmcu_instr_t *buffer, int32_t *size);
 static int get_ihex_properties(const char *line, ihex_properties_t *buffer);
 
 /* --- Extern --- */
 
-vmcu_plain_t* vmcu_read_ihex(const char *hex_file, int32_t *size) {
+vmcu_instr_t* vmcu_read_ihex(const char *hex_file, int32_t *size) {
 
     long bytes; *size = 0;
 
@@ -51,8 +51,8 @@ vmcu_plain_t* vmcu_read_ihex(const char *hex_file, int32_t *size) {
     FILE *file = fopen(hex_file, "r");
     size_t len; char *line = NULL;
 
-    const size_t sz = sizeof(vmcu_plain_t);
-    vmcu_plain_t *buffer = malloc((bytes / 4) * sz);
+    const size_t sz = sizeof(vmcu_instr_t);
+    vmcu_instr_t *buffer = malloc((bytes / 4) * sz);
 
     while(getline(&line, &len, file) != -1) {
 
@@ -98,7 +98,7 @@ static bool check_ihex(const char *line) {
     return true;
 }
 
-static int read_ihex_line(char *line, vmcu_plain_t *buffer, int32_t *size) {
+static int read_ihex_line(char *line, vmcu_instr_t *buffer, int32_t *size) {
 
     ihex_properties_t ihex; int32_t top = *size;
 
@@ -107,7 +107,7 @@ static int read_ihex_line(char *line, vmcu_plain_t *buffer, int32_t *size) {
 
     for(int i = 0; i < (ihex.byte_count / 2); i++) {
 
-        int instr;
+        int opc;
 
         if((base(i) + 3) >= strlen(ihex.line))
             goto error;
@@ -124,12 +124,12 @@ static int read_ihex_line(char *line, vmcu_plain_t *buffer, int32_t *size) {
         if(strcmp(current, "") == 0)
             goto error;
 
-        if((instr = vmcu_htoi(current)) < 0)
+        if((opc = vmcu_htoi(current)) < 0)
             goto error;
 
-        buffer[top + i] = (vmcu_plain_t) {
+        buffer[top + i] = (vmcu_instr_t) {
 
-            .opcode = big_endian16(instr),
+            .opcode = big_endian16(opc),
             .addr   = ((ihex.s_addr / 2 ) + i)
         };
 

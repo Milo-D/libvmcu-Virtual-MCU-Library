@@ -6,11 +6,11 @@
 // C Headers
 #include <inttypes.h>
 
-typedef struct vmcu_plain vmcu_plain_t;
+typedef struct vmcu_instr vmcu_instr_t;
 
 typedef struct vmcu_xref {
 
-    vmcu_plain_t *p;
+    vmcu_instr_t *i;
 
 } vmcu_xref_t;
 

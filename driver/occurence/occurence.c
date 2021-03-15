@@ -91,17 +91,17 @@ int main(int argc, char* argv[]) {
 
     for(int i=0; i < report->progsize; i++) {
 
-        vmcu_plain_t* p = &report->disassembly[i];
+        vmcu_instr_t* instr = &report->disassembly[i];
 
         //because VMCU_DATA is -1
-        if(p->key == VMCU_DATA) {
+        if(instr->key == VMCU_DATA) {
             continue;
         }
 
-        struct pair* mp = list[p->key];
+        struct pair* mp = list[instr->key];
 
-        int base = spaceIndex(p->mnem);
-        strncpy(mp->mnem, p->mnem, base);
+        int base = spaceIndex(instr->mnem);
+        strncpy(mp->mnem, instr->mnem, base);
 
         mp->hits += 1;
     }

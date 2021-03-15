@@ -28,29 +28,29 @@ vmcu_flash_t* vmcu_flash_ctor(const vmcu_report_t *report) {
     flash->memory = malloc(FLASH_SIZE * sizeof(vmcu_progmem_t));
     flash_erase_memory(flash);
 
-    vmcu_plain_t *p = report->disassembly;
+    vmcu_instr_t *instr = report->disassembly;
 
     for(int i = 0; i < report->progsize; i++) {
 
-        const int addr = p[i].addr;
+        const int addr = instr[i].addr;
 
         if(addr < 0 || addr >= FLASH_SIZE)
             continue;
 
-        flash->memory[ addr ].addr  = p[i].addr;
-        flash->memory[ addr ].key   = p[i].key;
+        flash->memory[ addr ].addr  = instr[i].addr;
+        flash->memory[ addr ].key   = instr[i].key;
         
-        flash->memory[ addr ].exec  = p[i].exec;
-        flash->memory[ addr ].dword = p[i].dword;
+        flash->memory[ addr ].exec  = instr[i].exec;
+        flash->memory[ addr ].dword = instr[i].dword;
 
-        if(p[i].dword == false) {
+        if(instr[i].dword == false) {
 
-            flash->memory[ addr ].opcode = p[i].opcode;
+            flash->memory[ addr ].opcode = instr[i].opcode;
             continue;
         }
         
-        const uint16_t opch = ((p[i].opcode & 0xffff0000) >> 16);
-        const uint16_t opcl = ((p[i].opcode & 0x0000ffff));
+        const uint16_t opch = ((instr[i].opcode & 0xffff0000) >> 16);
+        const uint16_t opcl = ((instr[i].opcode & 0x0000ffff));
 
         flash->memory[ addr ].opcode        = opch;
         flash->memory[ addr + 0x01 ].opcode = opcl;

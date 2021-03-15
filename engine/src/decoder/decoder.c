@@ -18,50 +18,50 @@
 
 static int get_opc_key(const uint32_t hex);
 static bool is_dword(const uint32_t opcode);
-static void copy_plain(vmcu_plain_t *dest, vmcu_plain_t *src);
+static void copy_instr(vmcu_instr_t *dest, vmcu_instr_t *src);
 
 /* --- Extern --- */
 
-int vmcu_decode_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu) {
+int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu) {
 
     uint32_t be = big_endian32(bytes);
 
     if(be > 0x0000ffff) {
 
-        p->key   = get_opc_key(high16(be));
-        p->dword = is_dword(high16(be));
+        instr->key   = get_opc_key(high16(be));
+        instr->dword = is_dword(high16(be));
 
     } else {
 
-        p->key   = get_opc_key(be);
-        p->dword = false;
+        instr->key   = get_opc_key(be);
+        instr->dword = false;
     }
 
-    p->opcode    = be;
-    p->addr      = 0x0000;
-    p->mnem      = NULL;
+    instr->opcode    = be;
+    instr->addr      = 0x0000;
+    instr->mnem      = NULL;
 
-    p->exec      = (p->key >= 0);
+    instr->exec      = (instr->key >= 0);
 
-    p->src.type  = VMCU_EMPTY;
-    p->dest.type = VMCU_EMPTY;
+    instr->src.type  = VMCU_EMPTY;
+    instr->dest.type = VMCU_EMPTY;
 
-    return ((p->dword == false) && (be > 0xffff)) ? -1 : 0;
+    return ((instr->dword == false) && (be > 0xffff)) ? -1 : 0;
 }
 
-vmcu_plain_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
+vmcu_instr_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
 
-    vmcu_plain_t *read, *result;
+    vmcu_instr_t *read, *result;
 
     if((read = vmcu_read_ihex(hex_file, size)) == NULL)
         return NULL;
 
     const int32_t top = *size;
-    result = malloc(top * sizeof(vmcu_plain_t));
+    result = malloc(top * sizeof(vmcu_instr_t));
 
     for(int i = 0, j = 0; i < top; i++, j++) {
 
-        copy_plain(&result[j], &read[i]);
+        copy_instr(&result[j], &read[i]);
 
         if(result[j].key < 0)
             continue;
@@ -83,7 +83,7 @@ vmcu_plain_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t
         *size -= 1;
     }
 
-    const size_t sz = sizeof(vmcu_plain_t);
+    const size_t sz = sizeof(vmcu_instr_t);
     result = realloc(result, *size * sz);
 
     free(read);
@@ -144,7 +144,7 @@ static bool is_dword(const uint32_t opcode) {
     return false;
 }
 
-static void copy_plain(vmcu_plain_t *dest, vmcu_plain_t *src) {
+static void copy_instr(vmcu_instr_t *dest, vmcu_instr_t *src) {
 
     dest->opcode    = src->opcode;
     dest->addr      = src->addr;

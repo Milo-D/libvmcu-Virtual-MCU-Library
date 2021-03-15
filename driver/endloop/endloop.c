@@ -31,10 +31,10 @@ int main(const int argc, const char **argv) {
 
     for(int32_t i = 0; i < report->progsize; i++) {
 
-        vmcu_plain_t *p = &report->disassembly[i];
+        vmcu_instr_t *instr = &report->disassembly[i];
 
-        if(p->opcode == 0xcfff)
-            printf("Endless loop at address 0x%04x\n", p->addr);
+        if(instr->opcode == 0xcfff)
+            printf("Endless loop at address 0x%04x\n", instr->addr);
     }
 
     vmcu_report_dtor(report);

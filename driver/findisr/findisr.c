@@ -29,14 +29,14 @@ vmcu_label_t* find_label(int address, vmcu_report_t* report) {
     }
 }
 
-void analyze_isr(vmcu_plain_t* plain, vmcu_report_t* report) {
+void analyze_isr(vmcu_instr_t* instr, vmcu_report_t* report) {
 
-    vmcu_operand_t* op = &plain->src;
+    vmcu_operand_t* op = &instr->src;
 
     int absolute_address = op->value;
 
-    if(plain->key == VMCU_RJMP)
-        absolute_address += plain->addr + 1;
+    if(instr->key == VMCU_RJMP)
+        absolute_address += instr->addr + 1;
 
     vmcu_label_t* label = find_label(absolute_address, report);
 
@@ -47,8 +47,8 @@ void print_addresses(vmcu_report_t* report, int start_index, int end_index) {
 
     for(int i=start_index; i <= end_index; i++) {
 
-        vmcu_plain_t* p = &report->disassembly[i];
-        analyze_isr(p, report);
+        vmcu_instr_t* instr = &report->disassembly[i];
+        analyze_isr(instr, report);
     }
 }
 
@@ -82,9 +82,9 @@ int main(const int argc, const char **argv) {
     int start_index = -1;
     for(int i=0; i < report->progsize; i++) {
 
-        vmcu_plain_t* p = &report->disassembly[i];
+        vmcu_instr_t* instr = &report->disassembly[i];
 
-        int key = p->key;
+        int key = instr->key;
 
         if(key == VMCU_JMP || key == VMCU_RJMP) {
 

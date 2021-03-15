@@ -20,7 +20,7 @@ static bool is_branch(const VMCU_IKEY key);
 static bool in_disasm(const vmcu_report_t *report, const int addr);
 static bool label_exists(const uint16_t *field, const uint16_t addr, const int k);
 
-static int get_abs_addr(const vmcu_plain_t *p);
+static int get_abs_addr(const vmcu_instr_t *instr);
 static int cmp_u16(const void *a, const void *b);
 
 /* --- Extern --- */
@@ -64,12 +64,12 @@ static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size) {
 
     for(int i = 0; i < report->progsize; i++) {
 
-        vmcu_plain_t *p = &report->disassembly[i];
+        vmcu_instr_t *instr = &report->disassembly[i];
 
-        if(is_branch(p->key) == false)
+        if(is_branch(instr->key) == false)
             continue;
 
-        if((addr = get_abs_addr(p)) < 0)
+        if((addr = get_abs_addr(instr)) < 0)
             continue;
 
         if(in_disasm(report, addr) == false)
@@ -92,12 +92,12 @@ static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *
 
     for(int i = 0; i < report->progsize; i++) {
 
-        vmcu_plain_t *p = &report->disassembly[i];
+        vmcu_instr_t *instr = &report->disassembly[i];
 
-        if(is_branch(p->key) == false)
+        if(is_branch(instr->key) == false)
             continue;
 
-        if(lx->addr != get_abs_addr(p))
+        if(lx->addr != get_abs_addr(instr))
             continue;
 
         if(*size >= nc) {
@@ -108,7 +108,7 @@ static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *
             nc *= 2;
         }
 
-        xrefs[*size].p = p;
+        xrefs[*size].i = instr;
         *size += 1;
     }
 
@@ -188,18 +188,18 @@ static bool label_exists(const uint16_t *field, const uint16_t addr, const int k
     return false;
 }
 
-static int get_abs_addr(const vmcu_plain_t *p) {
+static int get_abs_addr(const vmcu_instr_t *instr) {
 
-    if(p->key == VMCU_CALL || p->key == VMCU_JMP)
-        return p->src.value;
+    if(instr->key == VMCU_CALL || instr->key == VMCU_JMP)
+        return instr->src.value;
 
-    if(p->src.value < 0) {
+    if(instr->src.value < 0) {
 
-        if((p->src.value * -1) > p->addr)
+        if((instr->src.value * -1) > instr->addr)
             return -1;
     }
 
-    return (p->addr + p->src.value + 1);
+    return (instr->addr + instr->src.value + 1);
 }
 
 static int cmp_u16(const void *a, const void *b) {

@@ -8,7 +8,7 @@
 #include "engine/include/disassembler/disassembler.h"
 #include "engine/include/decoder/opcode.h"
 #include "engine/include/decomposer/decomposer.h"
-#include "engine/include/analyzer/report/plain.h"
+#include "engine/include/analyzer/report/instr.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/collections/sstream.h"
@@ -17,68 +17,68 @@
 
 /* Forward Declaration of static Functions */
 
-static char* disassemble_dw(vmcu_plain_t *p);
+static char* disassemble_dw(vmcu_instr_t *instr);
 
 /* Forward Declaration of static Members */
 
-static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_plain_t *p);
+static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr);
 
 /* --- Extern --- */
 
-int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_plain_t *p, vmcu_model_t *mcu) {
+int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu) {
 
-    if(vmcu_decompose_bytes(bytes, p, mcu) < 0)
+    if(vmcu_decompose_bytes(bytes, instr, mcu) < 0)
         return -1;
 
-    if(p->exec == false) {
+    if(instr->exec == false) {
 
-        p->mnem = disassemble_dw(p);
+        instr->mnem = disassemble_dw(instr);
         return 0;
     }
 
-    p->mnem = (*disassemble_opcode[ p->key ])(p);
+    instr->mnem = (*disassemble_opcode[ instr->key ])(instr);
     return 0;
 }
 
-vmcu_plain_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
+vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
 
-    vmcu_plain_t *p;
+    vmcu_instr_t *instr_list;
 
-    if((p = vmcu_decompose_ihex(hex_file, size, mcu)) == NULL)
+    if((instr_list = vmcu_decompose_ihex(hex_file, size, mcu)) == NULL)
         return NULL;
 
     for(int32_t i = 0; i < *size; i++) {
 
-        vmcu_plain_t *pi = &(p[i]);
+        vmcu_instr_t *instr = &(instr_list[i]);
 
-        if(pi->exec == false) {
+        if(instr->exec == false) {
 
-            pi->mnem = disassemble_dw(pi);
+            instr->mnem = disassemble_dw(instr);
             continue;
         }
 
-        pi->mnem = (*disassemble_opcode[pi->key])(pi);
+        instr->mnem = (*disassemble_opcode[ instr->key ])(instr);
     }
 
-    return p;
+    return instr_list;
 }
 
 /* --- Static --- */
 
-static char* disassemble_dw(vmcu_plain_t *p) {
+static char* disassemble_dw(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
 
-    vmcu_sstream_put(&ss, ".dw 0x%04x", p->src.value);
+    vmcu_sstream_put(&ss, ".dw 0x%04x", instr->src.value);
 
     vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; 0x%x", p->src.value);
+    vmcu_sstream_put(&ss, "; 0x%x", instr->src.value);
 
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_nop(vmcu_plain_t *p) {
+static char* disassemble_nop(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -91,10 +91,10 @@ static char* disassemble_nop(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_movw(vmcu_plain_t *p) {
+static char* disassemble_movw(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -109,10 +109,10 @@ static char* disassemble_movw(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_mul(vmcu_plain_t *p) {
+static char* disassemble_mul(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -125,10 +125,10 @@ static char* disassemble_mul(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_muls(vmcu_plain_t *p) {
+static char* disassemble_muls(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -141,10 +141,10 @@ static char* disassemble_muls(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_mulsu(vmcu_plain_t *p) {
+static char* disassemble_mulsu(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -157,10 +157,10 @@ static char* disassemble_mulsu(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_fmul(vmcu_plain_t *p) {
+static char* disassemble_fmul(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -173,10 +173,10 @@ static char* disassemble_fmul(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_fmuls(vmcu_plain_t *p) {
+static char* disassemble_fmuls(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -189,10 +189,10 @@ static char* disassemble_fmuls(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_fmulsu(vmcu_plain_t *p) {
+static char* disassemble_fmulsu(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -205,10 +205,10 @@ static char* disassemble_fmulsu(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ldi(vmcu_plain_t *p) {
+static char* disassemble_ldi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -221,9 +221,9 @@ static char* disassemble_ldi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_rjmp(vmcu_plain_t *p) {
+static char* disassemble_rjmp(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -243,9 +243,9 @@ static char* disassemble_rjmp(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_jmp(vmcu_plain_t *p) {
+static char* disassemble_jmp(vmcu_instr_t *instr) {
 
-    const int addr = p->src.value;
+    const int addr = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -258,7 +258,7 @@ static char* disassemble_jmp(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ijmp(vmcu_plain_t *p) {
+static char* disassemble_ijmp(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -271,10 +271,10 @@ static char* disassemble_ijmp(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_mov(vmcu_plain_t *p) {
+static char* disassemble_mov(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -287,9 +287,9 @@ static char* disassemble_mov(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_dec(vmcu_plain_t *p) {
+static char* disassemble_dec(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -302,9 +302,9 @@ static char* disassemble_dec(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_inc(vmcu_plain_t *p) {
+static char* disassemble_inc(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -317,10 +317,10 @@ static char* disassemble_inc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_add(vmcu_plain_t *p) {
+static char* disassemble_add(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -333,10 +333,10 @@ static char* disassemble_add(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_adc(vmcu_plain_t *p) {
+static char* disassemble_adc(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -349,10 +349,10 @@ static char* disassemble_adc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_adiw(vmcu_plain_t *p) {
+static char* disassemble_adiw(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -368,10 +368,10 @@ static char* disassemble_adiw(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sub(vmcu_plain_t *p) {
+static char* disassemble_sub(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -384,10 +384,10 @@ static char* disassemble_sub(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_subi(vmcu_plain_t *p) {
+static char* disassemble_subi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -400,10 +400,10 @@ static char* disassemble_subi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbc(vmcu_plain_t *p) {
+static char* disassemble_sbc(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -416,10 +416,10 @@ static char* disassemble_sbc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbci(vmcu_plain_t *p) {
+static char* disassemble_sbci(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -432,10 +432,10 @@ static char* disassemble_sbci(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbiw(vmcu_plain_t *p) {
+static char* disassemble_sbiw(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -451,9 +451,9 @@ static char* disassemble_sbiw(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_push(vmcu_plain_t *p) {
+static char* disassemble_push(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -466,9 +466,9 @@ static char* disassemble_push(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_pop(vmcu_plain_t *p) {
+static char* disassemble_pop(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -481,10 +481,10 @@ static char* disassemble_pop(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_in(vmcu_plain_t *p) {
+static char* disassemble_in(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -497,10 +497,10 @@ static char* disassemble_in(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_out(vmcu_plain_t *p) {
+static char* disassemble_out(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -513,10 +513,10 @@ static char* disassemble_out(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbis(vmcu_plain_t *p) {
+static char* disassemble_sbis(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -530,10 +530,10 @@ static char* disassemble_sbis(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbic(vmcu_plain_t *p) {
+static char* disassemble_sbic(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -547,10 +547,10 @@ static char* disassemble_sbic(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbrc(vmcu_plain_t *p) {
+static char* disassemble_sbrc(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -563,10 +563,10 @@ static char* disassemble_sbrc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbrs(vmcu_plain_t *p) {
+static char* disassemble_sbrs(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -579,10 +579,10 @@ static char* disassemble_sbrs(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cpse(vmcu_plain_t *p) {
+static char* disassemble_cpse(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -595,10 +595,10 @@ static char* disassemble_cpse(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_eor(vmcu_plain_t *p) {
+static char* disassemble_eor(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -611,9 +611,9 @@ static char* disassemble_eor(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_x(vmcu_plain_t *p) {
+static char* disassemble_ld_x(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -626,9 +626,9 @@ static char* disassemble_ld_x(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_xi(vmcu_plain_t *p) {
+static char* disassemble_ld_xi(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -641,9 +641,9 @@ static char* disassemble_ld_xi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_dx(vmcu_plain_t *p) {
+static char* disassemble_ld_dx(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -656,9 +656,9 @@ static char* disassemble_ld_dx(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_y(vmcu_plain_t *p) {
+static char* disassemble_ld_y(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -671,9 +671,9 @@ static char* disassemble_ld_y(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_yi(vmcu_plain_t *p) {
+static char* disassemble_ld_yi(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -686,9 +686,9 @@ static char* disassemble_ld_yi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_dy(vmcu_plain_t *p) {
+static char* disassemble_ld_dy(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -701,10 +701,10 @@ static char* disassemble_ld_dy(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ldd_yq(vmcu_plain_t *p) {
+static char* disassemble_ldd_yq(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -717,10 +717,10 @@ static char* disassemble_ldd_yq(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ldd_zq(vmcu_plain_t *p) {
+static char* disassemble_ldd_zq(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -733,9 +733,9 @@ static char* disassemble_ldd_zq(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_z(vmcu_plain_t *p) {
+static char* disassemble_ld_z(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -748,9 +748,9 @@ static char* disassemble_ld_z(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_zi(vmcu_plain_t *p) {
+static char* disassemble_ld_zi(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -763,9 +763,9 @@ static char* disassemble_ld_zi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ld_dz(vmcu_plain_t *p) {
+static char* disassemble_ld_dz(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -778,9 +778,9 @@ static char* disassemble_ld_dz(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_x(vmcu_plain_t *p) {
+static char* disassemble_st_x(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -793,9 +793,9 @@ static char* disassemble_st_x(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_xi(vmcu_plain_t *p) {
+static char* disassemble_st_xi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -808,9 +808,9 @@ static char* disassemble_st_xi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_dx(vmcu_plain_t *p) {
+static char* disassemble_st_dx(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -823,9 +823,9 @@ static char* disassemble_st_dx(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_y(vmcu_plain_t *p) {
+static char* disassemble_st_y(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -838,9 +838,9 @@ static char* disassemble_st_y(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_yi(vmcu_plain_t *p) {
+static char* disassemble_st_yi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -853,9 +853,9 @@ static char* disassemble_st_yi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_dy(vmcu_plain_t *p) {
+static char* disassemble_st_dy(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -868,10 +868,10 @@ static char* disassemble_st_dy(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_std_yq(vmcu_plain_t *p) {
+static char* disassemble_std_yq(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -884,9 +884,9 @@ static char* disassemble_std_yq(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_z(vmcu_plain_t *p) {
+static char* disassemble_st_z(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -899,9 +899,9 @@ static char* disassemble_st_z(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_zi(vmcu_plain_t *p) {
+static char* disassemble_st_zi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -914,9 +914,9 @@ static char* disassemble_st_zi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_st_dz(vmcu_plain_t *p) {
+static char* disassemble_st_dz(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -929,10 +929,10 @@ static char* disassemble_st_dz(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_std_zq(vmcu_plain_t *p) {
+static char* disassemble_std_zq(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -945,10 +945,10 @@ static char* disassemble_std_zq(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sts(vmcu_plain_t *p) {
+static char* disassemble_sts(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -961,10 +961,10 @@ static char* disassemble_sts(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sts32(vmcu_plain_t *p) {
+static char* disassemble_sts32(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -977,10 +977,10 @@ static char* disassemble_sts32(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lds(vmcu_plain_t *p) {
+static char* disassemble_lds(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -993,10 +993,10 @@ static char* disassemble_lds(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lds32(vmcu_plain_t *p) {
+static char* disassemble_lds32(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1009,9 +1009,9 @@ static char* disassemble_lds32(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_xch(vmcu_plain_t *p) {
+static char* disassemble_xch(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1025,9 +1025,9 @@ static char* disassemble_xch(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brne(vmcu_plain_t *p) {
+static char* disassemble_brne(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1047,9 +1047,9 @@ static char* disassemble_brne(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_breq(vmcu_plain_t *p) {
+static char* disassemble_breq(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1069,9 +1069,9 @@ static char* disassemble_breq(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brge(vmcu_plain_t *p) {
+static char* disassemble_brge(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1091,9 +1091,9 @@ static char* disassemble_brge(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brpl(vmcu_plain_t *p) {
+static char* disassemble_brpl(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1113,9 +1113,9 @@ static char* disassemble_brpl(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brlo(vmcu_plain_t *p) {
+static char* disassemble_brlo(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1135,9 +1135,9 @@ static char* disassemble_brlo(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brlt(vmcu_plain_t *p) {
+static char* disassemble_brlt(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1157,9 +1157,9 @@ static char* disassemble_brlt(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brcc(vmcu_plain_t *p) {
+static char* disassemble_brcc(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1179,9 +1179,9 @@ static char* disassemble_brcc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brcs(vmcu_plain_t *p) {
+static char* disassemble_brcs(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1201,9 +1201,9 @@ static char* disassemble_brcs(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brvs(vmcu_plain_t *p) {
+static char* disassemble_brvs(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1223,9 +1223,9 @@ static char* disassemble_brvs(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brts(vmcu_plain_t *p) {
+static char* disassemble_brts(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1245,9 +1245,9 @@ static char* disassemble_brts(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brtc(vmcu_plain_t *p) {
+static char* disassemble_brtc(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1267,9 +1267,9 @@ static char* disassemble_brtc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brmi(vmcu_plain_t *p) {
+static char* disassemble_brmi(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1289,9 +1289,9 @@ static char* disassemble_brmi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brhc(vmcu_plain_t *p) {
+static char* disassemble_brhc(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1311,9 +1311,9 @@ static char* disassemble_brhc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brhs(vmcu_plain_t *p) {
+static char* disassemble_brhs(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1333,9 +1333,9 @@ static char* disassemble_brhs(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brid(vmcu_plain_t *p) {
+static char* disassemble_brid(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1355,9 +1355,9 @@ static char* disassemble_brid(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brie(vmcu_plain_t *p) {
+static char* disassemble_brie(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1377,9 +1377,9 @@ static char* disassemble_brie(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brvc(vmcu_plain_t *p) {
+static char* disassemble_brvc(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1399,9 +1399,9 @@ static char* disassemble_brvc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_rcall(vmcu_plain_t *p) {
+static char* disassemble_rcall(vmcu_instr_t *instr) {
 
-    int src = p->src.value;
+    int src = instr->src.value;
     char sign[2] = "+";
 
     if(src < 0x00) {
@@ -1421,7 +1421,7 @@ static char* disassemble_rcall(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ret(vmcu_plain_t *p) {
+static char* disassemble_ret(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1434,7 +1434,7 @@ static char* disassemble_ret(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_reti(vmcu_plain_t *p) {
+static char* disassemble_reti(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1447,7 +1447,7 @@ static char* disassemble_reti(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_icall(vmcu_plain_t *p) {
+static char* disassemble_icall(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1460,9 +1460,9 @@ static char* disassemble_icall(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_call(vmcu_plain_t *p) {
+static char* disassemble_call(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1475,10 +1475,10 @@ static char* disassemble_call(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cp(vmcu_plain_t *p) {
+static char* disassemble_cp(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1491,10 +1491,10 @@ static char* disassemble_cp(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cpi(vmcu_plain_t *p) {
+static char* disassemble_cpi(vmcu_instr_t *instr) {
 
-    const uint8_t src = p->src.value;
-    const int dest = p->dest.value;
+    const uint8_t src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1507,10 +1507,10 @@ static char* disassemble_cpi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cpc(vmcu_plain_t *p) {
+static char* disassemble_cpc(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1523,9 +1523,9 @@ static char* disassemble_cpc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lsr(vmcu_plain_t *p) {
+static char* disassemble_lsr(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1538,9 +1538,9 @@ static char* disassemble_lsr(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_asr(vmcu_plain_t *p) {
+static char* disassemble_asr(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1553,9 +1553,9 @@ static char* disassemble_asr(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ror(vmcu_plain_t *p) {
+static char* disassemble_ror(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1568,9 +1568,9 @@ static char* disassemble_ror(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_swap(vmcu_plain_t *p) {
+static char* disassemble_swap(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1583,10 +1583,10 @@ static char* disassemble_swap(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ori(vmcu_plain_t *p) {
+static char* disassemble_ori(vmcu_instr_t *instr) {
 
-    const uint8_t src = p->src.value;
-    const int dest = p->dest.value;
+    const uint8_t src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1599,10 +1599,10 @@ static char* disassemble_ori(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_or_asm(vmcu_plain_t *p) {
+static char* disassemble_or_asm(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1615,10 +1615,10 @@ static char* disassemble_or_asm(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_and_asm(vmcu_plain_t *p) {
+static char* disassemble_and_asm(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1631,10 +1631,10 @@ static char* disassemble_and_asm(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_andi(vmcu_plain_t *p) {
+static char* disassemble_andi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1647,9 +1647,9 @@ static char* disassemble_andi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_las(vmcu_plain_t *p) {
+static char* disassemble_las(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1662,9 +1662,9 @@ static char* disassemble_las(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lac(vmcu_plain_t *p) {
+static char* disassemble_lac(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1677,9 +1677,9 @@ static char* disassemble_lac(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lat(vmcu_plain_t *p) {
+static char* disassemble_lat(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1692,9 +1692,9 @@ static char* disassemble_lat(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_com(vmcu_plain_t *p) {
+static char* disassemble_com(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1707,9 +1707,9 @@ static char* disassemble_com(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_neg(vmcu_plain_t *p) {
+static char* disassemble_neg(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1722,10 +1722,10 @@ static char* disassemble_neg(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_bld(vmcu_plain_t *p) {
+static char* disassemble_bld(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1738,10 +1738,10 @@ static char* disassemble_bld(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_bst(vmcu_plain_t *p) {
+static char* disassemble_bst(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1754,10 +1754,10 @@ static char* disassemble_bst(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sbi(vmcu_plain_t *p) {
+static char* disassemble_sbi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1770,10 +1770,10 @@ static char* disassemble_sbi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cbi(vmcu_plain_t *p) {
+static char* disassemble_cbi(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
-    const int dest = p->dest.value;
+    const int src = instr->src.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1786,7 +1786,7 @@ static char* disassemble_cbi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lpm(vmcu_plain_t *p) {
+static char* disassemble_lpm(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1799,9 +1799,9 @@ static char* disassemble_lpm(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lpm_z(vmcu_plain_t *p) {
+static char* disassemble_lpm_z(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1814,9 +1814,9 @@ static char* disassemble_lpm_z(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_lpm_zi(vmcu_plain_t *p) {
+static char* disassemble_lpm_zi(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1829,7 +1829,7 @@ static char* disassemble_lpm_zi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_eicall(vmcu_plain_t *p) {
+static char* disassemble_eicall(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1842,7 +1842,7 @@ static char* disassemble_eicall(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_eijmp(vmcu_plain_t *p) {
+static char* disassemble_eijmp(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1855,7 +1855,7 @@ static char* disassemble_eijmp(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_elpm(vmcu_plain_t *p) {
+static char* disassemble_elpm(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1868,9 +1868,9 @@ static char* disassemble_elpm(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_elpm_z(vmcu_plain_t *p) {
+static char* disassemble_elpm_z(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1883,9 +1883,9 @@ static char* disassemble_elpm_z(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_elpm_zi(vmcu_plain_t *p) {
+static char* disassemble_elpm_zi(vmcu_instr_t *instr) {
 
-    const int dest = p->dest.value;
+    const int dest = instr->dest.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1898,9 +1898,9 @@ static char* disassemble_elpm_zi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_des(vmcu_plain_t *p) {
+static char* disassemble_des(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1913,7 +1913,7 @@ static char* disassemble_des(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sleep(vmcu_plain_t *p) {
+static char* disassemble_sleep(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1926,7 +1926,7 @@ static char* disassemble_sleep(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_wdr(vmcu_plain_t *p) {
+static char* disassemble_wdr(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1939,7 +1939,7 @@ static char* disassemble_wdr(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_break_asm(vmcu_plain_t *p) {
+static char* disassemble_break_asm(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1952,7 +1952,7 @@ static char* disassemble_break_asm(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_spm(vmcu_plain_t *p) {
+static char* disassemble_spm(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1965,7 +1965,7 @@ static char* disassemble_spm(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_spm_zi(vmcu_plain_t *p) {
+static char* disassemble_spm_zi(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1978,7 +1978,7 @@ static char* disassemble_spm_zi(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_ses(vmcu_plain_t *p) {
+static char* disassemble_ses(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -1991,7 +1991,7 @@ static char* disassemble_ses(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_set(vmcu_plain_t *p) {
+static char* disassemble_set(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2004,7 +2004,7 @@ static char* disassemble_set(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sev(vmcu_plain_t *p) {
+static char* disassemble_sev(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2017,7 +2017,7 @@ static char* disassemble_sev(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sez(vmcu_plain_t *p) {
+static char* disassemble_sez(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2030,7 +2030,7 @@ static char* disassemble_sez(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_seh(vmcu_plain_t *p) {
+static char* disassemble_seh(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2043,7 +2043,7 @@ static char* disassemble_seh(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sec(vmcu_plain_t *p) {
+static char* disassemble_sec(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2056,7 +2056,7 @@ static char* disassemble_sec(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sei(vmcu_plain_t *p) {
+static char* disassemble_sei(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2069,7 +2069,7 @@ static char* disassemble_sei(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_sen(vmcu_plain_t *p) {
+static char* disassemble_sen(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2082,7 +2082,7 @@ static char* disassemble_sen(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cls(vmcu_plain_t *p) {
+static char* disassemble_cls(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2095,7 +2095,7 @@ static char* disassemble_cls(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_clt(vmcu_plain_t *p) {
+static char* disassemble_clt(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2108,7 +2108,7 @@ static char* disassemble_clt(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_clv(vmcu_plain_t *p) {
+static char* disassemble_clv(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2121,7 +2121,7 @@ static char* disassemble_clv(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_clz(vmcu_plain_t *p) {
+static char* disassemble_clz(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2134,7 +2134,7 @@ static char* disassemble_clz(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_clh(vmcu_plain_t *p) {
+static char* disassemble_clh(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2147,7 +2147,7 @@ static char* disassemble_clh(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_clc(vmcu_plain_t *p) {
+static char* disassemble_clc(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2160,7 +2160,7 @@ static char* disassemble_clc(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cli(vmcu_plain_t *p) {
+static char* disassemble_cli(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2173,7 +2173,7 @@ static char* disassemble_cli(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_cln(vmcu_plain_t *p) {
+static char* disassemble_cln(vmcu_instr_t *instr) {
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2186,9 +2186,9 @@ static char* disassemble_cln(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_bclr(vmcu_plain_t *p) {
+static char* disassemble_bclr(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2201,9 +2201,9 @@ static char* disassemble_bclr(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_bset(vmcu_plain_t *p) {
+static char* disassemble_bset(vmcu_instr_t *instr) {
 
-    const int src = p->src.value;
+    const int src = instr->src.value;
 
     vmcu_sstream_t ss;
     vmcu_sstream_ctor(&ss);
@@ -2216,7 +2216,7 @@ static char* disassemble_bset(vmcu_plain_t *p) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_plain_t *p) = {
+static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
 
     disassemble_nop,
     disassemble_movw,
