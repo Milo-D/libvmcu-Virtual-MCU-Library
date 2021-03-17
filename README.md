@@ -8,8 +8,10 @@
 
 <img src="https://raw.githubusercontent.com/Milo-D/libvmcu-Virtual-MCU-Library/master/images/libvmcu_architecture.svg" width="75%">
 
-VMCU is a small engine for static and dynamic analysis of AVR Microcontroller binaries. **This library is
-still in development.**
+libvmcu is a small engine for static and dynamic analysis of AVR Microcontroller binaries.
+
+It takes care of the preparation of raw data, which can then be further processed by other programs. 
+The goal here is to make it possible to interact programmatically with AVR source code.
 
 libvmcu can be used to
 
@@ -18,14 +20,16 @@ libvmcu can be used to
 - build debuggers and simulators
 - explore disassembly
 
-##### Table of Contents
+**Note: This library is still in development.**
+
+### Table of Contents
 [I Features](#Features)
 
 [II Examples](#Examples)
 
 [III Showcase](#Showcase)
 
-[IV How VMCU works](#How-VMCU-works)
+[IV How VMCU works](#How-libvmcu-works)
 
 [V Setup VMCU](#Setup)
 
