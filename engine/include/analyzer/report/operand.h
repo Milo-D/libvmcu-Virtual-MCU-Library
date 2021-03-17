@@ -3,6 +3,9 @@
 #ifndef VMCU_OPERAND_H
 #define VMCU_OPERAND_H
 
+// C Headers
+#include <inttypes.h>
+
 // Project Headers (engine utilities)
 #include "engine/include/arch/enum/optype.h"
 

@@ -4,12 +4,14 @@
 #define VMCU_MODEL_H
 
 // C Headers
+#include <stdbool.h>
 #include <inttypes.h>
 
 // Project Headers (engine utilities)
 #include "engine/include/arch/enum/device.h"
 #include "engine/include/arch/enum/device_core.h"
 #include "engine/include/arch/enum/sfregister.h"
+#include "engine/include/arch/enum/vect.h"
 
 typedef struct vmcu_section {
 
@@ -38,6 +40,16 @@ typedef struct vmcu_sfr_model {
 
 } vmcu_sfr_model_t;
 
+typedef struct vmcu_vtable_model {
+
+    uint32_t n_vect;
+    bool vector_32bit;
+
+    vmcu_section_t dfl;
+    VMCU_VECT *layout;
+
+} vmcu_vtable_model_t;
+
 typedef struct vmcu_model {
 
     VMCU_DEVICE device;
@@ -48,6 +60,8 @@ typedef struct vmcu_model {
 
     vmcu_data_model_t ds;
     vmcu_sfr_model_t sfr;
+
+    vmcu_vtable_model_t vtable;
 
 } vmcu_model_t;
 

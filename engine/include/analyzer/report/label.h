@@ -6,7 +6,7 @@
 // C Headers
 #include <inttypes.h>
 
-// Project Headers
+// Project Headers (engine)
 #include "engine/include/analyzer/report/xref.h"
 
 typedef struct vmcu_label {

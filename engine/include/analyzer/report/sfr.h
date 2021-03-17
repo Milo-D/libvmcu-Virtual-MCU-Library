@@ -6,10 +6,11 @@
 // C Headers
 #include <inttypes.h>
 
+// Project Headers (engine)
+#include "engine/include/analyzer/report/xref.h"
+
 // Project Headers (engine utilities)
 #include "engine/include/arch/enum/sfregister.h"
-
-typedef struct vmcu_xref vmcu_xref_t;
 
 typedef struct vmcu_sfr {
 

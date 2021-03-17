@@ -10,6 +10,7 @@
 /* Forward Declaration of ATmega328P specific fields */
 
 VMCU_SFREGISTER m328p_sfr_layout[167];
+VMCU_VECT m328p_vtable_layout[26];
 
 /* --- Extern --- */
 
@@ -59,6 +60,17 @@ void load_device_m328p(vmcu_model_t *model) {
     model->sfr.section.end         = 0x00c6;
 
     model->sfr.layout              = m328p_sfr_layout;
+
+    /* <-------------- Vectortable ----------------> */
+
+    model->vtable.n_vect           = 26;
+
+    model->vtable.dfl.size         = 0x33;
+    model->vtable.dfl.start        = 0x0000;
+    model->vtable.dfl.end          = 0x0032;
+
+    model->vtable.layout           = m328p_vtable_layout;
+    model->vtable.vector_32bit     = true;
 }
 
 /* --- ATmega328P specific fields --- */
@@ -232,4 +244,34 @@ VMCU_SFREGISTER m328p_sfr_layout[167] = {
     VMCU_UBRR0L,
     VMCU_UBRR0H,
     VMCU_UDR0
+};
+
+VMCU_VECT m328p_vtable_layout[26] = {
+
+    VMCU_VECT_RESET,
+    VMCU_VECT_INT0,
+    VMCU_VECT_INT1,
+    VMCU_VECT_PCINT0,
+    VMCU_VECT_PCINT1,
+    VMCU_VECT_PCINT2,
+    VMCU_VECT_WDT,
+    VMCU_VECT_TIMER2_COMPA,
+    VMCU_VECT_TIMER2_COMPB,
+    VMCU_VECT_TIMER2_OVF,
+    VMCU_VECT_TIMER1_CAPT,
+    VMCU_VECT_TIMER1_COMPA,
+    VMCU_VECT_TIMER1_COMPB,
+    VMCU_VECT_TIMER1_OVF,
+    VMCU_VECT_TIMER0_COMPA,
+    VMCU_VECT_TIMER0_COMPB,
+    VMCU_VECT_TIMER0_OVF,
+    VMCU_VECT_SPI_STC,
+    VMCU_VECT_USART_RX,
+    VMCU_VECT_USART_UDRE,
+    VMCU_VECT_USART_TX,
+    VMCU_VECT_ADC,
+    VMCU_VECT_EE_READY,
+    VMCU_VECT_ANALOG_COMP,
+    VMCU_VECT_TWI,
+    VMCU_VECT_SPM_READY
 };

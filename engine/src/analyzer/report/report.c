@@ -7,7 +7,7 @@
 // Project Headers (engine)
 #include "engine/include/analyzer/report/report.h"
 
-vmcu_report_t* vmcu_report_ctor(const char *file) {
+vmcu_report_t* vmcu_report_ctor(void) {
     
     vmcu_report_t *report;
     
@@ -23,7 +23,10 @@ vmcu_report_t* vmcu_report_ctor(const char *file) {
     report->n_label     = 0;
     report->label       = NULL;
 
-    return report; 
+    report->n_vector    = 0;
+    report->vector      = NULL;
+
+    return report;
 }
 
 void vmcu_report_dtor(vmcu_report_t *this) {
@@ -46,11 +49,20 @@ void vmcu_report_dtor(vmcu_report_t *this) {
             free(this->label[i].xref);
     }
 
+    for(int32_t i = 0; i < this->n_vector; i++) {
+
+        if(this->vector[i].n_xto > 0)
+            free(this->vector[i].xto);
+    }
+
     if(this->sfr != NULL)
         free(this->sfr);
 
     if(this->label != NULL)
         free(this->label);
+
+    if(this->vector != NULL)
+        free(this->vector);
 
     if(this->disassembly != NULL)
         free(this->disassembly);

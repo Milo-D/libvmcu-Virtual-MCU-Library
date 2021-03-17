@@ -288,6 +288,39 @@ typedef enum {                                ///< instruction groups (see offic
 
 } VMCU_GROUP;
 
+typedef enum {                                ///< interrupt vectors
+
+    VMCU_VECT_NONE = -1,                      ///< no interrupt vector
+
+    VMCU_VECT_RESET,                          ///< reset vector
+    VMCU_VECT_INT0,                           ///< int0 vector
+    VMCU_VECT_INT1,                           ///< int1 vector
+    VMCU_VECT_PCINT0,                         ///< pcint0 vector
+    VMCU_VECT_PCINT1,                         ///< pcint1 vector
+    VMCU_VECT_PCINT2,                         ///< pcint2 vector
+    VMCU_VECT_WDT,                            ///< wdt vector
+    VMCU_VECT_TIMER2_COMPA,                   ///< timer2 compa vector
+    VMCU_VECT_TIMER2_COMPB,                   ///< timer2 compb vector
+    VMCU_VECT_TIMER2_OVF,                     ///< timer2 ovf vector
+    VMCU_VECT_TIMER1_CAPT,                    ///< timer1 capt vector
+    VMCU_VECT_TIMER1_COMPA,                   ///< timer1 compa vector
+    VMCU_VECT_TIMER1_COMPB,                   ///< timer1 compb vector
+    VMCU_VECT_TIMER1_OVF,                     ///< timer1 ovf vector
+    VMCU_VECT_TIMER0_COMPA,                   ///< timer0 compa vector
+    VMCU_VECT_TIMER0_COMPB,                   ///< timer0 compb vector
+    VMCU_VECT_TIMER0_OVF,                     ///< timer0 ovf vector
+    VMCU_VECT_SPI_STC,                        ///< spi stc vector
+    VMCU_VECT_USART_RX,                       ///< usart rx vector
+    VMCU_VECT_USART_UDRE,                     ///< usart udre vector
+    VMCU_VECT_USART_TX,                       ///< usart tx vector
+    VMCU_VECT_ADC,                            ///< adc vector
+    VMCU_VECT_EE_READY,                       ///< ee ready vector
+    VMCU_VECT_ANALOG_COMP,                    ///< analog comp vector
+    VMCU_VECT_TWI,                            ///< twi vector
+    VMCU_VECT_SPM_READY                       ///< spm ready vector
+
+} VMCU_VECT;
+
 typedef enum {                                ///< supported devices for the analyzer
 
     VMCU_M328P                                ///< ATmega328(P) with AVRe+ device core
@@ -328,7 +361,7 @@ typedef struct vmcu_instr {                   ///< instruction structure
 
 } vmcu_instr_t;
 
-typedef struct vmcu_xref {                    ///< xref (from) structure
+typedef struct vmcu_xref {                    ///< xref (from, to) structure
 
     vmcu_instr_t *i;                          ///< cross reference to a single instruction
 
@@ -353,6 +386,16 @@ typedef struct vmcu_label {                   ///< label structure
 
 } vmcu_label_t;
 
+typedef struct vmcu_vector {                  ///< interrupt vector structure
+
+    VMCU_VECT id;                             ///< interrupt vector id
+    uint16_t addr;                            ///< interrupt vector address
+
+    int32_t n_xto;                            ///< xref (to) count
+    vmcu_xref_t *xto;                         ///< xref (to) list
+
+} vmcu_vector_t;
+
 typedef struct vmcu_report {                  ///< report (summary) of the binary
 
     int32_t progsize;                         ///< instruction count
@@ -363,6 +406,9 @@ typedef struct vmcu_report {                  ///< report (summary) of the binar
 
     int32_t n_label;                          ///< label count
     vmcu_label_t *label;                      ///< label list (sorted, ascending)
+
+    int32_t n_vector;                         ///< vector count
+    vmcu_vector_t *vector;                    ///< vector list (sorted, ascending)
 
 } vmcu_report_t;
 

@@ -11,7 +11,9 @@ SRC      :=                                                 \
 	$(wildcard engine/src/analyzer/*.c)                     \
 	$(wildcard engine/src/analyzer/modules/sfr/*.c)         \
 	$(wildcard engine/src/analyzer/modules/labels/*.c)      \
+	$(wildcard engine/src/analyzer/modules/vector/*.c)		\
 	$(wildcard engine/src/analyzer/report/*.c)              \
+	$(wildcard engine/src/analyzer/util/*.c)				\
 	$(wildcard engine/src/arch/*.c)                         \
 	$(wildcard engine/src/arch/device/*.c)					\
 	$(wildcard engine/src/collections/*.c)                  \

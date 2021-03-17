@@ -4,6 +4,18 @@
 
 - nothing to log
 
+# v.0.8.2 - 2021-03-17
+
+- Added: interrupt vector analysis
+  - finding vectors in disassembly at default table position
+  - storing vector ID (VMCU_VECT enum), vector address and a xref-to vector's ISR
+  
+- Added: vtable section in vmcu_model_t.
+  - holds data related to the MCU's vector table 
+  
+- Created analyzer/util/util.h for frequently (> 1) used subroutines
+  - moved get_abs_addr to analyzer/util/util.h:vmcu_get_abs_addr
+
 # v.0.8.1 - 2021-03-15
 
 - Added: Instruction Groups

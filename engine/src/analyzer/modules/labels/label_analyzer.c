@@ -8,6 +8,7 @@
 // Project Headers (engine)
 #include "engine/include/analyzer/modules/labels/label_analyzer.h"
 #include "engine/include/analyzer/report/report.h"
+#include "engine/include/analyzer/util/util.h"
 
 #define NXREF 10
 
@@ -20,7 +21,6 @@ static bool is_branch(const VMCU_IKEY key);
 static bool in_disasm(const vmcu_report_t *report, const int addr);
 static bool label_exists(const uint16_t *field, const uint16_t addr, const int k);
 
-static int get_abs_addr(const vmcu_instr_t *instr);
 static int cmp_u16(const void *a, const void *b);
 
 /* --- Extern --- */
@@ -69,7 +69,7 @@ static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size) {
         if(is_branch(instr->key) == false)
             continue;
 
-        if((addr = get_abs_addr(instr)) < 0)
+        if((addr = vmcu_get_abs_addr(instr)) < 0)
             continue;
 
         if(in_disasm(report, addr) == false)
@@ -97,7 +97,7 @@ static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *
         if(is_branch(instr->key) == false)
             continue;
 
-        if(lx->addr != get_abs_addr(instr))
+        if(lx->addr != vmcu_get_abs_addr(instr))
             continue;
 
         if(*size >= nc) {
@@ -186,20 +186,6 @@ static bool label_exists(const uint16_t *field, const uint16_t addr, const int k
     }
 
     return false;
-}
-
-static int get_abs_addr(const vmcu_instr_t *instr) {
-
-    if(instr->key == VMCU_CALL || instr->key == VMCU_JMP)
-        return instr->src.value;
-
-    if(instr->src.value < 0) {
-
-        if((instr->src.value * -1) > instr->addr)
-            return -1;
-    }
-
-    return (instr->addr + instr->src.value + 1);
 }
 
 static int cmp_u16(const void *a, const void *b) {

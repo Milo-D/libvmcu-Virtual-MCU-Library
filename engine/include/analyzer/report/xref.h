@@ -1,4 +1,4 @@
-/* xref (from) Structure Header */
+/* xref (from, to) Structure Header */
 
 #ifndef VMCU_XREF_H
 #define VMCU_XREF_H

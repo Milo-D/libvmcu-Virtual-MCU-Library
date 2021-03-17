@@ -141,6 +141,50 @@ ldi r24, 0x00             ; R24 <- 0x00
 ldi r25, 0x00             ; R25 <- 0x00
 ```
 
+#### Printing interrupt vectors and their xref-to
+
+```c
+int main(const int argc, const char **argv) {
+
+    /* ignoring checks for this example */
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+
+    for(int32_t i = 0; i < report->n_vector; i++) {
+
+        vmcu_vector_t *vect = &report->vector[i];
+        printf("Vector ID %d @ 0x%04x\n", vect->id, vect->addr);
+
+        if(vect->n_xto == 0)
+            continue;
+
+        vmcu_instr_t *isr = vect->xto->i;
+        
+        printf(" interrupt service routine at 0x%04x", isr->addr);
+        printf("\n\n");
+    }
+    
+    vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+    
+    return EXIT_SUCCESS;
+}
+```
+
+```assembly
+Vector ID 16 @ 0x0020
+ interrupt service routine at 0x03f5
+
+Vector ID 17 @ 0x0022
+ interrupt service routine at 0x008a
+
+Vector ID 18 @ 0x0024
+ interrupt service routine at 0x03c3
+
+Vector ID 19 @ 0x0026
+ interrupt service routine at 0x039d
+```
+
 #### Printing potential labels
 
 ```c
@@ -410,10 +454,11 @@ take a look at engine/*/arch/
 
 - [x] Analyzer for AVR binaries
    - [x] Label analysis
+   - [x] Vector analysis  
    - [ ] Function analysis
    - [ ] ISR analysis
    - [x] SFR analysis
-   - [ ] cycle analysis
+   - [ ] Cycle analysis
    - [ ] ...
 
 - [ ] Format Reader
