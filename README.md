@@ -153,13 +153,9 @@ int main(const int argc, const char **argv) {
     for(int32_t i = 0; i < report->n_vector; i++) {
 
         vmcu_vector_t *vect = &report->vector[i];
-        printf("Vector ID %d @ 0x%04x\n", vect->id, vect->addr);
-
-        if(vect->n_xto == 0)
-            continue;
-
-        vmcu_instr_t *isr = vect->xto->i;
+        vmcu_instr_t  *isr  = vect->xto->i;
         
+        printf("Vector ID %d @ 0x%04x\n", vect->id, vect->addr);
         printf(" interrupt service routine at 0x%04x", isr->addr);
         printf("\n\n");
     }
