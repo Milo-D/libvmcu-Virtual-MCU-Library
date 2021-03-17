@@ -85,12 +85,12 @@ VMCU comes with no further dependencies, thus allowing easy setup and easy usage
 int main(const int argc, const char **argv) {
     
     /* initialize a device model */
-    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_M328P);
+    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
     
     vmcu_instr_t instr;
     vmcu_disassemble_bytes(0xd8e0, &instr, m328p);
     
-    const VMCU_IKEY key    = instr.key;      // VMCU_LDI
+    const VMCU_IKEY key    = instr.key;      // VMCU_IKEY_LDI
     const VMCU_GROUP grp   = instr.group;    // VMCU_GROUP_TRANSFER
     
     const uint32_t opcode  = instr.opcode;   // 0xe0d8 (big endian)
@@ -104,8 +104,8 @@ int main(const int argc, const char **argv) {
     vmcu_operand_t *src    = &instr.src;     // source operand
     vmcu_operand_t *dest   = &instr.dest;    // destination operand
 
-    VMCU_OPTYPE src_type   = src->type;      // VMCU_IMM8
-    VMCU_OPTYPE dest_type  = dest->type;     // VMCU_REGISTER
+    VMCU_OP src_type       = src->type;      // VMCU_OP_IMM8
+    VMCU_OP dest_type      = dest->type;     // VMCU_OP_REGISTER
 
     const uint8_t src_val  = src->value;     // 0x08
     const uint8_t dest_val = dest->value;    // (R)29
@@ -123,7 +123,7 @@ int main(const int argc, const char **argv) {
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
     for(int32_t i = 0; i < report->progsize; i++)
@@ -151,7 +151,7 @@ ldi r25, 0x00             ; R25 <- 0x00
 int main(const int argc, const char **argv) {
 
     /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
     for(int32_t i = 0; i < report->n_vector; i++) {
@@ -191,7 +191,7 @@ Vector ID 19 @ 0x0026
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
     for(int32_t i = 0; i < report->n_label; i++) {
@@ -224,7 +224,7 @@ Label ID: 5, Address: 0x0162
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
     for(int32_t i = 0; i < report->n_label; i++) {
@@ -272,7 +272,7 @@ int main(const int argc, const char **argv) {
 int main(const int argc, const char **argv) {
 
     /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_M328P); 
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
     for(int32_t i = 0; i < report->n_sfr; i++) {

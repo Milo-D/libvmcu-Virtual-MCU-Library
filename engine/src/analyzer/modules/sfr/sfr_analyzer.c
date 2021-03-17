@@ -17,7 +17,7 @@
 static vmcu_operand_t* instr_is_sfr_related(vmcu_instr_t *instr);
 static inline bool operand_is_sfr_related(vmcu_operand_t *op, vmcu_model_t *mcu);
 
-static VMCU_SFREGISTER get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu);
+static VMCU_SFR get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *mcu);
 static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr, vmcu_model_t *mcu);
@@ -32,9 +32,9 @@ int vmcu_analyze_sfr(vmcu_report_t *report, vmcu_model_t *mcu) {
     for(int32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
-        VMCU_SFREGISTER id = get_id_by_instr(instr, mcu);
+        VMCU_SFR id = get_id_by_instr(instr, mcu);
 
-        if(id == VMCU_SFREGISTER_NONE)
+        if(id == VMCU_SFR_NONE)
             continue;
 
         if(sfr_map[id] == 0)
@@ -67,20 +67,20 @@ static vmcu_operand_t* instr_is_sfr_related(vmcu_instr_t *instr) {
 
     switch(instr->key) {
 
-        case VMCU_SBIS:  return &instr->dest;
-        case VMCU_SBIC:  return &instr->dest;
-        case VMCU_CBI:   return &instr->dest;
-        case VMCU_SBI:   return &instr->dest;
-        case VMCU_OUT:   return &instr->dest;
-        case VMCU_IN:    return &instr->src;
+        case VMCU_IKEY_SBIS:  return &instr->dest;
+        case VMCU_IKEY_SBIC:  return &instr->dest;
+        case VMCU_IKEY_CBI:   return &instr->dest;
+        case VMCU_IKEY_SBI:   return &instr->dest;
+        case VMCU_IKEY_OUT:   return &instr->dest;
+        case VMCU_IKEY_IN:    return &instr->src;
 
-        case VMCU_LDS:   return &instr->src;
-        case VMCU_LDS32: return &instr->src;
+        case VMCU_IKEY_LDS:   return &instr->src;
+        case VMCU_IKEY_LDS32: return &instr->src;
 
-        case VMCU_STS:   return &instr->dest;
-        case VMCU_STS32: return &instr->dest;
+        case VMCU_IKEY_STS:   return &instr->dest;
+        case VMCU_IKEY_STS32: return &instr->dest;
 
-        default:         return NULL;
+        default:                      return NULL;
     }
 }
 
@@ -89,21 +89,21 @@ static inline bool operand_is_sfr_related(vmcu_operand_t *op, vmcu_model_t *mcu)
     const uint32_t section_start = mcu->sfr.section.start;
     const uint32_t section_end   = mcu->sfr.section.end;
 
-    const int32_t offs = ((op->type == VMCU_IODIRECT) * section_start);
+    const int32_t offs = ((op->type == VMCU_OP_IODIRECT) * section_start);
     return ((op->value + offs) >= section_start && (op->value + offs) <= section_end);
 }
 
-static VMCU_SFREGISTER get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu) {
+static VMCU_SFR get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu) {
 
     vmcu_operand_t *op;
 
     if((op = instr_is_sfr_related(instr)) == NULL)
-        return VMCU_SFREGISTER_NONE;
+        return VMCU_SFR_NONE;
 
     if(operand_is_sfr_related(op, mcu) == false)
-        return VMCU_SFREGISTER_NONE;
+        return VMCU_SFR_NONE;
 
-    int32_t offs = ((op->type != VMCU_IODIRECT) * mcu->sfr.section.start);
+    int32_t offs = ((op->type != VMCU_OP_IODIRECT) * mcu->sfr.section.start);
     return mcu->sfr.layout[op->value - offs];
 }
 

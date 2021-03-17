@@ -10,11 +10,11 @@
 #include "engine/include/analyzer/report/xref.h"
 
 // Project Headers (engine utilities)
-#include "engine/include/arch/enum/sfregister.h"
+#include "engine/include/arch/enum/sfr_enum.h"
 
 typedef struct vmcu_sfr {
 
-    VMCU_SFREGISTER id;
+    VMCU_SFR id;
 
     int32_t n_xref;
     vmcu_xref_t *xref;

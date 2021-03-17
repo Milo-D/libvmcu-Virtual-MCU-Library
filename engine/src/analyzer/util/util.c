@@ -6,7 +6,10 @@
 
 int vmcu_get_abs_addr(const vmcu_instr_t *instr) {
 
-    if(instr->key == VMCU_CALL || instr->key == VMCU_JMP)
+    if(instr->key == VMCU_IKEY_CALL)
+        return instr->src.value;
+
+    if(instr->key == VMCU_IKEY_JMP)
         return instr->src.value;
 
     if(instr->src.value < 0) {

@@ -41,7 +41,7 @@ void test_system(void) {
 
     /* init device models */
 
-    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_M328P);
+    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
     /* start system tests */
 

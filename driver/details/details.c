@@ -28,7 +28,7 @@ int main(const int argc, const char **argv) {
     const uint32_t opc = htoi(argv[1]);
 
     vmcu_instr_t instr;
-    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_M328P);
+    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
     if(vmcu_disassemble_bytes(opc, &instr, m328p) < 0) {
 

@@ -19,9 +19,9 @@ vmcu_model_t* vmcu_model_ctor(const VMCU_DEVICE device) {
 
     switch(device) {
 
-        case VMCU_M328P: load_device_m328p(model); break;
+        case VMCU_DEVICE_M328P: load_device_m328p(model); break;
 
-        default: /* device does not exist */ return NULL;
+        default:    /* device does not exist */     return NULL;
     }
 
     return model;

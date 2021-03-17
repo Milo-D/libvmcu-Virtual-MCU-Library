@@ -25,256 +25,256 @@
 
 typedef enum {                                ///< instruction keys
 
-    VMCU_DATA = -1,                           ///< data (.dw)
+    VMCU_IKEY_DATA = -1,                      ///< data (.dw)
 
-    VMCU_NOP,                                 ///< nop
-    VMCU_MOVW,                                ///< movw Rd+1:Rd, Rr+1:Rr
-    VMCU_MUL,                                 ///< mul Rd, Rr
-    VMCU_MULS,                                ///< muls Rd, Rr
-    VMCU_MULSU,                               ///< mulsu Rd, Rr
-    VMCU_FMUL,                                ///< fmul Rd, Rr
-    VMCU_FMULS,                               ///< fmuls Rd, Rr
-    VMCU_FMULSU,                              ///< fmulsu Rd, Rr
-    VMCU_LDI,                                 ///< ldi Rd, K
-    VMCU_RJMP,                                ///< rjmp (+/-) K
-    VMCU_JMP,                                 ///< jmp K
-    VMCU_IJMP,                                ///< ijmp
-    VMCU_MOV,                                 ///< mov Rd, Rr
-    VMCU_DEC,                                 ///< dec Rd
-    VMCU_INC,                                 ///< inc Rd
-    VMCU_ADD,                                 ///< add Rd, Rr
-    VMCU_ADC,                                 ///< adc Rd, Rr
-    VMCU_ADIW,                                ///< adiw Rd+1:Rd, K
-    VMCU_SUB,                                 ///< sub Rd, Rr
-    VMCU_SUBI,                                ///< subi Rd, K
-    VMCU_SBC,                                 ///< sbc Rd, Rr
-    VMCU_SBCI,                                ///< sbci Rd, K
-    VMCU_SBIW,                                ///< sbiw Rd+1:Rd, K
-    VMCU_PUSH,                                ///< push Rd
-    VMCU_POP,                                 ///< pop Rd
-    VMCU_IN,                                  ///< in Rd, K
-    VMCU_OUT,                                 ///< out K, Rd
-    VMCU_SBIS,                                ///< sbis K, b
-    VMCU_SBIC,                                ///< sbic K, b
-    VMCU_SBRC,                                ///< sbrc Rd, b
-    VMCU_SBRS,                                ///< sbrs Rd, b
-    VMCU_CPSE,                                ///< cpse Rd, Rr
-    VMCU_EOR,                                 ///< eor Rd, Rr
-    VMCU_LDX,                                 ///< ld Rd, X
-    VMCU_LDXI,                                ///< ld Rd, X+
-    VMCU_LDDX,                                ///< ld Rd, -X
-    VMCU_LDY,                                 ///< ld Rd, Y
-    VMCU_LDYI,                                ///< ld Rd, Y+
-    VMCU_LDDY,                                ///< ld Rd, -Y
-    VMCU_LDDYQ,                               ///< ldd Rd, Y+q
-    VMCU_LDDZQ,                               ///< ldd Rd, Z+q
-    VMCU_LDZ,                                 ///< ld Rd, Z
-    VMCU_LDZI,                                ///< ld Rd, Z+
-    VMCU_LDDZ,                                ///< ld Rd, -Z
-    VMCU_STX,                                 ///< st X, Rr
-    VMCU_STXI,                                ///< st X+, Rr
-    VMCU_STDX,                                ///< st -X, Rr
-    VMCU_STY,                                 ///< st Y, Rr
-    VMCU_STYI,                                ///< st Y+, Rr
-    VMCU_STDY,                                ///< st -Y, Rr
-    VMCU_STDYQ,                               ///< std Y+q, Rr
-    VMCU_STZ,                                 ///< st Z, Rr
-    VMCU_STZI,                                ///< st Z+, Rr
-    VMCU_STDZ,                                ///< st -Z, Rr
-    VMCU_STDZQ,                               ///< std Z+q, Rr
-    VMCU_STS,                                 ///< sts K, Rr
-    VMCU_STS32,                               ///< sts K, Rr (32-bit)
-    VMCU_LDS,                                 ///< lds Rd, K
-    VMCU_LDS32,                               ///< lds Rd, K (32-bit)
-    VMCU_XCH,                                 ///< xch Rd, Rr
-    VMCU_BRNE,                                ///< brne (+/-) K
-    VMCU_BREQ,                                ///< breq (+/-) K
-    VMCU_BRGE,                                ///< brge (+/-) K
-    VMCU_BRPL,                                ///< brpl (+/-) K
-    VMCU_BRLO,                                ///< brlo (+/-) K
-    VMCU_BRLT,                                ///< brlt (+/-) K
-    VMCU_BRCC,                                ///< brcc (+/-) K
-    VMCU_BRCS,                                ///< brcs (+/-) K
-    VMCU_BRVS,                                ///< brvs (+/-) K
-    VMCU_BRTS,                                ///< brts (+/-) K
-    VMCU_BRTC,                                ///< brtc (+/-) K
-    VMCU_BRMI,                                ///< brmi (+/-) K
-    VMCU_BRHC,                                ///< brhc (+/-) K
-    VMCU_BRHS,                                ///< brhs (+/-) K
-    VMCU_BRID,                                ///< brid (+/-) K
-    VMCU_BRIE,                                ///< brie (+/-) K
-    VMCU_BRVC,                                ///< brvc (+/-) K
-    VMCU_RCALL,                               ///< rcall (+/-) K
-    VMCU_RET,                                 ///< ret
-    VMCU_RETI,                                ///< reti
-    VMCU_ICALL,                               ///< icall
-    VMCU_CALL,                                ///< call K
-    VMCU_CP,                                  ///< cp Rd, Rr
-    VMCU_CPI,                                 ///< cpi Rd, K
-    VMCU_CPC,                                 ///< cpc Rd, Rr
-    VMCU_LSR,                                 ///< lsr Rd
-    VMCU_ASR,                                 ///< asr Rd
-    VMCU_ROR,                                 ///< ror Rd
-    VMCU_SWAP,                                ///< swap Rd
-    VMCU_ORI,                                 ///< ori Rd, K
-    VMCU_OR,                                  ///< or Rd, Rr
-    VMCU_AND,                                 ///< and Rd, Rr
-    VMCU_ANDI,                                ///< andi Rd, K
-    VMCU_LAS,                                 ///< las Z, Rr
-    VMCU_LAC,                                 ///< lac Z, Rr
-    VMCU_LAT,                                 ///< lat Z, Rr
-    VMCU_COM,                                 ///< com Rd
-    VMCU_NEG,                                 ///< neg Rd
-    VMCU_BLD,                                 ///< bld Rd, b
-    VMCU_BST,                                 ///< bst Rd, b
-    VMCU_SBI,                                 ///< sbi K, b
-    VMCU_CBI,                                 ///< cbi K, b
-    VMCU_LPM,                                 ///< lpm
-    VMCU_LPMZ,                                ///< lpm Rd, Z
-    VMCU_LPMZI,                               ///< lpm Rd, Z+
-    VMCU_EICALL,                              ///< eicall
-    VMCU_EIJMP,                               ///< eijmp
-    VMCU_ELPM,                                ///< elpm
-    VMCU_ELPMZ,                               ///< elpm Rd, Z
-    VMCU_ELPMZI,                              ///< elpm Rd, Z+
-    VMCU_DES,                                 ///< des
-    VMCU_SLEEP,                               ///< sleep
-    VMCU_WDR,                                 ///< wdr
-    VMCU_BREAK,                               ///< break
-    VMCU_SPM,                                 ///< spm Z, Rr
-    VMCU_SPMZI,                               ///< spm Z+, Rr
-    VMCU_SES,                                 ///< ses
-    VMCU_SET,                                 ///< set
-    VMCU_SEV,                                 ///< sev
-    VMCU_SEZ,                                 ///< sez
-    VMCU_SEH,                                 ///< seh
-    VMCU_SEC,                                 ///< sec
-    VMCU_SEI,                                 ///< sei
-    VMCU_SEN,                                 ///< sen
-    VMCU_CLS,                                 ///< cls
-    VMCU_CLT,                                 ///< clt
-    VMCU_CLV,                                 ///< clv
-    VMCU_CLZ,                                 ///< clz
-    VMCU_CLH,                                 ///< clh
-    VMCU_CLC,                                 ///< clc
-    VMCU_CLI,                                 ///< cli
-    VMCU_CLN,                                 ///< cln
-    VMCU_BCLR,                                ///< blcr K
-    VMCU_BSET,                                ///< bset K
+    VMCU_IKEY_NOP,                            ///< nop
+    VMCU_IKEY_MOVW,                           ///< movw Rd+1:Rd, Rr+1:Rr
+    VMCU_IKEY_MUL,                            ///< mul Rd, Rr
+    VMCU_IKEY_MULS,                           ///< muls Rd, Rr
+    VMCU_IKEY_MULSU,                          ///< mulsu Rd, Rr
+    VMCU_IKEY_FMUL,                           ///< fmul Rd, Rr
+    VMCU_IKEY_FMULS,                          ///< fmuls Rd, Rr
+    VMCU_IKEY_FMULSU,                         ///< fmulsu Rd, Rr
+    VMCU_IKEY_LDI,                            ///< ldi Rd, K
+    VMCU_IKEY_RJMP,                           ///< rjmp (+/-) K
+    VMCU_IKEY_JMP,                            ///< jmp K
+    VMCU_IKEY_IJMP,                           ///< ijmp
+    VMCU_IKEY_MOV,                            ///< mov Rd, Rr
+    VMCU_IKEY_DEC,                            ///< dec Rd
+    VMCU_IKEY_INC,                            ///< inc Rd
+    VMCU_IKEY_ADD,                            ///< add Rd, Rr
+    VMCU_IKEY_ADC,                            ///< adc Rd, Rr
+    VMCU_IKEY_ADIW,                           ///< adiw Rd+1:Rd, K
+    VMCU_IKEY_SUB,                            ///< sub Rd, Rr
+    VMCU_IKEY_SUBI,                           ///< subi Rd, K
+    VMCU_IKEY_SBC,                            ///< sbc Rd, Rr
+    VMCU_IKEY_SBCI,                           ///< sbci Rd, K
+    VMCU_IKEY_SBIW,                           ///< sbiw Rd+1:Rd, K
+    VMCU_IKEY_PUSH,                           ///< push Rd
+    VMCU_IKEY_POP,                            ///< pop Rd
+    VMCU_IKEY_IN,                             ///< in Rd, K
+    VMCU_IKEY_OUT,                            ///< out K, Rd
+    VMCU_IKEY_SBIS,                           ///< sbis K, b
+    VMCU_IKEY_SBIC,                           ///< sbic K, b
+    VMCU_IKEY_SBRC,                           ///< sbrc Rd, b
+    VMCU_IKEY_SBRS,                           ///< sbrs Rd, b
+    VMCU_IKEY_CPSE,                           ///< cpse Rd, Rr
+    VMCU_IKEY_EOR,                            ///< eor Rd, Rr
+    VMCU_IKEY_LDX,                            ///< ld Rd, X
+    VMCU_IKEY_LDXI,                           ///< ld Rd, X+
+    VMCU_IKEY_LDDX,                           ///< ld Rd, -X
+    VMCU_IKEY_LDY,                            ///< ld Rd, Y
+    VMCU_IKEY_LDYI,                           ///< ld Rd, Y+
+    VMCU_IKEY_LDDY,                           ///< ld Rd, -Y
+    VMCU_IKEY_LDDYQ,                          ///< ldd Rd, Y+q
+    VMCU_IKEY_LDDZQ,                          ///< ldd Rd, Z+q
+    VMCU_IKEY_LDZ,                            ///< ld Rd, Z
+    VMCU_IKEY_LDZI,                           ///< ld Rd, Z+
+    VMCU_IKEY_LDDZ,                           ///< ld Rd, -Z
+    VMCU_IKEY_STX,                            ///< st X, Rr
+    VMCU_IKEY_STXI,                           ///< st X+, Rr
+    VMCU_IKEY_STDX,                           ///< st -X, Rr
+    VMCU_IKEY_STY,                            ///< st Y, Rr
+    VMCU_IKEY_STYI,                           ///< st Y+, Rr
+    VMCU_IKEY_STDY,                           ///< st -Y, Rr
+    VMCU_IKEY_STDYQ,                          ///< std Y+q, Rr
+    VMCU_IKEY_STZ,                            ///< st Z, Rr
+    VMCU_IKEY_STZI,                           ///< st Z+, Rr
+    VMCU_IKEY_STDZ,                           ///< st -Z, Rr
+    VMCU_IKEY_STDZQ,                          ///< std Z+q, Rr
+    VMCU_IKEY_STS,                            ///< sts K, Rr
+    VMCU_IKEY_STS32,                          ///< sts K, Rr (32-bit)
+    VMCU_IKEY_LDS,                            ///< lds Rd, K
+    VMCU_IKEY_LDS32,                          ///< lds Rd, K (32-bit)
+    VMCU_IKEY_XCH,                            ///< xch Rd, Rr
+    VMCU_IKEY_BRNE,                           ///< brne (+/-) K
+    VMCU_IKEY_BREQ,                           ///< breq (+/-) K
+    VMCU_IKEY_BRGE,                           ///< brge (+/-) K
+    VMCU_IKEY_BRPL,                           ///< brpl (+/-) K
+    VMCU_IKEY_BRLO,                           ///< brlo (+/-) K
+    VMCU_IKEY_BRLT,                           ///< brlt (+/-) K
+    VMCU_IKEY_BRCC,                           ///< brcc (+/-) K
+    VMCU_IKEY_BRCS,                           ///< brcs (+/-) K
+    VMCU_IKEY_BRVS,                           ///< brvs (+/-) K
+    VMCU_IKEY_BRTS,                           ///< brts (+/-) K
+    VMCU_IKEY_BRTC,                           ///< brtc (+/-) K
+    VMCU_IKEY_BRMI,                           ///< brmi (+/-) K
+    VMCU_IKEY_BRHC,                           ///< brhc (+/-) K
+    VMCU_IKEY_BRHS,                           ///< brhs (+/-) K
+    VMCU_IKEY_BRID,                           ///< brid (+/-) K
+    VMCU_IKEY_BRIE,                           ///< brie (+/-) K
+    VMCU_IKEY_BRVC,                           ///< brvc (+/-) K
+    VMCU_IKEY_RCALL,                          ///< rcall (+/-) K
+    VMCU_IKEY_RET,                            ///< ret
+    VMCU_IKEY_RETI,                           ///< reti
+    VMCU_IKEY_ICALL,                          ///< icall
+    VMCU_IKEY_CALL,                           ///< call K
+    VMCU_IKEY_CP,                             ///< cp Rd, Rr
+    VMCU_IKEY_CPI,                            ///< cpi Rd, K
+    VMCU_IKEY_CPC,                            ///< cpc Rd, Rr
+    VMCU_IKEY_LSR,                            ///< lsr Rd
+    VMCU_IKEY_ASR,                            ///< asr Rd
+    VMCU_IKEY_ROR,                            ///< ror Rd
+    VMCU_IKEY_SWAP,                           ///< swap Rd
+    VMCU_IKEY_ORI,                            ///< ori Rd, K
+    VMCU_IKEY_OR,                             ///< or Rd, Rr
+    VMCU_IKEY_AND,                            ///< and Rd, Rr
+    VMCU_IKEY_ANDI,                           ///< andi Rd, K
+    VMCU_IKEY_LAS,                            ///< las Z, Rr
+    VMCU_IKEY_LAC,                            ///< lac Z, Rr
+    VMCU_IKEY_LAT,                            ///< lat Z, Rr
+    VMCU_IKEY_COM,                            ///< com Rd
+    VMCU_IKEY_NEG,                            ///< neg Rd
+    VMCU_IKEY_BLD,                            ///< bld Rd, b
+    VMCU_IKEY_BST,                            ///< bst Rd, b
+    VMCU_IKEY_SBI,                            ///< sbi K, b
+    VMCU_IKEY_CBI,                            ///< cbi K, b
+    VMCU_IKEY_LPM,                            ///< lpm
+    VMCU_IKEY_LPMZ,                           ///< lpm Rd, Z
+    VMCU_IKEY_LPMZI,                          ///< lpm Rd, Z+
+    VMCU_IKEY_EICALL,                         ///< eicall
+    VMCU_IKEY_EIJMP,                          ///< eijmp
+    VMCU_IKEY_ELPM,                           ///< elpm
+    VMCU_IKEY_ELPMZ,                          ///< elpm Rd, Z
+    VMCU_IKEY_ELPMZI,                         ///< elpm Rd, Z+
+    VMCU_IKEY_DES,                            ///< des
+    VMCU_IKEY_SLEEP,                          ///< sleep
+    VMCU_IKEY_WDR,                            ///< wdr
+    VMCU_IKEY_BREAK,                          ///< break
+    VMCU_IKEY_SPM,                            ///< spm Z, Rr
+    VMCU_IKEY_SPMZI,                          ///< spm Z+, Rr
+    VMCU_IKEY_SES,                            ///< ses
+    VMCU_IKEY_SET,                            ///< set
+    VMCU_IKEY_SEV,                            ///< sev
+    VMCU_IKEY_SEZ,                            ///< sez
+    VMCU_IKEY_SEH,                            ///< seh
+    VMCU_IKEY_SEC,                            ///< sec
+    VMCU_IKEY_SEI,                            ///< sei
+    VMCU_IKEY_SEN,                            ///< sen
+    VMCU_IKEY_CLS,                            ///< cls
+    VMCU_IKEY_CLT,                            ///< clt
+    VMCU_IKEY_CLV,                            ///< clv
+    VMCU_IKEY_CLZ,                            ///< clz
+    VMCU_IKEY_CLH,                            ///< clh
+    VMCU_IKEY_CLC,                            ///< clc
+    VMCU_IKEY_CLI,                            ///< cli
+    VMCU_IKEY_CLN,                            ///< cln
+    VMCU_IKEY_BCLR,                           ///< blcr K
+    VMCU_IKEY_BSET                            ///< bset K
 
 } VMCU_IKEY;
 
 typedef enum {                                ///< special function register id's
 
-    VMCU_SFREGISTER_NONE = -1,                ///< no sfr (used as error code)
+    VMCU_SFR_NONE = -1,                       ///< no sfr (used as error code)
 
-    VMCU_RESERVED,                            ///< reserved i/o memory
-    VMCU_PINB,                                ///< pinb
-    VMCU_DDRB,                                ///< ddrb
-    VMCU_PORTB,                               ///< portb
-    VMCU_PINC,                                ///< pinc
-    VMCU_DDRC,                                ///< ddrc
-    VMCU_PORTC,                               ///< portc
-    VMCU_PIND,                                ///< pind
-    VMCU_DDRD,                                ///< ddrd
-    VMCU_PORTD,                               ///< portd
-    VMCU_TIFR0,                               ///< tifr0
-    VMCU_TIFR1,                               ///< tifr1
-    VMCU_TIFR2,                               ///< tifr2
-    VMCU_PCIFR,                               ///< pcifr
-    VMCU_EIFR,                                ///< eifr
-    VMCU_EIMSK,                               ///< eimsk
-    VMCU_GPIOR0,                              ///< gpior0
-    VMCU_EECR,                                ///< eecr
-    VMCU_EEDR,                                ///< eedr
-    VMCU_EEARL,                               ///< eearl
-    VMCU_EEARH,                               ///< eearh
-    VMCU_GTCCR,                               ///< gtccr
-    VMCU_TCCR0A,                              ///< tccr0a
-    VMCU_TCCR0B,                              ///< tccr0b
-    VMCU_TCNT0,                               ///< tcnt0
-    VMCU_OCR0A,                               ///< ocr0a
-    VMCU_OCR0B,                               ///< ocr0b
-    VMCU_GPIOR1,                              ///< gpior1
-    VMCU_GPIOR2,                              ///< gpior2
-    VMCU_SPCR0,                               ///< spcr0
-    VMCU_SPSR0,                               ///< spsr0
-    VMCU_SPDR0,                               ///< spdr0
-    VMCU_ACSR,                                ///< acsr
-    VMCU_DWDR,                                ///< dwdr
-    VMCU_SMCR,                                ///< smcr
-    VMCU_MCUSR,                               ///< mcusr
-    VMCU_MCUCR,                               ///< mcucr
-    VMCU_SPMCSR,                              ///< spmcsr
-    VMCU_SPL,                                 ///< spl
-    VMCU_SPH,                                 ///< sph
-    VMCU_SREG,                                ///< sreg
-    VMCU_WDTCSR,                              ///< wdtcsr
-    VMCU_CLKPR,                               ///< clkpr
-    VMCU_PRR,                                 ///< prr
-    VMCU_OSCCAL,                              ///< osccal
-    VMCU_PCICR,                               ///< pcicr
-    VMCU_EICRA,                               ///< eicra
-    VMCU_PCMSK0,                              ///< pcmsk0
-    VMCU_PCMSK1,                              ///< pcmsk1
-    VMCU_PCMSK2,                              ///< pcmsk2
-    VMCU_TIMSK0,                              ///< timsk0
-    VMCU_TIMSK1,                              ///< timsk1
-    VMCU_TIMSK2,                              ///< timsk2
-    VMCU_ADCL,                                ///< adcl
-    VMCU_ADCH,                                ///< adch
-    VMCU_ADCSRA,                              ///< adcsra
-    VMCU_ADCSRB,                              ///< adcsrb
-    VMCU_ADMUX,                               ///< admux
-    VMCU_DIDR0,                               ///< didr0
-    VMCU_DIDR1,                               ///< didr1
-    VMCU_TCCR1A,                              ///< tccr1a
-    VMCU_TCCR1B,                              ///< tccr1b
-    VMCU_TCCR1C,                              ///< tccr1c
-    VMCU_TCNT1L,                              ///< tcnt1l
-    VMCU_TCNT1H,                              ///< tcnt1h
-    VMCU_ICR1L,                               ///< icr1l
-    VMCU_ICR1H,                               ///< icr1h
-    VMCU_OCR1AL,                              ///< ocr1al
-    VMCU_OCR1AH,                              ///< ocr1ah
-    VMCU_OCR1BL,                              ///< ocr1bl
-    VMCU_OCR1BH,                              ///< ocr1bh
-    VMCU_TCCR2A,                              ///< tccr2a
-    VMCU_TCCR2B,                              ///< tccr2b
-    VMCU_TCNT2,                               ///< tcnt2
-    VMCU_OCR2A,                               ///< ocr2a
-    VMCU_OCR2B,                               ///< ocr2b
-    VMCU_ASSR,                                ///< assr
-    VMCU_TWBR,                                ///< twbr
-    VMCU_TWSR,                                ///< twsr
-    VMCU_TWAR,                                ///< twar
-    VMCU_TWDR,                                ///< twdr
-    VMCU_TWCR,                                ///< twcr
-    VMCU_TWAMR,                               ///< twamr
-    VMCU_UCSR0A,                              ///< ucsr0a
-    VMCU_UCSR0B,                              ///< ucsr0b
-    VMCU_UCSR0C,                              ///< ucsr0c
-    VMCU_UBRR0L,                              ///< ubbr0l
-    VMCU_UBRR0H,                              ///< ubbr0h
-    VMCU_UDR0                                 ///< udr0
+    VMCU_SFR_RESERVED,                        ///< reserved i/o memory
+    VMCU_SFR_PINB,                            ///< pinb
+    VMCU_SFR_DDRB,                            ///< ddrb
+    VMCU_SFR_PORTB,                           ///< portb
+    VMCU_SFR_PINC,                            ///< pinc
+    VMCU_SFR_DDRC,                            ///< ddrc
+    VMCU_SFR_PORTC,                           ///< portc
+    VMCU_SFR_PIND,                            ///< pind
+    VMCU_SFR_DDRD,                            ///< ddrd
+    VMCU_SFR_PORTD,                           ///< portd
+    VMCU_SFR_TIFR0,                           ///< tifr0
+    VMCU_SFR_TIFR1,                           ///< tifr1
+    VMCU_SFR_TIFR2,                           ///< tifr2
+    VMCU_SFR_PCIFR,                           ///< pcifr
+    VMCU_SFR_EIFR,                            ///< eifr
+    VMCU_SFR_EIMSK,                           ///< eimsk
+    VMCU_SFR_GPIOR0,                          ///< gpior0
+    VMCU_SFR_EECR,                            ///< eecr
+    VMCU_SFR_EEDR,                            ///< eedr
+    VMCU_SFR_EEARL,                           ///< eearl
+    VMCU_SFR_EEARH,                           ///< eearh
+    VMCU_SFR_GTCCR,                           ///< gtccr
+    VMCU_SFR_TCCR0A,                          ///< tccr0a
+    VMCU_SFR_TCCR0B,                          ///< tccr0b
+    VMCU_SFR_TCNT0,                           ///< tcnt0
+    VMCU_SFR_OCR0A,                           ///< ocr0a
+    VMCU_SFR_OCR0B,                           ///< ocr0b
+    VMCU_SFR_GPIOR1,                          ///< gpior1
+    VMCU_SFR_GPIOR2,                          ///< gpior2
+    VMCU_SFR_SPCR0,                           ///< spcr0
+    VMCU_SFR_SPSR0,                           ///< spsr0
+    VMCU_SFR_SPDR0,                           ///< spdr0
+    VMCU_SFR_ACSR,                            ///< acsr
+    VMCU_SFR_DWDR,                            ///< dwdr
+    VMCU_SFR_SMCR,                            ///< smcr
+    VMCU_SFR_MCUSR,                           ///< mcusr
+    VMCU_SFR_MCUCR,                           ///< mcucr
+    VMCU_SFR_SPMCSR,                          ///< spmcsr
+    VMCU_SFR_SPL,                             ///< spl
+    VMCU_SFR_SPH,                             ///< sph
+    VMCU_SFR_SREG,                            ///< sreg
+    VMCU_SFR_WDTCSR,                          ///< wdtcsr
+    VMCU_SFR_CLKPR,                           ///< clkpr
+    VMCU_SFR_PRR,                             ///< prr
+    VMCU_SFR_OSCCAL,                          ///< osccal
+    VMCU_SFR_PCICR,                           ///< pcicr
+    VMCU_SFR_EICRA,                           ///< eicra
+    VMCU_SFR_PCMSK0,                          ///< pcmsk0
+    VMCU_SFR_PCMSK1,                          ///< pcmsk1
+    VMCU_SFR_PCMSK2,                          ///< pcmsk2
+    VMCU_SFR_TIMSK0,                          ///< timsk0
+    VMCU_SFR_TIMSK1,                          ///< timsk1
+    VMCU_SFR_TIMSK2,                          ///< timsk2
+    VMCU_SFR_ADCL,                            ///< adcl
+    VMCU_SFR_ADCH,                            ///< adch
+    VMCU_SFR_ADCSRA,                          ///< adcsra
+    VMCU_SFR_ADCSRB,                          ///< adcsrb
+    VMCU_SFR_ADMUX,                           ///< admux
+    VMCU_SFR_DIDR0,                           ///< didr0
+    VMCU_SFR_DIDR1,                           ///< didr1
+    VMCU_SFR_TCCR1A,                          ///< tccr1a
+    VMCU_SFR_TCCR1B,                          ///< tccr1b
+    VMCU_SFR_TCCR1C,                          ///< tccr1c
+    VMCU_SFR_TCNT1L,                          ///< tcnt1l
+    VMCU_SFR_TCNT1H,                          ///< tcnt1h
+    VMCU_SFR_ICR1L,                           ///< icr1l
+    VMCU_SFR_ICR1H,                           ///< icr1h
+    VMCU_SFR_OCR1AL,                          ///< ocr1al
+    VMCU_SFR_OCR1AH,                          ///< ocr1ah
+    VMCU_SFR_OCR1BL,                          ///< ocr1bl
+    VMCU_SFR_OCR1BH,                          ///< ocr1bh
+    VMCU_SFR_TCCR2A,                          ///< tccr2a
+    VMCU_SFR_TCCR2B,                          ///< tccr2b
+    VMCU_SFR_TCNT2,                           ///< tcnt2
+    VMCU_SFR_OCR2A,                           ///< ocr2a
+    VMCU_SFR_OCR2B,                           ///< ocr2b
+    VMCU_SFR_ASSR,                            ///< assr
+    VMCU_SFR_TWBR,                            ///< twbr
+    VMCU_SFR_TWSR,                            ///< twsr
+    VMCU_SFR_TWAR,                            ///< twar
+    VMCU_SFR_TWDR,                            ///< twdr
+    VMCU_SFR_TWCR,                            ///< twcr
+    VMCU_SFR_TWAMR,                           ///< twamr
+    VMCU_SFR_UCSR0A,                          ///< ucsr0a
+    VMCU_SFR_UCSR0B,                          ///< ucsr0b
+    VMCU_SFR_UCSR0C,                          ///< ucsr0c
+    VMCU_SFR_UBRR0L,                          ///< ubbr0l
+    VMCU_SFR_UBRR0H,                          ///< ubbr0h
+    VMCU_SFR_UDR0                             ///< udr0
 
-} VMCU_SFREGISTER;
+} VMCU_SFR;
 
 typedef enum {                                ///< operand types
 
-    VMCU_IMM,                                 ///< immediate type (> 8-bit, < 16-bit)
-    VMCU_IMM8,                                ///< 8-bit immediate type (signed)
-    VMCU_UIMM8,                               ///< 8-bit immediate type (unsigned)
-    VMCU_UIMM16,                              ///< 16-bit immediate type (unsigned)
-    VMCU_REGISTER,                            ///< register type
-    VMCU_REGISTERPAIR,                        ///< register-pair type (XL, XH, ...)
-    VMCU_IODIRECT,                            ///< io-direct type
-    VMCU_XPTR,                                ///< X pointer type
-    VMCU_YPTR,                                ///< Y pointer type
-    VMCU_ZPTR,                                ///< Z pointer type
-    VMCU_EMPTY                                ///< no operand
+    VMCU_OP_IMM,                              ///< immediate type (> 8-bit, < 16-bit)
+    VMCU_OP_IMM8,                             ///< 8-bit immediate type (signed)
+    VMCU_OP_UIMM8,                            ///< 8-bit immediate type (unsigned)
+    VMCU_OP_UIMM16,                           ///< 16-bit immediate type (unsigned)
+    VMCU_OP_REGISTER,                         ///< register type
+    VMCU_OP_REGISTERPAIR,                     ///< register-pair type (XL, XH, ...)
+    VMCU_OP_IODIRECT,                         ///< io-direct type
+    VMCU_OP_XPTR,                             ///< X pointer type
+    VMCU_OP_YPTR,                             ///< Y pointer type
+    VMCU_OP_ZPTR,                             ///< Z pointer type
+    VMCU_OP_NONE                              ///< no operand
 
-} VMCU_OPTYPE;
+} VMCU_OP;
 
 typedef enum {                                ///< instruction groups (see official I.S.M.)
 
@@ -323,7 +323,7 @@ typedef enum {                                ///< interrupt vectors
 
 typedef enum {                                ///< supported devices for the analyzer
 
-    VMCU_M328P                                ///< ATmega328(P) with AVRe+ device core
+    VMCU_DEVICE_M328P                         ///< ATmega328(P) with AVRe+ device core
 
 } VMCU_DEVICE;
 
@@ -336,7 +336,7 @@ typedef struct vmcu_model vmcu_model_t;       ///< device model (opaque, details
 typedef struct vmcu_operand {                 ///< operand structure
 
     int32_t value;                            ///< operand value
-    VMCU_OPTYPE type;                         ///< operand type
+    VMCU_OP type;                             ///< operand type
 
 } vmcu_operand_t;
 
@@ -369,7 +369,7 @@ typedef struct vmcu_xref {                    ///< xref (from, to) structure
 
 typedef struct vmcu_sfr {                     ///< sfr (special function register) structure
 
-    VMCU_SFREGISTER id;                       ///< sfr id (for example id = VMCU_UCSR0A)
+    VMCU_SFR id;                              ///< sfr id (for example id = VMCU_SFR_UCSR0A)
 
     int32_t n_xref;                           ///< xref (from) count
     vmcu_xref_t *xref;                        ///< xref (from) list
@@ -416,7 +416,7 @@ typedef struct vmcu_report {                  ///< report (summary) of the binar
 
 /*
  * vmcu_model_ctor - constructor of vmcu_model_t
- * @device: device to be loaded (for example VMCU_M328P)
+ * @device: device to be loaded (example: VMCU_DEVICE_M328P)
  * */
 extern vmcu_model_t* vmcu_model_ctor(const VMCU_DEVICE device);
 

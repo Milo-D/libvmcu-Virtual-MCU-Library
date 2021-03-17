@@ -35,7 +35,7 @@ void analyze_isr(vmcu_instr_t* instr, vmcu_report_t* report) {
 
     int absolute_address = op->value;
 
-    if(instr->key == VMCU_RJMP)
+    if(instr->key == VMCU_IKEY_RJMP)
         absolute_address += instr->addr + 1;
 
     vmcu_label_t* label = find_label(absolute_address, report);
@@ -74,7 +74,7 @@ int main(const int argc, const char **argv) {
     /* Initialize libvmcu */
 
     const char* filename = argv[argc-1];
-    m328p = vmcu_model_ctor(VMCU_M328P);
+    m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
     if((report = vmcu_analyze_ihex(filename, m328p)) == NULL)
         return EXIT_FAILURE;
@@ -86,7 +86,7 @@ int main(const int argc, const char **argv) {
 
         int key = instr->key;
 
-        if(key == VMCU_JMP || key == VMCU_RJMP) {
+        if(key == VMCU_IKEY_JMP || key == VMCU_IKEY_RJMP) {
 
             if(start_index == -1)
                 start_index = i;

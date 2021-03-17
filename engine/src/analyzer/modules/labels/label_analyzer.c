@@ -128,39 +128,39 @@ static bool is_branch(const VMCU_IKEY key) {
 
     switch(key) {
 
-        case VMCU_RJMP:  return true;
-        case VMCU_JMP:   return true;
+        case VMCU_IKEY_RJMP:  return true;
+        case VMCU_IKEY_JMP:   return true;
 
-        case VMCU_RCALL: return true;
-        case VMCU_CALL:  return true;
+        case VMCU_IKEY_RCALL: return true;
+        case VMCU_IKEY_CALL:  return true;
 
-        case VMCU_BRNE:  return true;
-        case VMCU_BREQ:  return true;
+        case VMCU_IKEY_BRNE:  return true;
+        case VMCU_IKEY_BREQ:  return true;
 
-        case VMCU_BRGE:  return true;
-        case VMCU_BRLO:  return true;
+        case VMCU_IKEY_BRGE:  return true;
+        case VMCU_IKEY_BRLO:  return true;
 
-        case VMCU_BRPL:  return true;
-        case VMCU_BRMI:  return true;
+        case VMCU_IKEY_BRPL:  return true;
+        case VMCU_IKEY_BRMI:  return true;
 
-        case VMCU_BRCC:  return true;
-        case VMCU_BRCS:  return true;
+        case VMCU_IKEY_BRCC:  return true;
+        case VMCU_IKEY_BRCS:  return true;
 
-        case VMCU_BRVS:  return true;
-        case VMCU_BRVC:  return true;
+        case VMCU_IKEY_BRVS:  return true;
+        case VMCU_IKEY_BRVC:  return true;
 
-        case VMCU_BRTS:  return true;
-        case VMCU_BRTC:  return true;
+        case VMCU_IKEY_BRTS:  return true;
+        case VMCU_IKEY_BRTC:  return true;
 
-        case VMCU_BRHS:  return true;
-        case VMCU_BRHC:  return true;
+        case VMCU_IKEY_BRHS:  return true;
+        case VMCU_IKEY_BRHC:  return true;
 
-        case VMCU_BRIE:  return true;
-        case VMCU_BRID:  return true;
+        case VMCU_IKEY_BRIE:  return true;
+        case VMCU_IKEY_BRID:  return true;
 
-        case VMCU_BRLT:  return true;
+        case VMCU_IKEY_BRLT:  return true;
 
-        default:          break;
+        default:                    break;
     }
 
     return false;

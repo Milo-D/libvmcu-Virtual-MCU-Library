@@ -4,6 +4,11 @@
 
 - nothing to log
 
+# v.0.8.3 - 2021-03-18
+
+- Naming Convention of enums (preventing future internal name clashes)
+  - VMCU_ENUMNAME and its members VMCU_ENUMNAME_*
+
 # v.0.8.2 - 2021-03-17
 
 - Added: interrupt vector analysis

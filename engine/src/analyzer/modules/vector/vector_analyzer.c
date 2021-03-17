@@ -84,7 +84,7 @@ static bool interrupts_enabled(vmcu_report_t *report) {
 
     for(int32_t i = 0; i < report->progsize; i++) {
 
-        if(report->disassembly[i].key == VMCU_SEI)
+        if(report->disassembly[i].key == VMCU_IKEY_SEI)
             return true;
     }
 
@@ -135,7 +135,7 @@ static VMCU_VECT get_vector_id(vmcu_instr_t *instr, vmcu_model_t *mcu) {
     if(instr_in_vtable(instr, mcu) == false)
         return VMCU_VECT_NONE;
 
-    if(instr->key != VMCU_RJMP && instr->key != VMCU_JMP)
+    if(instr->key != VMCU_IKEY_RJMP && instr->key != VMCU_IKEY_JMP)
         return VMCU_VECT_NONE;
 
     if(mcu->vtable.vector_32bit == false)

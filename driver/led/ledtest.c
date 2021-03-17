@@ -37,7 +37,7 @@ int main(const int argc, const char **argv) {
     uint8_t led;
     atexit(cleanup);
 
-    if((m328p = vmcu_model_ctor(VMCU_M328P)) == NULL)
+    if((m328p = vmcu_model_ctor(VMCU_DEVICE_M328P)) == NULL)
         return EXIT_FAILURE;
 
     if((report = vmcu_analyze_ihex(TESTFILE, m328p)) == NULL)

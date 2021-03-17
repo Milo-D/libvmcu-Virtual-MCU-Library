@@ -7,12 +7,12 @@
 #include <inttypes.h>
 
 // Project Headers (engine utilities)
-#include "engine/include/arch/enum/optype.h"
+#include "engine/include/arch/enum/op.h"
 
 typedef struct vmcu_operand {
     
     int32_t value;
-    VMCU_OPTYPE type;
+    VMCU_OP type;
     
 } vmcu_operand_t;
 

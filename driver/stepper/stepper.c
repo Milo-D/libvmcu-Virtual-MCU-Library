@@ -36,7 +36,7 @@ int main(const int argc, const char **argv) {
 
     atexit(cleanup);
 
-    m328p = vmcu_model_ctor(VMCU_M328P);
+    m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
     report = vmcu_analyze_ihex(argv[1], m328p);
 
     if(report == NULL)

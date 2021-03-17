@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     int countFilters = argc-2;
     const char* fname = argv[argc-1];
 
-    vmcu_model_t* m328p   = vmcu_model_ctor(VMCU_M328P);
+    vmcu_model_t* m328p   = vmcu_model_ctor(VMCU_DEVICE_M328P);
     vmcu_report_t* report = vmcu_analyze_ihex(fname, m328p);
 
     if(report == NULL) {
@@ -93,8 +93,8 @@ int main(int argc, char* argv[]) {
 
         vmcu_instr_t* instr = &report->disassembly[i];
 
-        //because VMCU_DATA is -1
-        if(instr->key == VMCU_DATA) {
+        //because VMCU_IKEY_DATA is -1
+        if(instr->key == VMCU_IKEY_DATA) {
             continue;
         }
 

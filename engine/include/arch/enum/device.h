@@ -5,7 +5,7 @@
 
 typedef enum {
 
-    VMCU_M328P
+    VMCU_DEVICE_M328P
 
 } VMCU_DEVICE;
 

@@ -9,8 +9,8 @@
 
 // Project Headers (engine utilities)
 #include "engine/include/arch/enum/device.h"
-#include "engine/include/arch/enum/device_core.h"
-#include "engine/include/arch/enum/sfregister.h"
+#include "engine/include/arch/enum/core.h"
+#include "engine/include/arch/enum/sfr_enum.h"
 #include "engine/include/arch/enum/vect.h"
 
 typedef struct vmcu_section {
@@ -36,7 +36,7 @@ typedef struct vmcu_data_model {
 typedef struct vmcu_sfr_model {
 
     vmcu_section_t section;
-    VMCU_SFREGISTER *layout;
+    VMCU_SFR *layout;
 
 } vmcu_sfr_model_t;
 
@@ -52,8 +52,8 @@ typedef struct vmcu_vtable_model {
 
 typedef struct vmcu_model {
 
+    VMCU_CORE core;
     VMCU_DEVICE device;
-    VMCU_DEVICE_CORE core;
 
     vmcu_section_t flash;
     vmcu_section_t eeprom;
