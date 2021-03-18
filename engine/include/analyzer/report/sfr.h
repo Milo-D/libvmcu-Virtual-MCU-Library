@@ -16,8 +16,8 @@ typedef struct vmcu_sfr {
 
     VMCU_SFR id;
 
-    int32_t n_xref;
-    vmcu_xref_t *xref;
+    int32_t n_xfrom;
+    vmcu_xref_t *xfrom;
 
 } vmcu_sfr_t;
 

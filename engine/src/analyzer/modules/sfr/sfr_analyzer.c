@@ -52,8 +52,8 @@ int vmcu_analyze_sfr(vmcu_report_t *report, vmcu_model_t *mcu) {
 
         vmcu_sfr_t *sfr = &report->sfr[i];
 
-        sfr->n_xref = sfr_map[sfr->id];
-        sfr->xref   = get_xrefs(report, sfr, mcu);
+        sfr->n_xfrom = sfr_map[sfr->id];
+        sfr->xfrom   = get_xrefs(report, sfr, mcu);
     }
 
 cleanup:
@@ -118,9 +118,9 @@ static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *
 
         sfrs[j++] = (vmcu_sfr_t) {
 
-            .id     = i,
-            .n_xref = 0,
-            .xref   = NULL
+            .id      = i,
+            .n_xfrom = 0,
+            .xfrom   = NULL
         };
     }
 
@@ -129,7 +129,7 @@ static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *
 
 static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr, vmcu_model_t *mcu) {
 
-    vmcu_xref_t *xrefs = malloc(sfr->n_xref * sizeof(vmcu_xref_t));
+    vmcu_xref_t *xrefs = malloc(sfr->n_xfrom * sizeof(vmcu_xref_t));
 
     for(int32_t i = 0, j = 0; i < report->progsize; i++) {
 

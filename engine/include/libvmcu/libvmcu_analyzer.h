@@ -371,8 +371,8 @@ typedef struct vmcu_sfr {                     ///< sfr (special function registe
 
     VMCU_SFR id;                              ///< sfr id (for example id = VMCU_SFR_UCSR0A)
 
-    int32_t n_xref;                           ///< xref (from) count
-    vmcu_xref_t *xref;                        ///< xref (from) list
+    int32_t n_xfrom;                          ///< xref (from) count
+    vmcu_xref_t *xfrom;                       ///< xref (from) list
 
 } vmcu_sfr_t;
 
@@ -381,8 +381,8 @@ typedef struct vmcu_label {                   ///< label structure
     uint16_t id;                              ///< unique label identifier
     uint16_t addr;                            ///< label address
 
-    int32_t n_xref;                           ///< xref (from) count
-    vmcu_xref_t *xref;                        ///< xref (from) list
+    int32_t n_xfrom;                          ///< xref (from) count
+    vmcu_xref_t *xfrom;                       ///< xref (from) list
 
 } vmcu_label_t;
 

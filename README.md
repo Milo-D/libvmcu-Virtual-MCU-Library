@@ -232,9 +232,9 @@ int main(const int argc, const char **argv) {
         vmcu_label_t *lx = &report->label[i];
         printf("0x%04x\tL%d\n\n", lx->addr, lx->id);
 
-        for(int32_t j = 0; j < lx->n_xref; j++) {
+        for(int32_t j = 0; j < lx->n_xfrom; j++) {
 
-            vmcu_xref_t *x = &lx->xref[j];
+            vmcu_xref_t *x = &lx->xfrom[j];
 
             printf(" xref from 0x%04x ", x->p->addr);
             printf("%s\n", x->p->mnem);
@@ -280,9 +280,9 @@ int main(const int argc, const char **argv) {
         vmcu_sfr_t *sfr = &report->sfr[i];
         printf("SFR ID: %d\n\n", sfr->id);
 
-        for(int32_t j = 0; j < sfr->n_xref; j++) {
+        for(int32_t j = 0; j < sfr->n_xfrom; j++) {
 
-            vmcu_xref_t *x = &sfr->xref[j];
+            vmcu_xref_t *x = &sfr->xfrom[j];
 
             printf(" xref from 0x%04x ", x->p->addr);
             printf("%s\n", x->p->mnem);
@@ -445,7 +445,7 @@ take a look at engine/*/arch/
 # Static Analysis
 
 - [x] Disassembler
-- [x] Cross references (xref-from)
+- [x] Cross references (xref-from, xref-to)
 - [ ] analyzer flags
 
 - [x] Decompose and classify instructions

@@ -42,10 +42,10 @@ int vmcu_analyze_labels(vmcu_report_t *report) {
 
         lx->id       = i;
         lx->addr     = field[i];
-        lx->n_xref   = 0;
+        lx->n_xfrom  = 0;
 
-        int32_t *size = &lx->n_xref;
-        lx->xref = get_xrefs(report, lx, size);
+        int32_t *size = &lx->n_xfrom;
+        lx->xfrom = get_xrefs(report, lx, size);
     }
 
 cleanup:

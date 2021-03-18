@@ -27,9 +27,9 @@ int main(const int argc, const char **argv) {
         vmcu_label_t *lx = &report->label[i];
         printf("0x%04x\tL%d\n", lx->addr, lx->id);
 
-        for(int32_t j = 0; j < lx->n_xref; j++) {
+        for(int32_t j = 0; j < lx->n_xfrom; j++) {
 
-            vmcu_xref_t *x = &lx->xref[j];
+            vmcu_xref_t *x = &lx->xfrom[j];
 
             printf(" xref from 0x%04x ", x->i->addr);
             printf("(%s)\n", x->i->mnem);

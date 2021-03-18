@@ -33,9 +33,9 @@ int main(const int argc, const char **argv) {
         vmcu_sfr_t *sfr = &report->sfr[i];
         printf("SFR ID: %d\n", sfr->id);
 
-        for(int32_t j = 0; j < sfr->n_xref; j++) {
+        for(int32_t j = 0; j < sfr->n_xfrom; j++) {
 
-            vmcu_xref_t *x = &sfr->xref[j];
+            vmcu_xref_t *x = &sfr->xfrom[j];
 
             printf("  xref from 0x%04x ", x->i->addr);
             printf("(%s)\n", x->i->mnem);

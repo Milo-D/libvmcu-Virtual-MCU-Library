@@ -39,14 +39,14 @@ void vmcu_report_dtor(vmcu_report_t *this) {
 
     for(int32_t i = 0; i < this->n_sfr; i++) {
 
-        if(this->sfr[i].n_xref > 0)
-            free(this->sfr[i].xref);
+        if(this->sfr[i].n_xfrom > 0)
+            free(this->sfr[i].xfrom);
     }
 
     for(int32_t i = 0; i < this->n_label; i++) {
 
-        if(this->label[i].n_xref > 0)
-            free(this->label[i].xref);
+        if(this->label[i].n_xfrom > 0)
+            free(this->label[i].xfrom);
     }
 
     for(int32_t i = 0; i < this->n_vector; i++) {

@@ -4,6 +4,13 @@
 
 - nothing to log
 
+# v.0.8.4
+
+- Worked on naming Convention of xrefs
+  - xref-from and xref-to are using the same structure (vmcu_xref_t)
+  - xref-from's will always be exposed as xfrom with a list counter n_xfrom
+  - xref-to's will always be exposed as xto with a list counter n_xto
+
 # v.0.8.3 - 2021-03-18
 
 - Naming Convention of enums (preventing future internal name clashes)
