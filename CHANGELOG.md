@@ -2,9 +2,9 @@
 
 # Unreleased
 
-- nothing to log
+- Added: decoder tests for st_z and sts_32
 
-# v.0.8.4
+# v.0.8.4 - 2021-03-18
 
 - Worked on naming Convention of xrefs
   - xref-from and xref-to are using the same structure (vmcu_xref_t)
