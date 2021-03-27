@@ -2,6 +2,15 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.8.5 - 2021-03-27
+
+- Completed decoder (byte pipeline) testing.
+  - Each instruction was tested by decoding two single opcodes
+    - one opcode with no variable bits set
+    - one opcode with random bits set
+  
 - Added: decoder tests for st_z and sts_32
 
 # v.0.8.4 - 2021-03-18
