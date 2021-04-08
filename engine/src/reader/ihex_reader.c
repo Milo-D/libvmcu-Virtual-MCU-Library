@@ -56,14 +56,20 @@ vmcu_instr_t* vmcu_read_ihex(const char *hex_file, int32_t *size) {
 
     while(getline(&line, &len, file) != -1) {
 
-        if(check_ihex(line) == false)
+        if(check_ihex(line) == false) {
+
+            *size = 0;
             goto err;
+        }
 
         if(line[RECORD] != DATA_RECORD)
             continue;
 
-        if(read_ihex_line(line, buffer, size) < 0)
+        if(read_ihex_line(line, buffer, size) < 0) {
+
+            *size = 0;
             goto err;
+        }
     }
 
     if(*size == 0)

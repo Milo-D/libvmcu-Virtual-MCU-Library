@@ -11,6 +11,7 @@
 #include "engine/include/analyzer/report/sfr.h"
 #include "engine/include/analyzer/report/label.h"
 #include "engine/include/analyzer/report/vector.h"
+#include "engine/include/analyzer/report/string.h"
 
 typedef struct vmcu_report {
     
@@ -25,6 +26,9 @@ typedef struct vmcu_report {
 
     int32_t n_vector;
     vmcu_vector_t *vector;
+
+    int32_t n_string;
+    vmcu_string_t *string;
 
 } vmcu_report_t;
 

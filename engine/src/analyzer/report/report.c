@@ -26,6 +26,9 @@ vmcu_report_t* vmcu_report_ctor(void) {
     report->n_vector    = 0;
     report->vector      = NULL;
 
+    report->n_string    = 0;
+    report->string      = NULL;
+
     return report;
 }
 
@@ -55,6 +58,12 @@ void vmcu_report_dtor(vmcu_report_t *this) {
             free(this->vector[i].xto);
     }
 
+    for(int32_t i = 0; i < this->n_string; i++) {
+
+        if(this->string[i].length > 0)
+            free(this->string[i].bytes);
+    }
+
     if(this->sfr != NULL)
         free(this->sfr);
 
@@ -63,6 +72,9 @@ void vmcu_report_dtor(vmcu_report_t *this) {
 
     if(this->vector != NULL)
         free(this->vector);
+
+    if(this->string != NULL)
+        free(this->string);
 
     if(this->disassembly != NULL)
         free(this->disassembly);

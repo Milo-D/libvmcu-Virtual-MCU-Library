@@ -4,6 +4,13 @@
 
 - nothing to log
 
+# v.0.8.6 - 2021-04-08 
+
+- Added: submodule for string analysis
+  - discovers strings (ascii) in binary
+  
+- Minor bug fix in intel hex reader
+
 # v.0.8.5 - 2021-03-27
 
 - Completed decoder (byte pipeline) testing.

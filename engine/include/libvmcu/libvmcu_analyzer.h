@@ -396,6 +396,15 @@ typedef struct vmcu_vector {                  ///< interrupt vector structure
 
 } vmcu_vector_t;
 
+typedef struct vmcu_string {                  ///< string structure
+
+    uint16_t addr;                            ///< base address of string
+    uint16_t length;                          ///< length of string
+
+    char *bytes;                              ///< actual char buffer
+
+} vmcu_string_t;
+
 typedef struct vmcu_report {                  ///< report (summary) of the binary
 
     int32_t progsize;                         ///< instruction count
@@ -409,6 +418,9 @@ typedef struct vmcu_report {                  ///< report (summary) of the binar
 
     int32_t n_vector;                         ///< vector count
     vmcu_vector_t *vector;                    ///< vector list (sorted, ascending)
+
+    int32_t n_string;                         ///< string count
+    vmcu_string_t *string;                    ///< string list (sorted, ascending)
 
 } vmcu_report_t;
 

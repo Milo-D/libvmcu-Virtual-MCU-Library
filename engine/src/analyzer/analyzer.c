@@ -8,6 +8,7 @@
 #include "engine/include/analyzer/modules/sfr/sfr_analyzer.h"
 #include "engine/include/analyzer/modules/labels/label_analyzer.h"
 #include "engine/include/analyzer/modules/vector/vector_analyzer.h"
+#include "engine/include/analyzer/modules/string/string_analyzer.h"
 #include "engine/include/analyzer/report/report.h"
 #include "engine/include/disassembler/disassembler.h"
 
@@ -35,6 +36,7 @@ vmcu_report_t* vmcu_analyze_ihex(const char *hex_file, vmcu_model_t *mcu) {
     /* --- architecture unspecific analysis --- */
 
     vmcu_analyze_labels(report);
+    vmcu_analyze_strings(report);
     
     return report;
 }

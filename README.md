@@ -311,6 +311,44 @@ SFR ID: 50
  xref from 0x0054 sts 0x006e, r24           ; DATA[0x6e] <- R24
 ```
 
+#### Discovering strings in binary
+
+```c
+int main(const int argc, const char **argv) {
+
+    /* ignoring checks for this example */
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+
+    for(int32_t i = 0; i < report->n_string; i++) {
+
+        vmcu_string_t *str = &report->string[i];
+
+        printf("Found string \"%s", str->bytes);
+        printf("\" l = %d", str->length);
+        printf(" @ 0x%04x\n", str->addr);
+    }
+    
+    printf("\nTotal strings found: %d\n", report->n_string);
+
+    vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+    
+    return EXIT_SUCCESS;
+}
+```
+
+```console
+Found string "Welcome " l = 8 @ 0x092e
+Found string "[1] Login\n" l = 11 @ 0x0933
+Found string "[2] Memory management\n" l = 23 @ 0x0939
+Found string "Please authenticate yourself with your hardware token\n" l = 55 @ 0x0946
+Found string "Please insert token. (%d characters)\n" l = 38 @ 0x0962
+Found string "Token can only contain the characters [A-Z/a-z/0-9]\n" l = 53 @ 0x0975
+
+Total strings found: 6
+```
+
 # Showcase
 
 ![mdx_debug](https://user-images.githubusercontent.com/46600932/104666434-33f9da80-56d4-11eb-882b-724b13536412.png)
@@ -459,6 +497,9 @@ take a look at engine/*/arch/
    - [ ] ISR analysis
    - [x] SFR analysis
    - [ ] Cycle analysis
+   - [x] String analysis
+     - [x] ASCII
+     - [ ] UTF16
    - [ ] ...
 
 - [ ] Format Reader
