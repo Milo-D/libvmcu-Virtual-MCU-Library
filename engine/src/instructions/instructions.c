@@ -1340,33 +1340,6 @@ static void execute_brcc(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 2;
 }
 
-static void execute_brcs(vmcu_system_t *sys, const int opcode) {
-
-    if(vmcu_system_read_sreg(sys, CF) == 0x00) {
-
-        vmcu_system_move_pc(sys, 1);
-        sys->cycles += 1;
-
-        return;
-    }
-
-    int offs = vmcu_extr(opcode, 3, 10, 0);
-    const int prog_counter = vmcu_system_get_pc(sys);
-
-    if(((0x01 << 6) & offs) != 0x00) {
-
-        offs = comp(offs, 7);
-
-        vmcu_system_set_pc(sys, prog_counter - offs + 1);
-        sys->cycles += 2;
-
-        return;
-    }
-
-    vmcu_system_set_pc(sys, prog_counter + offs + 1);
-    sys->cycles += 2;
-}
-
 static void execute_brvs(vmcu_system_t *sys, const int opcode) {
 
     if(vmcu_system_read_sreg(sys, VF) == 0x00) {
@@ -2443,24 +2416,6 @@ static void execute_cln(vmcu_system_t *sys, const int opcode) {
     sys->cycles += 1;
 }
 
-static void execute_bclr(vmcu_system_t *sys, const int opcode) {
-
-    int s_bit = vmcu_extr(opcode, 4, 7, 0);
-    vmcu_system_write_sreg(sys, s_bit, 0x00);
-
-    vmcu_system_move_pc(sys, 1);
-    sys->cycles += 1;
-}
-
-static void execute_bset(vmcu_system_t *sys, const int opcode) {
-
-    int s_bit = vmcu_extr(opcode, 4, 7, 0);
-    vmcu_system_write_sreg(sys, s_bit, 0x01);
-
-    vmcu_system_move_pc(sys, 1);
-    sys->cycles += 1;
-}
-
 void (*vmcu_execute[INSTR_MAX]) (vmcu_system_t *sys, const int opcode) = {
 
     execute_nop,
@@ -2530,7 +2485,6 @@ void (*vmcu_execute[INSTR_MAX]) (vmcu_system_t *sys, const int opcode) = {
     execute_brlo,
     execute_brlt,
     execute_brcc,
-    execute_brcs,
     execute_brvs,
     execute_brts,
     execute_brtc,
@@ -2594,9 +2548,7 @@ void (*vmcu_execute[INSTR_MAX]) (vmcu_system_t *sys, const int opcode) = {
     execute_clh,
     execute_clc,
     execute_cli,
-    execute_cln,
-    execute_bclr,
-    execute_bset
+    execute_cln
 };
 
 

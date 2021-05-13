@@ -1179,28 +1179,6 @@ static char* disassemble_brcc(vmcu_instr_t *instr) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_brcs(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
-
-    if(src < 0x00) {
-
-        src *= -1;
-        sign[0] = '-';
-    }
-
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brcs %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
-}
-
 static char* disassemble_brvs(vmcu_instr_t *instr) {
 
     int src = instr->src.value;
@@ -2186,36 +2164,6 @@ static char* disassemble_cln(vmcu_instr_t *instr) {
     return vmcu_sstream_alloc(&ss);
 }
 
-static char* disassemble_bclr(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "bclr 0x0%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; SREG[%d] <- 0x00", src);
-
-    return vmcu_sstream_alloc(&ss);
-}
-
-static char* disassemble_bset(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "bset 0x0%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; SREG[%d] <- 0x01", src);
-
-    return vmcu_sstream_alloc(&ss);
-}
-
 static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
 
     disassemble_nop,
@@ -2285,7 +2233,6 @@ static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
     disassemble_brlo,
     disassemble_brlt,
     disassemble_brcc,
-    disassemble_brcs,
     disassemble_brvs,
     disassemble_brts,
     disassemble_brtc,
@@ -2349,7 +2296,5 @@ static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
     disassemble_clh,
     disassemble_clc,
     disassemble_cli,
-    disassemble_cln,
-    disassemble_bclr,
-    disassemble_bset
+    disassemble_cln
 };

@@ -143,9 +143,6 @@ static bool is_branch(const VMCU_IKEY key) {
         case VMCU_IKEY_BRPL:  return true;
         case VMCU_IKEY_BRMI:  return true;
 
-        case VMCU_IKEY_BRCC:  return true;
-        case VMCU_IKEY_BRCS:  return true;
-
         case VMCU_IKEY_BRVS:  return true;
         case VMCU_IKEY_BRVC:  return true;
 
@@ -159,6 +156,7 @@ static bool is_branch(const VMCU_IKEY key) {
         case VMCU_IKEY_BRID:  return true;
 
         case VMCU_IKEY_BRLT:  return true;
+        case VMCU_IKEY_BRCC:  return true;
 
         default:                    break;
     }

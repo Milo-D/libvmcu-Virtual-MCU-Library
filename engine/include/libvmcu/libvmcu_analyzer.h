@@ -94,7 +94,6 @@ typedef enum {                                ///< instruction keys
     VMCU_IKEY_BRLO,                           ///< brlo (+/-) K
     VMCU_IKEY_BRLT,                           ///< brlt (+/-) K
     VMCU_IKEY_BRCC,                           ///< brcc (+/-) K
-    VMCU_IKEY_BRCS,                           ///< brcs (+/-) K
     VMCU_IKEY_BRVS,                           ///< brvs (+/-) K
     VMCU_IKEY_BRTS,                           ///< brts (+/-) K
     VMCU_IKEY_BRTC,                           ///< brtc (+/-) K
@@ -158,9 +157,7 @@ typedef enum {                                ///< instruction keys
     VMCU_IKEY_CLH,                            ///< clh
     VMCU_IKEY_CLC,                            ///< clc
     VMCU_IKEY_CLI,                            ///< cli
-    VMCU_IKEY_CLN,                            ///< cln
-    VMCU_IKEY_BCLR,                           ///< blcr K
-    VMCU_IKEY_BSET                            ///< bset K
+    VMCU_IKEY_CLN                             ///< cln
 
 } VMCU_IKEY;
 

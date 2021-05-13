@@ -20,16 +20,10 @@
                        printf("    |---- "); \
                        fn(mcu)
 /*
- * brlo shadows brcs.
- * cl<x> shadows bclr.
- * se<x> shadows bset.
- *
  * ldd shadows lds (16-bit)
  * std shadows sts (16-bit)
  *
- * todo: remove brcs, bclr, bset
- *       replace brcc with brsh
- *
+ * todo: replace brcc with brsh
  *
  * todo: swap ld_zq in opcode table
  *       currently ld_zq is preferred

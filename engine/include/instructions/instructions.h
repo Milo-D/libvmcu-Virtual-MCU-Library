@@ -3,7 +3,7 @@
 #ifndef VMCU_INSTRUCTIONS_H
 #define VMCU_INSTRUCTIONS_H
 
-#define INSTR_MAX 145
+#define INSTR_MAX 131
 
 typedef struct vmcu_system vmcu_system_t;
 

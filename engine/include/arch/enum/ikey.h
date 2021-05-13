@@ -74,7 +74,6 @@ typedef enum {
     VMCU_IKEY_BRLO,
     VMCU_IKEY_BRLT,
     VMCU_IKEY_BRCC,
-    VMCU_IKEY_BRCS,
     VMCU_IKEY_BRVS,
     VMCU_IKEY_BRTS,
     VMCU_IKEY_BRTC,
@@ -138,9 +137,7 @@ typedef enum {
     VMCU_IKEY_CLH,
     VMCU_IKEY_CLC,
     VMCU_IKEY_CLI,
-    VMCU_IKEY_CLN,
-    VMCU_IKEY_BCLR,
-    VMCU_IKEY_BSET
+    VMCU_IKEY_CLN
 
 } VMCU_IKEY;
 

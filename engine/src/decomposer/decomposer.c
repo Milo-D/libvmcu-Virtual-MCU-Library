@@ -882,19 +882,6 @@ static void decompose_brcc(vmcu_instr_t *instr) {
         instr->src.value = comp(instr->src.value, 7) * -1;
 }
 
-static void decompose_brcs(vmcu_instr_t *instr) {
-
-    instr->group      = VMCU_GROUP_FLOW;
-
-    instr->src.type   = VMCU_OP_IMM;
-    instr->dest.type  = VMCU_OP_NONE;
-
-    instr->src.value  = vmcu_extr(instr->opcode, 3, 10, 0);
-
-    if(((0x01 << 6) & instr->src.value) != 0x00)
-        instr->src.value = comp(instr->src.value, 7) * -1;
-}
-
 static void decompose_brvs(vmcu_instr_t *instr) {
 
     instr->group      = VMCU_GROUP_FLOW;
@@ -1544,26 +1531,6 @@ static void decompose_cln(vmcu_instr_t *instr) {
     instr->dest.type  = VMCU_OP_NONE;
 }
 
-static void decompose_bclr(vmcu_instr_t *instr) {
-
-    instr->group      = VMCU_GROUP_BIT;
-
-    instr->src.type   = VMCU_OP_IMM;
-    instr->dest.type  = VMCU_OP_NONE;
-
-    instr->src.value  = vmcu_extr(instr->opcode, 4, 7, 0);
-}
-
-static void decompose_bset(vmcu_instr_t *instr) {
-
-    instr->group      = VMCU_GROUP_BIT;
-
-    instr->src.type   = VMCU_OP_IMM;
-    instr->dest.type  = VMCU_OP_NONE;
-
-    instr->src.value  = vmcu_extr(instr->opcode, 4, 7, 0);
-}
-
 static void (*decompose_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
 
     decompose_nop,
@@ -1633,7 +1600,6 @@ static void (*decompose_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
     decompose_brlo,
     decompose_brlt,
     decompose_brcc,
-    decompose_brcs,
     decompose_brvs,
     decompose_brts,
     decompose_brtc,
@@ -1697,8 +1663,6 @@ static void (*decompose_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
     decompose_clh,
     decompose_clc,
     decompose_cli,
-    decompose_cln,
-    decompose_bclr,
-    decompose_bset
+    decompose_cln
 };
 

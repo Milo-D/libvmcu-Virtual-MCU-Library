@@ -2,6 +2,15 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.8.7 - 2021-05-13
+
+- opcode cleanup
+  - removed bset due to opcode shadowing (se<*>)
+  - removed bclr due to opcode shadowing (cl<*>)
+  - removed brcs due to opcode shadowing (brlo)
+  
 - fixed inconsistency in function signatures
 
 # v.0.8.6 - 2021-04-08 
