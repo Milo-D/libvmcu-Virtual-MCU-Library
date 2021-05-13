@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 
-// libvmcu
+// libvmcu Headers
 #include "libvmcu_analyzer.h"
 #include "libvmcu_system.h"
 
@@ -28,6 +28,8 @@
  * std shadows sts (16-bit)
  *
  * todo: remove brcs, bclr, bset
+ *       replace brcc with brsh
+ *
  *
  * todo: swap ld_zq in opcode table
  *       currently ld_zq is preferred

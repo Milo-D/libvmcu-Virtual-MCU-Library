@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- nothing to log
+- fixed inconsistency in function signatures
 
 # v.0.8.6 - 2021-04-08 
 

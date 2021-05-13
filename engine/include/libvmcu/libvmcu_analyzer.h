@@ -458,7 +458,7 @@ extern void vmcu_report_dtor(vmcu_report_t *this);
 /*
  * vmcu_disassemble_bytes - disassemble 16/32-bit opcode
  * @bytes:  opcode to disassemble (little endian)
- * @p:      pointer to a single instance of vmcu_instr_t
+ * @instr:  pointer to a single instance of vmcu_instr_t
  * @mcu:    disassemble for this device model
  * */
 extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
@@ -476,7 +476,7 @@ extern vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, 
 /*
  * vmcu_decompose_bytes - decompose 16/32-bit opcode
  * @bytes:  opcode to decompose (little endian)
- * @p:      pointer to a single instance of vmcu_instr_t
+ * @instr:  pointer to a single instance of vmcu_instr_t
  * @mcu:    decompose for this device model
  * */
 extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
@@ -494,7 +494,7 @@ extern vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vm
 /*
  * vmcu_decode_bytes - decode 16/32-bit opcode
  * @bytes:  opcode to decode (little endian)
- * @p:      pointer to a single instance of vmcu_instr_t
+ * @instr:  pointer to a single instance of vmcu_instr_t
  * @mcu:    decode for this device model
  * */
 extern int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
