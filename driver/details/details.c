@@ -13,6 +13,7 @@
 /* Forward Declaration of static Functions */
 
 static void print_instr(vmcu_instr_t *instr, const uint32_t opcode);
+static void print_mnemonic(vmcu_instr_t *instr);
 static int htoi(const char *input);
 
 /* --- Extern --- */
@@ -39,9 +40,7 @@ int main(const int argc, const char **argv) {
     }
 
     print_instr(&instr, opc);
-
     vmcu_model_dtor(m328p);
-    free(instr.mnem);
 
     return EXIT_SUCCESS;
 }
@@ -54,7 +53,10 @@ static void print_instr(vmcu_instr_t *instr, const uint32_t opcode) {
 
     printf("opcode:     0x%04x\n", instr->opcode);
     printf("address:    0x%04x\n", instr->addr);
-    printf("mnemonic:   %s\n", instr->mnem);
+
+    printf("mnemonic:   ", instr->mnem);
+    print_mnemonic(instr);
+
     printf("executable: ");
 
     if(instr->exec == true)
@@ -68,6 +70,20 @@ static void print_instr(vmcu_instr_t *instr, const uint32_t opcode) {
         printf("32-bit\n");
     else
         printf("16-bit\n");
+}
+
+static void print_mnemonic(vmcu_instr_t *instr) {
+
+    vmcu_mnemonic_t *mnem = &instr->mnem;
+
+    printf("%s ",  mnem->base);
+    printf("%s",   mnem->dest);
+
+    if(instr->dest.type != VMCU_OP_NONE)
+        printf(", ");
+
+    printf("%s ",  mnem->src);
+    printf("%s\n", mnem->comment);
 }
 
 int htoi(const char *input) {

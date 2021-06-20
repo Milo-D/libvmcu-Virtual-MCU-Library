@@ -33,12 +33,6 @@ vmcu_report_t* vmcu_report_ctor(void) {
 }
 
 void vmcu_report_dtor(vmcu_report_t *this) {
-    
-    for(int32_t i = 0; i < this->progsize; i++) {
-
-        if(this->disassembly[i].mnem != NULL)
-            free(this->disassembly[i].mnem);
-    }
 
     for(int32_t i = 0; i < this->n_sfr; i++) {
 

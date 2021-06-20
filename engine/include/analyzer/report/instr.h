@@ -8,6 +8,7 @@
 
 // Project Headers (engine)
 #include "engine/include/analyzer/report/operand.h"
+#include "engine/include/analyzer/report/mnemonic.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/arch/enum/ikey.h"
@@ -27,10 +28,10 @@ typedef struct vmcu_instr {
     bool exec;
     bool dword;
 
-    char *mnem;
-
     vmcu_operand_t src;
     vmcu_operand_t dest;
+
+    vmcu_mnemonic_t mnem;
 
 } vmcu_instr_t;
 

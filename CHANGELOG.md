@@ -4,6 +4,21 @@
 
 - nothing to log
 
+# v.0.8.8 - 2021-06-20
+
+- Added: vmcu_mnemonic_t structure to vmcu_instr_t
+  - replaces char *mnem
+  - holds char literals (base, src, dest, comment)
+  - base = instruction string ("ldi", "movw", etc.)
+  - src = source operand string ("r29", "0xff", etc.)
+  - dest = destination operand string ("r29", "0xff", etc.)
+  - comment = comment string ("; r21 <- 0xab", "IF <- 0", etc.)
+
+- Added: disasm driver with syntax highlighting (driver/disasm/)
+
+- disassembler rewrite
+- adjusted examples, drivers, readme
+
 # v.0.8.7 - 2021-05-13
 
 - opcode cleanup

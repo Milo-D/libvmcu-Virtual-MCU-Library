@@ -98,9 +98,7 @@ int main(const int argc, const char **argv) {
 
     const bool dword       = instr.dword;    // false
     const bool exec        = instr.exec;     // true
-
-    const char *mnemonic   = instr.mnem;     // ldi r29, 0x08
-
+    
     vmcu_operand_t *src    = &instr.src;     // source operand
     vmcu_operand_t *dest   = &instr.dest;    // destination operand
 
@@ -110,16 +108,44 @@ int main(const int argc, const char **argv) {
     const uint8_t src_val  = src->value;     // 0x08
     const uint8_t dest_val = dest->value;    // (R)29
     
-    free(instr.mnem);
+    vmcu_mnemonic_t *mnem  = &instr.mnem;    // instruction mnemonic
+    
+    const char *base_str   = mnem->base;     // "ldi"
+    const char *dest_str   = mnem->dest;     // "r29"
+    const char *src_str    = mnem->src;      // "0x08"
+    const char *com_str    = mnem->comment;  // "; r29 <- 0x08"
+    
     vmcu_model_dtor(m328p);
     
     return EXIT_SUCCESS;
 }
 ```
 
+#### Example of an instruction-printer function
+
+```c
+/* this snippet can be used to assemble and print an instruction */
+
+void print_instruction(vmcu_instr_t *instr) {
+
+    vmcu_mnemonic_t *mnem = &instr->mnem;
+
+    printf("%s ",  mnem->base);
+    printf("%s",   mnem->dest);
+
+    if(instr->dest.type != VMCU_OP_NONE)
+        printf(", ");
+
+    printf("%s ",  mnem->src);
+    printf("%s\n", mnem->comment);
+}
+```
+
 #### Printing disassembly of an intel hex file
 
 ```c
+/* A possible implementation of print_instruction can be found above */
+
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
@@ -127,7 +153,7 @@ int main(const int argc, const char **argv) {
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
     for(int32_t i = 0; i < report->progsize; i++)
-        printf("%s\n", report->disassembly[i].mnem);
+        print_instruction(&report->disassembly[i]);
     
     vmcu_report_dtor(report);
     vmcu_model_dtor(m328p);
@@ -221,6 +247,8 @@ Label ID: 5, Address: 0x0162
 #### Printing xrefs of potential labels
 
 ```c
+/* A possible implementation of print_instruction can be found above */
+
 int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
@@ -235,9 +263,9 @@ int main(const int argc, const char **argv) {
         for(int32_t j = 0; j < lx->n_xfrom; j++) {
 
             vmcu_xref_t *x = &lx->xfrom[j];
-
+            
             printf(" xref from 0x%04x ", x->i->addr);
-            printf("%s\n", x->i->mnem);
+            print_instruction(x->i);
         }
 
         printf("\n");
@@ -269,6 +297,8 @@ int main(const int argc, const char **argv) {
 #### Printing xrefs of special function registers 
 
 ```c
+/* A possible implementation of print_instruction can be found above */
+
 int main(const int argc, const char **argv) {
 
     /* ignoring checks for this example */
@@ -285,7 +315,7 @@ int main(const int argc, const char **argv) {
             vmcu_xref_t *x = &sfr->xfrom[j];
 
             printf(" xref from 0x%04x ", x->i->addr);
-            printf("%s\n", x->i->mnem);
+            print_instruction(x->i);
         }
 
         printf("\n");
@@ -357,6 +387,8 @@ Total strings found: 6
 ![vcd_showcase](https://user-images.githubusercontent.com/46600932/109825592-430ffa00-7c3a-11eb-9af3-26175b962ef2.png)
 <sup>VCD-Trace Tool by pointbazaar</sup>
 
+![disasm_driver](https://user-images.githubusercontent.com/46600932/122659005-6a4ff000-d173-11eb-9c11-bb161de24d5d.png)
+<sup>An example of a small disassembler</sup>
 # How libvmcu works
 
 ### Device Models

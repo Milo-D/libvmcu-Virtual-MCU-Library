@@ -1,7 +1,7 @@
 /* Implementation of Disassembler */
 
 // C++ Headers
-#include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 
 // Project Headers (engine)
@@ -10,18 +10,13 @@
 #include "engine/include/decomposer/decomposer.h"
 #include "engine/include/analyzer/report/instr.h"
 
-// Project Headers (engine utilities)
-#include "engine/include/collections/sstream.h"
-
-#define TAB 26
-
 /* Forward Declaration of static Functions */
 
-static char* disassemble_dw(vmcu_instr_t *instr);
+static void disassemble_dw(vmcu_instr_t *instr);
 
 /* Forward Declaration of static Members */
 
-static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr);
+static void (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr);
 
 /* --- Extern --- */
 
@@ -32,11 +27,11 @@ int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model
 
     if(instr->exec == false) {
 
-        instr->mnem = disassemble_dw(instr);
+        disassemble_dw(instr);
         return 0;
     }
 
-    instr->mnem = (*disassemble_opcode[ instr->key ])(instr);
+    (*disassemble_opcode[ instr->key ])(instr);
     return 0;
 }
 
@@ -53,11 +48,11 @@ vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_mo
 
         if(instr->exec == false) {
 
-            instr->mnem = disassemble_dw(instr);
+            disassemble_dw(instr);
             continue;
         }
 
-        instr->mnem = (*disassemble_opcode[ instr->key ])(instr);
+        (*disassemble_opcode[ instr->key ])(instr);
     }
 
     return instr_list;
@@ -65,2106 +60,1396 @@ vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_mo
 
 /* --- Static --- */
 
-static char* disassemble_dw(vmcu_instr_t *instr) {
+static void disassemble_dw(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    ".dw");
 
-    vmcu_sstream_put(&ss, ".dw 0x%04x", instr->src.value);
+    sprintf(instr->mnem.src,     "0x%04x", instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; 0x%x", instr->src.value);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s",   instr->mnem.src);
 }
-
-static char* disassemble_nop(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_nop(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "nop");
+    sprintf(instr->mnem.base,    "nop");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; no operation");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; no operation");
 }
-
-static char* disassemble_movw(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_movw(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "movw r%d:r%d", dest + 1, dest);
-    vmcu_sstream_put(&ss, ", r%d:r%d", src + 1, src);
+    sprintf(instr->mnem.base,    "movw");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d:R%d", dest + 1, dest);
-    vmcu_sstream_put(&ss, " <- R%d:R%d", src + 1, src);
+    sprintf(instr->mnem.src,     "r%d:r%d",    instr->src.value + 1,
+                                               instr->src.value + 0);
+    sprintf(instr->mnem.dest,    "r%d:r%d",    instr->dest.value + 1,
+                                               instr->dest.value + 0);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s", instr->mnem.dest,
+                                               instr->mnem.src);
 }
 
-static char* disassemble_mul(vmcu_instr_t *instr) {
+static void disassemble_mul(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "mul");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                instr->dest.value);
 
-    vmcu_sstream_put(&ss, "mul r%d, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r1:r0 <- %s * %s", instr->mnem.dest,
+                                                       instr->mnem.src);
 }
-
-static char* disassemble_muls(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_muls(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "muls r%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "muls");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r1:r0 <- %s * %s", instr->mnem.dest,
+                                                       instr->mnem.src);
 }
 
-static char* disassemble_mulsu(vmcu_instr_t *instr) {
+static void disassemble_mulsu(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "mulsu");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                instr->dest.value);
 
-    vmcu_sstream_put(&ss, "mulsu r%d, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r1:r0 <- %s * %s", instr->mnem.dest,
+                                                       instr->mnem.src);
 }
-
-static char* disassemble_fmul(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_fmul(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "fmul r%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "fmul");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r1:r0 <- %s * %s", instr->mnem.dest,
+                                                       instr->mnem.src);
 }
 
-static char* disassemble_fmuls(vmcu_instr_t *instr) {
+static void disassemble_fmuls(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "fmuls");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                instr->dest.value);
 
-    vmcu_sstream_put(&ss, "fmuls r%d, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r1:r0 <- %s * %s", instr->mnem.dest,
+                                                       instr->mnem.src);
 }
-
-static char* disassemble_fmulsu(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_fmulsu(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "fmulsu r%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "fmulsu");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R1:R0 <- R%d * R%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r1:r0 <- %s * %s", instr->mnem.dest,
+                                                       instr->mnem.src);
 }
 
-static char* disassemble_ldi(vmcu_instr_t *instr) {
+static void disassemble_ldi(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "ldi");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "0x%02x",     instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",        instr->dest.value);
 
-    vmcu_sstream_put(&ss, "ldi r%d, 0x%02x", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- 0x%02x", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s", instr->mnem.dest,
+                                               instr->mnem.src);
 }
-
-static char* disassemble_rjmp(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
 
-    if(src < 0x00) {
+static void disassemble_rjmp(vmcu_instr_t *instr) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.base,    "rjmp");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",                  instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_put(&ss, "rjmp %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_jmp(vmcu_instr_t *instr) {
-
-    const int addr = instr->src.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_jmp(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "jmp +%d", addr);
+    sprintf(instr->mnem.base,    "jmp");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- 0x%x", addr);
+    sprintf(instr->mnem.src,     "0x%x",       instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- %s", instr->mnem.src);
 }
 
-static char* disassemble_ijmp(vmcu_instr_t *instr) {
+static void disassemble_ijmp(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "ijmp");
 
-    vmcu_sstream_put(&ss, "ijmp");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- ZH:ZL");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- ZH:ZL");
 }
-
-static char* disassemble_mov(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_mov(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "mov");
 
-    vmcu_sstream_put(&ss, "mov r%d, r%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",        instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",        instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s", instr->mnem.dest,
+                                               instr->mnem.src);
 }
-
-static char* disassemble_dec(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_dec(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "dec");
 
-    vmcu_sstream_put(&ss, "dec r%d", src);
+    sprintf(instr->mnem.src,     "r%d",               instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d - 0x01", src, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s - 0x01", instr->mnem.src,
+                                                      instr->mnem.src);
 }
-
-static char* disassemble_inc(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_inc(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "inc");
 
-    vmcu_sstream_put(&ss, "inc r%d", src);
+    sprintf(instr->mnem.src,     "r%d",               instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d + 0x01", src, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s + 0x01", instr->mnem.src,
+                                                      instr->mnem.src);
 }
-
-static char* disassemble_add(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_add(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "add r%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "add");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d + R%d", dest, dest, src);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s + %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
 
-static char* disassemble_adc(vmcu_instr_t *instr) {
+static void disassemble_adc(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "adc");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",                  instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                  instr->dest.value);
 
-    vmcu_sstream_put(&ss, "adc r%d, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d + R%d + CF", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s + %s + CF", instr->mnem.dest,
+                                                         instr->mnem.dest,
+                                                         instr->mnem.src);
 }
-
-static char* disassemble_adiw(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_adiw(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "adiw r%d:r%d, ", dest + 1, dest);
-    vmcu_sstream_put(&ss, "0x%02x", src);
+    sprintf(instr->mnem.base,    "adiw");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
+    sprintf(instr->mnem.src,     "0x%02x",          instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d:r%d",         instr->dest.value + 1,
+                                                    instr->dest.value + 0);
 
-    vmcu_sstream_put(&ss, "; R%d:R%d <- R%d:R%d", dest + 1, dest, dest + 1, dest);
-    vmcu_sstream_put(&ss, " + 0x%02x", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s + %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_sub(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sub(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sub");
 
-    vmcu_sstream_put(&ss, "sub r%d, r%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d - R%d", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s - %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_subi(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_subi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "subi");
 
-    vmcu_sstream_put(&ss, "subi r%d, 0x%02x", dest, src);
+    sprintf(instr->mnem.src,     "0x%02x",          instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d - 0x%02x", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s - %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_sbc(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sbc(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sbc");
 
-    vmcu_sstream_put(&ss, "sbc r%d, r%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",                  instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                  instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d - R%d - CF", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s - %s - CF", instr->mnem.dest,
+                                                         instr->mnem.dest,
+                                                         instr->mnem.src);
 }
-
-static char* disassemble_sbci(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sbci(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sbci");
 
-    vmcu_sstream_put(&ss, "sbci r%d, 0x%02x", dest, src);
+    sprintf(instr->mnem.src,     "0x%02x",               instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                  instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d - 0x%02x - CF", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s - %s - CF", instr->mnem.dest,
+                                                         instr->mnem.dest,
+                                                         instr->mnem.src);
 }
-
-static char* disassemble_sbiw(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sbiw(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sbiw");
 
-    vmcu_sstream_put(&ss, "sbiw r%d:r%d, ", dest + 1, dest);
-    vmcu_sstream_put(&ss, "0x%02x", src);
+    sprintf(instr->mnem.src,     "0x%02x",          instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d:r%d",         instr->dest.value + 1,
+                                                    instr->dest.value + 0);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-
-    vmcu_sstream_put(&ss, "; R%d:R%d <- R%d:R%d", dest + 1, dest, dest + 1, dest);
-    vmcu_sstream_put(&ss, " - 0x%02x", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s - %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_push(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_push(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "push");
 
-    vmcu_sstream_put(&ss, "push r%d", src);
+    sprintf(instr->mnem.src,     "r%d",              instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[SP--] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[SP--] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_pop(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_pop(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "pop");
 
-    vmcu_sstream_put(&ss, "pop r%d", src);
+    sprintf(instr->mnem.src,     "r%d",              instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[++SP]", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[++SP]", instr->mnem.src);
 }
-
-static char* disassemble_in(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_in(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "in");
 
-    vmcu_sstream_put(&ss, "in r%d, 0x%02x", dest, src);
+    sprintf(instr->mnem.src,     "0x%02x",         instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- IO[addr]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- IO[%s]", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_out(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_out(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "out");
 
-    vmcu_sstream_put(&ss, "out 0x%02x, r%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "0x%02x",         instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; IO[addr] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; IO[%s] <- %s", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_sbis(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sbis(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sbis");
 
-    vmcu_sstream_put(&ss, "sbis 0x%02x, %d", dest, src);
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
+    sprintf(instr->mnem.src,     "%d",                           instr->src.value);
+    sprintf(instr->mnem.dest,    "0x%02x",                       instr->dest.value);
 
-    vmcu_sstream_put(&ss, "; (IO[%02x, %d]", dest, src);
-    vmcu_sstream_put(&ss, " = 1): PC <- skip");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (IO[%s, %s] == 1): PC skip", instr->mnem.dest,
+                                                                 instr->mnem.src);
 }
-
-static char* disassemble_sbic(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sbic(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sbic");
 
-    vmcu_sstream_put(&ss, "sbic 0x%02x, %d", dest, src);
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
+    sprintf(instr->mnem.src,     "%d",                           instr->src.value);
+    sprintf(instr->mnem.dest,    "0x%02x",                       instr->dest.value);
 
-    vmcu_sstream_put(&ss, "; (IO[%02x, %d]", dest, src);
-    vmcu_sstream_put(&ss, " = 0): PC <- skip");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (IO[%s, %s] == 0): PC skip", instr->mnem.dest,
+                                                                 instr->mnem.src);
 }
-
-static char* disassemble_sbrc(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sbrc(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sbrc");
 
-    vmcu_sstream_put(&ss, "sbrc r%d, %d", dest, src);
+    sprintf(instr->mnem.src,     "%d",                       instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                      instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (R%d[%d] = 0): PC <- skip", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (%s[%s] == 0): PC skip", instr->mnem.dest,
+                                                             instr->mnem.src);
 }
-
-static char* disassemble_sbrs(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_sbrs(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sbrs");
 
-    vmcu_sstream_put(&ss, "sbrs r%d, %d", dest, src);
+    sprintf(instr->mnem.src,     "%d",                       instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                      instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (R%d[%d] = 1): PC <- skip", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (%s[%s] == 1): PC skip", instr->mnem.dest,
+                                                             instr->mnem.src);
 }
-
-static char* disassemble_cpse(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_cpse(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "cpse r%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "cpse");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (R%d = R%d): PC <- skip", dest, src);
+    sprintf(instr->mnem.src,     "r%d",                   instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",                   instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (%s == %s): PC skip", instr->mnem.dest,
+                                                          instr->mnem.src);
 }
 
-static char* disassemble_eor(vmcu_instr_t *instr) {
+static void disassemble_eor(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "eor");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    vmcu_sstream_put(&ss, "eor r%d, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d xor R%d", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s ^ %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_ld_x(vmcu_instr_t *instr) {
-
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_ld_x(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "ld r%d, X", dest);
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[X]", dest);
+    sprintf(instr->mnem.src,     "X");
+    sprintf(instr->mnem.dest,    "r%d",           instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[X]", instr->mnem.dest);
 }
 
-static char* disassemble_ld_xi(vmcu_instr_t *instr) {
+static void disassemble_ld_xi(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "X+");
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_put(&ss, "ld r%d, X+", dest);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[X+]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[X+]", instr->mnem.dest);
 }
-
-static char* disassemble_ld_dx(vmcu_instr_t *instr) {
-
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_ld_dx(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "ld r%d, -X", dest);
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[-X]", dest);
+    sprintf(instr->mnem.src,     "-X");
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[-X]", instr->mnem.dest);
 }
 
-static char* disassemble_ld_y(vmcu_instr_t *instr) {
+static void disassemble_ld_y(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "Y");
+    sprintf(instr->mnem.dest,    "r%d",           instr->dest.value);
 
-    vmcu_sstream_put(&ss, "ld r%d, Y", dest);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[Y]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[Y]", instr->mnem.dest);
 }
-
-static char* disassemble_ld_yi(vmcu_instr_t *instr) {
-
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_ld_yi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "ld r%d, Y+", dest);
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[Y+]", dest);
+    sprintf(instr->mnem.src,     "Y+");
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[Y+]", instr->mnem.dest);
 }
 
-static char* disassemble_ld_dy(vmcu_instr_t *instr) {
+static void disassemble_ld_dy(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "-Y");
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_put(&ss, "ld r%d, -Y", dest);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[-Y]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[-Y]", instr->mnem.dest);
 }
 
-static char* disassemble_ldd_yq(vmcu_instr_t *instr) {
+static void disassemble_ldd_yq(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "ldd");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "Y+%d",           instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_put(&ss, "ldd r%d, Y+%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[Y+%d]", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_ldd_zq(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_ldd_zq(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "ldd");
 
-    vmcu_sstream_put(&ss, "ldd r%d, Z+%d", dest, src);
+    sprintf(instr->mnem.src,     "Z+%d",           instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[Z+%d]", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_ld_z(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+static void disassemble_ld_z(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_put(&ss, "ld r%d, Z", dest);
+    sprintf(instr->mnem.src,     "Z");
+    sprintf(instr->mnem.dest,    "r%d",           instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[Z]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[Z]", instr->mnem.dest);
 }
-
-static char* disassemble_ld_zi(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+static void disassemble_ld_zi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_put(&ss, "ld r%d, Z+", dest);
+    sprintf(instr->mnem.src,     "Z+");
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[Z+]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[Z+]", instr->mnem.dest);
 }
-
-static char* disassemble_ld_dz(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+static void disassemble_ld_dz(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "ld");
 
-    vmcu_sstream_put(&ss, "ld r%d, -Z", dest);
+    sprintf(instr->mnem.src,     "-Z");
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[-Z]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[-Z]", instr->mnem.dest);
 }
-
-static char* disassemble_st_x(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_st_x(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_put(&ss, "st X, r%d", src);
+    sprintf(instr->mnem.src,     "r%d",           instr->src.value);
+    sprintf(instr->mnem.dest,    "X");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[X] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[X] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_st_xi(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_st_xi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_put(&ss, "st X+, r%d", src);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "X+");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[X+] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[X+] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_st_dx(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_st_dx(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_put(&ss, "st -X, r%d", src);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "-X");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[-X] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[-X] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_st_y(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_st_y(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_put(&ss, "st Y, r%d", src);
+    sprintf(instr->mnem.src,     "r%d",           instr->src.value);
+    sprintf(instr->mnem.dest,    "Y");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Y] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Y] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_st_yi(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_st_yi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "st Y+, r%d", src);
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Y+] <- R%d", src);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "Y+");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Y+] <- %s", instr->mnem.src);
 }
 
-static char* disassemble_st_dy(vmcu_instr_t *instr) {
+static void disassemble_st_dy(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "-Y");
 
-    vmcu_sstream_put(&ss, "st -Y, r%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[-Y] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[-Y] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_std_yq(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_std_yq(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "std Y+%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "std");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Y+%d] <- R%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "Y+%d",           instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
 
-static char* disassemble_st_z(vmcu_instr_t *instr) {
+static void disassemble_st_z(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",           instr->src.value);
+    sprintf(instr->mnem.dest,    "Z");
 
-    vmcu_sstream_put(&ss, "st Z, r%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Z] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Z] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_st_zi(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_st_zi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "st Z+, r%d", src);
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Z+] <- R%d", src);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "Z+");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Z+] <- %s", instr->mnem.src);
 }
 
-static char* disassemble_st_dz(vmcu_instr_t *instr) {
+static void disassemble_st_dz(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+    sprintf(instr->mnem.base,    "st");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "-Z");
 
-    vmcu_sstream_put(&ss, "st -Z, r%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[-Z] <- R%d", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[-Z] <- %s", instr->mnem.src);
 }
-
-static char* disassemble_std_zq(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_std_zq(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "std Z+%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "std");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Z+%d] <- R%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "Z+%d",           instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
 
-static char* disassemble_sts(vmcu_instr_t *instr) {
+static void disassemble_sts(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "sts");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "0x%x",           instr->dest.value);
 
-    vmcu_sstream_put(&ss, "sts 0x%x, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[0x%x] <- R%d", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
 
-static char* disassemble_sts32(vmcu_instr_t *instr) {
+static void disassemble_sts32(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "sts");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "0x%04x",         instr->dest.value);
 
-    vmcu_sstream_put(&ss, "sts 0x%04x, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[0x%x] <- R%d", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_lds(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_lds(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "lds");
 
-    vmcu_sstream_put(&ss, "lds r%d, 0x%x", dest, src);
+    sprintf(instr->mnem.src,     "0x%x",           instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[0x%x]", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_lds32(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_lds32(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "lds");
 
-    vmcu_sstream_put(&ss, "lds r%d, 0x%04x", dest, src);
+    sprintf(instr->mnem.src,     "0x%04x",         instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- DATA[0x%x]", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_xch(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_xch(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "xch");
 
-    vmcu_sstream_put(&ss, "xch Z, r%d", src);
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
+    sprintf(instr->mnem.src,     "r%d",                        instr->src.value);
+    sprintf(instr->mnem.dest,    "Z");
 
-    vmcu_sstream_put(&ss, "; DATA[Z] <- R%d", src);
-    vmcu_sstream_put(&ss, ", R%d <- DATA[Z]", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Z] <- %s, %s <- DS[Z]", instr->mnem.src,
+                                                               instr->mnem.src);
 }
-
-static char* disassemble_brne(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
-
-    if(src < 0x00) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+static void disassemble_brne(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "brne");
 
-    vmcu_sstream_put(&ss, "brne %s%d", sign, src);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (Z = 0): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (ZF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_breq(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
-
-    if(src < 0x00) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+static void disassemble_breq(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "breq");
 
-    vmcu_sstream_put(&ss, "breq %s%d", sign, src);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (Z = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (ZF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brge(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
-
-    if(src < 0x00) {
-
-        src *= -1;
-        sign[0] = '-';
-    }
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_brge(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "brge %s%d", sign, src);
+    sprintf(instr->mnem.base,    "brge");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (N ^ V = 0): PC <- PC %s 0x%x + 1", sign, src);
+    sprintf(instr->mnem.src,     "%d",                                  instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (NF ^ VF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
 
-static char* disassemble_brpl(vmcu_instr_t *instr) {
+static void disassemble_brpl(vmcu_instr_t *instr) {
 
-    int src = instr->src.value;
-    char sign[2] = "+";
+    sprintf(instr->mnem.base,    "brpl");
 
-    if(src < 0x00) {
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-        src *= -1;
-        sign[0] = '-';
-    }
-
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brpl %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (N = 0): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (NF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brlo(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
-
-    if(src < 0x00) {
-
-        src *= -1;
-        sign[0] = '-';
-    }
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_brlo(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "brlo %s%d", sign, src);
+    sprintf(instr->mnem.base,    "brlo");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (C = 1): PC <- PC %s 0x%x + 1", sign, src);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (CF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
 
-static char* disassemble_brlt(vmcu_instr_t *instr) {
+static void disassemble_brlt(vmcu_instr_t *instr) {
 
-    int src = instr->src.value;
-    char sign[2] = "+";
+    sprintf(instr->mnem.base,    "brlt");
 
-    if(src < 0x00) {
+    sprintf(instr->mnem.src,     "%d",                                  instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-        src *= -1;
-        sign[0] = '-';
-    }
-
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brlt %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (N ^ V = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (NF ^ VF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
 
-static char* disassemble_brcc(vmcu_instr_t *instr) {
+static void disassemble_brcc(vmcu_instr_t *instr) {
 
-    int src = instr->src.value;
-    char sign[2] = "+";
+    sprintf(instr->mnem.base,    "brcc");
 
-    if(src < 0x00) {
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-        src *= -1;
-        sign[0] = '-';
-    }
-
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brcc %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (C = 0): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (CF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brvs(vmcu_instr_t *instr) {
 
-    int src = instr->src.value;
-    char sign[2] = "+";
+static void disassemble_brvs(vmcu_instr_t *instr) {
 
-    if(src < 0x00) {
+    sprintf(instr->mnem.base,    "brvs");
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brvs %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (V = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (VF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brts(vmcu_instr_t *instr) {
 
-    int src = instr->src.value;
-    char sign[2] = "+";
+static void disassemble_brts(vmcu_instr_t *instr) {
 
-    if(src < 0x00) {
+    sprintf(instr->mnem.base,    "brts");
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brts %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (T = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (TF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brtc(vmcu_instr_t *instr) {
 
-    int src = instr->src.value;
-    char sign[2] = "+";
+static void disassemble_brtc(vmcu_instr_t *instr) {
 
-    if(src < 0x00) {
+    sprintf(instr->mnem.base,    "brtc");
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brtc %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (T = 0): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (TF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brmi(vmcu_instr_t *instr) {
 
-    int src = instr->src.value;
-    char sign[2] = "+";
+static void disassemble_brmi(vmcu_instr_t *instr) {
 
-    if(src < 0x00) {
+    sprintf(instr->mnem.base,    "brmi");
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
-
-    vmcu_sstream_put(&ss, "brmi %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (N = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (NF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brhc(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
 
-    if(src < 0x00) {
+static void disassemble_brhc(vmcu_instr_t *instr) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.base,    "brhc");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_put(&ss, "brhc %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (H = 0): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (HF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brhs(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
 
-    if(src < 0x00) {
+static void disassemble_brhs(vmcu_instr_t *instr) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.base,    "brhs");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_put(&ss, "brhs %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (H = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (HF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brid(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
 
-    if(src < 0x00) {
+static void disassemble_brid(vmcu_instr_t *instr) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.base,    "brid");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_put(&ss, "brid %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (I = 0): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (IF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brie(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
 
-    if(src < 0x00) {
+static void disassemble_brie(vmcu_instr_t *instr) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+    sprintf(instr->mnem.base,    "brie");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_put(&ss, "brie %s%d", sign, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (I = 1): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (IF == 1): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_brvc(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
-
-    if(src < 0x00) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+static void disassemble_brvc(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "brvc");
 
-    vmcu_sstream_put(&ss, "brvc %s%d", sign, src);
+    sprintf(instr->mnem.src,     "%d",                             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; (V = 0): PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; (VF == 0): PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_rcall(vmcu_instr_t *instr) {
-
-    int src = instr->src.value;
-    char sign[2] = "+";
-
-    if(src < 0x00) {
 
-        src *= -1;
-        sign[0] = '-';
-    }
+static void disassemble_rcall(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "rcall");
 
-    vmcu_sstream_put(&ss, "rcall %s%d", sign, src);
+    sprintf(instr->mnem.src,     "%d",                  instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- PC %s 0x%x + 1", sign, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- PC + %s + 1", instr->mnem.src);
 }
-
-static char* disassemble_ret(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_ret(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "ret");
+    sprintf(instr->mnem.base,    "ret");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- DATA[SP]");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- DS[2|3+SP]");
 }
 
-static char* disassemble_reti(vmcu_instr_t *instr) {
+static void disassemble_reti(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "reti");
 
-    vmcu_sstream_put(&ss, "reti");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- DATA[SP]");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- DS[2|3+SP]");
 }
-
-static char* disassemble_icall(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_icall(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "icall");
+    sprintf(instr->mnem.base,    "icall");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- ZH:ZL");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- ZH:ZL");
 }
 
-static char* disassemble_call(vmcu_instr_t *instr) {
+static void disassemble_call(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+    sprintf(instr->mnem.base,    "call");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "0x%x",       instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_put(&ss, "call +%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- 0x%x", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- %s", instr->mnem.src);
 }
-
-static char* disassemble_cp(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_cp(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "cp r%d, r%d", dest, src);
+    sprintf(instr->mnem.base,    "cp");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d - R%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",       instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",       instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s - %s", instr->mnem.dest,
+                                              instr->mnem.src);
 }
 
-static char* disassemble_cpi(vmcu_instr_t *instr) {
+static void disassemble_cpi(vmcu_instr_t *instr) {
 
-    const uint8_t src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "cpi");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "0x%02x",    (uint8_t) instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",       instr->dest.value);
 
-    vmcu_sstream_put(&ss, "cpi r%d, 0x%02x", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d - 0x%02x", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s - %s", instr->mnem.dest,
+                                              instr->mnem.src);
 }
 
-static char* disassemble_cpc(vmcu_instr_t *instr) {
+static void disassemble_cpc(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "cpc");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",            instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_put(&ss, "cpc r%d, r%d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d - R%d - CF", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s - %s - CF", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_lsr(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_lsr(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "lsr");
 
-    vmcu_sstream_put(&ss, "lsr r%d", src);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d >> 1", src, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s >> 1", instr->mnem.src,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_asr(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_asr(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "asr");
 
-    vmcu_sstream_put(&ss, "asr r%d", src);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d >> 1", src, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s >> 1", instr->mnem.src,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_ror(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_ror(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "ror");
 
-    vmcu_sstream_put(&ss, "ror r%d", src);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d >> 1", src, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s >> 1", instr->mnem.src,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_swap(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_swap(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "swap");
 
-    vmcu_sstream_put(&ss, "swap r%d", src);
+    sprintf(instr->mnem.src,     "r%d",                  instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- swap nibbles", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- swap nibbles", instr->mnem.src);
 }
-
-static char* disassemble_ori(vmcu_instr_t *instr) {
 
-    const uint8_t src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_ori(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "ori");
 
-    vmcu_sstream_put(&ss, "ori r%d, 0x%02x", dest, src);
+    sprintf(instr->mnem.src,     "0x%02x",          (uint8_t) instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d | 0x%02x", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s | %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_or_asm(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_or_asm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "or");
 
-    vmcu_sstream_put(&ss, "or r%d, r%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d | R%d", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s | %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_and_asm(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_and_asm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "and");
 
-    vmcu_sstream_put(&ss, "and r%d, r%d", dest, src);
+    sprintf(instr->mnem.src,     "r%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d & R%d", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s & %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_andi(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+static void disassemble_andi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "andi");
 
-    vmcu_sstream_put(&ss, "andi r%d, 0x%02x", dest, src);
+    sprintf(instr->mnem.src,     "0x%02x",          instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",             instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- R%d & 0x%02x", dest, dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- %s & %s", instr->mnem.dest,
+                                                    instr->mnem.dest,
+                                                    instr->mnem.src);
 }
-
-static char* disassemble_las(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_las(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "las Z, r%d", src);
+    sprintf(instr->mnem.base,    "las");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Z] <- R%d | DATA[Z]", src);
+    sprintf(instr->mnem.src,     "r%d",                   instr->src.value);
+    sprintf(instr->mnem.dest,    "Z");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Z] <- DS[Z] | %s", instr->mnem.src);
 }
 
-static char* disassemble_lac(vmcu_instr_t *instr) {
+static void disassemble_lac(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+    sprintf(instr->mnem.base,    "lac");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",                            instr->src.value);
+    sprintf(instr->mnem.dest,    "Z");
 
-    vmcu_sstream_put(&ss, "lac Z, r%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Z] <- (0xff - R%d) * DATA[Z]", src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Z] <- DS[Z] * (0xff - %s)", instr->mnem.src);
 }
-
-static char* disassemble_lat(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_lat(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "lat Z, r%d", src);
+    sprintf(instr->mnem.base,    "lat");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; DATA[Z] <- R%d | DATA[Z]", src);
+    sprintf(instr->mnem.src,     "r%d",                   instr->src.value);
+    sprintf(instr->mnem.dest,    "Z");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; DS[Z] <- DS[Z] ^ %s", instr->mnem.src);
 }
 
-static char* disassemble_com(vmcu_instr_t *instr) {
+static void disassemble_com(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+    sprintf(instr->mnem.base,    "com");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "r%d",               instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_put(&ss, "com r%d", src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- 0xff - R%d", src, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- 0xff - %s", instr->mnem.src,
+                                                      instr->mnem.src);
 }
-
-static char* disassemble_neg(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_neg(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "neg r%d", src);
+    sprintf(instr->mnem.base,    "neg");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- 0x00 - R%d", src, src);
+    sprintf(instr->mnem.src,     "r%d",               instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- 0x00 - %s", instr->mnem.src,
+                                                      instr->mnem.src);
 }
 
-static char* disassemble_bld(vmcu_instr_t *instr) {
+static void disassemble_bld(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "bld");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    vmcu_sstream_put(&ss, "bld r%d, %d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d[%d] <- TF", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s[%s] <- TF", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
-
-static char* disassemble_bst(vmcu_instr_t *instr) {
-
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_bst(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "bst r%d, %d", dest, src);
+    sprintf(instr->mnem.base,    "bst");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; TF <- R%d[%d]", dest, src);
+    sprintf(instr->mnem.src,     "%d",             instr->src.value);
+    sprintf(instr->mnem.dest,    "r%d",            instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; TF <- %s[%s]", instr->mnem.dest,
+                                                   instr->mnem.src);
 }
 
-static char* disassemble_sbi(vmcu_instr_t *instr) {
+static void disassemble_sbi(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "sbi");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "0x%02x",            instr->dest.value);
 
-    vmcu_sstream_put(&ss, "sbi 0x%02x, %d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; IO[%02x, %d] <- 0x01", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; IO[%s, %s] <- 1", instr->mnem.dest,
+                                                      instr->mnem.src);
 }
 
-static char* disassemble_cbi(vmcu_instr_t *instr) {
+static void disassemble_cbi(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "cbi");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "%d",                instr->src.value);
+    sprintf(instr->mnem.dest,    "0x%02x",            instr->dest.value);
 
-    vmcu_sstream_put(&ss, "cbi 0x%02x, %d", dest, src);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; IO[%02x, %d] <- 0x00", dest, src);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; IO[%s, %s] <- 0", instr->mnem.dest,
+                                                      instr->mnem.src);
 }
-
-static char* disassemble_lpm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_lpm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "lpm");
+    sprintf(instr->mnem.base,    "lpm");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R0 <- FLASH[Z]");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r0 <- FLASH[Z]");
 }
 
-static char* disassemble_lpm_z(vmcu_instr_t *instr) {
+static void disassemble_lpm_z(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+    sprintf(instr->mnem.base,    "lpm");
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.src,     "Z");
+    sprintf(instr->mnem.dest,    "r%d",              instr->dest.value);
 
-    vmcu_sstream_put(&ss, "lpm r%d, Z", dest);
-
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- FLASH[Z]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- FLASH[Z]", instr->mnem.dest);
 }
-
-static char* disassemble_lpm_zi(vmcu_instr_t *instr) {
-
-    const int dest = instr->dest.value;
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_lpm_zi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "lpm r%d, Z+", dest);
+    sprintf(instr->mnem.base,    "lpm");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- FLASH[Z+]", dest);
+    sprintf(instr->mnem.src,     "Z+");
+    sprintf(instr->mnem.dest,    "r%d",               instr->dest.value);
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- FLASH[Z+]", instr->mnem.dest);
 }
 
-static char* disassemble_eicall(vmcu_instr_t *instr) {
+static void disassemble_eicall(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "eicall");
 
-    vmcu_sstream_put(&ss, "eicall");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- ZH:ZL + (EIND << 16)");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- Z + (EIND << 16)");
 }
-
-static char* disassemble_eijmp(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_eijmp(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "eijmp");
+    sprintf(instr->mnem.base,    "eijmp");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; PC <- ZH:ZL + (EIND << 16)");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; PC <- Z + (EIND << 16)");
 }
 
-static char* disassemble_elpm(vmcu_instr_t *instr) {
+static void disassemble_elpm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "elpm");
 
-    vmcu_sstream_put(&ss, "elpm");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R0 <- FLASH[RAMPZ:Z]");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; r0 <- FLASH[RAMPZ:Z]");
 }
-
-static char* disassemble_elpm_z(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+static void disassemble_elpm_z(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "elpm");
 
-    vmcu_sstream_put(&ss, "elpm r%d, Z", dest);
+    sprintf(instr->mnem.src,     "Z");
+    sprintf(instr->mnem.dest,    "r%d",                    instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- FLASH[RAMPZ:Z]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- FLASH[RAMPZ:Z]", instr->mnem.dest);
 }
-
-static char* disassemble_elpm_zi(vmcu_instr_t *instr) {
 
-    const int dest = instr->dest.value;
+static void disassemble_elpm_zi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "elpm");
 
-    vmcu_sstream_put(&ss, "elpm r%d, Z+", dest);
+    sprintf(instr->mnem.src,     "Z+");
+    sprintf(instr->mnem.dest,    "r%d",                       instr->dest.value);
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; R%d <- FLASH[(RAMPZ:Z)+]", dest);
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; %s <- FLASH[(RAMPZ:Z)+]", instr->mnem.dest);
 }
-
-static char* disassemble_des(vmcu_instr_t *instr) {
 
-    const int src = instr->src.value;
+static void disassemble_des(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "des");
 
-    vmcu_sstream_put(&ss, "des 0x%02x", src);
+    sprintf(instr->mnem.src,     "0x%02x", instr->src.value);
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; Data Encryption Standard");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; Data Encryption Standard");
 }
-
-static char* disassemble_sleep(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_sleep(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "sleep");
+    sprintf(instr->mnem.base,    "sleep");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; circuit sleep");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; circuit sleep");
 }
 
-static char* disassemble_wdr(vmcu_instr_t *instr) {
+static void disassemble_wdr(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "wdr");
 
-    vmcu_sstream_put(&ss, "wdr");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; watchdog reset");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; watchdog reset");
 }
 
-static char* disassemble_break_asm(vmcu_instr_t *instr) {
+static void disassemble_break_asm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "break");
 
-    vmcu_sstream_put(&ss, "break");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; cpu stop mode");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; cpu stop mode");
 }
-
-static char* disassemble_spm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_spm(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "spm");
+    sprintf(instr->mnem.base,    "spm");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; FLASH[Z] <- (R1:R0 v 0xffff)");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; FLASH[Z] <- (r1:r0 v 0xffff)");
 }
 
-static char* disassemble_spm_zi(vmcu_instr_t *instr) {
+static void disassemble_spm_zi(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "spm");
 
-    vmcu_sstream_put(&ss, "spm Z+");
+    sprintf(instr->mnem.src,     "Z+");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; FLASH[Z+] <- (R1:R0 v 0xffff)");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; FLASH[Z+] <- (r1:r0 v 0xffff)");
 }
-
-static char* disassemble_ses(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_ses(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "ses");
+    sprintf(instr->mnem.base,    "ses");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; SF <- 0x01");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; SF <- 1");
 }
 
-static char* disassemble_set(vmcu_instr_t *instr) {
+static void disassemble_set(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "set");
 
-    vmcu_sstream_put(&ss, "set");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; TF <- 0x01");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; TF <- 1");
 }
-
-static char* disassemble_sev(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_sev(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "sev");
+    sprintf(instr->mnem.base,    "sev");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; VF <- 0x01");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; VF <- 1");
 }
 
-static char* disassemble_sez(vmcu_instr_t *instr) {
+static void disassemble_sez(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sez");
 
-    vmcu_sstream_put(&ss, "sez");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; ZF <- 0x01");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; ZF <- 1");
 }
-
-static char* disassemble_seh(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_seh(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "seh");
+    sprintf(instr->mnem.base,    "seh");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; HF <- 0x01");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; HF <- 1");
 }
 
-static char* disassemble_sec(vmcu_instr_t *instr) {
+static void disassemble_sec(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sec");
 
-    vmcu_sstream_put(&ss, "sec");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; CF <- 0x01");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; CF <- 1");
 }
-
-static char* disassemble_sei(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_sei(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "sei");
+    sprintf(instr->mnem.base,    "sei");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; IF <- 0x01");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; IF <- 1");
 }
 
-static char* disassemble_sen(vmcu_instr_t *instr) {
+static void disassemble_sen(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "sen");
 
-    vmcu_sstream_put(&ss, "sen");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; NF <- 0x01");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; NF <- 1");
 }
-
-static char* disassemble_cls(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_cls(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "cls");
+    sprintf(instr->mnem.base,    "cls");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; SF <- 0x00");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; SF <- 0");
 }
 
-static char* disassemble_clt(vmcu_instr_t *instr) {
+static void disassemble_clt(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "clt");
 
-    vmcu_sstream_put(&ss, "clt");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; TF <- 0x00");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; TF <- 0");
 }
-
-static char* disassemble_clv(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_clv(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "clv");
+    sprintf(instr->mnem.base,    "clv");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; VF <- 0x00");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; VF <- 0");
 }
 
-static char* disassemble_clz(vmcu_instr_t *instr) {
+static void disassemble_clz(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "clz");
 
-    vmcu_sstream_put(&ss, "clz");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; ZF <- 0x00");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; ZF <- 0");
 }
-
-static char* disassemble_clh(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_clh(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "clh");
+    sprintf(instr->mnem.base,    "clh");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; HF <- 0x00");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; HF <- 0");
 }
 
-static char* disassemble_clc(vmcu_instr_t *instr) {
+static void disassemble_clc(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "clc");
 
-    vmcu_sstream_put(&ss, "clc");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; CF <- 0x00");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; CF <- 0");
 }
 
-static char* disassemble_cli(vmcu_instr_t *instr) {
+static void disassemble_cli(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+    sprintf(instr->mnem.base,    "cli");
 
-    vmcu_sstream_put(&ss, "cli");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; IF <- 0x00");
-
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; IF <- 0");
 }
-
-static char* disassemble_cln(vmcu_instr_t *instr) {
 
-    vmcu_sstream_t ss;
-    vmcu_sstream_ctor(&ss);
+static void disassemble_cln(vmcu_instr_t *instr) {
 
-    vmcu_sstream_put(&ss, "cln");
+    sprintf(instr->mnem.base,    "cln");
 
-    vmcu_sstream_pad(&ss, (TAB - ss.length));
-    vmcu_sstream_put(&ss, "; NF <- 0x00");
+    sprintf(instr->mnem.src,     "");
+    sprintf(instr->mnem.dest,    "");
 
-    return vmcu_sstream_alloc(&ss);
+    sprintf(instr->mnem.comment, "; NF <- 0");
 }
 
-static char* (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
+static void (*disassemble_opcode[VMCU_SET_SIZE]) (vmcu_instr_t *instr) = {
 
     disassemble_nop,
     disassemble_movw,

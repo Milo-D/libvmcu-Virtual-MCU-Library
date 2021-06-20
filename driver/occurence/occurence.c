@@ -99,9 +99,7 @@ int main(int argc, char* argv[]) {
         }
 
         struct pair* mp = list[instr->key];
-
-        int base = spaceIndex(instr->mnem);
-        strncpy(mp->mnem, instr->mnem, base);
+        strcpy(mp->mnem, instr->mnem.base);
 
         mp->hits += 1;
     }

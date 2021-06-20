@@ -337,6 +337,17 @@ typedef struct vmcu_operand {                 ///< operand structure
 
 } vmcu_operand_t;
 
+typedef struct vmcu_mnemonic {                ///< disassembled mnemonic structure
+
+    char base    [7];                         ///< mnemonic base string (ldi, sts, etc.)
+
+    char src     [9];                         ///< source operand string (r29, 0xff9a, etc.)
+    char dest    [9];                         ///< destination operand string (r29, 0xff9a, etc.)
+
+    char comment[40];                         ///< comment string (todo: make comments optional)
+
+} vmcu_mnemonic_t;
+
 typedef struct vmcu_instr {                   ///< instruction structure
 
     struct {                                  ///< instruction core
@@ -351,10 +362,10 @@ typedef struct vmcu_instr {                   ///< instruction structure
     bool exec;                                ///< instruction executable ?
     bool dword;                               ///< 32-bit instruction ?
 
-    char *mnem;                               ///< disassembled mnemonic of instruction
-
     vmcu_operand_t src;                       ///< source operand (right operand)
     vmcu_operand_t dest;                      ///< destination operand (left operand)
+
+    vmcu_mnemonic_t mnem;                     ///< disassembled mnemonic of instruction
 
 } vmcu_instr_t;
 

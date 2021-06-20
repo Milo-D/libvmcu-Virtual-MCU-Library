@@ -11,6 +11,12 @@
 #include "libvmcu_analyzer.h"
 #include "libvmcu_system.h"
 
+/* Forward Declaration of static Functions */
+
+static void print_instruction(vmcu_instr_t *instr);
+
+/* --- Extern --- */
+
 int main(const int argc, const char **argv) {
 
     if(argc != 2) {
@@ -38,7 +44,7 @@ int main(const int argc, const char **argv) {
             vmcu_xref_t *x = &sfr->xfrom[j];
 
             printf("  xref from 0x%04x ", x->i->addr);
-            printf("(%s)\n", x->i->mnem);
+            print_instruction(x->i);
         }
 
         printf("\n");
@@ -48,4 +54,20 @@ int main(const int argc, const char **argv) {
     vmcu_model_dtor(m328p);
 
     return EXIT_SUCCESS;
+}
+
+/* --- Static --- */
+
+static void print_instruction(vmcu_instr_t *instr) {
+
+    vmcu_mnemonic_t *mnem = &instr->mnem;
+
+    printf("%s ",  mnem->base);
+    printf("%s",   mnem->dest);
+
+    if(instr->dest.type != VMCU_OP_NONE)
+        printf(", ");
+
+    printf("%s ",  mnem->src);
+    printf("%s\n", mnem->comment);
 }

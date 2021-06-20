@@ -33,6 +33,7 @@ vmcu_report_t *report = NULL;
 /* Forward Declaration of static Functions */
 
 static VMCU_GROUP get_filter(const char *arg);
+static void print_instruction(vmcu_instr_t *instr);
 static void cleanup(void);
 
 /* --- Extern --- */
@@ -63,7 +64,7 @@ int main(const int argc, const char **argv) {
             continue;
 
         printf("0x%04x\t", instr->addr);
-        printf("%s\n", instr->mnem);
+        print_instruction(instr);
     }
 
     return EXIT_SUCCESS;
@@ -89,6 +90,20 @@ static VMCU_GROUP get_filter(const char *arg) {
         return VMCU_GROUP_BIT;
 
     return VMCU_GROUP_NONE;
+}
+
+static void print_instruction(vmcu_instr_t *instr) {
+
+    vmcu_mnemonic_t *mnem = &instr->mnem;
+
+    printf("%s ",  mnem->base);
+    printf("%s",   mnem->dest);
+
+    if(instr->dest.type != VMCU_OP_NONE)
+        printf(", ");
+
+    printf("%s ",  mnem->src);
+    printf("%s\n", mnem->comment);
 }
 
 static void cleanup(void) {
