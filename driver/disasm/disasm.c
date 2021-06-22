@@ -55,7 +55,7 @@ vmcu_model_t  *m328p  = NULL;
 static void print_instruction(vmcu_instr_t *instr);
 static void print_instruction_details(vmcu_instr_t *instr);
 static void print_colored_base(const char *basestr, VMCU_GROUP group);
-static void print_colored_operands(const char *opstr, VMCU_OP optype);
+static void print_colored_operands(const char *opstr, VMCU_OPTYPE optype);
 static void add_padding(const size_t length, const size_t max);
 static void cleanup(void);
 
@@ -96,13 +96,13 @@ static void print_instruction(vmcu_instr_t *instr) {
 
     size_t sz = 0;
 
-    if(instr->dest.type != VMCU_OP_NONE) {
+    if(instr->dest.type != VMCU_OPTYPE_NONE) {
 
         print_colored_operands(mnem->dest, instr->dest.type);
         sz += printf(", ");
     }
 
-    if(instr->src.type != VMCU_OP_NONE) {
+    if(instr->src.type != VMCU_OPTYPE_NONE) {
 
         print_colored_operands(mnem->src, instr->src.type);
         sz += printf(" ");
@@ -147,25 +147,31 @@ static void print_colored_base(const char *basestr, VMCU_GROUP group) {
     printf("%s%s ", basestr, COLOR_RESET);
 }
 
-static void print_colored_operands(const char *opstr, VMCU_OP optype) {
+static void print_colored_operands(const char *opstr, VMCU_OPTYPE optype) {
 
     switch(optype) {
 
-        case VMCU_OP_IMM:
-        case VMCU_OP_IMM8:
-        case VMCU_OP_UIMM8:
-        case VMCU_OP_UIMM16:
-        case VMCU_OP_IODIRECT:
+        case VMCU_OPTYPE_B:
+        case VMCU_OPTYPE_K4:
+        case VMCU_OPTYPE_K6:
+        case VMCU_OPTYPE_K8:
+        case VMCU_OPTYPE_IO5:
+        case VMCU_OPTYPE_IO6:
+        case VMCU_OPTYPE_D7:
+        case VMCU_OPTYPE_D16:
+        case VMCU_OPTYPE_P22:
+        case VMCU_OPTYPE_S7:
+        case VMCU_OPTYPE_S12:
 
             printf("%s", COLOR_BLUE);
 
         break;
 
-        case VMCU_OP_REGISTER:
-        case VMCU_OP_REGISTERPAIR:
-        case VMCU_OP_XPTR:
-        case VMCU_OP_YPTR:
-        case VMCU_OP_ZPTR:
+        case VMCU_OPTYPE_R:
+        case VMCU_OPTYPE_RP:
+        case VMCU_OPTYPE_X:
+        case VMCU_OPTYPE_Y:
+        case VMCU_OPTYPE_Z:
 
             printf("%s", COLOR_CYAN);
 

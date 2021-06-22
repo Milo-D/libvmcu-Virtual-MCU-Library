@@ -6,17 +6,16 @@
 
 int vmcu_get_abs_addr(const vmcu_instr_t *instr) {
 
-    if(instr->key == VMCU_IKEY_CALL)
-        return instr->src.value;
+    /* this function only accepts branches, calls/jumps */
 
-    if(instr->key == VMCU_IKEY_JMP)
-        return instr->src.value;
+    if(instr->key == VMCU_IKEY_CALL || instr->key == VMCU_IKEY_JMP)
+        return instr->src.p;
 
-    if(instr->src.value < 0) {
+    if(instr->src.s < 0) {
 
-        if((instr->src.value * -1) > instr->addr)
+        if((instr->src.s * -1) > instr->addr)
             return -1;
     }
 
-    return (instr->addr + instr->src.value + 1);
+    return (instr->addr + instr->src.s + 1);
 }

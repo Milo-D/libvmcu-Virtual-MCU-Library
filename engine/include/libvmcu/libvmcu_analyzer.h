@@ -23,6 +23,45 @@
 
 /* <--------------------------------------- Enumeration (arch/) ---------------------------------------> */
 
+typedef enum {                                ///< general purpose registers
+
+    VMCU_REGISTER_NONE = -1,                  ///< no register
+
+    VMCU_REGISTER_R0,                         ///< r0
+    VMCU_REGISTER_R1,                         ///< r1
+    VMCU_REGISTER_R2,                         ///< r2
+    VMCU_REGISTER_R3,                         ///< r3
+    VMCU_REGISTER_R4,                         ///< r4
+    VMCU_REGISTER_R5,                         ///< r5
+    VMCU_REGISTER_R6,                         ///< r6
+    VMCU_REGISTER_R7,                         ///< r7
+    VMCU_REGISTER_R8,                         ///< r8
+    VMCU_REGISTER_R9,                         ///< r9
+    VMCU_REGISTER_R10,                        ///< r10
+    VMCU_REGISTER_R11,                        ///< r11
+    VMCU_REGISTER_R12,                        ///< r12
+    VMCU_REGISTER_R13,                        ///< r13
+    VMCU_REGISTER_R14,                        ///< r14
+    VMCU_REGISTER_R15,                        ///< r15
+    VMCU_REGISTER_R16,                        ///< r16
+    VMCU_REGISTER_R17,                        ///< r17
+    VMCU_REGISTER_R18,                        ///< r18
+    VMCU_REGISTER_R19,                        ///< r19
+    VMCU_REGISTER_R20,                        ///< r20
+    VMCU_REGISTER_R21,                        ///< r21
+    VMCU_REGISTER_R22,                        ///< r22
+    VMCU_REGISTER_R23,                        ///< r23
+    VMCU_REGISTER_R24,                        ///< r24
+    VMCU_REGISTER_R25,                        ///< r25
+    VMCU_REGISTER_R26,                        ///< r26
+    VMCU_REGISTER_R27,                        ///< r27
+    VMCU_REGISTER_R28,                        ///< r28
+    VMCU_REGISTER_R29,                        ///< r29
+    VMCU_REGISTER_R30,                        ///< r30
+    VMCU_REGISTER_R31                         ///< r31
+
+} VMCU_REGISTER;
+
 typedef enum {                                ///< instruction keys
 
     VMCU_IKEY_DATA = -1,                      ///< data (.dw)
@@ -257,21 +296,28 @@ typedef enum {                                ///< special function register id'
 
 } VMCU_SFR;
 
-typedef enum {                                ///< operand types
+typedef enum {                                ///< operand types (wikipedia.org/wiki/Atmel_AVR_instruction_set)
 
-    VMCU_OP_IMM,                              ///< immediate type (> 8-bit, < 16-bit)
-    VMCU_OP_IMM8,                             ///< 8-bit immediate type (signed)
-    VMCU_OP_UIMM8,                            ///< 8-bit immediate type (unsigned)
-    VMCU_OP_UIMM16,                           ///< 16-bit immediate type (unsigned)
-    VMCU_OP_REGISTER,                         ///< register type
-    VMCU_OP_REGISTERPAIR,                     ///< register-pair type (XL, XH, ...)
-    VMCU_OP_IODIRECT,                         ///< io-direct type
-    VMCU_OP_XPTR,                             ///< X pointer type
-    VMCU_OP_YPTR,                             ///< Y pointer type
-    VMCU_OP_ZPTR,                             ///< Z pointer type
-    VMCU_OP_NONE                              ///< no operand
+    VMCU_OPTYPE_NONE = -1,                    ///< no operand
 
-} VMCU_OP;
+    VMCU_OPTYPE_R,                            ///< general purpose register
+    VMCU_OPTYPE_RP,                           ///< pair of general purpose registers
+    VMCU_OPTYPE_X,                            ///< x pointer register (r27:r26)
+    VMCU_OPTYPE_Y,                            ///< y pointer register (r29:r28)
+    VMCU_OPTYPE_Z,                            ///< z pointer register (r31:r30)
+    VMCU_OPTYPE_B,                            ///< bit number in gpr or io register
+    VMCU_OPTYPE_K4,                           ///< 4-bit immediate unsigned constant
+    VMCU_OPTYPE_K6,                           ///< 6-bit immediate unsigned constant
+    VMCU_OPTYPE_K8,                           ///< 8-bit immediate constant, signedness irrelevant
+    VMCU_OPTYPE_IO5,                          ///< 5-bit io address
+    VMCU_OPTYPE_IO6,                          ///< 6-bit io address
+    VMCU_OPTYPE_D7,                           ///< 7-bit data address
+    VMCU_OPTYPE_D16,                          ///< 16-bit data address
+    VMCU_OPTYPE_P22,                          ///< 22-bit program address
+    VMCU_OPTYPE_S7,                           ///< 7-bit signed displacement in units of words
+    VMCU_OPTYPE_S12                           ///< 12-bit signed displacement in units of words
+
+} VMCU_OPTYPE;
 
 typedef enum {                                ///< instruction groups (see official I.S.M.)
 
@@ -330,19 +376,39 @@ typedef struct vmcu_model vmcu_model_t;       ///< device model (opaque, details
 
 /* <------------------------------------------- Structures --------------------------------------------> */
 
+typedef struct vmcu_registerpair {            ///< registerpair structure (rh:rl)
+
+    VMCU_REGISTER low;                        ///< low byte register
+    VMCU_REGISTER high;                       ///< high byte register
+
+} vmcu_registerpair_t;
+
 typedef struct vmcu_operand {                 ///< operand structure
 
-    int32_t value;                            ///< operand value
-    VMCU_OP type;                             ///< operand type
+    union {                                   ///< operand value union
+
+        uint8_t k;                            ///< set if type = K4, K6 or K8
+        uint8_t b;                            ///< set if type = B
+        uint8_t io;                           ///< set if type = IO5 or IO6
+
+        uint16_t d;                           ///< set if type = D7 or D16
+        uint32_t p;                           ///< set if type = P22
+        int16_t  s;                           ///< set if type = S7 or S12
+
+        VMCU_REGISTER r;                      ///< set if type = R
+        vmcu_registerpair_t rp;               ///< set if type = RP
+    };
+
+    VMCU_OPTYPE type;                         ///< operand type
 
 } vmcu_operand_t;
 
 typedef struct vmcu_mnemonic {                ///< disassembled mnemonic structure
 
-    char base    [7];                         ///< mnemonic base string (ldi, sts, etc.)
+    char base[11];                            ///< mnemonic base string (ldi, sts, etc.)
 
-    char src     [9];                         ///< source operand string (r29, 0xff9a, etc.)
-    char dest    [9];                         ///< destination operand string (r29, 0xff9a, etc.)
+    char src[9];                              ///< source operand string (r29, 0xff9a, etc.)
+    char dest[9];                             ///< destination operand string (r29, 0xff9a, etc.)
 
     char comment[40];                         ///< comment string (todo: make comments optional)
 

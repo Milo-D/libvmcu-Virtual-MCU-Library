@@ -1,0 +1,29 @@
+/* Enumeration of Operand Types - Header */
+
+#ifndef VMCU_OPTYPE_H
+#define VMCU_OPTYPE_H
+
+typedef enum {
+
+    VMCU_OPTYPE_NONE = -1,
+
+    VMCU_OPTYPE_R,
+    VMCU_OPTYPE_RP,
+    VMCU_OPTYPE_X,
+    VMCU_OPTYPE_Y,
+    VMCU_OPTYPE_Z,
+    VMCU_OPTYPE_B,
+    VMCU_OPTYPE_K4,
+    VMCU_OPTYPE_K6,
+    VMCU_OPTYPE_K8,
+    VMCU_OPTYPE_IO5,
+    VMCU_OPTYPE_IO6,
+    VMCU_OPTYPE_D7,
+    VMCU_OPTYPE_D16,
+    VMCU_OPTYPE_P22,
+    VMCU_OPTYPE_S7,
+    VMCU_OPTYPE_S12
+
+} VMCU_OPTYPE;
+
+#endif

@@ -34,7 +34,7 @@ static bool is_valid_flow_change(vmcu_instr_t *instr);
 static bool is_absolute_flow_change(vmcu_instr_t *instr);
 static bool is_conditional(vmcu_instr_t *instr);
 
-static void print_instruction(vmcu_instr_t *instr);
+static void print_instruction(const vmcu_instr_t *instr);
 
 /* --- Extern --- */
 
@@ -87,10 +87,15 @@ static bool is_endloop(vmcu_instr_t *instr) {
     if(is_valid_flow_change(instr) == false)
         return false;
 
-    if(!is_absolute_flow_change(instr) && instr->src.value == -1)
-        return true;
+    if(is_absolute_flow_change(instr) == true) {
 
-    if(instr->src.value == instr->addr)
+        if(instr->src.p == instr->addr)
+            return true;
+
+        return false;
+    }
+
+    if(instr->src.s == -1)
         return true;
 
     return false;
@@ -158,16 +163,15 @@ static bool is_conditional(vmcu_instr_t *instr) {
     return false;
 }
 
-static void print_instruction(vmcu_instr_t *instr) {
+void print_instruction(const vmcu_instr_t *instr) {
 
-    vmcu_mnemonic_t *mnem = &instr->mnem;
+    printf("%s",  instr->mnem.base);
 
-    printf("%s ",  mnem->base);
-    printf("%s",   mnem->dest);
+    if(instr->dest.type != VMCU_OPTYPE_NONE)
+        printf(" %s,", instr->mnem.dest);
 
-    if(instr->dest.type != VMCU_OP_NONE)
-        printf(", ");
+    if(instr->src.type != VMCU_OPTYPE_NONE)
+        printf(" %s", instr->mnem.src);
 
-    printf("%s ",  mnem->src);
-    printf("%s\n", mnem->comment);
+    printf(" %s\n", instr->mnem.comment);
 }

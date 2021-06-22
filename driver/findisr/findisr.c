@@ -32,14 +32,12 @@ vmcu_label_t* find_label(int address, vmcu_report_t* report) {
 void analyze_isr(vmcu_instr_t* instr, vmcu_report_t* report) {
 
     vmcu_operand_t* op = &instr->src;
-
-    int absolute_address = op->value;
+    int absolute_address = (op->type == VMCU_OPTYPE_S12) ? op->s : op->p;
 
     if(instr->key == VMCU_IKEY_RJMP)
         absolute_address += instr->addr + 1;
 
     vmcu_label_t* label = find_label(absolute_address, report);
-
     printf("L%d\t0x%04x\n", label->id, absolute_address);
 }
 

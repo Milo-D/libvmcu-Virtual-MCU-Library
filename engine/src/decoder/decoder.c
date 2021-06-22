@@ -43,8 +43,8 @@ int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *m
     instr->exec      = (instr->key >= 0);
 
     instr->group     = VMCU_GROUP_NONE;
-    instr->src.type  = VMCU_OP_NONE;
-    instr->dest.type = VMCU_OP_NONE;
+    instr->src.type  = VMCU_OPTYPE_NONE;
+    instr->dest.type = VMCU_OPTYPE_NONE;
 
     memset(&instr->mnem, '\0', sizeof(instr->mnem));
 
@@ -156,8 +156,8 @@ static void copy_instr(vmcu_instr_t *dest, vmcu_instr_t *src) {
     dest->exec      = (dest->key >= 0);
 
     dest->group     = VMCU_GROUP_NONE;
-    dest->src.type  = VMCU_OP_NONE;
-    dest->dest.type = VMCU_OP_NONE;
+    dest->src.type  = VMCU_OPTYPE_NONE;
+    dest->dest.type = VMCU_OPTYPE_NONE;
 
     memset(&dest->mnem, '\0', sizeof(dest->mnem));
 }

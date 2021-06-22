@@ -4,6 +4,64 @@
 
 - nothing to log
 
+# v.0.8.9 - 2021-06-22
+
+- VMCU_OP rework
+  - rename to VMCU_OPTYPE
+  - added new types to enumeration. Enumeration after rework:
+    - VMCU_OPTYPE_NONE = -1 (no operand, therefore no type)
+    - VMCU_OPTYPE_R,        (register operand)
+    - VMCU_OPTYPE_RP,       (registerpair operand)
+    - VMCU_OPTYPE_X,        (x pointer operand)
+    - VMCU_OPTYPE_Y,        (y pointer operand)
+    - VMCU_OPTYPE_Z,        (z pointer operand)
+    - VMCU_OPTYPE_B,        (bit number 0-7)
+    - VMCU_OPTYPE_K4,       (4-bit immediate)
+    - VMCU_OPTYPE_K6,       (6-bit immediate)
+    - VMCU_OPTYPE_K8,       (8-bit immediate)
+    - VMCU_OPTYPE_IO5,      (5-bit I/O address)
+    - VMCU_OPTYPE_IO6,      (6-bit I/O address)
+    - VMCU_OPTYPE_D7,       (7-bit data address)
+    - VMCU_OPTYPE_D16,      (16-bit data address)
+    - VMCU_OPTYPE_P22,      (22-bit program address)
+    - VMCU_OPTYPE_S7,       (7-bit signed displacement, program memory)
+    - VMCU_OPTYPE_S12       (12-bit signed displacement, program memory)
+  - similar types can be found at https://en.wikipedia.org/wiki/Atmel_AVR_instruction_set
+
+- Added: VMCU_REGISTER - an enumeration of AVR general purpose registers (r0-r31)
+  
+- Added: vmcu_registerpair_t structure
+  - this structure is able to represent a registerpair by holding
+    - a VMCU_REGISTER low - low byte of pair
+    - a VMCU_REGISTER high - high byte of pair
+
+- vmcu_operand_t rework
+  - vmcu_operand_t now consists of a
+    - VMCU_OPTYPE - an enumeration of different operand types
+    - value union - a c-union holding different kinds of operand values
+
+- The value union of vmcu_operand_t contains
+  - uint8_t k  for type = K4, K6, K8
+  - uint8_t b  for type = B
+  - uint8_t io for type = IO5, IO6
+  - uint16_t d for type = D7, D16
+  - uint32_t p for type = P22
+  - int16_t s  for type = S7, S12
+
+- disassembled .dw directive (= illegal opcode) does not have its opcode as source operand anymore
+  - instead, an illegal opcode (.dw xxxx) has following attributes
+    - instr->src.type  = VMCU_OPTYPE_NONE
+    - instr->dest.type = VMCU_OPTYPE_NONE
+    - therefore no operand values
+  - in order to simplify printing these "instructions", I've decided to move the .dw value (xxxx)
+    to instr->mnem.base. So the base mnemonic is now ".dw xxxx" with no operands. 
+
+- endloop driver (driver/endloop/) improvement
+  - endloop driver is now able to detect unconditional and conditional endless loops
+
+- adjusted driver code
+- minor improvements
+
 # v.0.8.8 - 2021-06-20
 
 - Added: vmcu_mnemonic_t structure to vmcu_instr_t

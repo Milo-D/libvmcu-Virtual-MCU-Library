@@ -21,7 +21,7 @@ vmcu_system_t *sys    = NULL;
 /* Forward Declaration of static Functions */
 
 static void print_disassembly(const int32_t pc);
-static void print_instruction(vmcu_instr_t *instr);
+static void print_instruction(const vmcu_instr_t *instr);
 
 static int find_pc(const int32_t pc);
 static void cleanup(void);
@@ -60,7 +60,6 @@ int main(const int argc, const char **argv) {
 
     } while(c != 'q');
 
-    /* Do something... */
     return EXIT_SUCCESS;
 }
 
@@ -95,18 +94,17 @@ static void print_disassembly(const int32_t pc) {
     }
 }
 
-static void print_instruction(vmcu_instr_t *instr) {
+void print_instruction(const vmcu_instr_t *instr) {
 
-    vmcu_mnemonic_t *mnem = &instr->mnem;
+    printf("%s",  instr->mnem.base);
 
-    printf("%s ",  mnem->base);
-    printf("%s",   mnem->dest);
+    if(instr->dest.type != VMCU_OPTYPE_NONE)
+        printf(" %s,", instr->mnem.dest);
 
-    if(instr->dest.type != VMCU_OP_NONE)
-        printf(", ");
+    if(instr->src.type != VMCU_OPTYPE_NONE)
+        printf(" %s", instr->mnem.src);
 
-    printf("%s ",  mnem->src);
-    printf("%s\n", mnem->comment);
+    printf(" %s\n", instr->mnem.comment);
 }
 
 static int find_pc(const int32_t pc) {

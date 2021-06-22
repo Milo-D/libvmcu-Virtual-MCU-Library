@@ -102,11 +102,11 @@ int main(const int argc, const char **argv) {
     vmcu_operand_t *src    = &instr.src;     // source operand
     vmcu_operand_t *dest   = &instr.dest;    // destination operand
 
-    VMCU_OP src_type       = src->type;      // VMCU_OP_IMM8
-    VMCU_OP dest_type      = dest->type;     // VMCU_OP_REGISTER
-
-    const uint8_t src_val  = src->value;     // 0x08
-    const uint8_t dest_val = dest->value;    // (R)29
+    VMCU_OPTYPE src_type   = src->type;      // VMCU_OPTYPE_K8
+    VMCU_OPTYPE dest_type  = dest->type;     // VMCU_OPTYPE_R
+    
+    const uint8_t src_val  = src->k;         // 0x08
+    VMCU_REGISTER dest_val = dest->r;        // VMCU_REGISTER_R29
     
     vmcu_mnemonic_t *mnem  = &instr.mnem;    // instruction mnemonic
     
@@ -126,18 +126,17 @@ int main(const int argc, const char **argv) {
 ```c
 /* this snippet can be used to assemble and print an instruction */
 
-void print_instruction(vmcu_instr_t *instr) {
+void print_instruction(const vmcu_instr_t *instr) {
 
-    vmcu_mnemonic_t *mnem = &instr->mnem;
+    printf("%s",  instr->mnem.base);
 
-    printf("%s ",  mnem->base);
-    printf("%s",   mnem->dest);
+    if(instr->dest.type != VMCU_OPTYPE_NONE)
+        printf(" %s,", instr->mnem.dest);
 
-    if(instr->dest.type != VMCU_OP_NONE)
-        printf(", ");
+    if(instr->src.type != VMCU_OPTYPE_NONE)
+        printf(" %s", instr->mnem.src);
 
-    printf("%s ",  mnem->src);
-    printf("%s\n", mnem->comment);
+    printf(" %s\n", instr->mnem.comment);
 }
 ```
 

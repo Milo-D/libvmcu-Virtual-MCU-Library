@@ -89,8 +89,10 @@ static inline bool operand_is_sfr_related(vmcu_operand_t *op, vmcu_model_t *mcu)
     const uint32_t section_start = mcu->sfr.section.start;
     const uint32_t section_end   = mcu->sfr.section.end;
 
-    const int32_t offs = ((op->type == VMCU_OP_IODIRECT) * section_start);
-    return ((op->value + offs) >= section_start && (op->value + offs) <= section_end);
+    if((op->type == VMCU_OPTYPE_IO5) || (op->type == VMCU_OPTYPE_IO6))
+        return ((op->io + section_start) >= section_start) && ((op->io + section_start) <= section_end);
+
+    return ((op->d >= section_start) && (op->d <= section_end));
 }
 
 static VMCU_SFR get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu) {
@@ -103,8 +105,10 @@ static VMCU_SFR get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu) {
     if(operand_is_sfr_related(op, mcu) == false)
         return VMCU_SFR_NONE;
 
-    int32_t offs = ((op->type != VMCU_OP_IODIRECT) * mcu->sfr.section.start);
-    return mcu->sfr.layout[op->value - offs];
+    if((op->type == VMCU_OPTYPE_D7) || (op->type == VMCU_OPTYPE_D16))
+        return mcu->sfr.layout[op->d - mcu->sfr.section.start];
+
+    return mcu->sfr.layout[op->io];
 }
 
 static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *mcu) {
