@@ -438,16 +438,19 @@ Currently this library comes with two headers, both can be found in engine/inclu
 - libvmcu_analyzer.h  (static analysis)
 - libvmcu_system.h    (dynamic analysis, simulation)
 
-Let's say, we have a file called driver.c on top level of this repository 
+Let's say, we have a file called prog.c on top level of this repository 
 and we want to link it with libvmcu:
 
 #### Include libvmcu headers
 ```c
+/* prog.c */
+
 #include "libvmcu_analyzer.h"
 #include "libvmcu_system.h"
 
 int main(void) {
     
+    /* do something */
     return 0;
 }
 ```
@@ -459,12 +462,12 @@ You@Terminal:~$ make clean all
 
 #### Build driver object
 ```console
-You@Terminal:~$ gcc -Iengine/include/libvmcu/ -c driver.c -o driver.o
+You@Terminal:~$ gcc -Iengine/include/libvmcu/ -c prog.c -o prog.o
 ```
 
 #### Link with libvmcu (do not forget -lm)
 ```console
-You@Terminal:~$ gcc -o driver driver.o -L/build/apps/ -lvmcu -lm
+You@Terminal:~$ gcc -o prog prog.o -Lbuild/apps/ -lvmcu -lm
 ```
 
 That's it. If you face issues, take look at some examples in the driver/ directory.
