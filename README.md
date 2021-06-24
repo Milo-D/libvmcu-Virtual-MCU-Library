@@ -596,4 +596,8 @@ of the engine.
 
 # Documentation
 
-The wiki will be updated as soon as possible. The libvmcu header files are documented, too.
+![vdoc](https://user-images.githubusercontent.com/46600932/123187328-3db11680-d49a-11eb-8482-ea5fb7cc3014.png)
+
+By the time of writing this the documentation is still in development. The (incomplete) documentation can be found at https://github.com/Milo-D/libvmcu-Virtual-MCU-Library/wiki 
+
+If you are missing information and don't want to wait for the wiki, the libvmcu header files are pretty well documented, too.
