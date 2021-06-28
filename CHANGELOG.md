@@ -4,6 +4,37 @@
 
 - nothing to log
 
+# v.0.8.10 - 2021-06-28
+
+- Added: vmcu_access_t
+  - vmcu_access_t holds bitfields (representing booleans)
+  - following bitfields are available
+    - registers (true if instr reads/writes gpr)
+    - flash     (true if instr reads/writes flash)
+    - stack     (true if instr reads/writes stack)
+    - io        (true if instr reads/writes io segment)
+    - ds        (true if instr reads/writes data segment)
+    - sp        (true if instr reads/writes stack pointer)
+    - pc        (true if instr reads/writes program counter)
+    - c_flag    (true if instr reads/writes carry flag)
+    - z_flag    (true if instr reads/writes zero flag)
+    - n_flag    (true if instr reads/writes negative flag)
+    - v_flag    (true if instr reads/writes overflow flag)
+    - s_flag    (true if instr reads/writes sign flag)
+    - h_flag    (true if instr reads/writes halfcarry flag)
+    - t_flag    (true if instr reads/writes t flag)
+    - i_flag    (true if instr reads/writes interrupt flag)
+    
+  - NOTE: Although (stack, io, registers ⊂ ds), (stack = true) or (io = true) 
+    or (registers = true) does not imply (ds = true).
+
+- Added: annotator stage in pipeline
+  - this stage annotates instructions by adding additional information about
+    the instruction itself, like groups and explicit/implicit read/write access.
+
+- Added: rwaccess driver (driver/rwaccess/)
+- Adjusted drivers, etc.
+
 # v.0.8.9 - 2021-06-22
 
 - VMCU_OP rework

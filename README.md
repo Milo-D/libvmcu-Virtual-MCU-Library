@@ -80,7 +80,7 @@ VMCU comes with no further dependencies, thus allowing easy setup and easy usage
 #### Extracting details from opcode
 
 ```c
-/* 0xd8e0 (little endian) <=> ldi r29, 0x08 */
+/* 0x6a97 (little endian) <=> sbiw r29:r28, 0x1a */
 
 int main(const int argc, const char **argv) {
     
@@ -88,32 +88,40 @@ int main(const int argc, const char **argv) {
     vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
     
     vmcu_instr_t instr;
-    vmcu_disassemble_bytes(0xd8e0, &instr, m328p);
+    vmcu_disassemble_bytes(0x6a97, &instr, m328p);
     
-    const VMCU_IKEY key    = instr.key;      // VMCU_IKEY_LDI
-    const VMCU_GROUP grp   = instr.group;    // VMCU_GROUP_TRANSFER
+    const VMCU_IKEY key    = instr.key;           // VMCU_IKEY_SBIW
+    const VMCU_GROUP grp   = instr.group;         // VMCU_GROUP_MATH_LOGIC
     
-    const uint32_t opcode  = instr.opcode;   // 0xe0d8 (big endian)
-    const uint16_t addr    = instr.addr;     // 0x0000 (undefined)
+    const uint32_t opcode  = instr.opcode;        // 0x976a (big endian)
+    const uint16_t addr    = instr.addr;          // 0x0000 (undefined)
 
-    const bool dword       = instr.dword;    // false
-    const bool exec        = instr.exec;     // true
+    const bool dword       = instr.dword;         // false
+    const bool exec        = instr.exec;          // true
     
-    vmcu_operand_t *src    = &instr.src;     // source operand
-    vmcu_operand_t *dest   = &instr.dest;    // destination operand
+    vmcu_operand_t *src    = &instr.src;          // source operand
+    vmcu_operand_t *dest   = &instr.dest;         // destination operand
 
-    VMCU_OPTYPE src_type   = src->type;      // VMCU_OPTYPE_K8
-    VMCU_OPTYPE dest_type  = dest->type;     // VMCU_OPTYPE_R
+    VMCU_OPTYPE src_type   = src->type;           // VMCU_OPTYPE_K6
+    VMCU_OPTYPE dest_type  = dest->type;          // VMCU_OPTYPE_RP
     
-    const uint8_t src_val  = src->k;         // 0x08
-    VMCU_REGISTER dest_val = dest->r;        // VMCU_REGISTER_R29
+    const uint8_t src_val  = src->k;              // 0x1a
     
-    vmcu_mnemonic_t *mnem  = &instr.mnem;    // instruction mnemonic
+    VMCU_REGISTER dest_rh  = dest->rp.high;       // VMCU_REGISTER_R29
+    VMCU_REGISTER dest_rl  = dest->rp.low;        // VMCU_REGISTER_R28
     
-    const char *base_str   = mnem->base;     // "ldi"
-    const char *dest_str   = mnem->dest;     // "r29"
-    const char *src_str    = mnem->src;      // "0x08"
-    const char *com_str    = mnem->comment;  // "; r29 <- 0x08"
+    const bool writes_hf   = instr.writes.h_flag; // false
+    const bool writes_cf   = instr.writes.c_flag; // true
+    
+    const bool reads_io    = instr.reads.io;      // false
+    const bool reads_nf    = instr.reads.n_flag;  // false
+    
+    vmcu_mnemonic_t *mnem  = &instr.mnem;         // instruction mnemonic
+    
+    const char *base_str   = mnem->base;          // "sbiw"
+    const char *dest_str   = mnem->dest;          // "r29:r28"
+    const char *src_str    = mnem->src;           // "0x1a"
+    const char *com_str    = mnem->comment;       // "r29:r28 <- r29:r28 - 0x1a"
     
     vmcu_model_dtor(m328p);
     
@@ -151,8 +159,50 @@ int main(const int argc, const char **argv) {
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
-    for(int32_t i = 0; i < report->progsize; i++)
+    for(int32_t i = 0; i < report->progsize; i++) {
+
+        printf("0x%04x ", report->disassembly[i].addr);
         print_instruction(&report->disassembly[i]);
+    }
+        
+    vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
+    
+    return EXIT_SUCCESS;
+}
+```
+
+```assembly
+0x004e ldi r27, 0x06 ; r27 <- 0x06
+0x004f rjmp 1        ; PC <- PC + 1 + 1
+0x0050 st X+, r1     ; DS[X+] <- r1
+0x0051 cpi r26, 0x20 ; r26 - 0x20
+0x0052 cpc r27, r18  ; r27 - r18 - CF
+0x0053 brne -4       ; (ZF == 0): PC <- PC + -4 + 1
+0x0054 call 0x60b    ; PC <- 0x60b
+```
+
+#### Filtering read/write access on status flags
+
+```c
+/* A possible implementation of print_instruction can be found above */
+
+int main(const int argc, const char **argv) {
+
+    /* ignoring checks for this example */
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+
+    for(int32_t i = 0; i < report->progsize; i++) {
+
+        vmcu_instr_t *instr = &report->disassembly[i];
+        
+        if(instr->writes.c_flag == true)
+            print_instruction(instr);
+        
+        if(instr->reads.c_flag == true)
+            print_instruction(instr);
+    }
     
     vmcu_report_dtor(report);
     vmcu_model_dtor(m328p);
@@ -162,12 +212,10 @@ int main(const int argc, const char **argv) {
 ```
 
 ```assembly
-ldd r24, Y+1              ; R24 <- DATA[Y+1]
-ldd r25, Y+2              ; R25 <- DATA[Y+2]
-sbiw r25:r24, 0x14        ; R25:R24 <- R25:R24 - 0x14
-brlt -55                  ; (N ^ V = 1): PC <- PC - 0x37 + 1
-ldi r24, 0x00             ; R24 <- 0x00
-ldi r25, 0x00             ; R25 <- 0x00
+subi r18, 0x00     ; r18 <- r18 - 0x00
+adiw r29:r28, 0x1a ; r29:r28 <- r29:r28 + 0x1a
+sbci r23, 0xff     ; r23 <- r23 - 0xff - CF
+cpc r19, r17       ; r19 - r17 - CF
 ```
 
 #### Printing interrupt vectors and their xref-to
@@ -280,17 +328,17 @@ int main(const int argc, const char **argv) {
 ```assembly
 0x04c6  L75
 
- xref from 0x04a1 call +1222                ; PC <- 0x4c6
- xref from 0x0a84 call +1222                ; PC <- 0x4c6
- xref from 0x0b5c call +1222                ; PC <- 0x4c6
+ xref from 0x04a1 call +1222 ; PC <- 0x4c6
+ xref from 0x0a84 call +1222 ; PC <- 0x4c6
+ xref from 0x0b5c call +1222 ; PC <- 0x4c6
 
 0x04e2  L76
 
- xref from 0x05d4 rjmp -243                 ; PC <- PC - 0xf3 + 1
+ xref from 0x05d4 rjmp -243  ; PC <- PC - 0xf3 + 1
 
 0x05d0  L77
 
- xref from 0x04e1 rjmp +238                 ; PC <- PC + 0xee + 1
+ xref from 0x04e1 rjmp +238  ; PC <- PC + 0xee + 1
 ```
 
 #### Printing xrefs of special function registers 
@@ -330,14 +378,14 @@ int main(const int argc, const char **argv) {
 ```assembly
 SFR ID: 17
        
- xref from 0x00f4 sbi 0x1f, 2               ; IO[1f, 2] <- 0x01
- xref from 0x00f5 sbi 0x1f, 1               ; IO[1f, 1] <- 0x01
+ xref from 0x00f4 sbi 0x1f, 2     ; IO[1f, 2] <- 0x01
+ xref from 0x00f5 sbi 0x1f, 1     ; IO[1f, 1] <- 0x01
  
 SFR ID: 50
 
- xref from 0x004c sts 0x006e, r1            ; DATA[0x6e] <- R1
- xref from 0x0051 lds r24, 0x006e           ; R24 <- DATA[0x6e]
- xref from 0x0054 sts 0x006e, r24           ; DATA[0x6e] <- R24
+ xref from 0x004c sts 0x006e, r1  ; DATA[0x6e] <- R1
+ xref from 0x0051 lds r24, 0x006e ; R24 <- DATA[0x6e]
+ xref from 0x0054 sts 0x006e, r24 ; DATA[0x6e] <- R24
 ```
 
 #### Discovering strings in binary
@@ -403,13 +451,16 @@ analyzer pipeline with all the relevant data it needs.
 
 **Stage 0:** The very first stage is the decoder. The decoder tries to decode the given Hex File.
 
-**Stage 1:** Once the binary has been decoded successfully, the data will be sent to the decomposer, so that 
-operands can be extracted and classified.
+**Stage 1:** Once the binary has been decoded successfully, the data will be sent to the annotator. This stage
+annotates instructions by adding additional information about the instruction itself, like groups and
+explicit/implicit read/write access.
 
-**Stage 2:** In this stage, the disassembler receives the result of Stage 0 and Stage 1 in order to generate 
+**Stage 2:** The decomposer takes care of opcodes and tries to extract and classify their operands.
+
+**Stage 3:** In this stage, the disassembler receives the result of the previous stage in order to generate 
 mnemonics and some comments.
 
-**Stage 3:** Now the analyzer comes into play. The analyzer takes all the data from the previous three steps 
+**Stage 4:** Now the analyzer comes into play. The analyzer takes all the data from the previous three steps 
 and performs a static analysis on it. It then generates a report and returns it, so that
 a virtual microcontroller can be initialized in order to start a dynamic analysis.
 

@@ -383,6 +383,31 @@ typedef struct vmcu_registerpair {            ///< registerpair structure (rh:rl
 
 } vmcu_registerpair_t;
 
+typedef struct vmcu_access {                  ///< abstract access structure
+
+    /* larger segments */
+    unsigned int registers : 1;               ///< accessing registers ?
+    unsigned int flash     : 1;               ///< accessing flash ?
+    unsigned int stack     : 1;               ///< accessing stack ?
+    unsigned int io        : 1;               ///< acccessing io ?
+    unsigned int ds        : 1;               ///< accessing data segment ?
+
+    /* special pointers */
+    unsigned int sp        : 1;               ///< accessing stack pointer ?
+    unsigned int pc        : 1;               ///< accessing program counter ?
+
+    /* status flags */
+    unsigned int c_flag    : 1;               ///< accessing carry flag ?
+    unsigned int z_flag    : 1;               ///< accessing zero flag ?
+    unsigned int n_flag    : 1;               ///< accessing negative flag ?
+    unsigned int v_flag    : 1;               ///< accessing overflow flag ?
+    unsigned int s_flag    : 1;               ///< accessing sign flag ?
+    unsigned int h_flag    : 1;               ///< accessing half-carry flag ?
+    unsigned int t_flag    : 1;               ///< accessing t-flag ?
+    unsigned int i_flag    : 1;               ///< accessing interrupt flag ?
+
+} vmcu_access_t;
+
 typedef struct vmcu_operand {                 ///< operand structure
 
     union {                                   ///< operand value union
@@ -416,22 +441,35 @@ typedef struct vmcu_mnemonic {                ///< disassembled mnemonic structu
 
 typedef struct vmcu_instr {                   ///< instruction structure
 
-    struct {                                  ///< instruction core
+    struct {                                  ///< members determined by decoder stage
 
-        VMCU_IKEY key;                        ///< instruction key (instruction identifier)
-        VMCU_GROUP group;                     ///< instruction group
+        VMCU_IKEY key;                        ///< instruction key (for example key = VMCU_IKEY_LDI)
+
+        int opcode;                           ///< instruction opcode (todo: change to uint32_t)
+        int addr;                             ///< instruction address (todo: change to uint32_t)
+
+        bool exec;                            ///< instruction executable/legal ?
+        bool dword;                           ///< instruction 32-bit ?
     };
 
-    int opcode;                               ///< 16-bit or 32-bit opcode (todo: change type to uint32)
-    int addr;
+    struct {                                  ///< members determined by annotator stage
 
-    bool exec;                                ///< instruction executable ?
-    bool dword;                               ///< 32-bit instruction ?
+        VMCU_GROUP group;                     ///< instruction group (for example group = VMCU_GROUP_FLOW)
 
-    vmcu_operand_t src;                       ///< source operand (right operand)
-    vmcu_operand_t dest;                      ///< destination operand (left operand)
+        vmcu_access_t writes;                 ///< abstract write access (implicit + explicit)
+        vmcu_access_t reads;                  ///< abstract read access (implicit + explicit)
+    };
 
-    vmcu_mnemonic_t mnem;                     ///< disassembled mnemonic of instruction
+    struct {                                  ///< members determined by decomposer stage
+
+        vmcu_operand_t src;                   ///< instruction's source operand
+        vmcu_operand_t dest;                  ///< instructions's destination operand
+    };
+
+    struct {                                  ///< members determined by disassembler stage
+
+        vmcu_mnemonic_t mnem;                 ///< disassembled mnemonic
+    };
 
 } vmcu_instr_t;
 
@@ -562,6 +600,24 @@ extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_
  * @mcu:        decompose for this device model
  * */
 extern vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+
+/* <--------------------------------- Functions - Annotator Stage -------------------------------------> */
+
+/*
+ * vmcu_annotate_bytes - annotate 16/32-bit opcode
+ * @bytes:  opcode to annotate (little endian)
+ * @instr:  pointer to a single instance of vmcu_instr_t
+ * @mcu:    annotate for this device model
+ * */
+extern int vmcu_annotate_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
+
+/*
+ * vmcu_annotate_ihex - annotate an intel hex file
+ * @hex_file:   intel hex file to annotate
+ * @size:       size of vmcu_instr_t* after annotating
+ * @mcu:        annotate for this device model
+ * */
+extern vmcu_instr_t* vmcu_annotate_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
 
 /* <---------------------------------- Functions - Decoder Stage --------------------------------------> */
 

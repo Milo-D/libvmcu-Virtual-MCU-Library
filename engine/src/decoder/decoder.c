@@ -19,11 +19,13 @@
 static int get_opc_key(const uint32_t hex);
 static bool is_dword(const uint32_t opcode);
 static void copy_instr(vmcu_instr_t *dest, vmcu_instr_t *src);
+static void initialize_empty_instr(vmcu_instr_t *instr);
 
 /* --- Extern --- */
 
 int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu) {
 
+    initialize_empty_instr(instr);
     uint32_t be = big_endian32(bytes);
 
     if(be > 0x0000ffff) {
@@ -39,14 +41,7 @@ int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *m
 
     instr->opcode    = be;
     instr->addr      = 0x0000;
-
     instr->exec      = (instr->key >= 0);
-
-    instr->group     = VMCU_GROUP_NONE;
-    instr->src.type  = VMCU_OPTYPE_NONE;
-    instr->dest.type = VMCU_OPTYPE_NONE;
-
-    memset(&instr->mnem, '\0', sizeof(instr->mnem));
 
     return ((instr->dword == false) && (be > 0xffff)) ? -1 : 0;
 }
@@ -148,16 +143,32 @@ static bool is_dword(const uint32_t opcode) {
 
 static void copy_instr(vmcu_instr_t *dest, vmcu_instr_t *src) {
 
+    initialize_empty_instr(dest);
+
     dest->opcode    = src->opcode;
     dest->addr      = src->addr;
 
     dest->dword     = is_dword(src->opcode);
     dest->key       = get_opc_key(src->opcode);
     dest->exec      = (dest->key >= 0);
+}
 
-    dest->group     = VMCU_GROUP_NONE;
-    dest->src.type  = VMCU_OPTYPE_NONE;
-    dest->dest.type = VMCU_OPTYPE_NONE;
+static void initialize_empty_instr(vmcu_instr_t *instr) {
 
-    memset(&dest->mnem, '\0', sizeof(dest->mnem));
+    instr->key       = VMCU_IKEY_DATA;
+    instr->opcode    = 0xffff;
+    instr->addr      = 0x0000;
+    instr->exec      = false;
+    instr->dword     = false;
+
+    instr->group     = VMCU_GROUP_NONE;
+
+    memset(&instr->writes, 0x00, sizeof(vmcu_access_t));
+    memset(&instr->reads,  0x00, sizeof(vmcu_access_t));
+
+    instr->src.type  = VMCU_OPTYPE_NONE;
+    instr->dest.type = VMCU_OPTYPE_NONE;
+
+    memset(&instr->mnem,   '\0', sizeof(vmcu_mnemonic_t));
+
 }

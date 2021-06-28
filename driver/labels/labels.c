@@ -25,8 +25,11 @@ int main(const int argc, const char **argv) {
     vmcu_model_t *m328p   = vmcu_model_ctor(VMCU_DEVICE_M328P);
     vmcu_report_t *report = vmcu_analyze_ihex(argv[1], m328p);
 
-    if(report == NULL)
+    if(report == NULL) {
+
+        vmcu_model_dtor(m328p);
         return EXIT_FAILURE;
+    }
 
     for(int32_t i = 0; i < report->n_label; i++) {
 

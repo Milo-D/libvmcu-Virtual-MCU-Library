@@ -9,6 +9,7 @@
 // Project Headers (engine)
 #include "engine/include/analyzer/report/operand.h"
 #include "engine/include/analyzer/report/mnemonic.h"
+#include "engine/include/analyzer/report/access.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/arch/enum/ikey.h"
@@ -19,19 +20,32 @@ typedef struct vmcu_instr {
     struct {
 
         VMCU_IKEY key;
-        VMCU_GROUP group;
+
+        int opcode;
+        int addr;
+
+        bool exec;
+        bool dword;
     };
 
-    int opcode;
-    int addr;
+    struct {
 
-    bool exec;
-    bool dword;
+        VMCU_GROUP group;
 
-    vmcu_operand_t src;
-    vmcu_operand_t dest;
+        vmcu_access_t writes;
+        vmcu_access_t reads;
+    };
 
-    vmcu_mnemonic_t mnem;
+    struct {
+
+        vmcu_operand_t src;
+        vmcu_operand_t dest;
+    };
+
+    struct {
+
+        vmcu_mnemonic_t mnem;
+    };
 
 } vmcu_instr_t;
 
