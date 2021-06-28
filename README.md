@@ -15,7 +15,6 @@ The goal here is to make it possible to interact programmatically with AVR sourc
 
 libvmcu can be used to
 
-- create (regression) tests for embedded systems
 - perform binary analysis on AVR programs
 - build debuggers and simulators
 - explore disassembly
@@ -51,29 +50,24 @@ libvmcu can be used to
 
 # Features
 
-### Take one step forward and one back
+### Interact with the binary
 
-VMCU supports backstepping. You'll be able to simulate both, forth and back.
-Note that backstepping will erase externally (via write_gpr, ...) added data.
+With libvmcu you are able to interact programmatically with your AVR source code. You can filter
+disassembly, find endless loops, extract details from opcode (for example affected flags) and more.
+
+### Analyzer Pipeline
+
+The pipeline offers an interface for each stage: decode, annotate, decompose, disassemble and analyze.
+Stages can either operate on a single opcode or a whole binary.
 
 ### Cycle accurate realtime Simulation
 
-Cycle accurate realtime simulation of the microcontroller including its peripherals.
-
-### Decode, Decompose, Disassemble, Analyze
-
-The pipeline offers an interface for each stage: decode, decompose, disassemble and analyze.
-Stages can either operate on a single opcode or a whole binary. 
-
-### Combine Static and Dynamic Analysis
-
-Perform a static analysis on your binary to receive additional information, 
-for example which SFRs are used by the program. Then, use this information
-to improve your dynamic analysis.
+Although this project primarily focus on static analysis, it offers an accurate realtime simulation of 
+some few microcontroller including their peripherals. 
 
 ### No further dependencies
 
-VMCU comes with no further dependencies, thus allowing easy setup and easy usage.
+libvmcu comes with no further dependencies, thus allowing easy setup and easy usage.
 
 # Examples
 
