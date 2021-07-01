@@ -10,6 +10,11 @@
 #include "engine/include/decomposer/decomposer.h"
 #include "engine/include/analyzer/report/instr.h"
 
+/* Disabling some warnings for this file */
+
+#pragma GCC diagnostic ignored "-Wformat-zero-length"
+#pragma GCC diagnostic ignored "-Wformat-overflow"
+
 /* Forward Declaration of static Functions */
 
 static void disassemble_dw(vmcu_instr_t *instr);
