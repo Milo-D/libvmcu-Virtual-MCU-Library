@@ -15,8 +15,6 @@ static void execute_nop(vmcu_system_t *sys, const int opcode) {
 
     vmcu_system_move_pc(sys, 1);
     sys->cycles += 1;
-
-    return;
 }
 
 static void execute_movw(vmcu_system_t *sys, const int opcode) {

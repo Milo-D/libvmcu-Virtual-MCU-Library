@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include <time.h>
 
 // libvmcu
 #include "libvmcu_analyzer.h"

@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- nothing to log
+- using CMake now
 
 # v.0.8.10 - 2021-06-28
 

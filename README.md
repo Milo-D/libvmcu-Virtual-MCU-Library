@@ -502,7 +502,8 @@ int main(void) {
 
 #### Build libvmcu
 ```console
-You@Terminal:~$ make clean all
+You@Terminal:~$ cd build-release/
+You@Terminal:~$ make -f build.mk
 ```
 
 #### Build driver object
@@ -512,7 +513,7 @@ You@Terminal:~$ gcc -Iengine/include/libvmcu/ -c prog.c -o prog.o
 
 #### Link with libvmcu (do not forget -lm)
 ```console
-You@Terminal:~$ gcc -o prog prog.o -Lbuild/apps/ -lvmcu -lm
+You@Terminal:~$ gcc -o prog prog.o -Lbuild-release/ -lvmcu -lm
 ```
 
 That's it. If you face issues, take look at some examples in the driver/ directory.

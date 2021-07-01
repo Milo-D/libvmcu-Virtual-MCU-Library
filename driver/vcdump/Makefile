@@ -1,12 +1,20 @@
-BUILD    := ../../build
-APP_DIR  := $(BUILD)/apps
-OBJ_DIR  := $(BUILD)/objects
 TARGET   := vcdump
+LIB_DIR  := ../../build-release
+LIB_DBG	 := ../../build-debug
+OBJ_DIR  := $(BUILD)/objects
 INCLUDE  := -I../../engine/include/libvmcu/
 LIBS	 := -lvmcu -lm
 
-driver: vcdump.c
-	@cd ..;cd ..;make all
-	@mkdir -p $(OBJ_DIR)/driver/$(TARGET)
-	gcc $(INCLUDE) -g -c vcdump.c -o $(OBJ_DIR)/driver/$(TARGET)/$(TARGET).o
-	gcc -o $(APP_DIR)/$(TARGET) $(OBJ_DIR)/driver/$(TARGET)/$(TARGET).o -L$(APP_DIR)/ $(LIBS)
+all: $(TARGET).c
+	gcc $(INCLUDE) -c $(TARGET).c -o $(TARGET).o
+	gcc -o $(TARGET) $(TARGET).o -L$(LIB_DIR)/ $(LIBS)
+	@rm $(TARGET).o
+
+debug: $(TARGET).c
+	gcc $(INCLUDE) -c $(TARGET).c -o $(TARGET).o
+	gcc -o $(TARGET) $(TARGET).o -L$(LIB_DBG)/ $(LIBS)
+	@rm $(TARGET).o
+
+clean:
+	@-rm $(TARGET).o
+	@-rm $(TARGET)

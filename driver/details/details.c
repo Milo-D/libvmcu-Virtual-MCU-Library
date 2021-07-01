@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include <time.h>
 
 // libvmcu
 #include "libvmcu_analyzer.h"
@@ -54,7 +53,7 @@ static void print_instr(vmcu_instr_t *instr, const uint32_t opcode) {
     printf("opcode:     0x%04x\n", instr->opcode);
     printf("address:    0x%04x\n", instr->addr);
 
-    printf("mnemonic:   ", instr->mnem);
+    printf("mnemonic:   ");
     print_mnemonic(instr);
 
     printf("executable: ");

@@ -9,8 +9,6 @@
 #include "engine/include/decoder/opcode.h"
 #include "engine/include/analyzer/report/instr.h"
 
-// todo: pre-initialize vmcu_abstract_access_t with "false"
-
 /* Forward Declaration of static Functions */
 
 static void annotate_dw(vmcu_instr_t *instr);
