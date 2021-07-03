@@ -3,6 +3,7 @@
 # Unreleased
 
 - using CMake now
+- added syntax highlight for stepper driver
 
 # v.0.8.10 - 2021-06-28
 
