@@ -6,6 +6,7 @@
 // Project Headers (engine)
 #include "engine/include/analyzer/analyzer.h"
 #include "engine/include/analyzer/modules/sfr/sfr_analyzer.h"
+#include "engine/include/analyzer/modules/controlflow/controlflow_analyzer.h"
 #include "engine/include/analyzer/modules/labels/label_analyzer.h"
 #include "engine/include/analyzer/modules/vector/vector_analyzer.h"
 #include "engine/include/analyzer/modules/string/string_analyzer.h"
@@ -30,6 +31,7 @@ vmcu_report_t* vmcu_analyze_ihex(const char *hex_file, vmcu_model_t *mcu) {
 
     /* --- architecture specific analysis --- */
 
+    vmcu_analyze_control_flow(report, mcu);
     vmcu_analyze_sfr(report, mcu);
     vmcu_analyze_vectors(report, mcu);
 

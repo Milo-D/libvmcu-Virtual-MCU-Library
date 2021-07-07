@@ -370,9 +370,10 @@ typedef enum {                                ///< supported devices for the ana
 
 } VMCU_DEVICE;
 
-/* <--------------------------------------- Structures (arch/) ----------------------------------------> */
+/* <--------------------------------------- Structures (fwd) ------------------------------------------> */
 
 typedef struct vmcu_model vmcu_model_t;       ///< device model (opaque, details not relevant for user)
+typedef struct vmcu_cfg_node vmcu_cfg_node_t; ///< single cfg node (opaque, see below for declaration)
 
 /* <------------------------------------------- Structures --------------------------------------------> */
 
@@ -517,7 +518,25 @@ typedef struct vmcu_string {                  ///< string structure
 
 } vmcu_string_t;
 
+typedef struct vmcu_cfg_node {                ///< control flow graph node structure
+
+    vmcu_xref_t xto;                          ///< cross-reference to corresponding instruction
+
+    vmcu_cfg_node_t *t;                       ///< 'true' branch of cfg node
+    vmcu_cfg_node_t *f;                       ///< 'false' branch of cfg node
+
+} vmcu_cfg_node_t;
+
+typedef struct vmcu_cfg {                     ///< control flow graph
+
+    int32_t used;                             ///< the number of nodes in use
+    vmcu_cfg_node_t *node;                    ///< entry node (node[0] is defined as entry)
+
+} vmcu_cfg_t;
+
 typedef struct vmcu_report {                  ///< report (summary) of the binary
+
+    vmcu_cfg_t *cfg;                          ///< control flow graph
 
     int32_t progsize;                         ///< instruction count
     vmcu_instr_t *disassembly;                ///< instruction list

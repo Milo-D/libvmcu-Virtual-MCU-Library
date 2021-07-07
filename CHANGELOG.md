@@ -1,6 +1,18 @@
 # Changelog
 
-# Unreleased
+# v.0.8.11 - 2021-07-07
+
+- added: CFG - control flow graph
+  - vmcu_cfg_t is the controlflow graph of libvmcu. It holds,
+    - vmcu_cfg_t node*, a dynamic array of vmcu_node_t structures
+    - node[0] is the entry node
+      - a node consists of
+        - vmcu_xref_t xto, a cross-reference to the corresponding instruction (xref-to)
+        - vmcu_cfg_node_t *t, a node pointer for the true branch
+        - vmcu_cfg_node_t *f, a node pointer for the false branch
+    - int32_t used, a simple node counter, should be equal to report.progsize
+  
+- added: CFG example driver (driver/cfg/)
 
 - using CMake now
 - added syntax highlight for stepper driver

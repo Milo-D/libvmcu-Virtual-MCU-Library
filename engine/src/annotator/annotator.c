@@ -1194,7 +1194,7 @@ static void annotate_eijmp(vmcu_instr_t *instr) {
 
 static void annotate_elpm(vmcu_instr_t *instr) {
 
-    instr->group            = VMCU_GROUP_FLOW;
+    instr->group            = VMCU_GROUP_TRANSFER;
 
     instr->writes.registers = true;
 
@@ -1205,7 +1205,7 @@ static void annotate_elpm(vmcu_instr_t *instr) {
 
 static void annotate_elpm_z(vmcu_instr_t *instr) {
 
-    instr->group            = VMCU_GROUP_FLOW;
+    instr->group            = VMCU_GROUP_TRANSFER;
 
     instr->writes.registers = true;
 
@@ -1216,7 +1216,7 @@ static void annotate_elpm_z(vmcu_instr_t *instr) {
 
 static void annotate_elpm_zi(vmcu_instr_t *instr) {
 
-    instr->group            = VMCU_GROUP_FLOW;
+    instr->group            = VMCU_GROUP_TRANSFER;
 
     instr->writes.registers = true;
 

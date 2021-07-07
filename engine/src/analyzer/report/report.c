@@ -14,6 +14,8 @@ vmcu_report_t* vmcu_report_ctor(void) {
     if((report = malloc(sizeof(vmcu_report_t))) == NULL)
         return NULL;
 
+    report->cfg         = NULL;
+
     report->progsize    = 0;
     report->disassembly = NULL;
 
@@ -58,20 +60,12 @@ void vmcu_report_dtor(vmcu_report_t *this) {
             free(this->string[i].bytes);
     }
 
-    if(this->sfr != NULL)
-        free(this->sfr);
-
-    if(this->label != NULL)
-        free(this->label);
-
-    if(this->vector != NULL)
-        free(this->vector);
-
-    if(this->string != NULL)
-        free(this->string);
-
-    if(this->disassembly != NULL)
-        free(this->disassembly);
+    if(this->sfr         != NULL) free(this->sfr);
+    if(this->label       != NULL) free(this->label);
+    if(this->vector      != NULL) free(this->vector);
+    if(this->string      != NULL) free(this->string);
+    if(this->disassembly != NULL) free(this->disassembly);
+    if(this->cfg         != NULL) vmcu_cfg_dtor(this->cfg);
 
     free(this);
 }

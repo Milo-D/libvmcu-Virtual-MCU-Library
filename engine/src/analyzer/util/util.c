@@ -4,7 +4,7 @@
 #include "engine/include/analyzer/util/util.h"
 #include "engine/include/analyzer/report/instr.h"
 
-int vmcu_get_abs_addr(const vmcu_instr_t *instr) {
+int vmcu_resolve_flow(const vmcu_instr_t *instr) {
 
     /* this function only accepts branches, calls/jumps */
 

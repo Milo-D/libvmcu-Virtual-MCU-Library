@@ -5,6 +5,6 @@
 
 typedef struct vmcu_instr vmcu_instr_t;
 
-extern int vmcu_get_abs_addr(const vmcu_instr_t *instr);
+extern int vmcu_resolve_flow(const vmcu_instr_t *instr);
 
 #endif

@@ -11,8 +11,8 @@ all: $(TARGET).c
 	@rm $(TARGET).o
 
 debug: $(TARGET).c
-	gcc $(INCLUDE) -c $(TARGET).c -o $(TARGET).o
-	gcc -o $(TARGET) $(TARGET).o -L$(LIB_DBG)/ $(LIBS)
+	gcc $(INCLUDE) -c $(TARGET).c -g -o $(TARGET).o
+	gcc -g -o $(TARGET) $(TARGET).o -L$(LIB_DBG)/ $(LIBS)
 	@rm $(TARGET).o
 
 clean:

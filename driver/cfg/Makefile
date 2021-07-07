@@ -1,4 +1,4 @@
-TARGET   := vector
+TARGET   := cfg
 LIB_DIR  := ../../build-release
 LIB_DBG	 := ../../build-debug
 OBJ_DIR  := $(BUILD)/objects

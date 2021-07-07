@@ -69,7 +69,7 @@ static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size) {
         if(is_branch(instr->key) == false)
             continue;
 
-        if((addr = vmcu_get_abs_addr(instr)) < 0)
+        if((addr = vmcu_resolve_flow(instr)) < 0)
             continue;
 
         if(in_disasm(report, addr) == false)
@@ -97,7 +97,7 @@ static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *
         if(is_branch(instr->key) == false)
             continue;
 
-        if(lx->addr != vmcu_get_abs_addr(instr))
+        if(lx->addr != vmcu_resolve_flow(instr))
             continue;
 
         if(*size >= nc) {

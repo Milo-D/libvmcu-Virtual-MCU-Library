@@ -150,7 +150,7 @@ static VMCU_VECT get_vector_id(vmcu_instr_t *instr, vmcu_model_t *mcu) {
 
 static void set_xref(vmcu_vector_t *vect, vmcu_report_t *report, vmcu_instr_t *instr) {
 
-    const int32_t isr_addr = vmcu_get_abs_addr(instr);
+    const int32_t isr_addr = vmcu_resolve_flow(instr);
 
     for(int32_t i = 0; i < report->progsize; i++) {
 

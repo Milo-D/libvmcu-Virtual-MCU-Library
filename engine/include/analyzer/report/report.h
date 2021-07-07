@@ -7,6 +7,7 @@
 #include <inttypes.h>
 
 // Project Headers (engine)
+#include "engine/include/analyzer/report/cfg.h"
 #include "engine/include/analyzer/report/instr.h"
 #include "engine/include/analyzer/report/sfr.h"
 #include "engine/include/analyzer/report/label.h"
@@ -14,7 +15,9 @@
 #include "engine/include/analyzer/report/string.h"
 
 typedef struct vmcu_report {
-    
+
+    vmcu_cfg_t *cfg;
+
     int32_t progsize;
     vmcu_instr_t *disassembly;
 
