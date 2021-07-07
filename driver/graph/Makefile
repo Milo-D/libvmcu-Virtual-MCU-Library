@@ -1,4 +1,4 @@
-TARGET   := cfg
+TARGET   := graph
 LIB_DIR  := ../../build-release
 LIB_DBG	 := ../../build-debug
 OBJ_DIR  := $(BUILD)/objects
@@ -18,3 +18,4 @@ debug: $(TARGET).c
 clean:
 	@-rm $(TARGET).o
 	@-rm $(TARGET)
+	@-rm -f graph.dot graph.png
