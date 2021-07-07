@@ -1,5 +1,9 @@
 # Changelog
 
+# Unreleased
+
+- adjusted example section in README
+
 # v.0.8.11 - 2021-07-07
 
 - added: CFG - control flow graph

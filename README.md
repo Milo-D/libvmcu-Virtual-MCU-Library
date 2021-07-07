@@ -12,139 +12,118 @@ libvmcu is a small engine for static and dynamic analysis of AVR Microcontroller
 It takes care of the preparation of raw data, which can then be further processed by other programs. 
 The goal here is to make it possible to interact programmatically with AVR source code.
 
-libvmcu can be used to
+libvmcu provides you with
 
-- perform binary analysis on AVR programs
-- build debuggers and simulators
-- explore disassembly
+- a simple way to analyze AVR assembly without further dependencies.
+- directed control flow graphs extracted from your binary
+- disassembly and a decomposed representation of instructions
+- abstract implicit/explicit read/write memory access information
+- analyzer modules for interrupt vectors, strings, ...
+- cross references from/to disassembled instructions
+- and more...
 
 **Note: This library is still in development.**
 
 ### Table of Contents
-[I Features](#Features)
+[I Examples](#Examples)
 
-[II Examples](#Examples)
+[II Showcase](#Showcase)
 
-[III Showcase](#Showcase)
+[III How VMCU works](#How-libvmcu-works)
 
-[IV How VMCU works](#How-libvmcu-works)
+[IV Setup VMCU](#Setup)
 
-[V Setup VMCU](#Setup)
+[V Supported MCUs](#Supported-Microcontroller)
 
-[VI Supported MCUs](#Supported-Microcontroller)
+[VI Dynamic Analysis](#Dynamic-Analysis)
 
-[VII Dynamic Analysis](#Dynamic-Analysis)
+[VII Static Analysis](#Static-Analysis)
 
-[VIII Static Analysis](#Static-Analysis)
+[VIII Instruction-Set](#Instructions)
 
-[IX Instruction-Set](#Instructions)
+[IX Bindings](#Bindings)
 
-[X Bindings](#Bindings)
+[X Contributing](#Contributing)
 
-[XI Contributing](#Contributing)
+[XI Credits](#Credits)
 
-[XII Credits](#Credits)
-
-[XIII Documentation](#Documentation)
-
-# Features
-
-### Interact with the binary
-
-With libvmcu you are able to interact programmatically with your AVR source code. You can filter
-disassembly, find endless loops, extract details from opcode (for example affected flags) and more.
-
-### Analyzer Pipeline
-
-The pipeline offers an interface for each stage: decode, annotate, decompose, disassemble and analyze.
-Stages can either operate on a single opcode or a whole binary.
-
-### Cycle accurate realtime Simulation
-
-Although this project primarily focus on static analysis, it offers an accurate realtime simulation of 
-some few microcontroller including their peripherals. 
-
-### No further dependencies
-
-libvmcu comes with no further dependencies, thus allowing easy setup and easy usage.
+[XII Documentation](#Documentation)
 
 # Examples
 
-#### Extracting details from opcode
+#### Printing controlflow of a binary
 
 ```c
-/* 0x6a97 (little endian) <=> sbiw r29:r28, 0x1a */
+/* A possible implementation of print_instruction can be found below */
 
 int main(const int argc, const char **argv) {
     
-    /* initialize a device model */
-    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
-    
-    vmcu_instr_t instr;
-    vmcu_disassemble_bytes(0x6a97, &instr, m328p);
-    
-    const VMCU_IKEY key    = instr.key;           // VMCU_IKEY_SBIW
-    const VMCU_GROUP grp   = instr.group;         // VMCU_GROUP_MATH_LOGIC
-    
-    const uint32_t opcode  = instr.opcode;        // 0x976a (big endian)
-    const uint16_t addr    = instr.addr;          // 0x0000 (undefined)
+    /* ignoring checks for this example */
+    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P);
+    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
-    const bool dword       = instr.dword;         // false
-    const bool exec        = instr.exec;          // true
+    for(int32_t i = 0; i < report->cfg->used; i++) {
+        
+        vmcu_cfg_node_t *node = &report->cfg->node[i];
+        print_instruction(node->xto.i);
+        
+        if(node->t != NULL) {
+            
+            printf("true  -> ");
+            print_instruction(node->t->xto.i);
+        }
+        
+        if(node->f != NULL) {
+            
+            printf("false -> ");
+            print_instruction(node->f->xto.i);
+        }
+        
+        printf("\n");
+    } 
     
-    vmcu_operand_t *src    = &instr.src;          // source operand
-    vmcu_operand_t *dest   = &instr.dest;         // destination operand
-
-    VMCU_OPTYPE src_type   = src->type;           // VMCU_OPTYPE_K6
-    VMCU_OPTYPE dest_type  = dest->type;          // VMCU_OPTYPE_RP
-    
-    const uint8_t src_val  = src->k;              // 0x1a
-    
-    VMCU_REGISTER dest_rh  = dest->rp.high;       // VMCU_REGISTER_R29
-    VMCU_REGISTER dest_rl  = dest->rp.low;        // VMCU_REGISTER_R28
-    
-    const bool writes_hf   = instr.writes.h_flag; // false
-    const bool writes_cf   = instr.writes.c_flag; // true
-    
-    const bool reads_io    = instr.reads.io;      // false
-    const bool reads_nf    = instr.reads.n_flag;  // false
-    
-    vmcu_mnemonic_t *mnem  = &instr.mnem;         // instruction mnemonic
-    
-    const char *base_str   = mnem->base;          // "sbiw"
-    const char *dest_str   = mnem->dest;          // "r29:r28"
-    const char *src_str    = mnem->src;           // "0x1a"
-    const char *com_str    = mnem->comment;       // "r29:r28 <- r29:r28 - 0x1a"
-    
+    vmcu_report_dtor(report);
     vmcu_model_dtor(m328p);
     
     return EXIT_SUCCESS;
 }
 ```
 
-#### Example of an instruction-printer function
-
-```c
-/* this snippet can be used to assemble and print an instruction */
-
-void print_instruction(const vmcu_instr_t *instr) {
-
-    printf("%s",  instr->mnem.base);
-
-    if(instr->dest.type != VMCU_OPTYPE_NONE)
-        printf(" %s,", instr->mnem.dest);
-
-    if(instr->src.type != VMCU_OPTYPE_NONE)
-        printf(" %s", instr->mnem.src);
-
-    printf(" %s\n", instr->mnem.comment);
-}
+```assembly
+         0x0000  .... f1f3  breq -2         ; (ZF == 1): PC <- PC + -2 + 1
+true  -> 0x3fff  .... 839a  sbi 0x10, 3     ; IO[0x10, 3] <- 1
+false -> 0x0001  .... 0fef  ldi r16, 0xff   ; r16 <- 0xff
+--------------------------------------------------------------------------------
+         0x0001  .... 0fef  ldi r16, 0xff   ; r16 <- 0xff
+true  -> 0x0002  .... 5817  cp r21, r24     ; r21 - r24
+--------------------------------------------------------------------------------
+         0x0002  .... 5817  cp r21, r24     ; r21 - r24
+true  -> 0x0003  .... 19f4  brne 3          ; (ZF == 0): PC <- PC + 3 + 1
+--------------------------------------------------------------------------------
+         0x0003  .... 19f4  brne 3          ; (ZF == 0): PC <- PC + 3 + 1
+true  -> 0x0007  .... 0127  eor r16, r17    ; r16 <- r16 ^ r17
+false -> 0x0004  .... a895  wdr             ; watchdog reset
+--------------------------------------------------------------------------------
+         0x0004  .... a895  wdr             ; watchdog reset
+true  -> 0x0005  .... 8895  sleep           ; circuit sleep
+--------------------------------------------------------------------------------
+         0x0005  .... 8895  sleep           ; circuit sleep
+true  -> 0x0006  .... 0000  nop             ; no operation
+--------------------------------------------------------------------------------
+         0x0006  .... 0000  nop             ; no operation
+true  -> 0x0007  .... 0127  eor r16, r17    ; r16 <- r16 ^ r17
+--------------------------------------------------------------------------------
+         0x0007  .... 0127  eor r16, r17    ; r16 <- r16 ^ r17
+--------------------------------------------------------------------------------
+         0x3fff  .... 839a  sbi 0x10, 3     ; IO[0x10, 3] <- 1
+true  -> 0x0000  .... f1f3  breq -2         ; (ZF == 1): PC <- PC + -2 + 1
+--------------------------------------------------------------------------------
 ```
 
 #### Printing disassembly of an intel hex file
 
 ```c
-/* A possible implementation of print_instruction can be found above */
+/* A possible implementation of print_instruction can be found below */
 
 int main(const int argc, const char **argv) {
     
@@ -178,7 +157,7 @@ int main(const int argc, const char **argv) {
 #### Filtering read/write access on status flags
 
 ```c
-/* A possible implementation of print_instruction can be found above */
+/* A possible implementation of print_instruction can be found below */
 
 int main(const int argc, const char **argv) {
 
@@ -251,43 +230,10 @@ Vector ID 19 @ 0x0026
  interrupt service routine at 0x039d
 ```
 
-#### Printing potential labels
-
-```c
-int main(const int argc, const char **argv) {
-    
-    /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
-    
-    for(int32_t i = 0; i < report->n_label; i++) {
-        
-        vmcu_label_t *lx = &report->label[i];
-        
-        printf("Label ID: %d, ", lx->id);
-        printf("Address: 0x%04x\n", lx->addr);
-    }
-    
-    vmcu_report_dtor(report);
-    vmcu_model_dtor(m328p);
-    
-    return EXIT_SUCCESS;
-}
-```
-
-```console
-Label ID: 0, Address: 0x0000
-Label ID: 1, Address: 0x011b
-Label ID: 2, Address: 0x014d
-Label ID: 3, Address: 0x0159
-Label ID: 4, Address: 0x015b
-Label ID: 5, Address: 0x0162
-```
-
 #### Printing xrefs of potential labels
 
 ```c
-/* A possible implementation of print_instruction can be found above */
+/* A possible implementation of print_instruction can be found below */
 
 int main(const int argc, const char **argv) {
     
@@ -337,7 +283,7 @@ int main(const int argc, const char **argv) {
 #### Printing xrefs of special function registers 
 
 ```c
-/* A possible implementation of print_instruction can be found above */
+/* A possible implementation of print_instruction can be found below */
 
 int main(const int argc, const char **argv) {
 
@@ -381,42 +327,75 @@ SFR ID: 50
  xref from 0x0054 sts 0x006e, r24 ; DATA[0x6e] <- R24
 ```
 
-#### Discovering strings in binary
+#### Extracting details from opcode
 
 ```c
+/* 0x6a97 (little endian) <=> sbiw r29:r28, 0x1a */
+
 int main(const int argc, const char **argv) {
-
-    /* ignoring checks for this example */
-    vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
-
-    for(int32_t i = 0; i < report->n_string; i++) {
-
-        vmcu_string_t *str = &report->string[i];
-
-        printf("Found string \"%s", str->bytes);
-        printf("\" l = %d", str->length);
-        printf(" @ 0x%04x\n", str->addr);
-    }
     
-    printf("\nTotal strings found: %d\n", report->n_string);
+    /* initialize a device model */
+    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
+    
+    vmcu_instr_t instr;
+    vmcu_disassemble_bytes(0x6a97, &instr, m328p);
+    
+    const VMCU_IKEY key    = instr.key;           // VMCU_IKEY_SBIW
+    const VMCU_GROUP grp   = instr.group;         // VMCU_GROUP_MATH_LOGIC
+    
+    const uint32_t opcode  = instr.opcode;        // 0x976a (big endian)
+    const uint16_t addr    = instr.addr;          // 0x0000 (undefined)
 
-    vmcu_report_dtor(report);
+    const bool dword       = instr.dword;         // false
+    const bool exec        = instr.exec;          // true
+    
+    vmcu_operand_t *src    = &instr.src;          // source operand
+    vmcu_operand_t *dest   = &instr.dest;         // destination operand
+
+    VMCU_OPTYPE src_type   = src->type;           // VMCU_OPTYPE_K6
+    VMCU_OPTYPE dest_type  = dest->type;          // VMCU_OPTYPE_RP
+    
+    const uint8_t src_val  = src->k;              // 0x1a
+    
+    VMCU_REGISTER dest_rh  = dest->rp.high;       // VMCU_REGISTER_R29
+    VMCU_REGISTER dest_rl  = dest->rp.low;        // VMCU_REGISTER_R28
+    
+    const bool writes_hf   = instr.writes.h_flag; // false
+    const bool writes_cf   = instr.writes.c_flag; // true
+    
+    const bool reads_io    = instr.reads.io;      // false
+    const bool reads_nf    = instr.reads.n_flag;  // false
+    
+    vmcu_mnemonic_t *mnem  = &instr.mnem;         // instruction mnemonic
+    
+    const char *base_str   = mnem->base;          // "sbiw"
+    const char *dest_str   = mnem->dest;          // "r29:r28"
+    const char *src_str    = mnem->src;           // "0x1a"
+    const char *com_str    = mnem->comment;       // "r29:r28 <- r29:r28 - 0x1a"
+    
     vmcu_model_dtor(m328p);
     
     return EXIT_SUCCESS;
 }
 ```
 
-```console
-Found string "Welcome " l = 8 @ 0x092e
-Found string "[1] Login\n" l = 11 @ 0x0933
-Found string "[2] Memory management\n" l = 23 @ 0x0939
-Found string "Please authenticate yourself with your hardware token\n" l = 55 @ 0x0946
-Found string "Please insert token. (%d characters)\n" l = 38 @ 0x0962
-Found string "Token can only contain the characters [A-Z/a-z/0-9]\n" l = 53 @ 0x0975
+#### Example of an instruction-printer function
 
-Total strings found: 6
+```c
+/* this snippet can be used to assemble and print an instruction */
+
+void print_instruction(const vmcu_instr_t *instr) {
+
+    printf("%s",  instr->mnem.base);
+
+    if(instr->dest.type != VMCU_OPTYPE_NONE)
+        printf(" %s,", instr->mnem.dest);
+
+    if(instr->src.type != VMCU_OPTYPE_NONE)
+        printf(" %s", instr->mnem.src);
+
+    printf(" %s\n", instr->mnem.comment);
+}
 ```
 
 # Showcase
