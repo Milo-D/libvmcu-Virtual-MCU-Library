@@ -123,7 +123,7 @@ static void tf(vmcu_report_t *report, vmcu_instr_t *instr, vmcu_model_t *mcu, br
 
     if(instr->group != VMCU_GROUP_FLOW) {
 
-        b->t = mod(a + 1, mcu->flash.size);
+        b->t = mod(a + instr->dword + 1, f);
         b->f = -1;
 
         return;
@@ -139,8 +139,8 @@ static void tf(vmcu_report_t *report, vmcu_instr_t *instr, vmcu_model_t *mcu, br
 
     if((src == VMCU_OPTYPE_S7) || (src == VMCU_OPTYPE_S12)) {
 
-        b->t = mod(a + s + 1, mcu->flash.size);
-        b->f = (src == VMCU_OPTYPE_S7) ? mod(a + 1, mcu->flash.size) : -1;
+        b->t = mod(a + s + 1, f);
+        b->f = (src == VMCU_OPTYPE_S7) ? mod(a + 1, f) : -1;
 
         return;
     }
