@@ -540,8 +540,8 @@ take a look at engine/*/arch/
 
 # Static Analysis
 
-- [x] Disassembler
-- [x] Cross references (xref-from, xref-to)
+- [x] disassembler
+- [x] cross references (xref-from, xref-to)
 - [ ] analyzer flags
 
 - [x] Decompose and classify instructions
@@ -549,13 +549,14 @@ take a look at engine/*/arch/
   - [x] operands and operand types
 
 - [x] Analyzer for AVR binaries
-   - [x] Label analysis
-   - [x] Vector analysis  
-   - [ ] Function analysis
+   - [x] label analysis
+   - [x] vector analysis
+   - [x] controlflow analysis
+   - [ ] function analysis
    - [ ] ISR analysis
    - [x] SFR analysis
-   - [ ] Cycle analysis
-   - [x] String analysis
+   - [ ] cycle analysis
+   - [x] string analysis
      - [x] ASCII
      - [ ] UTF16
    - [ ] ...
