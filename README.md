@@ -5,7 +5,7 @@
 
 # libvmcu - Virtual MCU Library
 
-<img src="https://raw.githubusercontent.com/Milo-D/libvmcu-Virtual-MCU-Library/master/images/libvmcu_architecture.svg" width="75%">
+<img src="https://user-images.githubusercontent.com/46600932/124829351-d060b380-df78-11eb-9ff6-39ac6e392893.png" width="75%">
 
 libvmcu is a small engine for static and dynamic analysis of AVR Microcontroller binaries.
 
@@ -408,6 +408,7 @@ void print_instruction(const vmcu_instr_t *instr) {
 
 ![disasm_driver](https://user-images.githubusercontent.com/46600932/122659005-6a4ff000-d173-11eb-9c11-bb161de24d5d.png)
 <sup>An example of a small disassembler</sup>
+
 # How libvmcu works
 
 ### Device Models
