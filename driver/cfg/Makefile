@@ -18,3 +18,4 @@ debug: $(TARGET).c
 clean:
 	@-rm $(TARGET).o
 	@-rm $(TARGET)
+	@-rm -f graph.dot graph.png
