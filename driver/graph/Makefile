@@ -11,7 +11,7 @@ all: $(TARGET).c
 	@rm $(TARGET).o
 
 debug: $(TARGET).c
-	gcc $(INCLUDE) -c $(TARGET).c -g -o $(TARGET).o
+	gcc -Wall -Wextra $(INCLUDE) -c $(TARGET).c -g -o $(TARGET).o
 	gcc -g -o $(TARGET) $(TARGET).o -L$(LIB_DBG)/ $(LIBS)
 	@rm $(TARGET).o
 
