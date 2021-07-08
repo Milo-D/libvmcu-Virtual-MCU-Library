@@ -5,7 +5,7 @@
 
 # libvmcu - Virtual MCU Library
 
-<img src="https://user-images.githubusercontent.com/46600932/124829351-d060b380-df78-11eb-9ff6-39ac6e392893.png" width="75%">
+<img src="https://user-images.githubusercontent.com/46600932/124859431-37e62580-dfb0-11eb-9368-25a5d954d809.png" width="75%">
 
 libvmcu is a small engine for static and dynamic analysis of AVR Microcontroller binaries.
 
