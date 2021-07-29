@@ -17,6 +17,8 @@
 #define COLOR_CYAN    "\x1b[36m"
 #define COLOR_RESET   "\x1b[0m"
 
+#define SEP "------------------------------------------------------------------------------------------------\n"
+
 #define mnemlen(mnem) strlen(mnem->base) \
                     + strlen(mnem->src)  \
                     + strlen(mnem->dest)
@@ -74,7 +76,7 @@ int main(const int argc, const char **argv) {
             print_instruction(node->f->xto.i);
         }
 
-        printf("------------------------------------------------------------------------------------------------\n");
+        printf(SEP);
     }
 
     return EXIT_SUCCESS;
