@@ -44,3 +44,5 @@ These are a some of my ideas for the future of libvmcu
 [13] adjust driver makefiles (debug recipe, add -g -o)
 
 [14] speed up controlflow analysis by adding a lookup table for the cfg nodes
+
+[15] fix inconsistency of xref-to
