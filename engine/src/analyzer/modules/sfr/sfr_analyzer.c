@@ -19,17 +19,17 @@ static inline bool operand_is_sfr_related(vmcu_operand_t *op, vmcu_model_t *mcu)
 
 static VMCU_SFR get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu);
 
-static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *mcu);
+static vmcu_sfr_t* get_sfrs(const uint32_t *sfr_map, uint32_t size, vmcu_model_t *mcu);
 static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr, vmcu_model_t *mcu);
 
 /* --- Extern --- */
 
 int vmcu_analyze_sfr(vmcu_report_t *report, vmcu_model_t *mcu) {
 
-    int32_t *sfr_map = malloc(mcu->sfr.section.size * sizeof(int32_t));
-    memset(sfr_map, 0, mcu->sfr.section.size * sizeof(int32_t));
+    uint32_t *sfr_map = malloc(mcu->sfr.section.size * sizeof(uint32_t));
+    memset(sfr_map, 0, mcu->sfr.section.size * sizeof(uint32_t));
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
         VMCU_SFR id = get_id_by_instr(instr, mcu);
@@ -43,12 +43,12 @@ int vmcu_analyze_sfr(vmcu_report_t *report, vmcu_model_t *mcu) {
         sfr_map[id] += 1;
     }
 
-    if(report->n_sfr <= 0)
+    if(report->n_sfr == 0)
         goto cleanup;
 
     report->sfr = get_sfrs(sfr_map, report->n_sfr, mcu);
 
-    for(int32_t i = 0; i < report->n_sfr; i++) {
+    for(uint32_t i = 0; i < report->n_sfr; i++) {
 
         vmcu_sfr_t *sfr = &report->sfr[i];
 
@@ -111,11 +111,11 @@ static VMCU_SFR get_id_by_instr(vmcu_instr_t *instr, vmcu_model_t *mcu) {
     return mcu->sfr.layout[op->io];
 }
 
-static vmcu_sfr_t* get_sfrs(const int32_t *sfr_map, int32_t size, vmcu_model_t *mcu) {
+static vmcu_sfr_t* get_sfrs(const uint32_t *sfr_map, uint32_t size, vmcu_model_t *mcu) {
 
     vmcu_sfr_t *sfrs = malloc(size * sizeof(vmcu_sfr_t));
 
-    for(int32_t i = 0, j = 0; i < mcu->sfr.section.size; i++) {
+    for(uint32_t i = 0, j = 0; i < mcu->sfr.section.size; i++) {
 
         if(sfr_map[i] == 0)
             continue;
@@ -135,7 +135,7 @@ static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_sfr_t *sfr, vmcu_model
 
     vmcu_xref_t *xrefs = malloc(sfr->n_xfrom * sizeof(vmcu_xref_t));
 
-    for(int32_t i = 0, j = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0, j = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
 

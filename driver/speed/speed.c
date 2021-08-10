@@ -47,17 +47,13 @@ int main(const int argc, const char **argv) {
 
     sys = vmcu_system_ctor(report);
 
-    int32_t pc; double start, end;
-    clock_t timer = clock();
+    double start, end;
 
+    clock_t timer = clock();
     start = clock();
 
-    do {
-
-        pc = vmcu_system_get_pc(sys);
+    while(vmcu_system_get_pc(sys) != 0x0047)
         vmcu_system_step(sys);
-
-    } while(pc != 0x0047);
 
     end = clock() - start;
 

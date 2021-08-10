@@ -5,8 +5,11 @@
 
 #define INSTR_MAX 131
 
+// C Headers
+#include <inttypes.h>
+
 typedef struct vmcu_system vmcu_system_t;
 
-extern void (*vmcu_execute[INSTR_MAX]) (vmcu_system_t *sys, const int opcode);
+extern void (*vmcu_execute[INSTR_MAX]) (vmcu_system_t *sys, const uint32_t opcode);
 
 #endif

@@ -117,9 +117,9 @@ void vmcu_data_update_io(const vmcu_data_t *this, const uint32_t cpu_clk, const 
     vmcu_io_update(this->io, cpu_clk, dc);
 }
 
-int vmcu_data_check_irq(const vmcu_data_t *this) {
+int vmcu_data_check_irq(const vmcu_data_t *this, uint32_t *isr) {
 
-    return vmcu_io_check_irq(this->io);
+    return vmcu_io_check_irq(this->io, isr);
 }
 
 void vmcu_data_set_sfr(vmcu_data_t *this, const uint16_t addr, const int bit) {

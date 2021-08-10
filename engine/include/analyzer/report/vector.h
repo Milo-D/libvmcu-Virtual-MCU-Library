@@ -15,9 +15,9 @@
 typedef struct vmcu_vector {
 
     VMCU_VECT id;
-    uint16_t addr;
+    uint32_t addr;
 
-    int32_t n_xto;
+    uint32_t n_xto;
     vmcu_xref_t *xto;
 
 } vmcu_vector_t;

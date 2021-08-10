@@ -43,7 +43,7 @@ extern void vmcu_io_dtor(vmcu_io_t *this);
 /* IO Operations */
 
 extern void vmcu_io_update(vmcu_io_t *this, const uint32_t cpu_clk, const uint64_t dc);
-extern int vmcu_io_check_irq(const vmcu_io_t *this);
+extern int vmcu_io_check_irq(const vmcu_io_t *this, uint32_t *isr);
 extern void vmcu_io_reboot(const vmcu_io_t *this);
 
 /* EEPROM Operations */

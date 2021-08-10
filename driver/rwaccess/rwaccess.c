@@ -5,11 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include <time.h>
 
 // libvmcu
 #include "libvmcu_analyzer.h"
-#include "libvmcu_system.h"
 
 /* libvmcu Structures */
 
@@ -40,7 +38,7 @@ int main(const int argc, const char **argv) {
     if(report == NULL)
         return EXIT_FAILURE;
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
         print_instruction(instr);

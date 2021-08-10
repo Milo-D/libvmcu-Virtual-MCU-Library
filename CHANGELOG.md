@@ -1,6 +1,26 @@
 # Changelog
 
-# Unreleased
+# v.0.8.12 - 2021-08-10
+
+- reduction of heap usage and overall memory usage
+  - only 10 heap allocs needed to disassemble an intel hex file
+
+- getting rid of basic integers in important sections
+  - flash address is now represented as uint32_t 
+  - opcodes are (finally) represented as uint32_t
+  - for more user relevant changes see libvmcu headers
+
+- the disassembly is now sorted (ascending, sorted by address)
+  - this change is mandatory for the cfg
+
+- refactored decoder
+  - decoder operates now on an intermediate representation (binary_buffer) of the binary
+
+- added vmcu_binary_buffer_t (only for internal usage)
+  - this serves as an intermediate representation for the decoder
+  - every single format reader (reader/) should return a binary buffer
+
+- refactored intel hex reader
 
 - adjusted example section in README
 

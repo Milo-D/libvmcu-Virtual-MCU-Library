@@ -34,14 +34,14 @@ int vmcu_annotate_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t 
     return 0;
 }
 
-vmcu_instr_t* vmcu_annotate_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
+vmcu_instr_t* vmcu_annotate_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu) {
 
     vmcu_instr_t *instr_list;
 
     if((instr_list = vmcu_decode_ihex(hex_file, size, mcu)) == NULL)
         return NULL;
 
-    for(int32_t i = 0; i < *size; i++) {
+    for(uint32_t i = 0; i < *size; i++) {
 
         vmcu_instr_t *instr = &(instr_list[i]);
 

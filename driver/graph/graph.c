@@ -85,7 +85,7 @@ int main(const int argc, const char **argv) {
     struct CFGBlock** blocks = obtain_blocks(report, &nblocks);
 
     for(uint32_t i = 0; i < nblocks; i++) {
-	print_block(blocks[i], file);
+	    print_block(blocks[i], file);
     }
     
     for(uint32_t i = 0; i < nblocks; i++) {
@@ -105,7 +105,6 @@ int main(const int argc, const char **argv) {
     free(blocks);
     
     if(report != NULL) vmcu_report_dtor(report);
-
     if(m328p != NULL) vmcu_model_dtor(m328p);
 
     return EXIT_SUCCESS;
@@ -203,8 +202,8 @@ static uint32_t branch_from(vmcu_cfg_node_t* node){
 
 static uint32_t get_highest_addr(vmcu_report_t* report){
 	vmcu_instr_t* disassembly = report->disassembly;
-	int32_t highest_addr = 0;
-	for(int32_t i = 0; i < report->progsize; i++){
+	uint32_t highest_addr = 0;
+	for(uint32_t i = 0; i < report->progsize; i++){
 		if(disassembly[i].addr > highest_addr){
 			highest_addr = disassembly[i].addr;
 		}

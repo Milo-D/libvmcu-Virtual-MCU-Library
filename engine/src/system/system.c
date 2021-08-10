@@ -19,7 +19,7 @@
 /* Forward Declaration of static Functions */
 
 static void system_update_io(vmcu_system_t *this, const uint64_t dc);
-static void system_exec_isr(vmcu_system_t *this, const int isr);
+static void system_exec_isr(vmcu_system_t *this, const uint32_t isr);
 
 /* --- Extern --- */
 
@@ -95,7 +95,7 @@ int vmcu_system_step(vmcu_system_t *this) {
     } else if(p->dword == true) {
 
         uint16_t opcl = vmcu_flash_read(this->flash, this->flash->pc + 1);
-        (*vmcu_execute[p->key])(this, (p->opcode << 16) + opcl);
+        (*vmcu_execute[p->key])(this, ((uint32_t) p->opcode << 16) + opcl);
 
     } else {
 
@@ -110,7 +110,10 @@ int vmcu_system_step(vmcu_system_t *this) {
 
 void vmcu_system_backstep(vmcu_system_t *this) {
 
-    int counter = this->steps - 1;
+    if(this->steps == 0)
+        return;
+
+    uint64_t counter = this->steps - 1;
     vmcu_system_reboot(this);
 
     while(counter-- > 0)
@@ -160,27 +163,27 @@ uint8_t vmcu_system_dump_sreg(const vmcu_system_t *this) {
     return vmcu_sreg_dump(this->sreg);
 }
 
-vmcu_progmem_t* vmcu_system_read_progmem(const vmcu_system_t *this, const int addr) {
+vmcu_progmem_t* vmcu_system_read_progmem(const vmcu_system_t *this, const uint32_t addr) {
 
     return vmcu_flash_read_progmem(this->flash, addr);
 }
 
-uint16_t vmcu_system_read_flash(const vmcu_system_t *this, const int addr) {
+uint16_t vmcu_system_read_flash(const vmcu_system_t *this, const uint32_t addr) {
 
     return vmcu_flash_read(this->flash, addr);
 }
 
-void vmcu_system_move_pc(const vmcu_system_t *this, const int inc) {
+void vmcu_system_move_pc(const vmcu_system_t *this, const int64_t inc) {
 
     vmcu_flash_move_pc(this->flash, inc);
 }
 
-void vmcu_system_set_pc(vmcu_system_t *this, const int addr) {
+void vmcu_system_set_pc(vmcu_system_t *this, const uint32_t addr) {
 
     vmcu_flash_set_pc(this->flash, addr);
 }
 
-int vmcu_system_get_pc(const vmcu_system_t *this) {
+uint32_t vmcu_system_get_pc(const vmcu_system_t *this) {
 
     return vmcu_flash_get_pc(this->flash);
 }
@@ -254,16 +257,16 @@ static void system_update_io(vmcu_system_t *this, const uint64_t dc) {
 
     if(iflag == true) {
 
-        const int isr = vmcu_data_check_irq(this->data);
-        
-        if(isr >= 0)
+        uint32_t isr = 0x0000;
+
+        if(vmcu_data_check_irq(this->data, &isr) != -1)
             system_exec_isr(this, isr);
     }
 }
 
-static void system_exec_isr(vmcu_system_t *this, const int isr) {
+static void system_exec_isr(vmcu_system_t *this, const uint32_t isr) {
 
-    const int pc = vmcu_flash_get_pc(this->flash);
+    const uint32_t pc = vmcu_flash_get_pc(this->flash);
 
     vmcu_data_push(this->data, pc & 0x00ff);
     vmcu_data_push(this->data, (pc & 0xff00) >> 8);

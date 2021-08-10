@@ -25,10 +25,10 @@ int main(const int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-    const uint32_t opc = htoi(argv[1]);
-
     vmcu_instr_t instr;
     vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
+
+    const uint32_t opc = htoi(argv[1]);
 
     if(vmcu_disassemble_bytes(opc, &instr, m328p) < 0) {
 
@@ -50,8 +50,8 @@ static void print_instr(vmcu_instr_t *instr, const uint32_t opcode) {
 
     printf("---- Instruction details of 0x%04x ----\n", opcode);
 
-    printf("opcode:     0x%04x\n", instr->opcode);
-    printf("address:    0x%04x\n", instr->addr);
+    printf("opcode:     0x%04" PRIx32 "\n", instr->opcode);
+    printf("address:    0x%04" PRIx32 "\n", instr->addr);
 
     printf("mnemonic:   ");
     print_mnemonic(instr);

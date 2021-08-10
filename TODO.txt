@@ -4,9 +4,6 @@ These are a some of my ideas for the future of libvmcu
 
 /********************************* Features ***************************************/
 
-[0] controlflow graph (cfg)
-    [0.1] requires slab allocator to minimize memory requests
-
 [1] McCabe's cyclomatic complexity
     [1.1] requires controlflow graph, see [0]
 
@@ -37,9 +34,7 @@ These are a some of my ideas for the future of libvmcu
 
 /********************************* Internal / Cleanup *****************************/
 
-[11] sort instructions by address in disassembly (important)
-
-[12] remove usage of basic integers (int) in libvmcu
+[12] remove usage of basic integers (int) in libvmcu (nearly done)
 
 [13] adjust driver makefiles (debug recipe, add -g -o)
 

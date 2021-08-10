@@ -14,29 +14,29 @@
 
 /* Forward Declaration of static Functions */
 
-static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size);
-static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size);
+static uint32_t* preprocess_labels(const vmcu_report_t *report, uint32_t *size);
+static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, uint32_t *size);
 
 static bool is_branch(const VMCU_IKEY key);
-static bool in_disasm(const vmcu_report_t *report, const int addr);
-static bool label_exists(const uint16_t *field, const uint16_t addr, const int k);
+static bool in_disasm(const vmcu_report_t *report, const uint32_t addr);
+static bool label_exists(const uint32_t *field, const uint32_t addr, const uint32_t k);
 
-static int cmp_u16(const void *a, const void *b);
+static int cmp_u32(const void *a, const void *b);
 
 /* --- Extern --- */
 
 int vmcu_analyze_labels(vmcu_report_t *report) {
 
-    uint16_t *field = preprocess_labels(report, &report->n_label);
-    qsort(field, report->n_label, sizeof(uint16_t), cmp_u16);
+    uint32_t *field = preprocess_labels(report, &report->n_label);
+    qsort(field, report->n_label, sizeof(uint32_t), cmp_u32);
 
-    if(report->n_label <= 0)
+    if(report->n_label == 0)
         goto cleanup;
 
     size_t bytes = report->n_label * sizeof(vmcu_label_t);
     report->label = malloc(bytes);
 
-    for(int i = 0; i < report->n_label; i++) {
+    for(uint32_t i = 0; i < report->n_label; i++) {
 
         vmcu_label_t *lx = &report->label[i];
 
@@ -44,7 +44,7 @@ int vmcu_analyze_labels(vmcu_report_t *report) {
         lx->addr     = field[i];
         lx->n_xfrom  = 0;
 
-        int32_t *size = &lx->n_xfrom;
+        uint32_t *size = &lx->n_xfrom;
         lx->xfrom = get_xrefs(report, lx, size);
     }
 
@@ -55,42 +55,40 @@ cleanup:
 
 /* --- Static --- */
 
-static uint16_t* preprocess_labels(const vmcu_report_t *report, int32_t *size) {
+static uint32_t* preprocess_labels(const vmcu_report_t *report, uint32_t *size) {
 
-    int addr;
+    int64_t jloc = 0;
+    uint32_t *field = malloc(report->progsize * sizeof(uint32_t));
 
-    const int32_t psize = report->progsize;
-    uint16_t *field = malloc(psize * sizeof(uint16_t));
-
-    for(int i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
 
         if(is_branch(instr->key) == false)
             continue;
 
-        if((addr = vmcu_resolve_flow(instr)) < 0)
+        if((jloc = vmcu_resolve_flow(instr)) < 0)
             continue;
 
-        if(in_disasm(report, addr) == false)
+        if(in_disasm(report, jloc) == false)
             continue;
 
-        if(label_exists(field, addr, *size))
+        if(label_exists(field, jloc, *size))
             continue;
 
-        field[*size] = addr;
+        field[*size] = jloc;
         *size += 1;
     }
 
     return field;
 }
 
-static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, int32_t *size) {
+static vmcu_xref_t* get_xrefs(vmcu_report_t *report, vmcu_label_t *lx, uint32_t *size) {
 
-    int32_t nc = NXREF;
+    uint32_t nc = NXREF;
     vmcu_xref_t *xrefs = malloc(nc * sizeof(vmcu_xref_t));
 
-    for(int i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
 
@@ -164,9 +162,9 @@ static bool is_branch(const VMCU_IKEY key) {
     return false;
 }
 
-static bool in_disasm(const vmcu_report_t *report, const int addr) {
+static bool in_disasm(const vmcu_report_t *report, const uint32_t addr) {
 
-    for(int i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         if(addr == report->disassembly[i].addr)
             return true;
@@ -175,9 +173,9 @@ static bool in_disasm(const vmcu_report_t *report, const int addr) {
     return false;
 }
 
-static bool label_exists(const uint16_t *field, const uint16_t addr, const int k) {
+static bool label_exists(const uint32_t *field, const uint32_t addr, const uint32_t k) {
 
-    for(int i = 0; i < k; i++) {
+    for(uint32_t i = 0; i < k; i++) {
 
         if(field[i] == addr)
             return true;
@@ -186,9 +184,9 @@ static bool label_exists(const uint16_t *field, const uint16_t addr, const int k
     return false;
 }
 
-static int cmp_u16(const void *a, const void *b) {
+static int cmp_u32(const void *a, const void *b) {
 
-    return (*((uint16_t*) a) - *((uint16_t*) b));
+    return (*((uint32_t*) a) - *((uint32_t*) b));
 }
 
 

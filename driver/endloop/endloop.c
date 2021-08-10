@@ -6,7 +6,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <inttypes.h>
-#include <time.h>
 
 // libvmcu
 #include "libvmcu_analyzer.h"
@@ -55,7 +54,7 @@ int main(const int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
 
@@ -67,7 +66,7 @@ int main(const int argc, const char **argv) {
         else
             printf("unconditional endloop:\t");
 
-        printf("0x%04x\t", instr->addr);
+        printf("0x%04" PRIx32 "\t", instr->addr);
         print_instruction(instr);
     }
 

@@ -6,19 +6,18 @@
 #include <string.h>
 #include <stdbool.h>
 
-// Project Headers (engine)
+// Project Headers (engine, readers)
 #include "engine/include/reader/ihex_reader.h"
-#include "engine/include/analyzer/report/instr.h"
+#include "engine/include/reader/binary_buffer.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/misc/filemanip.h"
 #include "engine/include/misc/bitmanip.h"
-#include "engine/include/misc/memmanip.h"
 #include "engine/include/misc/stringmanip.h"
 
 #define RECORD 8
 #define DATA_RECORD '0'
-#define IHEX_MINLEN 11
+#define IHEX_MIN_LENGTH 11
 
 #define base(i) RECORD + (i * 4)
 
@@ -26,8 +25,9 @@
 
 typedef struct ihex_properties {
 
-    int s_addr;
-    int byte_count;
+    uint32_t byte_count;
+    uint32_t s_addr;
+    uint8_t record;
 
     char *line;
 
@@ -35,67 +35,57 @@ typedef struct ihex_properties {
 
 /* Forward Declaration of static Functions */
 
-static bool check_ihex(const char *line);
-static int read_ihex_line(char *line, vmcu_instr_t *buffer, int32_t *size);
-static int get_ihex_properties(const char *line, ihex_properties_t *buffer);
+static bool verify_ihex_line(const char *line);
+static uint32_t estimate_buffer_size(const char *hex_file);
+
+static int32_t read_ihex_file(const char *hex_file, vmcu_binary_buffer_t *bb, uint32_t *size);
+static int32_t read_ihex_line(char *line, vmcu_binary_buffer_t *bb, uint32_t *size);
+
+static int32_t get_ihex_properties(char *line, ihex_properties_t *prop);
 
 /* --- Extern --- */
 
-vmcu_instr_t* vmcu_read_ihex(const char *hex_file, int32_t *size) {
+vmcu_binary_buffer_t * vmcu_read_ihex(const char *hex_file, uint32_t *size) {
 
-    long bytes; *size = 0;
+    uint32_t n;
+    vmcu_binary_buffer_t *bb;
 
-    if((bytes = vmcu_fbytes(hex_file)) < 4)
+    if((n = estimate_buffer_size(hex_file)) == 0)
         return NULL;
 
-    FILE *file = fopen(hex_file, "r");
-    size_t len; char *line = NULL;
+    if((bb = malloc(n * sizeof(vmcu_binary_buffer_t))) == NULL)
+        return NULL;
 
-    const size_t sz = sizeof(vmcu_instr_t);
-    vmcu_instr_t *buffer = malloc((bytes / 4) * sz);
+    if(read_ihex_file(hex_file, bb, size) < 0) {
 
-    while(getline(&line, &len, file) != -1) {
-
-        if(check_ihex(line) == false) {
-
-            *size = 0;
-            goto err;
-        }
-
-        if(line[RECORD] != DATA_RECORD)
-            continue;
-
-        if(read_ihex_line(line, buffer, size) < 0) {
-
-            *size = 0;
-            goto err;
-        }
+        free(bb);
+        return NULL;
     }
 
-    if(*size == 0)
-        goto err;
+    if(*size == 0) {
 
-    /* adjusting size */
-    buffer = realloc(buffer, *size * sz);
+        free(bb);
+        return NULL;
+    }
 
-    free(line);
-    fclose(file);
-
-    return buffer;
-
-err:
-    fclose(file);
-    free(buffer);
-    free(line);
-
-    return NULL;
+    return bb;
 }
 
 /* --- Static --- */
 
-static bool check_ihex(const char *line) {
+static uint32_t estimate_buffer_size(const char *hex_file) {
 
-    if(strlen(line) < IHEX_MINLEN)
+    long bytes;
+
+    if((bytes = vmcu_fbytes(hex_file)) < 4)
+        return 0;
+
+    return (bytes / 4);
+}
+
+static bool verify_ihex_line(const char *line) {
+
+    if(strlen(line) < IHEX_MIN_LENGTH)
         return false;
 
     if(strchr(line, ':') == NULL)
@@ -104,76 +94,93 @@ static bool check_ihex(const char *line) {
     return true;
 }
 
-static int read_ihex_line(char *line, vmcu_instr_t *buffer, int32_t *size) {
+static int32_t read_ihex_file(const char *hex_file, vmcu_binary_buffer_t *bb, uint32_t *size) {
 
-    ihex_properties_t ihex; int32_t top = *size;
+    FILE *f = NULL;
+    size_t len; char *line = NULL;
 
-    if(get_ihex_properties(line, &ihex) < 0)
+    if((f = fopen(hex_file, "r")) == NULL)
         return -1;
 
-    for(int i = 0; i < (ihex.byte_count / 2); i++) {
+    while(getline(&line, &len, f) != -1) {
 
-        int opc;
+        if(read_ihex_line(line, bb, size) < 0) {
 
-        if((base(i) + 3) >= strlen(ihex.line))
-            goto error;
+            *size = 0;
+
+            free(line);
+            fclose(f);
+
+            return -1;
+        }
+    }
+
+    free(line);
+    fclose(f);
+
+    return 0;
+}
+
+static int32_t read_ihex_line(char *line, vmcu_binary_buffer_t *bb, uint32_t *size) {
+
+    ihex_properties_t prop;
+
+    if(get_ihex_properties(line, &prop) < 0)
+        return -1;
+
+    if(prop.record != DATA_RECORD)
+        return 0;
+
+    for(uint32_t i = 0; i < (prop.byte_count / 2); i++) {
+
+        int64_t hex_bytes;
+
+        if((base(i) + 3) >= strlen(prop.line))
+            return -1;
 
         char current[5] = {
 
-            ihex.line[base(i) + 0],
-            ihex.line[base(i) + 1],
-            ihex.line[base(i) + 2],
-            ihex.line[base(i) + 3],
+            prop.line[base(i) + 0],
+            prop.line[base(i) + 1],
+            prop.line[base(i) + 2],
+            prop.line[base(i) + 3],
             '\0'
         };
 
         if(strcmp(current, "") == 0)
-            goto error;
+            return -1;
 
-        if((opc = vmcu_htoi(current)) < 0)
-            goto error;
+        if((hex_bytes = vmcu_htoi(current)) < 0)
+            return -1;
 
-        buffer[top + i] = (vmcu_instr_t) {
+        bb[*size] = (vmcu_binary_buffer_t) {
 
-            .opcode = big_endian16(opc),
-            .addr   = ((ihex.s_addr / 2 ) + i)
+            .bytes  = hex_bytes,
+            .addr   = ((prop.s_addr / 2) + i)
         };
 
         *size += 1;
     }
 
-    free(ihex.line);
     return 0;
-
-error:
-    free(ihex.line);
-    return -1;
 }
 
-static int get_ihex_properties(const char *line, ihex_properties_t *buffer) {
+static int32_t get_ihex_properties(char *line, ihex_properties_t *prop) {
 
-    char *bytes; char *addr;
-    const size_t hex_len = strlen(line);
-
-    if((buffer->line = vmcu_substr(line, 1, hex_len)) == NULL)
+    if(verify_ihex_line(line) == false)
         return -1;
 
-    if((bytes = vmcu_substr(buffer->line, 0, 1)) == NULL) {
+    char bytes[3] = { line[1], line[2], '\0' };
+    char addr [5] = { line[3], line[4], line[5], line[6], '\0' };
 
-        free(buffer->line);
-        return -1;
-    }
+    *prop = (ihex_properties_t) {
 
-    if((addr = vmcu_substr(buffer->line, 2, 5)) == NULL) {
+        .byte_count = vmcu_htoi(bytes),
+        .s_addr     = vmcu_htoi(addr),
+        .record     = line[RECORD],
+        .line       = line + 1
+    };
 
-        vmcu_nfree(2, buffer->line, bytes);
-        return -1;
-    }
-
-    buffer->s_addr = vmcu_htoi(addr);
-    buffer->byte_count = vmcu_htoi(bytes);
-
-    vmcu_nfree(2, bytes, addr);
     return 0;
 }
 

@@ -33,14 +33,14 @@ vmcu_system_t *sys    = NULL;
 
 /* Forward Declaration of static Functions */
 
-static void print_disassembly(const int32_t pc);
+static void print_disassembly(const uint32_t pc);
 static void print_instruction(vmcu_instr_t *instr, const bool is_pc);
 static void print_instruction_details(vmcu_instr_t *instr, const bool is_pc);
 static void print_colored_base(const char *basestr, VMCU_GROUP group);
 static void print_colored_operands(const char *opstr, VMCU_OPTYPE optype);
 static void add_padding(const size_t length, const size_t max);
 
-static int find_pc(const int32_t pc);
+static int64_t find_pc(const uint32_t pc);
 static void cleanup(void);
 
 /* --- Extern --- */
@@ -67,7 +67,7 @@ int main(const int argc, const char **argv) {
 
     do {
 
-        int32_t pc = vmcu_system_get_pc(sys);
+        uint32_t pc = vmcu_system_get_pc(sys);
         print_disassembly(pc);
 
         c = getchar();
@@ -82,16 +82,16 @@ int main(const int argc, const char **argv) {
 
 /* --- Static --- */
 
-static void print_disassembly(const int32_t pc) {
+static void print_disassembly(const uint32_t pc) {
 
-    int index;
+    int64_t index;
 
     if((index = find_pc(pc)) < 0)
         return;
 
     system("clear");
 
-    for(int i = (index - MAX); i <= (index + MAX) ; i++) {
+    for(int64_t i = (index - MAX); i <= (index + MAX); i++) {
 
         if(i < 0 || i >= report->progsize) {
 
@@ -131,7 +131,7 @@ static void print_instruction(vmcu_instr_t *instr, const bool is_pc) {
 
 static void print_instruction_details(vmcu_instr_t *instr, const bool is_pc) {
 
-    printf("0x%04x", instr->addr);
+    printf("0x%04" PRIx32, instr->addr);
 
     if(is_pc == true)
         printf(" [->] ");
@@ -147,9 +147,9 @@ static void print_instruction_details(vmcu_instr_t *instr, const bool is_pc) {
     if(instr->dword == false)
         printf("      %s....%s ", COLOR_GREEN, COLOR_RESET);
     else
-        printf("      %s%04x%s ", COLOR_GREEN, swph, COLOR_RESET);
+        printf("      %s%04" PRIx16 "%s ", COLOR_GREEN, swph, COLOR_RESET);
 
-    printf("%s%04x%s      ", COLOR_YELLOW, swpl, COLOR_RESET);
+    printf("%s%04" PRIx16 "%s      ", COLOR_YELLOW, swpl, COLOR_RESET);
 }
 
 static void print_colored_base(const char *basestr, VMCU_GROUP group) {
@@ -218,9 +218,9 @@ static void add_padding(const size_t length, const size_t max) {
     printf("%s", pad);
 }
 
-static int find_pc(const int32_t pc) {
+static int64_t find_pc(const uint32_t pc) {
 
-    for(int i = 0; i < report->progsize; i++) {
+    for(int64_t i = 0; i < report->progsize; i++) {
 
         if(report->disassembly[i].addr == pc)
             return i;

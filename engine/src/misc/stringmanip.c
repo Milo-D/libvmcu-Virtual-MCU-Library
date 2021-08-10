@@ -34,10 +34,10 @@ char* vmcu_substr(const char *str, const int from, const int to) {
     return sub;
 }
 
-int vmcu_htoi(const char *input) {
+int64_t vmcu_htoi(const char *input) {
 
     unsigned int len = strlen(input);
-    int dec = 0; int base = 1; int end = 0;
+    int64_t dec = 0; int base = 1; int end = 0;
 
     if(len > 1) {
 

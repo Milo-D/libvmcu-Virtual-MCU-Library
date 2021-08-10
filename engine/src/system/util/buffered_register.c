@@ -8,7 +8,7 @@ void vmcu_buffered_register_write(vmcu_buffered_register_t *this, const int8_t v
     this->buffer = value;
 }
 
-int buffered_register_update(vmcu_buffered_register_t *this) {
+int vmcu_buffered_register_update(vmcu_buffered_register_t *this) {
 
     if(*(this->cmp_with) != this->condition)
         return VMCU_BUFFERED_REGISTER_NOT_WRITTEN;

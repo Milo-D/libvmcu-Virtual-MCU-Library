@@ -36,27 +36,27 @@ vmcu_report_t* vmcu_report_ctor(void) {
 
 void vmcu_report_dtor(vmcu_report_t *this) {
 
-    for(int32_t i = 0; i < this->n_sfr; i++) {
+    for(uint32_t i = 0; i < this->n_sfr; i++) {
 
-        if(this->sfr[i].n_xfrom > 0)
+        if(this->sfr[i].n_xfrom != 0)
             free(this->sfr[i].xfrom);
     }
 
-    for(int32_t i = 0; i < this->n_label; i++) {
+    for(uint32_t i = 0; i < this->n_label; i++) {
 
-        if(this->label[i].n_xfrom > 0)
+        if(this->label[i].n_xfrom != 0)
             free(this->label[i].xfrom);
     }
 
-    for(int32_t i = 0; i < this->n_vector; i++) {
+    for(uint32_t i = 0; i < this->n_vector; i++) {
 
-        if(this->vector[i].n_xto > 0)
+        if(this->vector[i].n_xto != 0)
             free(this->vector[i].xto);
     }
 
-    for(int32_t i = 0; i < this->n_string; i++) {
+    for(uint32_t i = 0; i < this->n_string; i++) {
 
-        if(this->string[i].length > 0)
+        if(this->string[i].length != 0)
             free(this->string[i].bytes);
     }
 

@@ -21,8 +21,8 @@ typedef struct vmcu_instr {
 
         VMCU_IKEY key;
 
-        int opcode;
-        int addr;
+        uint32_t opcode;
+        uint32_t addr;
 
         bool exec;
         bool dword;

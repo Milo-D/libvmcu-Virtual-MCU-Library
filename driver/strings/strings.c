@@ -39,7 +39,7 @@ int main(const int argc, const char **argv) {
     if(report == NULL)
         return EXIT_FAILURE;
 
-    for(int32_t i = 0; i < report->n_string; i++) {
+    for(uint32_t i = 0; i < report->n_string; i++) {
 
         vmcu_string_t *str = &report->string[i];
 
@@ -47,8 +47,8 @@ int main(const int argc, const char **argv) {
         print_string(str);
         printf("\" ");
 
-        printf("l = %d", str->length);
-        printf(" @ 0x%04x\n", str->addr);
+        printf("l = %" PRIu64, str->length);
+        printf(" @ 0x%04" PRIx32 "\n", str->addr);
     }
 
     printf("\nTotal strings found: %d\n", report->n_string);
@@ -66,7 +66,7 @@ static void print_string(const vmcu_string_t *str) {
      * This function only handles '\n'.
      * */
 
-    for(int32_t i = 0; i < str->length; i++) {
+    for(uint64_t i = 0; i < str->length; i++) {
 
         const char ch = str->bytes[i];
 

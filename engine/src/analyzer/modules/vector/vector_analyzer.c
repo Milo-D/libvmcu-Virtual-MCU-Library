@@ -57,7 +57,7 @@
 
 static bool interrupts_enabled(vmcu_report_t *report);
 
-static vmcu_vector_t* get_vectors(vmcu_report_t *report, int32_t *size, vmcu_model_t *mcu);
+static vmcu_vector_t* get_vectors(vmcu_report_t *report, uint32_t *size, vmcu_model_t *mcu);
 static VMCU_VECT get_vector_id(vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 static void set_xref(vmcu_vector_t *vect, vmcu_report_t *report, vmcu_instr_t *instr);
@@ -82,7 +82,7 @@ int vmcu_analyze_vectors(vmcu_report_t *report, vmcu_model_t *mcu) {
 
 static bool interrupts_enabled(vmcu_report_t *report) {
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         if(report->disassembly[i].key == VMCU_IKEY_SEI)
             return true;
@@ -91,11 +91,11 @@ static bool interrupts_enabled(vmcu_report_t *report) {
     return false;
 }
 
-static vmcu_vector_t* get_vectors(vmcu_report_t *report, int32_t *size, vmcu_model_t *mcu) {
+static vmcu_vector_t* get_vectors(vmcu_report_t *report, uint32_t *size, vmcu_model_t *mcu) {
 
     vmcu_vector_t *vectors = malloc(mcu->vtable.n_vect * sizeof(vmcu_vector_t));
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
         VMCU_VECT vector_id = get_vector_id(instr, mcu);
@@ -118,7 +118,7 @@ static vmcu_vector_t* get_vectors(vmcu_report_t *report, int32_t *size, vmcu_mod
         *size += 1;
     }
 
-    if(*size <= 0) {
+    if(*size == 0) {
 
         free(vectors);
         return NULL;
@@ -144,15 +144,14 @@ static VMCU_VECT get_vector_id(vmcu_instr_t *instr, vmcu_model_t *mcu) {
     if(((instr->addr - mcu->vtable.dfl.start) & 1) == 1)
         return VMCU_VECT_NONE;
 
-    const int32_t k = instr->addr - mcu->vtable.dfl.start;
-    return mcu->vtable.layout[k / 2];
+    return mcu->vtable.layout[(instr->addr - mcu->vtable.dfl.start) / 2];
 }
 
 static void set_xref(vmcu_vector_t *vect, vmcu_report_t *report, vmcu_instr_t *instr) {
 
-    const int32_t isr_addr = vmcu_resolve_flow(instr);
+    const uint32_t isr_addr = vmcu_resolve_flow(instr);
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *current = &report->disassembly[i];
 

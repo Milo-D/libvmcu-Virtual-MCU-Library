@@ -57,7 +57,7 @@ int main(const int argc, const char **argv) {
 
     vmcu_cfg_t *cfg = report->cfg;
 
-    for(int32_t i = 0; i < cfg->used; i++) {
+    for(uint32_t i = 0; i < cfg->used; i++) {
 
         vmcu_cfg_node_t *node = &cfg->node[i];
 
@@ -111,7 +111,7 @@ static void print_instruction(vmcu_instr_t *instr) {
 
 static void print_instruction_details(vmcu_instr_t *instr) {
 
-    printf("0x%04x", instr->addr);
+    printf("0x%04" PRIx32, instr->addr);
 
     const uint16_t opcl = (instr->opcode & 0x0000ffff);
     const uint16_t swpl = (opcl >> 8) | (opcl << 8);
@@ -122,9 +122,9 @@ static void print_instruction_details(vmcu_instr_t *instr) {
     if(instr->dword == false)
         printf("      %s....%s ", COLOR_GREEN, COLOR_RESET);
     else
-        printf("      %s%04x%s ", COLOR_GREEN, swph, COLOR_RESET);
+        printf("      %s%04" PRIx16 "%s ", COLOR_GREEN, swph, COLOR_RESET);
 
-    printf("%s%04x%s      ", COLOR_YELLOW, swpl, COLOR_RESET);
+    printf("%s%04" PRIx16 "%s      ", COLOR_YELLOW, swpl, COLOR_RESET);
 }
 
 static void print_colored_base(const char *basestr, VMCU_GROUP group) {

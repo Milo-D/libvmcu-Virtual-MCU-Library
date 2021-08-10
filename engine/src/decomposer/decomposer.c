@@ -37,14 +37,14 @@ int vmcu_decompose_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t
     return 0;
 }
 
-vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
+vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu) {
 
     vmcu_instr_t *instr_list;
 
     if((instr_list = vmcu_annotate_ihex(hex_file, size, mcu)) == NULL)
         return NULL;
 
-    for(int32_t i = 0; i < *size; i++) {
+    for(uint32_t i = 0; i < *size; i++) {
 
         vmcu_instr_t *instr = &(instr_list[i]);
 
@@ -88,7 +88,7 @@ static void decompose_movw(vmcu_instr_t *instr) {
 
 static void decompose_mul(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -144,7 +144,7 @@ static void decompose_fmulsu(vmcu_instr_t *instr) {
 
 static void decompose_ldi(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K8;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -166,7 +166,7 @@ static void decompose_rjmp(vmcu_instr_t *instr) {
 
 static void decompose_jmp(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_P22;
     instr->dest.type    = VMCU_OPTYPE_NONE;
@@ -182,7 +182,7 @@ static void decompose_ijmp(vmcu_instr_t *instr) {
 
 static void decompose_mov(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -209,7 +209,7 @@ static void decompose_inc(vmcu_instr_t *instr) {
 
 static void decompose_add(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -220,7 +220,7 @@ static void decompose_add(vmcu_instr_t *instr) {
 
 static void decompose_adc(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -231,7 +231,7 @@ static void decompose_adc(vmcu_instr_t *instr) {
 
 static void decompose_adiw(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K6;
     instr->dest.type    = VMCU_OPTYPE_RP;
@@ -244,7 +244,7 @@ static void decompose_adiw(vmcu_instr_t *instr) {
 
 static void decompose_sub(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -255,7 +255,7 @@ static void decompose_sub(vmcu_instr_t *instr) {
 
 static void decompose_subi(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K8;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -266,7 +266,7 @@ static void decompose_subi(vmcu_instr_t *instr) {
 
 static void decompose_sbc(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -277,7 +277,7 @@ static void decompose_sbc(vmcu_instr_t *instr) {
 
 static void decompose_sbci(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K8;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -288,7 +288,7 @@ static void decompose_sbci(vmcu_instr_t *instr) {
 
 static void decompose_sbiw(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K6;
     instr->dest.type    = VMCU_OPTYPE_RP;
@@ -301,7 +301,7 @@ static void decompose_sbiw(vmcu_instr_t *instr) {
 
 static void decompose_push(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_NONE;
@@ -311,7 +311,7 @@ static void decompose_push(vmcu_instr_t *instr) {
 
 static void decompose_pop(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_NONE;
@@ -321,7 +321,7 @@ static void decompose_pop(vmcu_instr_t *instr) {
 
 static void decompose_in(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_IO6;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -332,7 +332,7 @@ static void decompose_in(vmcu_instr_t *instr) {
 
 static void decompose_out(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_IO6;
@@ -379,7 +379,7 @@ static void decompose_sbrs(vmcu_instr_t *instr) {
 
 static void decompose_cpse(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -390,7 +390,7 @@ static void decompose_cpse(vmcu_instr_t *instr) {
 
 static void decompose_eor(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -467,7 +467,7 @@ static void decompose_ld_dy(vmcu_instr_t *instr) {
 
 static void decompose_ldd_yq(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K6;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -481,7 +481,7 @@ static void decompose_ldd_yq(vmcu_instr_t *instr) {
 
 static void decompose_ldd_zq(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K6;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -594,7 +594,7 @@ static void decompose_st_dy(vmcu_instr_t *instr) {
 
 static void decompose_std_yq(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_K6;
@@ -641,7 +641,7 @@ static void decompose_st_dz(vmcu_instr_t *instr) {
 
 static void decompose_std_zq(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_K6;
@@ -655,8 +655,8 @@ static void decompose_std_zq(vmcu_instr_t *instr) {
 
 static void decompose_sts(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
-    const int tmp = vmcu_extr(opc, 0, 4, 0) + vmcu_extr(opc, 8, 11, 4);
+    const uint32_t opc  = instr->opcode;
+    const uint16_t tmp  = vmcu_extr(opc, 0, 4, 0) + vmcu_extr(opc, 8, 11, 4);
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_D7;
@@ -679,8 +679,8 @@ static void decompose_sts32(vmcu_instr_t *instr) {
 
 static void decompose_lds(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
-    const int tmp = vmcu_extr(opc, 0, 4, 0) + vmcu_extr(opc, 8, 11, 4);
+    const uint32_t opc = instr->opcode;
+    const uint32_t tmp = vmcu_extr(opc, 0, 4, 0) + vmcu_extr(opc, 8, 11, 4);
 
     instr->src.type     = VMCU_OPTYPE_D7;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -928,7 +928,7 @@ static void decompose_call(vmcu_instr_t *instr) {
 
 static void decompose_cp(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -939,7 +939,7 @@ static void decompose_cp(vmcu_instr_t *instr) {
 
 static void decompose_cpi(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K8;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -950,7 +950,7 @@ static void decompose_cpi(vmcu_instr_t *instr) {
 
 static void decompose_cpc(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -993,7 +993,7 @@ static void decompose_swap(vmcu_instr_t *instr) {
 
 static void decompose_ori(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K8;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -1004,7 +1004,7 @@ static void decompose_ori(vmcu_instr_t *instr) {
 
 static void decompose_or_asm(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -1015,7 +1015,7 @@ static void decompose_or_asm(vmcu_instr_t *instr) {
 
 static void decompose_and_asm(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_R;
     instr->dest.type    = VMCU_OPTYPE_R;
@@ -1026,7 +1026,7 @@ static void decompose_and_asm(vmcu_instr_t *instr) {
 
 static void decompose_andi(vmcu_instr_t *instr) {
 
-    const int opc = instr->opcode;
+    const uint32_t opc  = instr->opcode;
 
     instr->src.type     = VMCU_OPTYPE_K8;
     instr->dest.type    = VMCU_OPTYPE_R;

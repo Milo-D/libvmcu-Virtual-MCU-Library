@@ -28,7 +28,7 @@ typedef struct vmcu_system {
     uint64_t cycles;
     uint32_t clock;
     
-    int steps;
+    uint64_t steps;
 
 } vmcu_system_t;
 
@@ -57,11 +57,11 @@ extern uint8_t vmcu_system_dump_sreg(const vmcu_system_t *this);
 
 /* FLASH Operations */
 
-extern vmcu_progmem_t* vmcu_system_read_progmem(const vmcu_system_t *this, const int addr);
-extern uint16_t vmcu_system_read_flash(const vmcu_system_t *this, const int addr);
-extern void vmcu_system_move_pc(const vmcu_system_t *this, const int inc);
-extern void vmcu_system_set_pc(vmcu_system_t *this, const int addr);
-extern int vmcu_system_get_pc(const vmcu_system_t *this);
+extern vmcu_progmem_t* vmcu_system_read_progmem(const vmcu_system_t *this, const uint32_t addr);
+extern uint16_t vmcu_system_read_flash(const vmcu_system_t *this, const uint32_t addr);
+extern void vmcu_system_move_pc(const vmcu_system_t *this, const int64_t inc);
+extern void vmcu_system_set_pc(vmcu_system_t *this, const uint32_t addr);
+extern uint32_t vmcu_system_get_pc(const vmcu_system_t *this);
 
 /* DATA Operations */
 

@@ -7,10 +7,10 @@
 #include <stdbool.h>
 
 typedef struct vmcu_progmem {
-    
-    int opcode;
-    int addr;
-    int key;
+
+    uint16_t opcode;
+    uint32_t addr;
+    int32_t key;
     
     bool exec;
     bool dword;

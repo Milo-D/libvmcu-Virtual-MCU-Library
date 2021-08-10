@@ -91,7 +91,7 @@ void vmcu_timer8_update(vmcu_timer8_t *this, vmcu_irq_t *irq, uint64_t dc) {
     if(this->prescaler == 0)
         return;
 
-    for(int i = 0; i < dc; i++) {
+    for(uint64_t i = 0; i < dc; i++) {
 
         if(--(this->countdown) > 0)
             continue;

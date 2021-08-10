@@ -7,7 +7,8 @@
 
 struct pair {
 
-    int ikey;
+    VMCU_IKEY ikey;
+
     int hits;
     char mnem[10];
 };
@@ -89,7 +90,7 @@ int main(int argc, char* argv[]) {
 
     init_list(list, nKeys);
 
-    for(int i=0; i < report->progsize; i++) {
+    for(uint32_t i=0; i < report->progsize; i++) {
 
         vmcu_instr_t* instr = &report->disassembly[i];
 

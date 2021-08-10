@@ -8,12 +8,12 @@
 // Project Headers (engine)
 #include "engine/include/misc/memmanip.h"
 
-void vmcu_nfree(const int n, ...) {
+void vmcu_nfree(const uint32_t n, ...) {
 
     va_list var;
     va_start(var, n);
 
-    for(int i = 0; i < n; i++) {
+    for(uint32_t i = 0; i < n; i++) {
 
         void *p = va_arg(var, void*);
 

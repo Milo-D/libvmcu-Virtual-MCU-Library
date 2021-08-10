@@ -8,8 +8,8 @@
 
 typedef struct vmcu_string {
 
-    uint16_t addr;
-    uint16_t length;
+    uint32_t addr;
+    uint64_t length;
 
     char *bytes;
 

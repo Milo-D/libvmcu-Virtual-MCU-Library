@@ -52,15 +52,12 @@ void vmcu_io_update(vmcu_io_t *this, const uint32_t cpu_clk, const uint64_t dc) 
         vmcu_eeprom_update(this->eeprom, this->irq, cpu_clk, dc);
 }
 
-int vmcu_io_check_irq(const vmcu_io_t *this) {
+int vmcu_io_check_irq(const vmcu_io_t *this, uint32_t *isr) {
 
-    if(this->irq->size < 1)
+    if(vmcu_irq_pop(this->irq, isr) < 0)
         return -1;
 
-    uint16_t isr = 0x0000;
-    vmcu_irq_pop(this->irq, &isr);
-
-    switch(isr) {
+    switch(*isr) {
 
         case RST_VECT:        /* not yet implemented */             break;
         case INT0_VECT:       /* not yet implemented */             break;
@@ -90,7 +87,7 @@ int vmcu_io_check_irq(const vmcu_io_t *this) {
         default:              /* should not happen */               break;
     }
 
-    return (int) isr;
+    return 0;
 }
 
 void vmcu_io_reboot(const vmcu_io_t *this) {

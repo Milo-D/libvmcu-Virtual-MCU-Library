@@ -62,7 +62,7 @@ int main(const int argc, const char **argv) {
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P);
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
-    for(int32_t i = 0; i < report->cfg->used; i++) {
+    for(uint32_t i = 0; i < report->cfg->used; i++) {
         
         vmcu_cfg_node_t *node = &report->cfg->node[i];
         print_instruction(node->xto.i);
@@ -131,7 +131,7 @@ int main(const int argc, const char **argv) {
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         printf("0x%04x ", report->disassembly[i].addr);
         print_instruction(&report->disassembly[i]);
@@ -165,7 +165,7 @@ int main(const int argc, const char **argv) {
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
         
@@ -199,7 +199,7 @@ int main(const int argc, const char **argv) {
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
-    for(int32_t i = 0; i < report->n_vector; i++) {
+    for(uint32_t i = 0; i < report->n_vector; i++) {
 
         vmcu_vector_t *vect = &report->vector[i];
         vmcu_instr_t  *isr  = vect->xto->i;
@@ -241,12 +241,12 @@ int main(const int argc, const char **argv) {
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
     
-    for(int32_t i = 0; i < report->n_label; i++) {
+    for(uint32_t i = 0; i < report->n_label; i++) {
 
         vmcu_label_t *lx = &report->label[i];
         printf("0x%04x\tL%d\n\n", lx->addr, lx->id);
 
-        for(int32_t j = 0; j < lx->n_xfrom; j++) {
+        for(uint32_t j = 0; j < lx->n_xfrom; j++) {
 
             vmcu_xref_t *x = &lx->xfrom[j];
             
@@ -291,12 +291,12 @@ int main(const int argc, const char **argv) {
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
     vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
 
-    for(int32_t i = 0; i < report->n_sfr; i++) {
+    for(uint32_t i = 0; i < report->n_sfr; i++) {
 
         vmcu_sfr_t *sfr = &report->sfr[i];
         printf("SFR ID: %d\n\n", sfr->id);
 
-        for(int32_t j = 0; j < sfr->n_xfrom; j++) {
+        for(uint32_t j = 0; j < sfr->n_xfrom; j++) {
 
             vmcu_xref_t *x = &sfr->xfrom[j];
 
@@ -344,7 +344,7 @@ int main(const int argc, const char **argv) {
     const VMCU_GROUP grp   = instr.group;         // VMCU_GROUP_MATH_LOGIC
     
     const uint32_t opcode  = instr.opcode;        // 0x976a (big endian)
-    const uint16_t addr    = instr.addr;          // 0x0000 (undefined)
+    const uint32_t addr    = instr.addr;          // 0x0000 (undefined)
 
     const bool dword       = instr.dword;         // false
     const bool exec        = instr.exec;          // true

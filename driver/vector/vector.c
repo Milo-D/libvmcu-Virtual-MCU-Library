@@ -37,16 +37,20 @@ int main(const int argc, const char **argv) {
     if(report == NULL)
         return EXIT_FAILURE;
 
-    for(int32_t i = 0; i < report->n_vector; i++) {
+    for(uint32_t i = 0; i < report->n_vector; i++) {
 
         vmcu_vector_t *vect = &report->vector[i];
-        printf("Vector ID %d @ 0x%04x\n", vect->id, vect->addr);
+
+        printf("Vector ID %d", vect->id);
+        printf(" @ 0x%04" PRIx32 "\n", vect->addr);
 
         if(vect->n_xto == 0)
             continue;
 
         vmcu_instr_t  *isr  = vect->xto->i;
-        printf(" interrupt service routine at 0x%04x\n\n", isr->addr);
+
+        printf(" interrupt service routine at ");
+        printf("0x%04" PRIx32 "\n\n", isr->addr);
     }
 
     return EXIT_SUCCESS;

@@ -40,14 +40,14 @@ int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model
     return 0;
 }
 
-vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu) {
+vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu) {
 
     vmcu_instr_t *instr_list;
 
     if((instr_list = vmcu_decompose_ihex(hex_file, size, mcu)) == NULL)
         return NULL;
 
-    for(int32_t i = 0; i < *size; i++) {
+    for(uint32_t i = 0; i < *size; i++) {
 
         vmcu_instr_t *instr = &(instr_list[i]);
 
@@ -168,18 +168,18 @@ static void disassemble_ldi(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "ldi");
 
-    sprintf(instr->mnem.src,     "0x%02x",     instr->src.k);
-    sprintf(instr->mnem.dest,    "r%d",        instr->dest.r);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8, instr->src.k);
+    sprintf(instr->mnem.dest,    "r%d",         instr->dest.r);
 
-    sprintf(instr->mnem.comment, "; %s <- %s", instr->mnem.dest,
-                                               instr->mnem.src);
+    sprintf(instr->mnem.comment, "; %s <- %s",  instr->mnem.dest,
+                                                instr->mnem.src);
 }
 
 static void disassemble_rjmp(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "rjmp");
 
-    sprintf(instr->mnem.src,     "%d",                  instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,            instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; PC <- PC + %s + 1", instr->mnem.src);
@@ -189,7 +189,7 @@ static void disassemble_jmp(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "jmp");
 
-    sprintf(instr->mnem.src,     "0x%x",       instr->src.p);
+    sprintf(instr->mnem.src,     "0x%" PRIx32, instr->src.p);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; PC <- %s", instr->mnem.src);
@@ -266,7 +266,7 @@ static void disassemble_adiw(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "adiw");
 
-    sprintf(instr->mnem.src,     "0x%02x",          instr->src.k);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8,     instr->src.k);
     sprintf(instr->mnem.dest,    "r%d:r%d",         instr->dest.rp.high,
                                                     instr->dest.rp.low);
 
@@ -291,7 +291,7 @@ static void disassemble_subi(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "subi");
 
-    sprintf(instr->mnem.src,     "0x%02x",          instr->src.k);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8,     instr->src.k);
     sprintf(instr->mnem.dest,    "r%d",             instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- %s - %s", instr->mnem.dest,
@@ -315,7 +315,7 @@ static void disassemble_sbci(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "sbci");
 
-    sprintf(instr->mnem.src,     "0x%02x",               instr->src.k);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8,          instr->src.k);
     sprintf(instr->mnem.dest,    "r%d",                  instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- %s - %s - CF", instr->mnem.dest,
@@ -327,7 +327,7 @@ static void disassemble_sbiw(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "sbiw");
 
-    sprintf(instr->mnem.src,     "0x%02x",          instr->src.k);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8,     instr->src.k);
     sprintf(instr->mnem.dest,    "r%d:r%d",         instr->dest.rp.high,
                                                     instr->dest.rp.low);
 
@@ -360,7 +360,7 @@ static void disassemble_in(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "in");
 
-    sprintf(instr->mnem.src,     "0x%02x",         instr->src.io);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8,    instr->src.io);
     sprintf(instr->mnem.dest,    "r%d",            instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- IO[%s]", instr->mnem.dest,
@@ -372,7 +372,7 @@ static void disassemble_out(vmcu_instr_t *instr) {
     sprintf(instr->mnem.base,    "out");
 
     sprintf(instr->mnem.src,     "r%d",            instr->src.r);
-    sprintf(instr->mnem.dest,    "0x%02x",         instr->dest.io);
+    sprintf(instr->mnem.dest,    "0x%02" PRIx8,    instr->dest.io);
 
     sprintf(instr->mnem.comment, "; IO[%s] <- %s", instr->mnem.dest,
                                                    instr->mnem.src);
@@ -382,8 +382,8 @@ static void disassemble_sbis(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "sbis");
 
-    sprintf(instr->mnem.src,     "%d",                           instr->src.b);
-    sprintf(instr->mnem.dest,    "0x%02x",                       instr->dest.io);
+    sprintf(instr->mnem.src,     "%" PRIu8,                      instr->src.b);
+    sprintf(instr->mnem.dest,    "0x%02" PRIx8,                  instr->dest.io);
 
     sprintf(instr->mnem.comment, "; (IO[%s, %s] == 1): PC skip", instr->mnem.dest,
                                                                  instr->mnem.src);
@@ -393,8 +393,8 @@ static void disassemble_sbic(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "sbic");
 
-    sprintf(instr->mnem.src,     "%d",                           instr->src.b);
-    sprintf(instr->mnem.dest,    "0x%02x",                       instr->dest.io);
+    sprintf(instr->mnem.src,     "%" PRIu8,                      instr->src.b);
+    sprintf(instr->mnem.dest,    "0x%02" PRIx8,                  instr->dest.io);
 
     sprintf(instr->mnem.comment, "; (IO[%s, %s] == 0): PC skip", instr->mnem.dest,
                                                                  instr->mnem.src);
@@ -404,7 +404,7 @@ static void disassemble_sbrc(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "sbrc");
 
-    sprintf(instr->mnem.src,     "%d",                       instr->src.b);
+    sprintf(instr->mnem.src,     "%" PRIu8,                  instr->src.b);
     sprintf(instr->mnem.dest,    "r%d",                      instr->dest.r);
 
     sprintf(instr->mnem.comment, "; (%s[%s] == 0): PC skip", instr->mnem.dest,
@@ -415,7 +415,7 @@ static void disassemble_sbrs(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "sbrs");
 
-    sprintf(instr->mnem.src,     "%d",                       instr->src.b);
+    sprintf(instr->mnem.src,     "%" PRIu8,                  instr->src.b);
     sprintf(instr->mnem.dest,    "r%d",                      instr->dest.r);
 
     sprintf(instr->mnem.comment, "; (%s[%s] == 1): PC skip", instr->mnem.dest,
@@ -509,7 +509,7 @@ static void disassemble_ldd_yq(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "ldd");
 
-    sprintf(instr->mnem.src,     "Y+%d",           instr->src.k);
+    sprintf(instr->mnem.src,     "Y+%" PRIu8,      instr->src.k);
     sprintf(instr->mnem.dest,    "r%d",            instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
@@ -520,7 +520,7 @@ static void disassemble_ldd_zq(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "ldd");
 
-    sprintf(instr->mnem.src,     "Z+%d",           instr->src.k);
+    sprintf(instr->mnem.src,     "Z+%" PRIu8,      instr->src.k);
     sprintf(instr->mnem.dest,    "r%d",            instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
@@ -622,7 +622,7 @@ static void disassemble_std_yq(vmcu_instr_t *instr) {
     sprintf(instr->mnem.base,    "std");
 
     sprintf(instr->mnem.src,     "r%d",            instr->src.r);
-    sprintf(instr->mnem.dest,    "Y+%d",           instr->dest.k);
+    sprintf(instr->mnem.dest,    "Y+%" PRIu8,      instr->dest.k);
 
     sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
                                                    instr->mnem.src);
@@ -663,7 +663,7 @@ static void disassemble_std_zq(vmcu_instr_t *instr) {
     sprintf(instr->mnem.base,    "std");
 
     sprintf(instr->mnem.src,     "r%d",            instr->src.r);
-    sprintf(instr->mnem.dest,    "Z+%d",           instr->dest.k);
+    sprintf(instr->mnem.dest,    "Z+%" PRIu8,      instr->dest.k);
 
     sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
                                                    instr->mnem.src);
@@ -674,7 +674,7 @@ static void disassemble_sts(vmcu_instr_t *instr) {
     sprintf(instr->mnem.base,    "sts");
 
     sprintf(instr->mnem.src,     "r%d",            instr->src.r);
-    sprintf(instr->mnem.dest,    "0x%x",           instr->dest.d);
+    sprintf(instr->mnem.dest,    "0x%" PRIx16,     instr->dest.d);
 
     sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
                                                    instr->mnem.src);
@@ -685,7 +685,7 @@ static void disassemble_sts32(vmcu_instr_t *instr) {
     sprintf(instr->mnem.base,    "sts");
 
     sprintf(instr->mnem.src,     "r%d",            instr->src.r);
-    sprintf(instr->mnem.dest,    "0x%04x",         instr->dest.d);
+    sprintf(instr->mnem.dest,    "0x%04" PRIx16,   instr->dest.d);
 
     sprintf(instr->mnem.comment, "; DS[%s] <- %s", instr->mnem.dest,
                                                    instr->mnem.src);
@@ -695,7 +695,7 @@ static void disassemble_lds(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "lds");
 
-    sprintf(instr->mnem.src,     "0x%x",           instr->src.d);
+    sprintf(instr->mnem.src,     "0x%" PRIx16,     instr->src.d);
     sprintf(instr->mnem.dest,    "r%d",            instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
@@ -706,7 +706,7 @@ static void disassemble_lds32(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "lds");
 
-    sprintf(instr->mnem.src,     "0x%04x",         instr->src.d);
+    sprintf(instr->mnem.src,     "0x%04" PRIx16,   instr->src.d);
     sprintf(instr->mnem.dest,    "r%d",            instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- DS[%s]", instr->mnem.dest,
@@ -728,7 +728,7 @@ static void disassemble_brne(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brne");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (ZF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -738,7 +738,7 @@ static void disassemble_breq(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "breq");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (ZF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -748,7 +748,7 @@ static void disassemble_brge(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brge");
 
-    sprintf(instr->mnem.src,     "%d",                                  instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                            instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (NF ^ VF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -758,7 +758,7 @@ static void disassemble_brpl(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brpl");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (NF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -768,7 +768,7 @@ static void disassemble_brlo(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brlo");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (CF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -778,7 +778,7 @@ static void disassemble_brlt(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brlt");
 
-    sprintf(instr->mnem.src,     "%d",                                  instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                            instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (NF ^ VF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -788,7 +788,7 @@ static void disassemble_brcc(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brcc");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (CF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -798,7 +798,7 @@ static void disassemble_brvs(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brvs");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (VF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -808,7 +808,7 @@ static void disassemble_brts(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brts");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (TF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -818,7 +818,7 @@ static void disassemble_brtc(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brtc");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (TF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -828,7 +828,7 @@ static void disassemble_brmi(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brmi");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (NF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -838,7 +838,7 @@ static void disassemble_brhc(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brhc");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (HF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -848,7 +848,7 @@ static void disassemble_brhs(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brhs");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (HF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -858,7 +858,7 @@ static void disassemble_brid(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brid");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (IF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -868,7 +868,7 @@ static void disassemble_brie(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brie");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (IF == 1): PC <- PC + %s + 1", instr->mnem.src);
@@ -878,7 +878,7 @@ static void disassemble_brvc(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "brvc");
 
-    sprintf(instr->mnem.src,     "%d",                             instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,                       instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; (VF == 0): PC <- PC + %s + 1", instr->mnem.src);
@@ -888,7 +888,7 @@ static void disassemble_rcall(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "rcall");
 
-    sprintf(instr->mnem.src,     "%d",                  instr->src.s);
+    sprintf(instr->mnem.src,     "%" PRId16,            instr->src.s);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; PC <- PC + %s + 1", instr->mnem.src);
@@ -928,7 +928,7 @@ static void disassemble_call(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "call");
 
-    sprintf(instr->mnem.src,     "0x%x",       instr->src.p);
+    sprintf(instr->mnem.src,     "0x%" PRIx32, instr->src.p);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; PC <- %s", instr->mnem.src);
@@ -949,11 +949,11 @@ static void disassemble_cpi(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "cpi");
 
-    sprintf(instr->mnem.src,     "0x%02x",    (uint8_t) instr->src.k);
-    sprintf(instr->mnem.dest,    "r%d",       instr->dest.r);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8, instr->src.k);
+    sprintf(instr->mnem.dest,    "r%d",         instr->dest.r);
 
-    sprintf(instr->mnem.comment, "; %s - %s", instr->mnem.dest,
-                                              instr->mnem.src);
+    sprintf(instr->mnem.comment, "; %s - %s",   instr->mnem.dest,
+                                                instr->mnem.src);
 }
 
 static void disassemble_cpc(vmcu_instr_t *instr) {
@@ -1014,7 +1014,7 @@ static void disassemble_ori(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "ori");
 
-    sprintf(instr->mnem.src,     "0x%02x",          (uint8_t) instr->src.k);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8,     instr->src.k);
     sprintf(instr->mnem.dest,    "r%d",             instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- %s | %s", instr->mnem.dest,
@@ -1050,7 +1050,7 @@ static void disassemble_andi(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "andi");
 
-    sprintf(instr->mnem.src,     "0x%02x",          instr->src.k);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8,     instr->src.k);
     sprintf(instr->mnem.dest,    "r%d",             instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s <- %s & %s", instr->mnem.dest,
@@ -1114,7 +1114,7 @@ static void disassemble_bld(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "bld");
 
-    sprintf(instr->mnem.src,     "%d",             instr->src.b);
+    sprintf(instr->mnem.src,     "%" PRIu8,        instr->src.b);
     sprintf(instr->mnem.dest,    "r%d",            instr->dest.r);
 
     sprintf(instr->mnem.comment, "; %s[%s] <- TF", instr->mnem.dest,
@@ -1125,7 +1125,7 @@ static void disassemble_bst(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "bst");
 
-    sprintf(instr->mnem.src,     "%d",             instr->src.b);
+    sprintf(instr->mnem.src,     "%" PRIu8,        instr->src.b);
     sprintf(instr->mnem.dest,    "r%d",            instr->dest.r);
 
     sprintf(instr->mnem.comment, "; TF <- %s[%s]", instr->mnem.dest,
@@ -1136,8 +1136,8 @@ static void disassemble_sbi(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "sbi");
 
-    sprintf(instr->mnem.src,     "%d",                instr->src.b);
-    sprintf(instr->mnem.dest,    "0x%02x",            instr->dest.io);
+    sprintf(instr->mnem.src,     "%" PRIu8,           instr->src.b);
+    sprintf(instr->mnem.dest,    "0x%02" PRIx8,       instr->dest.io);
 
     sprintf(instr->mnem.comment, "; IO[%s, %s] <- 1", instr->mnem.dest,
                                                       instr->mnem.src);
@@ -1147,8 +1147,8 @@ static void disassemble_cbi(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "cbi");
 
-    sprintf(instr->mnem.src,     "%d",                instr->src.b);
-    sprintf(instr->mnem.dest,    "0x%02x",            instr->dest.io);
+    sprintf(instr->mnem.src,     "%" PRIu8,           instr->src.b);
+    sprintf(instr->mnem.dest,    "0x%02" PRIx8,       instr->dest.io);
 
     sprintf(instr->mnem.comment, "; IO[%s, %s] <- 0", instr->mnem.dest,
                                                       instr->mnem.src);
@@ -1238,7 +1238,7 @@ static void disassemble_des(vmcu_instr_t *instr) {
 
     sprintf(instr->mnem.base,    "des");
 
-    sprintf(instr->mnem.src,     "0x%02x", instr->src.k);
+    sprintf(instr->mnem.src,     "0x%02" PRIx8, instr->src.k);
     sprintf(instr->mnem.dest,    "");
 
     sprintf(instr->mnem.comment, "; Data Encryption Standard");

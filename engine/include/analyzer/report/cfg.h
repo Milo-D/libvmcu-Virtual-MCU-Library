@@ -11,12 +11,12 @@
 
 typedef struct vmcu_cfg {
 
-    int32_t used;
+    uint32_t used;
     vmcu_cfg_node_t *node;
 
 } vmcu_cfg_t;
 
-extern vmcu_cfg_t* vmcu_cfg_ctor(const uint32_t capacity);
+extern vmcu_cfg_t* vmcu_cfg_ctor(const uint32_t n);
 extern void vmcu_cfg_dtor(vmcu_cfg_t *this);
 
 #endif

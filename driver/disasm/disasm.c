@@ -71,13 +71,13 @@ int main(const int argc, const char **argv) {
     atexit(cleanup);
     m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
-    int32_t progsize = 0;
+    uint32_t progsize = 0;
     vmcu_instr_t *prog = vmcu_disassemble_ihex(argv[1], &progsize, m328p);
 
     if(prog == NULL || progsize == 0)
         return EXIT_FAILURE;
 
-    for(int32_t i = 0; i < progsize; i++)
+    for(uint32_t i = 0; i < progsize; i++)
         print_instruction(&prog[i]);
 
     free(prog);
@@ -113,7 +113,7 @@ static void print_instruction(vmcu_instr_t *instr) {
 
 static void print_instruction_details(vmcu_instr_t *instr) {
 
-    printf("0x%04x", instr->addr);
+    printf("0x%04" PRIx32, instr->addr);
 
     const uint16_t opcl = (instr->opcode & 0x0000ffff);
     const uint16_t swpl = (opcl >> 8) | (opcl << 8);
@@ -124,9 +124,9 @@ static void print_instruction_details(vmcu_instr_t *instr) {
     if(instr->dword == false)
         printf("      %s....%s ", COLOR_GREEN, COLOR_RESET);
     else
-        printf("      %s%04x%s ", COLOR_GREEN, swph, COLOR_RESET);
+        printf("      %s%04" PRIx16 "%s ", COLOR_GREEN, swph, COLOR_RESET);
 
-    printf("%s%04x%s      ", COLOR_YELLOW, swpl, COLOR_RESET);
+    printf("%s%04" PRIx16 "%s      ", COLOR_YELLOW, swpl, COLOR_RESET);
 }
 
 static void print_colored_base(const char *basestr, VMCU_GROUP group) {

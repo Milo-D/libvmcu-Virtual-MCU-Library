@@ -31,16 +31,18 @@ int main(const int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-    for(int32_t i = 0; i < report->n_label; i++) {
+    for(uint32_t i = 0; i < report->n_label; i++) {
 
         vmcu_label_t *lx = &report->label[i];
-        printf("0x%04x\tL%d\n", lx->addr, lx->id);
 
-        for(int32_t j = 0; j < lx->n_xfrom; j++) {
+        printf("0x%04" PRIx32 "\t", lx->addr);
+        printf("L%" PRIu32 "\n", lx->id);
+
+        for(uint32_t j = 0; j < lx->n_xfrom; j++) {
 
             vmcu_xref_t *x = &lx->xfrom[j];
 
-            printf(" xref from 0x%04x ", x->i->addr);
+            printf(" xref from 0x%04" PRIx32 " ", x->i->addr);
             print_instruction(x->i);
         }
 

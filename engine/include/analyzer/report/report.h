@@ -18,19 +18,19 @@ typedef struct vmcu_report {
 
     vmcu_cfg_t *cfg;
 
-    int32_t progsize;
+    uint32_t progsize;
     vmcu_instr_t *disassembly;
 
-    int32_t n_sfr;
+    uint32_t n_sfr;
     vmcu_sfr_t *sfr;
 
-    int32_t n_label;
+    uint32_t n_label;
     vmcu_label_t *label;
 
-    int32_t n_vector;
+    uint32_t n_vector;
     vmcu_vector_t *vector;
 
-    int32_t n_string;
+    uint32_t n_string;
     vmcu_string_t *string;
 
 } vmcu_report_t;

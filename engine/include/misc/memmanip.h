@@ -3,6 +3,9 @@
 #ifndef VMCU_MEMMANIP_H
 #define VMCU_MEMMANIP_H
 
-extern void vmcu_nfree(const int n, ...);
+// C Headers
+#include <inttypes.h>
+
+extern void vmcu_nfree(const uint32_t n, ...);
 
 #endif

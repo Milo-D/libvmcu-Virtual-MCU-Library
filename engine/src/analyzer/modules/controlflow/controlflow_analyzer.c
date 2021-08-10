@@ -72,8 +72,8 @@
 
 typedef struct branch_buffer {
 
-    int32_t t;
-    int32_t f;
+    int64_t t;
+    int64_t f;
 
 } branch_buffer_t;
 
@@ -81,8 +81,8 @@ typedef struct branch_buffer {
 
 static void tf(vmcu_report_t *report, vmcu_instr_t *instr, vmcu_model_t *mcu, branch_buffer_t *b);
 
-static vmcu_cfg_node_t* seek_node(const vmcu_cfg_t *cfg, const int32_t addr);
-static vmcu_instr_t* peek(const vmcu_report_t *report, const int32_t addr);
+static vmcu_cfg_node_t* seek_node(const vmcu_cfg_t *cfg, const uint32_t addr);
+static vmcu_instr_t* peek(const vmcu_report_t *report, const uint32_t addr);
 
 /* --- Extern --- */
 
@@ -90,13 +90,13 @@ extern int vmcu_analyze_control_flow(vmcu_report_t *report, vmcu_model_t *mcu) {
 
     report->cfg = vmcu_cfg_ctor(report->progsize);
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         vmcu_instr_t *instr = &report->disassembly[i];
         report->cfg->node[ report->cfg->used++ ].xto.i = instr;
     }
 
-    for(int32_t i = 0; i < report->cfg->used; i++) {
+    for(uint32_t i = 0; i < report->cfg->used; i++) {
 
         vmcu_instr_t *instr = report->cfg->node[i].xto.i;
 
@@ -117,8 +117,8 @@ static void tf(vmcu_report_t *report, vmcu_instr_t *instr, vmcu_model_t *mcu, br
     const VMCU_IKEY key    = instr->key;
     const VMCU_OPTYPE src  = instr->src.type;
 
-    const int32_t a        = instr->addr;
-    const int16_t s        = instr->src.s;
+    const int16_t  s       = instr->src.s;
+    const int64_t  a       = instr->addr;
     const uint32_t f       = mcu->flash.size;
 
     if(instr->group != VMCU_GROUP_FLOW) {
@@ -158,12 +158,9 @@ static void tf(vmcu_report_t *report, vmcu_instr_t *instr, vmcu_model_t *mcu, br
     b->t = b->f = -1;
 }
 
-static vmcu_cfg_node_t* seek_node(const vmcu_cfg_t *cfg, const int32_t addr) {
+static vmcu_cfg_node_t* seek_node(const vmcu_cfg_t *cfg, const uint32_t addr) {
 
-    if(addr < 0)
-        return NULL;
-
-    for(int32_t i = 0; i < cfg->used; i++) {
+    for(uint32_t i = 0; i < cfg->used; i++) {
 
         if(cfg->node[i].xto.i->addr == addr)
             return &cfg->node[i];
@@ -172,9 +169,9 @@ static vmcu_cfg_node_t* seek_node(const vmcu_cfg_t *cfg, const int32_t addr) {
     return NULL;
 }
 
-static vmcu_instr_t* peek(const vmcu_report_t *report, const int32_t addr) {
+static vmcu_instr_t* peek(const vmcu_report_t *report, const uint32_t addr) {
 
-    for(int32_t i = 0; i < report->progsize; i++) {
+    for(uint32_t i = 0; i < report->progsize; i++) {
 
         if(report->disassembly[i].addr == addr)
             return &report->disassembly[i];

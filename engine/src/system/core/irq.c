@@ -8,7 +8,7 @@
 
 /* Forward Declaration of static Functions */
 
-static vmcu_request_t* new_request(const uint16_t isr);
+static vmcu_request_t* new_request(const uint32_t isr);
 
 /* --- Extern --- */
 
@@ -41,7 +41,7 @@ void vmcu_irq_dtor(vmcu_irq_t *this) {
     free(this);
 }
 
-int vmcu_irq_enable(vmcu_irq_t *this, const uint16_t isr_vect) {
+int vmcu_irq_enable(vmcu_irq_t *this, const uint32_t isr_vect) {
 
     if(vmcu_irq_contains(this, isr_vect) == 0)
         return -1;
@@ -76,7 +76,7 @@ int vmcu_irq_enable(vmcu_irq_t *this, const uint16_t isr_vect) {
     return 0;
 }
 
-int vmcu_irq_disable(vmcu_irq_t *this, const uint16_t isr_vect) {
+int vmcu_irq_disable(vmcu_irq_t *this, const uint32_t isr_vect) {
 
     if(vmcu_irq_contains(this, isr_vect) < 0)
         return -1;
@@ -106,7 +106,7 @@ int vmcu_irq_disable(vmcu_irq_t *this, const uint16_t isr_vect) {
     return -1;
 }
 
-int vmcu_irq_pop(vmcu_irq_t *this, uint16_t *buffer) {
+int vmcu_irq_pop(vmcu_irq_t *this, uint32_t *buffer) {
 
     if(this->size == 0)
         return -1;
@@ -122,10 +122,7 @@ int vmcu_irq_pop(vmcu_irq_t *this, uint16_t *buffer) {
     return 0;
 }
 
-int vmcu_irq_contains(const vmcu_irq_t *this, const uint16_t isr_vect) {
-    
-    if(this->size < 0)
-        return -1;
+int vmcu_irq_contains(const vmcu_irq_t *this, const uint32_t isr_vect) {
 
     vmcu_request_t *it = this->head;
         
@@ -154,7 +151,7 @@ void vmcu_irq_reboot(vmcu_irq_t *this) {
 
 /* --- Static --- */
 
-static vmcu_request_t* new_request(const uint16_t isr) {
+static vmcu_request_t* new_request(const uint32_t isr) {
 
     vmcu_request_t *request = malloc(sizeof(vmcu_request_t));
 

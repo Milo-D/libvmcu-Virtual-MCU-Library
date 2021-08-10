@@ -30,7 +30,7 @@ extern void vmcu_data_reboot(const vmcu_data_t *this);
 /* IO/SFR Operations */
 
 extern void vmcu_data_update_io(const vmcu_data_t *this, const uint32_t cpu_clk, const uint64_t dc);
-extern int vmcu_data_check_irq(const vmcu_data_t *this);
+extern int vmcu_data_check_irq(const vmcu_data_t *this, uint32_t *isr);
 
 extern void vmcu_data_set_sfr(vmcu_data_t *this, const uint16_t addr, const int bit);
 extern void vmcu_data_clear_sfr(vmcu_data_t *this, const uint16_t addr, const int bit);

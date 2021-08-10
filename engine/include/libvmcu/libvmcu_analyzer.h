@@ -446,8 +446,8 @@ typedef struct vmcu_instr {                   ///< instruction structure
 
         VMCU_IKEY key;                        ///< instruction key (for example key = VMCU_IKEY_LDI)
 
-        int opcode;                           ///< instruction opcode (todo: change to uint32_t)
-        int addr;                             ///< instruction address (todo: change to uint32_t)
+        uint32_t opcode;                      ///< instruction opcode
+        uint32_t addr;                        ///< instruction address
 
         bool exec;                            ///< instruction executable/legal ?
         bool dword;                           ///< instruction 32-bit ?
@@ -484,17 +484,17 @@ typedef struct vmcu_sfr {                     ///< sfr (special function registe
 
     VMCU_SFR id;                              ///< sfr id (for example id = VMCU_SFR_UCSR0A)
 
-    int32_t n_xfrom;                          ///< xref (from) count
+    uint32_t n_xfrom;                         ///< xref (from) count
     vmcu_xref_t *xfrom;                       ///< xref (from) list
 
 } vmcu_sfr_t;
 
 typedef struct vmcu_label {                   ///< label structure
 
-    uint16_t id;                              ///< unique label identifier
-    uint16_t addr;                            ///< label address
+    uint32_t id;                              ///< unique label identifier
+    uint32_t addr;                            ///< label address
 
-    int32_t n_xfrom;                          ///< xref (from) count
+    uint32_t n_xfrom;                         ///< xref (from) count
     vmcu_xref_t *xfrom;                       ///< xref (from) list
 
 } vmcu_label_t;
@@ -502,17 +502,17 @@ typedef struct vmcu_label {                   ///< label structure
 typedef struct vmcu_vector {                  ///< interrupt vector structure
 
     VMCU_VECT id;                             ///< interrupt vector id
-    uint16_t addr;                            ///< interrupt vector address
+    uint32_t addr;                            ///< interrupt vector address
 
-    int32_t n_xto;                            ///< xref (to) count
+    uint32_t n_xto;                           ///< xref (to) count
     vmcu_xref_t *xto;                         ///< xref (to) list
 
 } vmcu_vector_t;
 
 typedef struct vmcu_string {                  ///< string structure
 
-    uint16_t addr;                            ///< base address of string
-    uint16_t length;                          ///< length of string
+    uint32_t addr;                            ///< base address of string
+    uint64_t length;                          ///< length of string (in bytes)
 
     char *bytes;                              ///< actual char buffer
 
@@ -529,7 +529,7 @@ typedef struct vmcu_cfg_node {                ///< control flow graph node struc
 
 typedef struct vmcu_cfg {                     ///< control flow graph
 
-    int32_t used;                             ///< the number of nodes in use
+    uint32_t used;                            ///< the number of nodes in use
     vmcu_cfg_node_t *node;                    ///< entry node (node[0] is defined as entry)
 
 } vmcu_cfg_t;
@@ -538,19 +538,19 @@ typedef struct vmcu_report {                  ///< report (summary) of the binar
 
     vmcu_cfg_t *cfg;                          ///< control flow graph
 
-    int32_t progsize;                         ///< instruction count
+    uint32_t progsize;                        ///< instruction count
     vmcu_instr_t *disassembly;                ///< instruction list
 
-    int32_t n_sfr;                            ///< sfr count
+    uint32_t n_sfr;                           ///< sfr count
     vmcu_sfr_t *sfr;                          ///< sfr list (sorted, ascending)
 
-    int32_t n_label;                          ///< label count
+    uint32_t n_label;                         ///< label count
     vmcu_label_t *label;                      ///< label list (sorted, ascending)
 
-    int32_t n_vector;                         ///< vector count
+    uint32_t n_vector;                        ///< vector count
     vmcu_vector_t *vector;                    ///< vector list (sorted, ascending)
 
-    int32_t n_string;                         ///< string count
+    uint32_t n_string;                        ///< string count
     vmcu_string_t *string;                    ///< string list (sorted, ascending)
 
 } vmcu_report_t;
@@ -600,7 +600,7 @@ extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmc
  * @size:       size of vmcu_instr_t* after disassembling
  * @mcu:        disassemble for this device model
  * */
-extern vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
 
 /* <--------------------------------- Functions - Decomposer Stage ------------------------------------> */
 
@@ -618,7 +618,7 @@ extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_
  * @size:       size of vmcu_instr_t* after decomposing
  * @mcu:        decompose for this device model
  * */
-extern vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
 
 /* <--------------------------------- Functions - Annotator Stage -------------------------------------> */
 
@@ -636,7 +636,7 @@ extern int vmcu_annotate_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_m
  * @size:       size of vmcu_instr_t* after annotating
  * @mcu:        annotate for this device model
  * */
-extern vmcu_instr_t* vmcu_annotate_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_annotate_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
 
 /* <---------------------------------- Functions - Decoder Stage --------------------------------------> */
 
@@ -654,6 +654,6 @@ extern int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_mod
  * @size:       size of vmcu_instr_t* after decoding
  * @mcu:        decode for this device model
  * */
-extern vmcu_instr_t* vmcu_decode_ihex(const char *hex_file, int32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_decode_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
 
 #endif

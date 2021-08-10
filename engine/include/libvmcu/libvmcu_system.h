@@ -34,9 +34,9 @@ typedef struct vmcu_data  vmcu_data_t;        ///< data space memory (forward de
 
 typedef struct vmcu_progmem {                 ///< program memory single
 
-    int opcode;                               ///< 16-bit opcode (todo: change type to uint16)
-    int addr;                                 ///< address of opcode (todo: change type to uint16)
-    int key;                                  ///< numerical instruction identifier
+    uint16_t opcode;                          ///< 16-bit opcode
+    uint32_t addr;                            ///< address of opcode
+    int32_t key;                              ///< numerical instruction identifier
 
     bool exec;                                ///< instruction executable ?
     bool dword;                               ///< 32-bit instruction ?
@@ -54,7 +54,7 @@ typedef struct vmcu_system {                  ///< virtual microcontroller
     uint64_t cycles;                          ///< cycle counter
     uint32_t clock;                           ///< cpu clock
 
-    int steps;                                ///< step counter
+    uint64_t steps;                           ///< step counter
 
 } vmcu_system_t;
 
@@ -137,34 +137,34 @@ extern uint8_t vmcu_system_dump_sreg(const vmcu_system_t *this);
  * @this:   pointer to virtual system
  * @addr:   FLASH address { 0, 1, ..., FLASH_SIZE - 1 }
  * */
-extern vmcu_progmem_t* vmcu_system_read_progmem(const vmcu_system_t *this, const int addr);
+extern vmcu_progmem_t* vmcu_system_read_progmem(const vmcu_system_t *this, const uint32_t addr);
 
 /*
  * vmcu_system_read_flash - read opcode from FLASH
  * @this:   pointer to virtual system
  * @addr:   FLASH address { 0, 1, ..., FLASH_SIZE - 1 }
  * */
-extern uint16_t vmcu_system_read_flash(const vmcu_system_t *this, const int addr);
+extern uint16_t vmcu_system_read_flash(const vmcu_system_t *this, const uint32_t addr);
 
 /*
  * vmcu_system_move_pc - move program counter (relative)
  * @this:   pointer to virtual system
  * @inc:    relative offset
  * */
-extern void vmcu_system_move_pc(const vmcu_system_t *this, const int inc);
+extern void vmcu_system_move_pc(const vmcu_system_t *this, const int64_t inc);
 
 /*
  * vmcu_system_set_pc - set program counter (absolute)
  * @this:   pointer to virtual system
  * @addr:   FLASH address { 0, 1, ..., FLASH_SIZE - 1 }
  * */
-extern void vmcu_system_set_pc(vmcu_system_t *this, const int addr);
+extern void vmcu_system_set_pc(vmcu_system_t *this, const uint32_t addr);
 
 /*
  * vmcu_system_get_pc - get current program counter
  * @this:   pointer to virtual system
  * */
-extern int vmcu_system_get_pc(const vmcu_system_t *this);
+extern uint32_t vmcu_system_get_pc(const vmcu_system_t *this);
 
 /*
  * vmcu_system_push_stack - push byte onto stack
