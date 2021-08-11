@@ -401,9 +401,6 @@ void print_instruction(const vmcu_instr_t *instr) {
 ![mdx_debug](https://user-images.githubusercontent.com/46600932/104666434-33f9da80-56d4-11eb-882b-724b13536412.png)
 <sup>A small debugger written with libvmcu</sup>
 
-![vcd_showcase](https://user-images.githubusercontent.com/46600932/109825592-430ffa00-7c3a-11eb-9af3-26175b962ef2.png)
-<sup>VCD-Trace Tool by pointbazaar</sup>
-
 # Setup
 
 Currently this library comes with two headers, both can be found in engine/include/libvmcu:
@@ -519,14 +516,14 @@ take a look at engine/*/arch/
 
 # Dynamic Analysis
 
-- [x] Interrupt support
+- [x] interrupt support
 - [x] cycle accurate realtime simulation
-- [x] Support for 133 AVR assembly instructions
+- [x] support for 133 AVR assembly instructions
   
 
-- [x] Accurate simulation of internal peripherals
-    - [x] 8-bit Timer (partial)
-    - [ ] 16-bit Timer
+- [x] accurate simulation of internal peripherals
+    - [x] 8-bit timer (partial)
+    - [ ] 16-bit timer
     - [x] EEPROM
     - [ ] UART
     - [ ] SPI
@@ -569,8 +566,6 @@ of the engine.
 1) Huge thanks to <a href="https://alexander-hansen.dev">Alexander Hansen</a> for the new logo and architecture diagram. :)
 
 # Documentation
-
-![vdoc](https://user-images.githubusercontent.com/46600932/123187328-3db11680-d49a-11eb-8482-ea5fb7cc3014.png)
 
 By the time of writing this the documentation is still in development. The (incomplete) documentation can be found at https://github.com/Milo-D/libvmcu-Virtual-MCU-Library/wiki 
 
