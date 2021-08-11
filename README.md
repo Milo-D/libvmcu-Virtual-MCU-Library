@@ -29,25 +29,23 @@ libvmcu provides you with
 
 [II Showcase](#Showcase)
 
-[III How VMCU works](#How-libvmcu-works)
+[III Setup VMCU](#Setup)
 
-[IV Setup VMCU](#Setup)
+[IV Supported MCUs](#Supported-Microcontroller)
 
-[V Supported MCUs](#Supported-Microcontroller)
+[V Dynamic Analysis](#Dynamic-Analysis)
 
-[VI Dynamic Analysis](#Dynamic-Analysis)
+[VI Static Analysis](#Static-Analysis)
 
-[VII Static Analysis](#Static-Analysis)
+[VII Instruction-Set](#Instructions)
 
-[VIII Instruction-Set](#Instructions)
+[VIII Bindings](#Bindings)
 
-[IX Bindings](#Bindings)
+[IX Contributing](#Contributing)
 
-[X Contributing](#Contributing)
+[X Credits](#Credits)
 
-[XI Credits](#Credits)
-
-[XII Documentation](#Documentation)
+[XI Documentation](#Documentation)
 
 # Examples
 
@@ -406,55 +404,6 @@ void print_instruction(const vmcu_instr_t *instr) {
 ![vcd_showcase](https://user-images.githubusercontent.com/46600932/109825592-430ffa00-7c3a-11eb-9af3-26175b962ef2.png)
 <sup>VCD-Trace Tool by pointbazaar</sup>
 
-![disasm_driver](https://user-images.githubusercontent.com/46600932/122659005-6a4ff000-d173-11eb-9c11-bb161de24d5d.png)
-<sup>An example of a small disassembler</sup>
-
-# How libvmcu works
-
-### Device Models
-
-A device model is an abstraction over a microcontroller type. It contains MCU specific
-data, like memory sections and layouts.
-
-Each implementation of a microcontroller has a device loader which fills the 
-device model with data. The device model is then used to supply the
-analyzer pipeline with all the relevant data it needs.
-
-### Analyzer Pipeline
-
-**Stage 0:** The very first stage is the decoder. The decoder tries to decode the given Hex File.
-
-**Stage 1:** Once the binary has been decoded successfully, the data will be sent to the annotator. This stage
-annotates instructions by adding additional information about the instruction itself, like groups and
-explicit/implicit read/write access.
-
-**Stage 2:** The decomposer takes care of opcodes and tries to extract and classify their operands.
-
-**Stage 3:** In this stage, the disassembler receives the result of the previous stage in order to generate 
-mnemonics and some comments.
-
-**Stage 4:** Now the analyzer comes into play. The analyzer takes all the data from the previous three steps 
-and performs a static analysis on it. It then generates a report and returns it, so that
-a virtual microcontroller can be initialized in order to start a dynamic analysis.
-
-### Virtual System - Core
-
-The virtual system core consists of following components:
-
-**GPRs -** A set of general purpose registers (r0 - r31)
-
-**SREG -** Status Register of the microcontroller
-
-**FLASH -** Storage for program data.
-
-**DATA -** The dataspace contains mapped GPRs, mapped SFRs and SRAM.
-
-**I/O -** This module updates the peripherals and interrupts.
-
-### Virtual System - Peripherals
-
-Peripherals and interrupts are managed by the I/O module (core).
-
 # Setup
 
 Currently this library comes with two headers, both can be found in engine/include/libvmcu:
@@ -545,11 +494,11 @@ take a look at engine/*/arch/
 - [x] cross references (xref-from, xref-to)
 - [ ] analyzer flags
 
-- [x] Decompose and classify instructions
+- [x] decompose and classify instructions
   - [x] instruction groups
   - [x] operands and operand types
 
-- [x] Analyzer for AVR binaries
+- [x] analyzer for AVR binaries
    - [x] label analysis
    - [x] vector analysis
    - [x] controlflow analysis
@@ -562,7 +511,7 @@ take a look at engine/*/arch/
      - [ ] UTF16
    - [ ] ...
 
-- [ ] Format Reader
+- [ ] format reader
     - [x] intel hex
     - [ ] motorola hex
     - [ ] bin
@@ -570,7 +519,6 @@ take a look at engine/*/arch/
 
 # Dynamic Analysis
 
-- [x] Backstepping
 - [x] Interrupt support
 - [x] cycle accurate realtime simulation
 - [x] Support for 133 AVR assembly instructions
