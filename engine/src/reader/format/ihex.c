@@ -7,12 +7,11 @@
 #include <stdbool.h>
 
 // Project Headers (engine, readers)
-#include "engine/include/reader/ihex_reader.h"
+#include "engine/include/reader/format/ihex.h"
 #include "engine/include/reader/binary_buffer.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/misc/filemanip.h"
-#include "engine/include/misc/bitmanip.h"
 #include "engine/include/misc/stringmanip.h"
 
 #define RECORD 8

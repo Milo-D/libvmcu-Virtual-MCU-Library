@@ -12,7 +12,7 @@
 
 // Project Headers (engine, readers)
 #include "engine/include/reader/binary_buffer.h"
-#include "engine/include/reader/ihex_reader.h"
+#include "engine/include/reader/reader.h"
 
 // Project Headers (engine utilities)
 #include "engine/include/misc/bitmanip.h"
@@ -62,7 +62,7 @@ vmcu_instr_t* vmcu_decode_ihex(const char *hex_file, uint32_t *size, vmcu_model_
     vmcu_instr_t *result;
     vmcu_binary_buffer_t *bb;
 
-    if((bb = vmcu_read_ihex(hex_file, size)) == NULL)
+    if((bb = vmcu_read_format(VMCU_FMT_IHEX, hex_file, size)) == NULL)
         return NULL;
 
     if((result = decode_binary_buffer(bb, size)) == NULL)

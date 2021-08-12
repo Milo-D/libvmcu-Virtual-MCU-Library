@@ -1,5 +1,11 @@
 # Changelog
 
+# Unreleased
+
+- added format reader interface (reader/reader.c)
+  - reader for different file formats can be now added to reader/format/
+    - for example reader/format/ihex.c to read the intel hex format
+
 # v.0.8.12 - 2021-08-10
 
 - reduction of heap usage and overall memory usage
