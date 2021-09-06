@@ -18,10 +18,10 @@
 
 /* --- Extern --- */
 
-vmcu_report_t* vmcu_analyze_ihex(const char *hex_file, vmcu_model_t *mcu) {
+vmcu_report_t* vmcu_analyze_file(const char *file, vmcu_model_t *mcu) {
 
     vmcu_report_t *report = vmcu_report_ctor();
-    report->disassembly = vmcu_disassemble_ihex(hex_file, &report->progsize, mcu);
+    report->disassembly = vmcu_disassemble_file(file, &report->progsize, mcu);
 
     if(report->disassembly == NULL) {
 

@@ -64,7 +64,7 @@ int main(const int argc, const char **argv) {
 
     if(argc != 2) {
 
-        printf("Usage: ./skeleton <hexfile>\n");
+        printf("Usage: ./skeleton <binary>\n");
         return EXIT_FAILURE;
     }
 
@@ -72,7 +72,7 @@ int main(const int argc, const char **argv) {
     m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
     uint32_t progsize = 0;
-    vmcu_instr_t *prog = vmcu_disassemble_ihex(argv[1], &progsize, m328p);
+    vmcu_instr_t *prog = vmcu_disassemble_file(argv[1], &progsize, m328p);
 
     if(prog == NULL || progsize == 0)
         return EXIT_FAILURE;

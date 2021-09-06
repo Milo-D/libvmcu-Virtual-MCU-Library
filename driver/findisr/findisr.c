@@ -56,7 +56,7 @@ int main(const int argc, const char **argv) {
 
     if(argc < 2) {
 
-        printf("Usage: ./findisr <hexfile>\n");
+        printf("Usage: ./findisr <binary>\n");
         return EXIT_FAILURE;
     }
 
@@ -76,7 +76,7 @@ int main(const int argc, const char **argv) {
     const char* filename = argv[argc-1];
     m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
-    if((report = vmcu_analyze_ihex(filename, m328p)) == NULL)
+    if((report = vmcu_analyze_file(filename, m328p)) == NULL)
         return EXIT_FAILURE;
 
     uint32_t start_index = 0;

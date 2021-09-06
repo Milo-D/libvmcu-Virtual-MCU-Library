@@ -32,6 +32,8 @@ These are a some of my ideas for the future of libvmcu
 [10] a python binding would be really great.
     [10.1] requires external contributors :( see CONTRIBUTING.txt
 
+[11] make libvmcu thread safe
+
 /********************************* Internal / Cleanup *****************************/
 
 [12] remove usage of basic integers (int) in libvmcu (nearly done)
@@ -41,3 +43,5 @@ These are a some of my ideas for the future of libvmcu
 [14] speed up controlflow analysis by adding a lookup table for the cfg nodes
 
 [15] fix inconsistency of xref-to
+
+[16] a consistent way to return readable error codes (not just -1 and 0)

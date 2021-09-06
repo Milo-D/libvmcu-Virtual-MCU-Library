@@ -572,11 +572,11 @@ extern void vmcu_model_dtor(vmcu_model_t *this);
 /* <---------------------------------- Functions - Analyzer Stage -------------------------------------> */
 
 /*
- * vmcu_analyze_ihex - analyze an intel hex file
- * @hex_file:   intel hex file to analyze
- * @mcu:        analyze for this device model
+ * vmcu_analyze_file - analyze a binary file
+ * @file:   file to analyze (currently srec or ihex)
+ * @mcu:    analyze for this device model
  * */
-extern vmcu_report_t* vmcu_analyze_ihex(const char *hex_file, vmcu_model_t *mcu);
+extern vmcu_report_t* vmcu_analyze_file(const char *file, vmcu_model_t *mcu);
 
 /*
  * vmcu_report_dtor - destructor of vmcu_report_t
@@ -595,12 +595,12 @@ extern void vmcu_report_dtor(vmcu_report_t *this);
 extern int vmcu_disassemble_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 /*
- * vmcu_disassemble_ihex - disassemble an intel hex file
- * @hex_file:   intel hex file to disassemble
- * @size:       size of vmcu_instr_t* after disassembling
- * @mcu:        disassemble for this device model
+ * vmcu_disassemble_file - disassemble a binary file
+ * @file:   file to disassemble (currently srec or ihex)
+ * @size:   size of vmcu_instr_t* after disassembling
+ * @mcu:    disassemble for this device model
  * */
-extern vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_disassemble_file(const char *file, uint32_t *size, vmcu_model_t *mcu);
 
 /* <--------------------------------- Functions - Decomposer Stage ------------------------------------> */
 
@@ -613,12 +613,12 @@ extern vmcu_instr_t* vmcu_disassemble_ihex(const char *hex_file, uint32_t *size,
 extern int vmcu_decompose_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 /*
- * vmcu_decompose_ihex - decompose an intel hex file
- * @hex_file:   intel hex file to decompose
- * @size:       size of vmcu_instr_t* after decomposing
- * @mcu:        decompose for this device model
+ * vmcu_decompose_file - decompose a binary file
+ * @file:   file to decompose (currently srec or ihex)
+ * @size:   size of vmcu_instr_t* after decomposing
+ * @mcu:    decompose for this device model
  * */
-extern vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_decompose_file(const char *file, uint32_t *size, vmcu_model_t *mcu);
 
 /* <--------------------------------- Functions - Annotator Stage -------------------------------------> */
 
@@ -631,12 +631,12 @@ extern vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, uint32_t *size, v
 extern int vmcu_annotate_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 /*
- * vmcu_annotate_ihex - annotate an intel hex file
- * @hex_file:   intel hex file to annotate
- * @size:       size of vmcu_instr_t* after annotating
- * @mcu:        annotate for this device model
+ * vmcu_annotate_file - annotate a binary file
+ * @file:   file to annotate (currently srec or ihex)
+ * @size:   size of vmcu_instr_t* after annotating
+ * @mcu:    annotate for this device model
  * */
-extern vmcu_instr_t* vmcu_annotate_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_annotate_file(const char *file, uint32_t *size, vmcu_model_t *mcu);
 
 /* <---------------------------------- Functions - Decoder Stage --------------------------------------> */
 
@@ -649,11 +649,11 @@ extern vmcu_instr_t* vmcu_annotate_ihex(const char *hex_file, uint32_t *size, vm
 extern int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *mcu);
 
 /*
- * vmcu_decode_ihex - decode an intel hex file
- * @hex_file:   intel hex file to decode
- * @size:       size of vmcu_instr_t* after decoding
- * @mcu:        decode for this device model
+ * vmcu_decode_file - decode a binary file
+ * @file:   file to decode (currently srec or ihex)
+ * @size:   size of vmcu_instr_t* after decoding
+ * @mcu:    decode for this device model
  * */
-extern vmcu_instr_t* vmcu_decode_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu);
+extern vmcu_instr_t* vmcu_decode_file(const char *file, uint32_t *size, vmcu_model_t *mcu);
 
 #endif

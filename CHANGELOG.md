@@ -2,6 +2,26 @@
 
 # Unreleased
 
+- nothing to log
+
+# v.0.8.13 - 2021-09-06
+
+- Now supporting Motorola SRecord
+
+- merged pull-request (#68) from pointbazaar (Alexander Hansen)
+  - added format reader for motorola hex (SRecord)
+  - thanks for that :)
+
+- refactored srec format reader (PR #68)
+  - adjusted style
+  - fixed some minor bugs
+
+- connected srec format reader to pipeline
+
+- Important: file extension decides which reader will be invoked 
+  - *.hex  ==> invokes intel hex reader
+  - *.srec ==> invokes srec reader
+
 - added format reader interface (reader/reader.c)
   - reader for different file formats can be now added to reader/format/
     - for example reader/format/ihex.c to read the intel hex format

@@ -58,7 +58,7 @@ int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P);
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+    vmcu_report_t *report = vmcu_analyze_file("file.hex", m328p);
 
     for(uint32_t i = 0; i < report->cfg->used; i++) {
         
@@ -127,7 +127,7 @@ int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+    vmcu_report_t *report = vmcu_analyze_file("file.srec", m328p);
     
     for(uint32_t i = 0; i < report->progsize; i++) {
 
@@ -161,7 +161,7 @@ int main(const int argc, const char **argv) {
 
     /* ignoring checks for this example */
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+    vmcu_report_t *report = vmcu_analyze_file("file.hex", m328p);
 
     for(uint32_t i = 0; i < report->progsize; i++) {
 
@@ -195,7 +195,7 @@ int main(const int argc, const char **argv) {
 
     /* ignoring checks for this example */
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+    vmcu_report_t *report = vmcu_analyze_file("file.hex", m328p);
 
     for(uint32_t i = 0; i < report->n_vector; i++) {
 
@@ -237,7 +237,7 @@ int main(const int argc, const char **argv) {
     
     /* ignoring checks for this example */
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+    vmcu_report_t *report = vmcu_analyze_file("file.hex", m328p);
     
     for(uint32_t i = 0; i < report->n_label; i++) {
 
@@ -287,7 +287,7 @@ int main(const int argc, const char **argv) {
 
     /* ignoring checks for this example */
     vmcu_model_t  *m328p  = vmcu_model_ctor(VMCU_DEVICE_M328P); 
-    vmcu_report_t *report = vmcu_analyze_ihex("file.hex", m328p);
+    vmcu_report_t *report = vmcu_analyze_file("file.hex", m328p);
 
     for(uint32_t i = 0; i < report->n_sfr; i++) {
 
@@ -510,7 +510,7 @@ take a look at engine/*/arch/
 
 - [ ] format reader
     - [x] intel hex
-    - [ ] motorola hex
+    - [x] motorola hex
     - [ ] bin
     - [ ] elf 
 

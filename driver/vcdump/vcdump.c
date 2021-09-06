@@ -33,7 +33,7 @@ int main(const int argc, const char **argv) {
 
     if(argc < 4) {
 
-        printf("Usage: ./vcdump <hexfile> <cycles> <values to be monitored>+\n");
+        printf("Usage: ./vcdump <binary> <cycles> <values to be monitored>+\n");
         return EXIT_FAILURE;
     }
 
@@ -53,7 +53,7 @@ int main(const int argc, const char **argv) {
 
     m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
-    if((report = vmcu_analyze_ihex(filename, m328p)) == NULL)
+    if((report = vmcu_analyze_file(filename, m328p)) == NULL)
         return EXIT_FAILURE;
 
     sys = vmcu_system_ctor(report);

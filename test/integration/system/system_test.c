@@ -85,7 +85,7 @@ static void test_ihex_kmp(vmcu_model_t *mcu) {
 
     printf("Simulating kmp.hex");
 
-    vmcu_report_t *report = vmcu_analyze_ihex(IHEX_KMP, mcu);
+    vmcu_report_t *report = vmcu_analyze_file(IHEX_KMP, mcu);
     vmcu_system_t *sys = vmcu_system_ctor(report);
 
     while(vmcu_system_get_pc(sys) != 0x0141)
@@ -109,7 +109,7 @@ static void test_ihex_erdy(vmcu_model_t *mcu) {
 
     printf("Simulating erdy.hex");
 
-    vmcu_report_t *report = vmcu_analyze_ihex(IHEX_ERDY, mcu);
+    vmcu_report_t *report = vmcu_analyze_file(IHEX_ERDY, mcu);
     vmcu_system_t *sys = vmcu_system_ctor(report);
 
     while(sys->cycles < 33007)
@@ -136,7 +136,7 @@ static void test_ihex_eonly(vmcu_model_t *mcu) {
 
     printf("Simulating eonly.hex");
 
-    vmcu_report_t *report = vmcu_analyze_ihex(IHEX_EONLY, mcu);
+    vmcu_report_t *report = vmcu_analyze_file(IHEX_EONLY, mcu);
     vmcu_system_t *sys = vmcu_system_ctor(report);
 
     while(vmcu_system_get_pc(sys) != 0x001e)
@@ -168,7 +168,7 @@ static void test_ihex_dfs(vmcu_model_t *mcu) {
 
     printf("Simulating dfs.hex");
 
-    vmcu_report_t *report = vmcu_analyze_ihex(IHEX_DFS, mcu);
+    vmcu_report_t *report = vmcu_analyze_file(IHEX_DFS, mcu);
     vmcu_system_t *sys = vmcu_system_ctor(report);
 
     while(vmcu_system_get_pc(sys) != 0x01c0)
@@ -187,7 +187,7 @@ static void test_ihex_tov(vmcu_model_t *mcu) {
 
     printf("Simulating tov.hex");
 
-    vmcu_report_t *report = vmcu_analyze_ihex(IHEX_TOV, mcu);
+    vmcu_report_t *report = vmcu_analyze_file(IHEX_TOV, mcu);
     vmcu_system_t *sys = vmcu_system_ctor(report);
 
     uint8_t irqc = 0;

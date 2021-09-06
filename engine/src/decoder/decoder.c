@@ -57,12 +57,12 @@ int vmcu_decode_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t *m
     return ((instr->dword == false) && (bytes > 0xffff)) ? -1 : 0;
 }
 
-vmcu_instr_t* vmcu_decode_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu) {
+vmcu_instr_t* vmcu_decode_file(const char *file, uint32_t *size, vmcu_model_t *mcu) {
 
     vmcu_instr_t *result;
     vmcu_binary_buffer_t *bb;
 
-    if((bb = vmcu_read_format(VMCU_FMT_IHEX, hex_file, size)) == NULL)
+    if((bb = vmcu_read_format(file, size)) == NULL)
         return NULL;
 
     if((result = decode_binary_buffer(bb, size)) == NULL)

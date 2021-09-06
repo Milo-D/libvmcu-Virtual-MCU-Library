@@ -41,12 +41,12 @@ int main(const int argc, const char **argv) {
 
     if(argc != 2) {
 
-        printf("Usage: ./endloop <file.hex>\n");
+        printf("Usage: ./endloop <binary>\n");
         return EXIT_FAILURE;
     }
 
     vmcu_model_t *m328p   = vmcu_model_ctor(VMCU_DEVICE_M328P);
-    vmcu_report_t *report = vmcu_analyze_ihex(argv[1], m328p);
+    vmcu_report_t *report = vmcu_analyze_file(argv[1], m328p);
 
     if(report == NULL) {
 

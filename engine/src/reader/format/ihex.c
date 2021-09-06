@@ -1,4 +1,4 @@
-/* Intel Hex Reader Header */
+/* Intel Hex Reader Implementation */
 
 // C Headers
 #include <stdio.h>
@@ -44,7 +44,7 @@ static int32_t get_ihex_properties(char *line, ihex_properties_t *prop);
 
 /* --- Extern --- */
 
-vmcu_binary_buffer_t * vmcu_read_ihex(const char *hex_file, uint32_t *size) {
+vmcu_binary_buffer_t* vmcu_read_ihex(const char *hex_file, uint32_t *size) {
 
     uint32_t n;
     vmcu_binary_buffer_t *bb;

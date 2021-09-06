@@ -37,11 +37,11 @@ int vmcu_decompose_bytes(const uint32_t bytes, vmcu_instr_t *instr, vmcu_model_t
     return 0;
 }
 
-vmcu_instr_t* vmcu_decompose_ihex(const char *hex_file, uint32_t *size, vmcu_model_t *mcu) {
+vmcu_instr_t* vmcu_decompose_file(const char *file, uint32_t *size, vmcu_model_t *mcu) {
 
     vmcu_instr_t *instr_list;
 
-    if((instr_list = vmcu_annotate_ihex(hex_file, size, mcu)) == NULL)
+    if((instr_list = vmcu_annotate_file(file, size, mcu)) == NULL)
         return NULL;
 
     for(uint32_t i = 0; i < *size; i++) {

@@ -94,13 +94,13 @@ int main(const int argc, const char **argv) {
 
     if(argc != 2) {
 
-        printf("Usage: ./sca <file.hex>\n");
+        printf("Usage: ./sca <binary>\n");
         return EXIT_FAILURE;
     }
 
     vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
 
-    vmcu_report_t *report = vmcu_analyze_ihex(FILE, m328p);
+    vmcu_report_t *report = vmcu_analyze_file(FILE, m328p);
     vmcu_system_t *sys    = vmcu_system_ctor(report);
 
     char cracked[LENGTH] = "";

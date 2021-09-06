@@ -64,7 +64,7 @@ void bubblesort(void **array, int length, int (*compar)(const void *, const void
 int main(int argc, char* argv[]) {
 
     if(argc != 2) {
-        printf("Expected hex file argument. exiting.\n");
+        printf("Expected binary file as argument. exiting.\n");
         return 1;
     }
 
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
     const char* fname = argv[argc-1];
 
     vmcu_model_t* m328p   = vmcu_model_ctor(VMCU_DEVICE_M328P);
-    vmcu_report_t* report = vmcu_analyze_ihex(fname, m328p);
+    vmcu_report_t* report = vmcu_analyze_file(fname, m328p);
 
     if(report == NULL) {
 

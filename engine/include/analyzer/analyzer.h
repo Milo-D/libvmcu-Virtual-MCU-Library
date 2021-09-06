@@ -6,6 +6,6 @@
 typedef struct vmcu_report vmcu_report_t;
 typedef struct vmcu_model vmcu_model_t;
 
-extern vmcu_report_t* vmcu_analyze_ihex(const char *hex_file, vmcu_model_t *mcu);
+extern vmcu_report_t* vmcu_analyze_file(const char *file, vmcu_model_t *mcu);
 
 #endif
