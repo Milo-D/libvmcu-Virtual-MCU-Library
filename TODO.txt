@@ -45,3 +45,5 @@ These are a some of my ideas for the future of libvmcu
 [15] fix inconsistency of xref-to
 
 [16] a consistent way to return readable error codes (not just -1 and 0)
+
+[17] separate frequently used functions (like print_instruction) from driver land

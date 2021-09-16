@@ -2,7 +2,7 @@
 
 # Unreleased
 
-- nothing to log
+- new driver: mbc - a driver to find multibyte comparisons in AVR binaries
 
 # v.0.8.13 - 2021-09-06
 
