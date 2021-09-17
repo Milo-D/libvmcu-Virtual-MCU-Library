@@ -5,9 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// libvmcu
+// libvmcu Headers
 #include "libvmcu_analyzer.h"
-#include "libvmcu_system.h"
 
 #define COLOR_RED     "\x1b[31m"
 #define COLOR_GREEN   "\x1b[32m"
@@ -16,6 +15,8 @@
 #define COLOR_MAGENTA "\x1b[35m"
 #define COLOR_CYAN    "\x1b[36m"
 #define COLOR_RESET   "\x1b[0m"
+
+#define LIST_SIZE_DFL 8
 
 #define mnemlen(mnem) strlen(mnem->base) \
                     + strlen(mnem->src)  \
@@ -77,11 +78,6 @@
  *
  * */
 
-/* libvmcu Structures */
-
-vmcu_model_t  *m328p  = NULL;
-vmcu_report_t *report = NULL;
-
 /* Helper Structures */
 
 typedef struct instr_list {
@@ -106,12 +102,14 @@ static void instr_list_dtor(instr_list_t *this);
 static void instr_list_push_item(instr_list_t *this, vmcu_instr_t *item);
 static void instr_list_reset(instr_list_t *this);
 
+static bool* hitmap_ctor(const uint32_t initial_size);
+static void hitmap_dtor(bool *this);
+
 static void print_instruction(vmcu_instr_t *instr);
 static void print_instruction_details(vmcu_instr_t *instr);
 static void print_colored_base(const char *basestr, VMCU_GROUP group);
 static void print_colored_operands(const char *opstr, VMCU_OPTYPE optype);
-static void add_padding(const size_t length, const size_t max);
-static void cleanup(void);
+static void print_padding(const size_t length, const size_t max);
 
 /* --- Extern --- */
 
@@ -123,24 +121,21 @@ int main(const int argc, const char **argv) {
         return EXIT_FAILURE;
     }
 
-    atexit(cleanup);
+    vmcu_model_t *m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
+    vmcu_report_t *report = vmcu_analyze_file(argv[1], m328p);
 
-    m328p = vmcu_model_ctor(VMCU_DEVICE_M328P);
-    report = vmcu_analyze_file(argv[1], m328p);
+    if(report == NULL) {
 
-    if(report == NULL)
+        vmcu_model_dtor(m328p);
         return EXIT_FAILURE;
+    }
 
-    vmcu_cfg_t *cfg = report->cfg;
+    instr_list_t *list = instr_list_ctor(LIST_SIZE_DFL);
+    bool *hitmap = hitmap_ctor( max_addr(report) + 1 );
 
-    bool *hitmap = malloc((max_addr(report) + 1) * sizeof(bool));
-    memset(hitmap, false, (max_addr(report) + 1) * sizeof(bool));
+    for(uint32_t i = 0; i < report->cfg->used; i++) {
 
-    instr_list_t *list = instr_list_ctor(8);
-
-    for(uint32_t i = 0; i < cfg->used; i++) {
-
-        vmcu_cfg_node_t *node = &cfg->node[i];
+        vmcu_cfg_node_t *node = &report->cfg->node[i];
         VMCU_IKEY instr_key = node->xto.i->key;
 
         if(instr_key == VMCU_IKEY_CP || instr_key == VMCU_IKEY_CPI) {
@@ -153,7 +148,10 @@ int main(const int argc, const char **argv) {
     }
 
     instr_list_dtor(list);
-    free(hitmap);
+    hitmap_dtor(hitmap);
+
+    vmcu_report_dtor(report);
+    vmcu_model_dtor(m328p);
 
     return EXIT_SUCCESS;
 }
@@ -297,6 +295,19 @@ static void instr_list_reset(instr_list_t *this) {
     this->index = 0;
 }
 
+static bool* hitmap_ctor(const uint32_t initial_size) {
+
+    bool *hitmap = malloc((initial_size + 1) * sizeof(bool));
+    memset(hitmap, false, (initial_size + 1) * sizeof(bool));
+
+    return hitmap;
+}
+
+static void hitmap_dtor(bool *this) {
+
+    free(this);
+}
+
 static void print_instruction(vmcu_instr_t *instr) {
 
     vmcu_mnemonic_t *mnem = &instr->mnem;
@@ -318,7 +329,7 @@ static void print_instruction(vmcu_instr_t *instr) {
         sz += printf(" ");
     }
 
-    add_padding(mnemlen(mnem) + sz, 26);
+    print_padding(mnemlen(mnem) + sz, 26);
     printf("%s%s%s\n", COLOR_RED, mnem->comment, COLOR_RESET);
 }
 
@@ -393,7 +404,7 @@ static void print_colored_operands(const char *opstr, VMCU_OPTYPE optype) {
     printf("%s%s", opstr, COLOR_RESET);
 }
 
-static void add_padding(const size_t length, const size_t max) {
+static void print_padding(const size_t length, const size_t max) {
 
     if(length >= max)
         return;
@@ -404,13 +415,4 @@ static void add_padding(const size_t length, const size_t max) {
     pad[max - length] = '\0';
 
     printf("%s", pad);
-}
-
-static void cleanup(void) {
-
-    if(report != NULL)
-        vmcu_report_dtor(report);
-
-    if(m328p != NULL)
-        vmcu_model_dtor(m328p);
 }
