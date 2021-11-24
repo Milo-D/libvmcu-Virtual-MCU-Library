@@ -1,0 +1,20 @@
+TARGET   := opcxp
+LIB_DIR  := ../../build-release
+LIB_DBG	 := ../../build-debug
+OBJ_DIR  := $(BUILD)/objects
+INCLUDE  := -I../../engine/include/libvmcu/
+LIBS	 := -lvmcu -lm
+
+all: $(TARGET).c
+	gcc -O2 $(INCLUDE) -c $(TARGET).c -o $(TARGET).o
+	gcc -O2 -o $(TARGET) $(TARGET).o -L$(LIB_DIR)/ $(LIBS)
+	@rm $(TARGET).o
+
+debug: $(TARGET).c
+	gcc -g $(INCLUDE) -c $(TARGET).c -o $(TARGET).o
+	gcc -g -o $(TARGET) $(TARGET).o -L$(LIB_DBG)/ $(LIBS)
+	@rm $(TARGET).o
+
+clean:
+	@-rm $(TARGET).o
+	@-rm $(TARGET)
