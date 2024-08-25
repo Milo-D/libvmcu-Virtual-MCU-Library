@@ -5,14 +5,20 @@
 
 static asm_table_entry_t asm_table[VMCU_IID_ENUM_END] = {
 
-    [VMCU_IID_NOP]     = {
+    [VMCU_IID_NOP] = {
 
         .handler          = assemble_nop,
         .handler_unpacked = pack_and_assemble_nop,
         .n_operands       = 0,
         .n_words          = 1
     },
-    [VMCU_IID_MOVW]    = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },
+    [VMCU_IID_MOVW] = {
+
+        .handler          = assemble_movw,
+        .handler_unpacked = pack_and_assemble_movw,
+        .n_operands       = 2,
+        .n_words          = 1
+    },
     [VMCU_IID_MUL]     = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },
     [VMCU_IID_MULS]    = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },
     [VMCU_IID_MULSU]   = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },

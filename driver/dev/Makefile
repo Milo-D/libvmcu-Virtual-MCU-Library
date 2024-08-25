@@ -21,31 +21,36 @@ OBJ = dev.o
 # Targets
 .PHONY: all clean
 
-# Default target: build with selected library type
-all: $(OBJ) $(LIB)
-	$(CC) $(CFLAGS) -o dev $(OBJ) $(LIB)
+# Default target: build with static debug library
+all: debug
 
-# Rules for linking with static or shared libraries in debug mode
+# Rules for linking with static libraries in debug mode
 debug: CFLAGS += -g -O0
-debug: $(OBJ) $(STATIC_LIB_DEBUG) $(SHARED_LIB_DEBUG)
+debug: LIBS = $(STATIC_LIB_DEBUG)
+debug: $(OBJ) $(STATIC_LIB_DEBUG)
 	@echo "Building with Debug Static Library..."
-	$(CC) $(CFLAGS) -o dev $(OBJ) $(STATIC_LIB_DEBUG)
+	$(CC) $(CFLAGS) -o dev $(OBJ) $(LIBS)
 
+# Rules for linking with shared libraries in debug mode
 debug-shared: CFLAGS += -g -O0
+debug-shared: LIBS = $(SHARED_LIB_DEBUG)
 debug-shared: $(OBJ) $(SHARED_LIB_DEBUG)
 	@echo "Building with Debug Shared Library..."
-	$(CC) $(CFLAGS) -o dev $(OBJ) $(SHARED_LIB_DEBUG)
+	$(CC) $(CFLAGS) -o dev $(OBJ) $(LIBS)
 
-# Rules for linking with static or shared libraries in release mode
+# Rules for linking with static libraries in release mode
 release: CFLAGS += -O2
-release: $(OBJ) $(STATIC_LIB_RELEASE) $(SHARED_LIB_RELEASE)
+release: LIBS = $(STATIC_LIB_RELEASE)
+release: $(OBJ) $(STATIC_LIB_RELEASE)
 	@echo "Building with Release Static Library..."
-	$(CC) $(CFLAGS) -o dev $(OBJ) $(STATIC_LIB_RELEASE)
+	$(CC) $(CFLAGS) -o dev $(OBJ) $(LIBS)
 
+# Rules for linking with shared libraries in release mode
 release-shared: CFLAGS += -O2
+release-shared: LIBS = $(SHARED_LIB_RELEASE)
 release-shared: $(OBJ) $(SHARED_LIB_RELEASE)
 	@echo "Building with Release Shared Library..."
-	$(CC) $(CFLAGS) -o dev $(OBJ) $(SHARED_LIB_RELEASE)
+	$(CC) $(CFLAGS) -o dev $(OBJ) $(LIBS)
 
 # Compile dev.c into dev.o
 dev.o: dev.c

@@ -19,23 +19,53 @@ vmcu_rc_t assemble_nop(uint16_t* write_ptr, const vmcu_operand_t* dest, const vm
     return VMCU_RC_OK;
 }
 
-/*
- 
-void pack_and_assemble_ldi(uint16_t* write_ptr, const va_list operands) {
+vmcu_rc_t pack_and_assemble_movw(uint16_t* write_ptr, const va_list operands) {
+
+    /*
+     * todo: rework vmcu_operand_t
+     * */
+
+    vmcu_register_t rd, rr;
+
+    rd = va_arg(operands, vmcu_register_t);
+    rr = va_arg(operands, vmcu_register_t);
 
     vmcu_operand_t dest = {
 
-        .type = VMCU_OPTYPE_R,
-        .r    = va_arg(operands, vmcu_register_t)
+        .type = VMCU_OPTYPE_RP,
+        .rp   = {
+
+            .low  = rd,
+            .high = rd + 1
+        }
     };
 
     vmcu_operand_t src = {
 
-        .type = VMCU_OPTYPE_K8,
-        .imm8 = va_arg(operands, uint8_t)
+        .type = VMCU_OPTYPE_RP,
+        .rp   = {
+
+            .low  = rr,
+            .high = rr + 1
+        }
     };
 
-    return assemble_ldi(write_ptr, addr, &dest, &src);
+    return assemble_movw(write_ptr, &dest, &src);
 }
 
- */
+vmcu_rc_t assemble_movw(uint16_t* write_ptr, const vmcu_operand_t* dest, const vmcu_operand_t* src) {
+
+    vmcu_register_t rd, rr;
+
+    rd = dest->rp.low;
+    rr = src->rp.low;
+
+    if (rd < VMCU_REGISTER_R0 || rd > VMCU_REGISTER_R30 || rd % 2 == 1)
+        return VMCU_RC_ERR_PARAM;
+
+    if (rr < VMCU_REGISTER_R0 || rr > VMCU_REGISTER_R30 || rr % 2 == 1)
+        return VMCU_RC_ERR_PARAM;
+
+    write_word(write_ptr, (0x100 | (rr / 2)) | ((rd / 2) << 4));
+    return VMCU_RC_OK;
+}
