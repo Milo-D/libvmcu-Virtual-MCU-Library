@@ -1,0 +1,38 @@
+---[ assembler
+
+#1 implement missing instructions
+#2 rework MOVW (blocked by misc.#4)
+#3 add assembler runtime option for output endianness
+
+---[ disassembler
+
+#1 implement missing instructions
+
+---[ writer
+
+#1 implement binary writer for IHEX
+#2 implement binary writer for SREC
+
+---[ simulator
+
+#1 rework simulator (vmcu_system_t)
+
+---[ analyzer
+
+#1 rework analyzer
+
+---[ testing
+
+#1 implement testsuite
+#2 add tests for reader
+#3 add tests for disassembler
+#4 add tests for assembler
+
+---[ misc
+
+#1 add engine.errno
+#2 support for engine profiles
+#3 add support for callbacks to custom memory allocators
+#4 rework vmcu_registerpair_t (offer predefined and valid registerpairs)
+#5 add engine stats
+
