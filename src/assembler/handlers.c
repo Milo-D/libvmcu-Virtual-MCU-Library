@@ -81,7 +81,7 @@ vmcu_rc_t pack_and_assemble_mul(uint16_t* write_ptr, const va_list operands) {
     vmcu_operand_t src = {
 
         .type = VMCU_OPTYPE_R,
-        .rp   = va_arg(operands, vmcu_register_t)
+        .r    = va_arg(operands, vmcu_register_t)
     };
 
     return assemble_mul(write_ptr, &dest, &src);
@@ -115,7 +115,7 @@ vmcu_rc_t pack_and_assemble_muls(uint16_t* write_ptr, const va_list operands) {
     vmcu_operand_t src = {
 
         .type = VMCU_OPTYPE_R,
-        .rp   = va_arg(operands, vmcu_register_t)
+        .r    = va_arg(operands, vmcu_register_t)
     };
 
     return assemble_muls(write_ptr, &dest, &src);
