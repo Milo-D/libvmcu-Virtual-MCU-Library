@@ -35,4 +35,5 @@
 #3 add support for callbacks to custom memory allocators
 #4 rework vmcu_registerpair_t (offer predefined and valid registerpairs)
 #5 add engine stats
-
+#6 symbol visibility in static archives
+#7 makefile rules to install and uninstall shared lib

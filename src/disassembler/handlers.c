@@ -8,29 +8,43 @@
 
 /* --- Internal helper functions --- */
 
-static void init_operand_regpair(vmcu_operand_t* operand, const vmcu_register_t rh, const vmcu_register_t rl) {
+static inline int16_t sext_s12(int16_t s12) {
 
-    operand->type    = VMCU_OPTYPE_RP;
-    operand->rp.high = rh;
-    operand->rp.low  = rl;
-
-    snprintf(operand->str, sizeof(operand->str), "r%d:r%d", rh, rl);
+    /* sign extend from 12-bit to 16-bit */
+    return (s12 & 0x0800) ? s12 |= 0xf000 : s12;
 }
 
-static void init_operand_reg(vmcu_operand_t* operand, const vmcu_register_t reg) {
+static void init_operand_regpair(vmcu_operand_t* op, const vmcu_register_t rh, const vmcu_register_t rl) {
 
-    operand->type = VMCU_OPTYPE_R;
-    operand->r    = reg;
+    op->type    = VMCU_OPTYPE_RP;
+    op->rp.high = rh;
+    op->rp.low  = rl;
 
-    snprintf(operand->str, sizeof(operand->str), "r%d", reg);
+    snprintf(op->str, sizeof(op->str), "r%d:r%d", rh, rl);
 }
 
-static void init_operand_imm8(vmcu_operand_t* operand, const uint8_t imm) {
+static void init_operand_reg(vmcu_operand_t* op, const vmcu_register_t reg) {
 
-    operand->type = VMCU_OPTYPE_K8;
-    operand->imm8 = imm;
+    op->type = VMCU_OPTYPE_R;
+    op->r    = reg;
 
-    snprintf(operand->str, sizeof(operand->str), "0x%02x", imm);
+    snprintf(op->str, sizeof(op->str), "r%d", reg);
+}
+
+static void init_operand_uimm8(vmcu_operand_t* op, const vmcu_optype_t type, const uint8_t imm) {
+
+    op->type  = type;
+    op->uimm8 = imm;
+
+    snprintf(op->str, sizeof(op->str), "0x%02" PRIx8, imm);
+}
+
+static void init_operand_imm16(vmcu_operand_t* op, const vmcu_optype_t type, const int16_t imm) {
+
+    op->type  = type;
+    op->imm16 = imm;
+
+    snprintf(op->str, sizeof(op->str), "%" PRId16, imm);
 }
 
 /* --- Exposed --- */
@@ -244,10 +258,25 @@ void disassemble_ldi(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_word
     init_operand_reg(&instr->operands[0], rd);
 
     k = ((w0->raw & 0xf00) >> 4) + (w0->raw & 0xf);
-    init_operand_imm8(&instr->operands[1], k);
+    init_operand_uimm8(&instr->operands[1], VMCU_OPTYPE_K8, k);
 }
 
 void disassemble_rjmp(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_word_t* w1) {
+
+    int16_t s12;
+
+    instr->id               = VMCU_IID_RJMP;
+    instr->group            = VMCU_GROUP_FLOW;
+    instr->writes.pc        = true;
+    instr->addr             = w0->addr;
+    instr->n_words          = 1;
+    instr->words[0]         = w0->raw;
+    instr->n_operands       = 1;
+
+    strcpy(instr->str, "rjmp");
+
+    s12 = sext_s12(w0->raw & 0x0fff);
+    init_operand_imm16(&instr->operands[0], VMCU_OPTYPE_S12, s12);
 }
 
 void disassemble_jmp(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_word_t* w1) {

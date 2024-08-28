@@ -298,7 +298,7 @@ typedef struct vmcu_operand {
 
     union {
 
-        uint8_t             imm8;   // if .type = K4, K6, K8, B, IO5 or IO6
+        uint8_t             uimm8;  // if .type = K4, K6, K8, B, IO5 or IO6
         uint16_t            uimm16; // if .type = D7 or D16
         uint32_t            uimm32; // if .type = P22
         int16_t             imm16;  // if .type = S7 or S12
