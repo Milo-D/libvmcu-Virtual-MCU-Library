@@ -12,6 +12,7 @@
  *            operand. Excess elements are ignored. The exact number and type of
  *            operands to provide depends on the specific instruction denoted by @iid
  * @retval    total number of resulting words (either 1 or 2), 0 on failure
+ * @vmcu.rc   vmcu.rc set accordingly
  *
  * Configurable options:
  * - vmcu.assembler.expect_operand_structs

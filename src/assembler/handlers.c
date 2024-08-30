@@ -61,10 +61,10 @@ vmcu_rc_t assemble_movw(uint16_t* write_ptr, const vmcu_operand_t* dest, const v
     rr = src->rp.low;
 
     if (rd < VMCU_REGISTER_R0 || rd > VMCU_REGISTER_R30 || rd % 2 == 1)
-        return VMCU_RC_ERR_PARAM;
+        return VMCU_RC_ERR_OP_DEST;
 
     if (rr < VMCU_REGISTER_R0 || rr > VMCU_REGISTER_R30 || rr % 2 == 1)
-        return VMCU_RC_ERR_PARAM;
+        return VMCU_RC_ERR_OP_SRC;
 
     write_word(write_ptr, (0x100 | (rr / 2)) | ((rd / 2) << 4));
     return VMCU_RC_OK;
@@ -92,10 +92,10 @@ vmcu_rc_t assemble_mul(uint16_t* write_ptr, const vmcu_operand_t* dest, const vm
     uint16_t opcode;
 
     if (dest->r < VMCU_REGISTER_R0 || dest->r > VMCU_REGISTER_R31)
-        return VMCU_RC_ERR_PARAM;
+        return VMCU_RC_ERR_OP_DEST;
 
     if (src->r < VMCU_REGISTER_R0 || src->r > VMCU_REGISTER_R31)
-        return VMCU_RC_ERR_PARAM;
+        return VMCU_RC_ERR_OP_SRC;
 
     opcode = ((0x9c00 | (src->r & 0xf)) | ((src->r & 0x10) << 5));
     opcode |= (dest->r << 4);
@@ -124,10 +124,10 @@ vmcu_rc_t pack_and_assemble_muls(uint16_t* write_ptr, const va_list operands) {
 vmcu_rc_t assemble_muls(uint16_t* write_ptr, const vmcu_operand_t* dest, const vmcu_operand_t* src) {
 
     if (dest->r < VMCU_REGISTER_R16 || dest->r > VMCU_REGISTER_R31)
-        return VMCU_RC_ERR_PARAM;
+        return VMCU_RC_ERR_OP_DEST;
 
     if (src->r < VMCU_REGISTER_R16 || src->r > VMCU_REGISTER_R31)
-        return VMCU_RC_ERR_PARAM;
+        return VMCU_RC_ERR_OP_SRC;
 
     write_word(write_ptr, ((0x200 | (src->r - 16)) | ((dest->r - 16) << 4)));
     return VMCU_RC_OK;
