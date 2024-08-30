@@ -1,10 +1,9 @@
-/* Implements the disassembler.h API */
-
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
 #include <lib/disassembler.h>
+#include <lib/engine.h>
 #include "opcode_table.h"
 
 static uint32_t count_32bit_instructions(vmcu_word_t* words, const uint32_t n_words) {
@@ -30,12 +29,12 @@ static int compare_words(const void* a, const void* b) {
 
 /* --- Exposed --- */
 
-vmcu_instr_t* vmcu_disasm(vmcu_engine_t* e, vmcu_word_t* words, const uint32_t n_words, uint32_t* size) {
+vmcu_instr_t* vmcu_disasm(vmcu_word_t* words, const uint32_t n_words, uint32_t* size) {
 
     vmcu_instr_t* instructions;
     vmcu_word_t*  copy;
 
-    if (e->disassembler.words_mutable == false) {
+    if (vmcu.disassembler.words_mutable == false) {
 
         copy = malloc(n_words * sizeof(vmcu_word_t));
         memcpy(copy, words, n_words * sizeof(vmcu_word_t));
@@ -80,7 +79,7 @@ vmcu_instr_t* vmcu_disasm(vmcu_engine_t* e, vmcu_word_t* words, const uint32_t n
     }
 
 vmcu_disasm_failure:
-    if (e->disassembler.words_mutable == false)
+    if (vmcu.disassembler.words_mutable == false)
         free(copy);
 
     return instructions; 

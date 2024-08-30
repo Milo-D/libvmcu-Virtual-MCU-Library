@@ -2,10 +2,11 @@
 #include <stdarg.h>
 
 #include <lib/assembler.h>
+#include <lib/engine.h>
 #include <lib/rc.h>
 #include "asm_table.h"
 
-unsigned int vmcu_asm(vmcu_engine_t* e, uint16_t* write_ptr, const vmcu_iid_t iid, ...) {
+unsigned int vmcu_asm(uint16_t* write_ptr, const vmcu_iid_t iid, ...) {
 
     va_list            operands;
     vmcu_operand_t*    op_ptr[2];
@@ -19,7 +20,7 @@ unsigned int vmcu_asm(vmcu_engine_t* e, uint16_t* write_ptr, const vmcu_iid_t ii
     if ((entry = get_asm_table_entry(iid)) == NULL)
         return n_assembled_words;
 
-    if (e->assembler.expect_operand_structs == true) {
+    if (vmcu.assembler.expect_operand_structs == true) {
 
         op_ptr[0] = op_ptr[1] = NULL;
 

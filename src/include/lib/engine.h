@@ -2,6 +2,7 @@
 #define VMCU_ENGINE_H
 
 #include <stdbool.h>
+#include "rc.h"
 
 /*
  * Endianness.
@@ -79,6 +80,7 @@ typedef struct vmcu_assembler_config {
  * */
 typedef struct vmcu_engine {
 
+    vmcu_rc_t                  rc;              // most recent return code (similar to errno)
     vmcu_core_t                instruction_set; // instruction set version
     vmcu_reader_config_t       reader;          // configuration for reader
     vmcu_disassembler_config_t disassembler;    // configuration for disassembler
@@ -87,9 +89,13 @@ typedef struct vmcu_engine {
 } vmcu_engine_t;
 
 /*
- * vmcu_engine_init - initialize engine with default settings
- * @e   a pointer to an empty engine object
+ * VMCU engine in TLS (thread local storage)
  * */
-void vmcu_engine_init(vmcu_engine_t* e);
+extern __thread vmcu_engine_t vmcu;
+
+/*
+ * vmcu_engine_reset - reset engine to default values
+ * */
+void vmcu_engine_reset(void);
 
 #endif

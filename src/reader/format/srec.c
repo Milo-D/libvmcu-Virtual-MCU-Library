@@ -54,15 +54,15 @@ typedef struct srec_properties {
 static bool verify_srec_line(const char* line);
 static uint32_t calculate_buffer_size(FILE* stream);
 
-static int32_t read_srec_stream(vmcu_engine_t* e, FILE* stream, vmcu_word_t* words, uint32_t* size);
-static int32_t read_srec_line(vmcu_engine_t* e, const char* line, vmcu_word_t* words, uint32_t* size);
+static int32_t read_srec_stream(FILE* stream, vmcu_word_t* words, uint32_t* size);
+static int32_t read_srec_line(const char* line, vmcu_word_t* words, uint32_t* size);
 
 static srec_error_t get_srec_properties(const char* line, srec_properties_t* prop);
 static srec_error_t populate_data(const char* line, srec_properties_t* prop);
 
 /* --- Extern --- */
 
-vmcu_word_t* read_srec(vmcu_engine_t* e, FILE* stream, uint32_t* size) {
+vmcu_word_t* read_srec(FILE* stream, uint32_t* size) {
 
     uint32_t     n;
     vmcu_word_t* words;
@@ -73,7 +73,7 @@ vmcu_word_t* read_srec(vmcu_engine_t* e, FILE* stream, uint32_t* size) {
     if ((words = malloc(n * sizeof(vmcu_word_t))) == NULL)
         return NULL;
 
-    if (read_srec_stream(e, stream, words, size) < 0) {
+    if (read_srec_stream(stream, words, size) < 0) {
 
         free(words);
         return NULL;
@@ -130,14 +130,14 @@ static bool verify_srec_line(const char* line) {
     return true;
 }
 
-static int32_t read_srec_stream(vmcu_engine_t* e, FILE* stream, vmcu_word_t* words, uint32_t* size) {
+static int32_t read_srec_stream(FILE* stream, vmcu_word_t* words, uint32_t* size) {
 
     size_t len;
     char*  line = NULL;
 
     while (getline(&line, &len, stream) != -1) {
 
-        if (read_srec_line(e, line, words, size) < 0) {
+        if (read_srec_line(line, words, size) < 0) {
 
             *size = 0;
             free(line);
@@ -150,7 +150,7 @@ static int32_t read_srec_stream(vmcu_engine_t* e, FILE* stream, vmcu_word_t* wor
     return 0;
 }
 
-static int32_t read_srec_line(vmcu_engine_t* e, const char* line, vmcu_word_t* words, uint32_t* size) {
+static int32_t read_srec_line(const char* line, vmcu_word_t* words, uint32_t* size) {
 
     srec_properties_t prop;
     srec_error_t      err;
@@ -168,7 +168,7 @@ static int32_t read_srec_line(vmcu_engine_t* e, const char* line, vmcu_word_t* w
 
         uint8_t high, low;
 
-        if (e->reader.endianness == VMCU_ENDIAN_LITTLE) {
+        if (vmcu.reader.endianness == VMCU_ENDIAN_LITTLE) {
 
             low  = prop.data[ (i * 2) + 0 ];
             high = prop.data[ (i * 2) + 1 ];

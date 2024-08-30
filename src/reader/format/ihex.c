@@ -32,13 +32,13 @@ typedef struct ihex_properties {
 
 static bool verify_ihex_line(const char* line);
 static uint32_t calculate_buffer_size(FILE* stream);
-static int read_ihex_stream(vmcu_engine_t* e, FILE* stream, vmcu_word_t* words, uint32_t* size);
-static int read_ihex_line(vmcu_engine_t* e, char* line, vmcu_word_t* words, uint32_t* size);
+static int read_ihex_stream(FILE* stream, vmcu_word_t* words, uint32_t* size);
+static int read_ihex_line(char* line, vmcu_word_t* words, uint32_t* size);
 static int get_ihex_properties(char* line, ihex_properties_t* prop);
 
 /* --- Extern --- */
 
-vmcu_word_t* read_ihex(vmcu_engine_t* e, FILE* stream, uint32_t* size) {
+vmcu_word_t* read_ihex(FILE* stream, uint32_t* size) {
 
     uint32_t     n;
     vmcu_word_t* words;
@@ -49,7 +49,7 @@ vmcu_word_t* read_ihex(vmcu_engine_t* e, FILE* stream, uint32_t* size) {
     if ((words = malloc(n * sizeof(vmcu_word_t))) == NULL)
         return NULL;
 
-    if (read_ihex_stream(e, stream, words, size) < 0) {
+    if (read_ihex_stream(stream, words, size) < 0) {
 
         free(words);
         return NULL;
@@ -105,14 +105,14 @@ static bool verify_ihex_line(const char* line) {
     return true;
 }
 
-static int read_ihex_stream(vmcu_engine_t* e, FILE* stream, vmcu_word_t* words, uint32_t* size) {
+static int read_ihex_stream(FILE* stream, vmcu_word_t* words, uint32_t* size) {
 
     size_t len;
     char*  line = NULL;
 
     while (getline(&line, &len, stream) != -1) {
 
-        if (read_ihex_line(e, line, words, size) < 0) {
+        if (read_ihex_line(line, words, size) < 0) {
 
             *size = 0;
             free(line);
@@ -125,7 +125,7 @@ static int read_ihex_stream(vmcu_engine_t* e, FILE* stream, vmcu_word_t* words, 
     return 0;
 }
 
-static int read_ihex_line(vmcu_engine_t* e, char* line, vmcu_word_t* words, uint32_t* size) {
+static int read_ihex_line(char* line, vmcu_word_t* words, uint32_t* size) {
 
     ihex_properties_t prop;
 
@@ -143,7 +143,7 @@ static int read_ihex_line(vmcu_engine_t* e, char* line, vmcu_word_t* words, uint
         if ((base(i) + 3) >= strlen(prop.line))
             return -1;
 
-        if (e->reader.endianness == VMCU_ENDIAN_LITTLE) {
+        if (vmcu.reader.endianness == VMCU_ENDIAN_LITTLE) {
 
             current[0] = prop.line[base(i) + 2];
             current[1] = prop.line[base(i) + 3];
