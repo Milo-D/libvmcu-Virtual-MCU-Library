@@ -51,8 +51,8 @@ static void init_operand_imm16(vmcu_operand_t* op, const vmcu_optype_t type, con
 
 void disassemble_invalid_opcode(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_word_t* w1) {
 
-    instr->id         = VMCU_IID_NONE;
-    instr->group      = VMCU_GROUP_NONE;
+    instr->id         = VMCU_IID_ENUM_START;
+    instr->group      = VMCU_GROUP_ENUM_START;
     instr->addr       = w0->addr;
     instr->n_words    = 1;
     instr->words[0]   = w0->raw;

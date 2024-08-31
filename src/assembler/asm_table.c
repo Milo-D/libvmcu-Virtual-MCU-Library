@@ -166,7 +166,7 @@ static asm_table_entry_t asm_table[VMCU_IID_ENUM_END] = {
 
 asm_table_entry_t* get_asm_table_entry(const vmcu_iid_t iid) {
 
-    if ((iid <= VMCU_IID_NONE) || (iid >= VMCU_IID_ENUM_END))
+    if ((iid <= VMCU_IID_ENUM_START) || (iid >= VMCU_IID_ENUM_END))
         return NULL;
 
     return &asm_table[iid];

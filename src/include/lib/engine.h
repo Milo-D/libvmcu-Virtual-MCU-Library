@@ -9,10 +9,10 @@
  * */
 typedef enum {
 
-    VMCU_ENDIAN_NONE = -1, // no/invalid endianness
-    VMCU_ENDIAN_BIG,       // big endian
-    VMCU_ENDIAN_LITTLE,    // little endian
-    VMCU_ENDIAN_ENUM_END   // end of enum 
+    VMCU_ENDIAN_ENUM_START = -1, // start of enum
+    VMCU_ENDIAN_BIG,             // big endian
+    VMCU_ENDIAN_LITTLE,          // little endian
+    VMCU_ENDIAN_ENUM_END         // end of enum
 
 } vmcu_endian_t;
 
@@ -21,10 +21,10 @@ typedef enum {
  * */
 typedef enum {
 
-    VMCU_FMT_NONE = -1, // file format invalid / no file format
-    VMCU_FMT_IHEX,      // intel hex format
-    VMCU_FMT_SREC,      // srec or motorola hex format
-    VMCU_FMT_ENUM_END   // end of enum
+    VMCU_FMT_ENUM_START = -1, // start of enum
+    VMCU_FMT_IHEX,            // intel hex format
+    VMCU_FMT_SREC,            // srec or motorola hex format
+    VMCU_FMT_ENUM_END         // end of enum
 
 } vmcu_fmt_t;
 
@@ -33,14 +33,14 @@ typedef enum {
  * */
 typedef enum {
 
-    VMCU_CORE_NONE = -1, // no/invalid core
-    VMCU_CORE_AVR,       // original instruction set (1995)
-    VMCU_CORE_AVRe,      // extended AVR instruction set (movw, lpm)
-    VMCU_CORE_AVRep,     // extended AVRe instruction set (xmulxx, eicall, ...)
-    VMCU_CORE_AVRxm,     // extended AVRe+ instruction set (rmw, des, ...)
-    VMCU_CORE_AVRxt,     // combination of AVRe+ and AVRxm
-    VMCU_CORE_AVRrc,     // AVR reduced core (only r16-r31)
-    VMCU_CORE_ENUM_END   // end of enum
+    VMCU_CORE_ENUM_START = -1, // start of enum
+    VMCU_CORE_AVR,             // original instruction set (1995)
+    VMCU_CORE_AVRe,            // extended AVR instruction set (movw, lpm)
+    VMCU_CORE_AVRep,           // extended AVRe instruction set (xmulxx, eicall, ...)
+    VMCU_CORE_AVRxm,           // extended AVRe+ instruction set (rmw, des, ...)
+    VMCU_CORE_AVRxt,           // combination of AVRe+ and AVRxm
+    VMCU_CORE_AVRrc,           // AVR reduced core (only r16-r31)
+    VMCU_CORE_ENUM_END         // end of enum
 
 } vmcu_core_t;
 

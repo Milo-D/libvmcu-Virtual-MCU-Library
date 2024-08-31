@@ -13,7 +13,7 @@ static const char* const error_map[] = {
 
 const char* vmcu_strerror(const vmcu_rc_t rc) {
 
-    if (rc <= VMCU_RC_NONE || rc >= VMCU_RC_ENUM_END)
+    if (rc <= VMCU_RC_ENUM_START || rc >= VMCU_RC_ENUM_END)
         return NULL;
 
     return error_map[rc];
