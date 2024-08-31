@@ -263,7 +263,8 @@ typedef enum {
     VMCU_OPTYPE_D16,       // 16-bit data address
     VMCU_OPTYPE_P22,       // 22-bit program address
     VMCU_OPTYPE_S7,        // 7-bit signed displacement in units of words
-    VMCU_OPTYPE_S12        // 12-bit signed displacement in units of words
+    VMCU_OPTYPE_S12,       // 12-bit signed displacement in units of words
+    VMCU_OPTYPE_ENUM_END   // end of enum
 
 } vmcu_optype_t;
 
