@@ -247,7 +247,7 @@ typedef struct vmcu_rw_access {
  * */
 typedef enum {
 
-    VMCU_OPTYPE_ENUM_START = -1, // no operand
+    VMCU_OPTYPE_ENUM_START = -1, // start of enum
     VMCU_OPTYPE_R,               // general purpose register
     VMCU_OPTYPE_RP,              // pair of general purpose registers
     VMCU_OPTYPE_X,               // x pointer register (r27:r26)

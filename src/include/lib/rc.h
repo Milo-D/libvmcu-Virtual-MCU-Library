@@ -3,7 +3,7 @@
 
 typedef enum {
 
-    VMCU_RC_ENUM_START = -1, // no return code
+    VMCU_RC_ENUM_START = -1, // start of enum
     VMCU_RC_OK,              // no error. indicates success
     VMCU_RC_FAIL,            // generic error code
     VMCU_RC_ERR_PARAM,       // function called with invalid parameters (generic)
