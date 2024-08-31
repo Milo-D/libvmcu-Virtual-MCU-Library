@@ -74,6 +74,26 @@ typedef struct vmcu_assembler_config {
 } vmcu_assembler_config_t;
 
 /*
+ * Callback to custom memory allocation routine
+ * */
+typedef void* (*vmcu_cb_alloc_t)(size_t);
+
+/*
+ * Callback to custom memory de-allocation routine
+ * */
+typedef void (*vmcu_cb_free_t)(void*);
+
+/*
+ * Callback namespace
+ * */
+typedef struct vmcu_callbacks {
+
+    vmcu_cb_alloc_t alloc; // allocation routine
+    vmcu_cb_free_t  free;  // de-allocation routine
+
+} vmcu_callbacks_t;
+
+/*
  * VMCU engine object, holding
  * the current engine configuration
  * for all VMCU submodules.
@@ -82,6 +102,7 @@ typedef struct vmcu_engine {
 
     vmcu_rc_t                  rc;              // most recent return code (similar to errno)
     vmcu_core_t                instruction_set; // instruction set version
+    vmcu_callbacks_t           cb;              // VMCU callbacks
     vmcu_reader_config_t       reader;          // configuration for reader
     vmcu_disassembler_config_t disassembler;    // configuration for disassembler
     vmcu_assembler_config_t    assembler;       // configuration for assembler

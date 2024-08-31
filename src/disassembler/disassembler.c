@@ -36,7 +36,7 @@ vmcu_instr_t* vmcu_disasm(vmcu_word_t* words, const uint32_t n_words, uint32_t* 
 
     if (vmcu.disassembler.words_mutable == false) {
 
-        copy = malloc(n_words * sizeof(vmcu_word_t));
+        copy = vmcu.cb.alloc(n_words * sizeof(vmcu_word_t));
         memcpy(copy, words, n_words * sizeof(vmcu_word_t));
 
         words = copy;
@@ -45,7 +45,7 @@ vmcu_instr_t* vmcu_disasm(vmcu_word_t* words, const uint32_t n_words, uint32_t* 
     qsort(words, n_words, sizeof(vmcu_word_t), compare_words);
     *size = n_words - count_32bit_instructions(words, n_words);
 
-    if ((instructions = malloc(*size * sizeof(vmcu_instr_t))) == NULL)
+    if ((instructions = vmcu.cb.alloc(*size * sizeof(vmcu_instr_t))) == NULL)
         goto vmcu_disasm_failure;
 
     memset(instructions, 0, *size * sizeof(vmcu_instr_t));
@@ -59,14 +59,14 @@ vmcu_instr_t* vmcu_disasm(vmcu_word_t* words, const uint32_t n_words, uint32_t* 
 
             if (i + 1 >= n_words) {
 
-                free(instructions);
+                vmcu.cb.free(instructions);
                 instructions = NULL;
                 break;
             }
 
             if (words[i + 1].addr - w0->addr != 1) {
 
-                free(instructions);
+                vmcu.cb.free(instructions);
                 instructions = NULL;
                 break;
             }
@@ -80,7 +80,7 @@ vmcu_instr_t* vmcu_disasm(vmcu_word_t* words, const uint32_t n_words, uint32_t* 
 
 vmcu_disasm_failure:
     if (vmcu.disassembler.words_mutable == false)
-        free(copy);
+        vmcu.cb.free(copy);
 
     return instructions; 
 }

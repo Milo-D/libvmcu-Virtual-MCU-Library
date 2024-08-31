@@ -70,18 +70,18 @@ vmcu_word_t* read_srec(FILE* stream, uint32_t* size) {
     if ((n = calculate_buffer_size(stream)) == 0)
         return NULL;
 
-    if ((words = malloc(n * sizeof(vmcu_word_t))) == NULL)
+    if ((words = vmcu.cb.alloc(n * sizeof(vmcu_word_t))) == NULL)
         return NULL;
 
     if (read_srec_stream(stream, words, size) < 0) {
 
-        free(words);
+        vmcu.cb.free(words);
         return NULL;
     }
 
     if (*size == 0) {
 
-        free(words);
+        vmcu.cb.free(words);
         return NULL;
     }
 

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <string.h>
 
 #include <lib/engine.h>
@@ -7,6 +8,12 @@ static const vmcu_engine_t default_engine = {
 
     .rc              = VMCU_RC_OK,
     .instruction_set = VMCU_CORE_AVRep,
+
+    .cb = {
+
+        .alloc = malloc,
+        .free  = free
+    },
 
     .reader = {
 
@@ -30,6 +37,12 @@ __thread vmcu_engine_t vmcu = {
 
     .rc              = default_engine.rc,
     .instruction_set = default_engine.instruction_set,
+
+    .cb = {
+
+        .alloc = default_engine.cb.alloc,
+        .free  = default_engine.cb.free
+    },
 
     .reader = {
 
