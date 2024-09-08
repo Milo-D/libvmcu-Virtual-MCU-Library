@@ -1,6 +1,7 @@
 #ifndef VMCU_ENGINE_H
 #define VMCU_ENGINE_H
 
+#include <inttypes.h>
 #include <stdbool.h>
 #include "rc.h"
 
@@ -74,6 +75,18 @@ typedef struct vmcu_assembler_config {
 } vmcu_assembler_config_t;
 
 /*
+ * Writer configuration
+ * */
+typedef struct vmcu_writer_config {
+
+    vmcu_fmt_t    file_format;   // the format to write
+    vmcu_endian_t endianness;    // endianness of the resulting data payload
+    uint8_t       byte_count;    // desired byte count per record (1-255)
+    bool          words_mutable; // allows the writer to alter the words buffer
+
+} vmcu_writer_config_t;
+
+/*
  * Callback to custom memory allocation routine
  * */
 typedef void* (*vmcu_cb_alloc_t)(size_t);
@@ -106,6 +119,7 @@ typedef struct vmcu_engine {
     vmcu_reader_config_t       reader;          // configuration for reader
     vmcu_disassembler_config_t disassembler;    // configuration for disassembler
     vmcu_assembler_config_t    assembler;       // configuration for assembler
+    vmcu_writer_config_t       writer;          // configuration for writer
 
 } vmcu_engine_t;
 

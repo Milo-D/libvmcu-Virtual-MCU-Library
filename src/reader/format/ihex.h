@@ -1,7 +1,7 @@
 /* Intel Hex Reader */
 
-#ifndef VMCU_IHEX_H
-#define VMCU_IHEX_H
+#ifndef VMCU_READER_IHEX_H
+#define VMCU_READER_IHEX_H
 
 #include <stdio.h>
 #include <inttypes.h>

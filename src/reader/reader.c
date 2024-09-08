@@ -17,7 +17,7 @@ vmcu_word_t* vmcu_read(FILE* stream, uint32_t* size) {
     vmcu_word_t* words;
     *size = 0;
 
-    switch(vmcu.reader.file_format) {
+    switch (vmcu.reader.file_format) {
 
         case VMCU_FMT_IHEX: words = read_ihex(stream, size); break;
         case VMCU_FMT_SREC: words = read_srec(stream, size); break;

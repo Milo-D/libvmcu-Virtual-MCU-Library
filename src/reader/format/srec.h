@@ -1,7 +1,7 @@
 /* Motorola SREC Reader */
 
-#ifndef VMCU_SREC_H
-#define VMCU_SREC_H
+#ifndef VMCU_READER_SREC_H
+#define VMCU_READER_SREC_H
 
 #include <stdio.h>
 #include <inttypes.h>

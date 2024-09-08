@@ -30,6 +30,14 @@ static const vmcu_engine_t default_engine = {
     .assembler = {
 
         .expect_operand_structs = true
+    },
+
+    .writer = {
+
+        .file_format   = VMCU_FMT_IHEX,
+        .endianness    = VMCU_ENDIAN_LITTLE,
+        .byte_count    = 0x10,
+        .words_mutable = true
     }
 };
 
@@ -59,6 +67,14 @@ __thread vmcu_engine_t vmcu = {
     .assembler = {
 
         .expect_operand_structs = default_engine.assembler.expect_operand_structs
+    },
+
+    .writer = {
+
+        .file_format   = default_engine.writer.file_format,
+        .endianness    = default_engine.writer.endianness,
+        .byte_count    = default_engine.writer.byte_count,
+        .words_mutable = default_engine.writer.words_mutable
     }
 };
 
