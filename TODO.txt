@@ -7,11 +7,15 @@
 ---[ disassembler
 
 #1 implement missing instructions
+#2 add second interface for sequential blocks of data
 
 ---[ writer
 
-#1 implement binary writer for IHEX
-#2 implement binary writer for SREC
+#1 implement binary writer for SREC
+
+---[ reader
+
+#1 add support for I32HEX (record 04)
 
 ---[ simulator
 
@@ -30,9 +34,7 @@
 
 ---[ misc
 
-#1 add engine.errno
 #2 support for engine profiles
-#3 add support for callbacks to custom memory allocators
 #4 rework vmcu_registerpair_t (offer predefined and valid registerpairs)
 #5 add engine stats
 #6 symbol visibility in static archives

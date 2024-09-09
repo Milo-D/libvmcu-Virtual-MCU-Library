@@ -47,6 +47,14 @@ static void init_operand_imm16(vmcu_operand_t* op, const vmcu_optype_t type, con
     snprintf(op->str, sizeof(op->str), "%" PRId16, imm);
 }
 
+static void init_operand_uimm32(vmcu_operand_t* op, const uint32_t imm) {
+
+    op->type   = VMCU_OPTYPE_P22;
+    op->uimm32 = imm;
+
+    snprintf(op->str, sizeof(op->str), "0x%" PRIx32, imm);
+}
+
 /* --- Exposed --- */
 
 void disassemble_invalid_opcode(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_word_t* w1) {
@@ -265,13 +273,13 @@ void disassemble_rjmp(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_wor
 
     int16_t s12;
 
-    instr->id               = VMCU_IID_RJMP;
-    instr->group            = VMCU_GROUP_FLOW;
-    instr->writes.pc        = true;
-    instr->addr             = w0->addr;
-    instr->n_words          = 1;
-    instr->words[0]         = w0->raw;
-    instr->n_operands       = 1;
+    instr->id         = VMCU_IID_RJMP;
+    instr->group      = VMCU_GROUP_FLOW;
+    instr->writes.pc  = true;
+    instr->addr       = w0->addr;
+    instr->n_words    = 1;
+    instr->words[0]   = w0->raw;
+    instr->n_operands = 1;
 
     strcpy(instr->str, "rjmp");
 
@@ -280,6 +288,22 @@ void disassemble_rjmp(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_wor
 }
 
 void disassemble_jmp(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_word_t* w1) {
+
+    uint32_t p;
+
+    instr->id         = VMCU_IID_JMP;
+    instr->group      = VMCU_GROUP_FLOW;
+    instr->writes.pc  = true;
+    instr->addr       = w0->addr;
+    instr->n_words    = 2;
+    instr->words[0]   = w0->raw;
+    instr->words[1]   = w1->raw;
+    instr->n_operands = 1;
+
+    strcpy(instr->str, "jmp");
+
+    p = ((((uint32_t) (((w0->raw & 0x1f0) >> 3) | (w0->raw & 1))) << 16) | w1->raw);
+    init_operand_uimm32(&instr->operands[0], p);
 }
 
 void disassemble_ijmp(vmcu_instr_t* instr, const vmcu_word_t* w0, const vmcu_word_t* w1) {

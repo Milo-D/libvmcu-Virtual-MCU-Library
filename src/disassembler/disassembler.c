@@ -71,7 +71,7 @@ vmcu_instr_t* vmcu_disasm(vmcu_word_t* words, const uint32_t n_words, uint32_t* 
                 break;
             }
  
-            w1 = &words[i++];
+            w1 = &words[++i];
         }
 
         disasm_handler_t disasm_handler = get_disasm_handler(w0->raw);
