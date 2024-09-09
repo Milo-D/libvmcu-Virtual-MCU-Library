@@ -113,15 +113,15 @@ static inline uint32_t data_record_top(const data_record_t* drec) {
     return (drec->addr + drec->bc);
 }
 
-static void write_ihex_records(FILE* stream, vmcu_word_t* words, const uint32_t n) {
+static void write_ihex_records(FILE* stream, vmcu_word_t* words, const uint32_t n_words) {
 
     data_record_t drec;
 
     data_record_open(&drec, stream);
-    data_record_new(&drec, words[0].addr); // TODO: check input address range (overflow when multiplied)
+    data_record_new(&drec, words[0].addr);
     data_record_add(&drec, words[0].raw);
 
-    for (uint32_t i = 1; i < n; i++) {
+    for (uint32_t i = 1; i < n_words; i++) {
 
         vmcu_word_t* cur, *prev;
 
@@ -151,8 +151,15 @@ vmcu_rc_t write_ihex(FILE* stream, vmcu_word_t* words, const uint32_t n_words) {
     if (vmcu.writer.byte_count == 0 || vmcu.writer.byte_count % 2 != 0)
         return VMCU_RC_BAD_ENGINE;
 
-    if (n_words != 0)
-        write_ihex_records(stream, words, n_words);
-    
+    if (n_words == 0)
+        return VMCU_RC_OK;
+
+    for (uint32_t i = 0; i < n_words; i++) {
+
+        if (words[i].addr >= (((uint64_t) UINT32_MAX + 1) / 2))
+            return VMCU_RC_BAD_PARAM;
+    }
+
+    write_ihex_records(stream, words, n_words);
     return VMCU_RC_OK;
 }

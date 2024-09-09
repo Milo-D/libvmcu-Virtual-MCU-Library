@@ -6,7 +6,7 @@ typedef enum {
     VMCU_RC_ENUM_START = -1, // start of enum
     VMCU_RC_OK,              // no error. indicates success
     VMCU_RC_FAIL,            // generic error code
-    VMCU_RC_ERR_PARAM,       // function called with invalid parameters (generic)
+    VMCU_RC_BAD_PARAM,       // function called with invalid parameters (generic)
     VMCU_RC_ERR_OP_SRC,      // error related to source operand
     VMCU_RC_ERR_OP_DEST,     // error related to destination operand
     VMCU_RC_ERR_IID,         // error related to instruction IDs

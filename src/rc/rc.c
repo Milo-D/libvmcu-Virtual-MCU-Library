@@ -5,7 +5,7 @@ static const char* const error_map[] = {
 
     [VMCU_RC_OK]          = "Ok",
     [VMCU_RC_FAIL]        = "Generic error",
-    [VMCU_RC_ERR_PARAM]   = "Invalid function parameter",
+    [VMCU_RC_BAD_PARAM]   = "Invalid function parameter",
     [VMCU_RC_ERR_OP_SRC]  = "Invalid source operand",
     [VMCU_RC_ERR_OP_DEST] = "Invalid destination operand",
     [VMCU_RC_ERR_IID]     = "Invalid instruction id",
