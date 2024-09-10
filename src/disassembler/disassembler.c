@@ -4,7 +4,7 @@
 
 #include <lib/disassembler.h>
 #include <lib/engine.h>
-#include "opcode_table.h"
+#include "disasm_table.h"
 
 static uint32_t count_32bit_instructions(vmcu_word_t* words, const uint32_t n_words) {
 

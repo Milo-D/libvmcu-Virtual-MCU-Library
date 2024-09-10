@@ -1,21 +1,21 @@
 #include <stddef.h>
 
-#include "opcode_table.h"
+#include "disasm_table.h"
 #include "handlers.h"
 
 /*
  * A structure representing a single entry
- * within the following Opcode Table
+ * within the following disassembly table
  * */
-typedef struct opcode_table_entry {
+typedef struct disasm_table_entry {
 
     uint16_t         mask;
     uint16_t         static_opcode;
     disasm_handler_t handler;
 
-} opcode_table_entry_t;
+} disasm_table_entry_t;
 
-const opcode_table_entry_t opcode_table[VMCU_IID_ENUM_END] = {
+const disasm_table_entry_t disasm_table[VMCU_IID_ENUM_END] = {
 
     [VMCU_IID_NOP]     = { .mask = 0xffff, .static_opcode = 0x0000, .handler = disassemble_nop    },
     [VMCU_IID_MOVW]    = { .mask = 0xff00, .static_opcode = 0x0100, .handler = disassemble_movw   },
@@ -156,7 +156,7 @@ disasm_handler_t get_disasm_handler(const uint16_t bytes) {
 
     for (vmcu_iid_t i = VMCU_IID_NOP; i < VMCU_IID_ENUM_END; i++) {
 
-        const opcode_table_entry_t* it = &opcode_table[i];
+        const disasm_table_entry_t* it = &disasm_table[i];
 
         if ((bytes & it->mask) == it->static_opcode)
             return it->handler;
@@ -177,7 +177,7 @@ bool is_32bit_instruction(const uint16_t bytes) {
 
     for (size_t i = 0; i < sizeof(all_32bit_instructions) / sizeof(vmcu_iid_t); i++) {
 
-        const opcode_table_entry_t* entry = &opcode_table[ all_32bit_instructions[i] ];
+        const disasm_table_entry_t* entry = &disasm_table[ all_32bit_instructions[i] ];
 
         if ((bytes & entry->mask) == entry->static_opcode)
             return true;

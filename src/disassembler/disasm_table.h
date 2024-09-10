@@ -1,5 +1,5 @@
-#ifndef VMCU_OPCODE_TABLE_H
-#define VMCU_OPCODE_TABLE_H
+#ifndef VMCU_DISASM_TABLE_H
+#define VMCU_DISASM_TABLE_H
 
 #include <stdbool.h>
 #include <inttypes.h>
