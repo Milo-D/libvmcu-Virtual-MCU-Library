@@ -33,7 +33,13 @@ static asm_table_entry_t asm_table[VMCU_IID_ENUM_END] = {
         .n_operands       = 2,
         .n_words          = 1
     },
-    [VMCU_IID_MULSU]   = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },
+    [VMCU_IID_MULSU]   = {
+
+        .handler          = assemble_mulsu,
+        .handler_unpacked = pack_and_assemble_mulsu,
+        .n_operands       = 2,
+        .n_words          = 1
+    },
     [VMCU_IID_FMUL]    = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },
     [VMCU_IID_FMULS]   = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },
     [VMCU_IID_FMULSU]  = { .handler = assemble_nop, .handler_unpacked = pack_and_assemble_nop, .n_operands = 2, .n_words = 1 },
