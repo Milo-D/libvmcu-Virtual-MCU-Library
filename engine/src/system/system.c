@@ -78,6 +78,19 @@ void vmcu_system_dtor(vmcu_system_t *this) {
     free(this);
 }
 
+int vmcu_system_step_n(vmcu_system_t *this, uint64_t nsteps) {
+
+    int err = 0;
+
+    for(uint64_t i = 0; i < nsteps; i++){
+       err = vmcu_system_step(this);
+       if (err){
+           return err;
+       }
+    }
+    return err;
+}
+
 int vmcu_system_step(vmcu_system_t *this) {
 
     int err = 0;
