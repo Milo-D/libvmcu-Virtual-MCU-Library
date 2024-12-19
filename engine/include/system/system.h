@@ -40,6 +40,7 @@ extern void vmcu_system_dtor(vmcu_system_t *this);
 /* General System Functions */
 
 extern int vmcu_system_step(vmcu_system_t *this);
+extern int vmcu_system_step_n(vmcu_system_t *this, uint64_t nsteps);
 extern void vmcu_system_backstep(vmcu_system_t *this);
 extern void vmcu_system_reboot(vmcu_system_t *this);
 

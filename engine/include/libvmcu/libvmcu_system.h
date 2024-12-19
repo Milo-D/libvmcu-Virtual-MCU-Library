@@ -79,6 +79,13 @@ extern void vmcu_system_dtor(vmcu_system_t *this);
 extern int vmcu_system_step(vmcu_system_t *this);
 
 /*
+ * vmcu_system_step_n - multiple steps
+ * @this:   pointer to virtual system
+ * @nsteps: number of steps
+ * */
+extern int vmcu_system_step_n(vmcu_system_t *this, uint64_t nsteps);
+
+/*
  * vmcu_system_backstep - single step back
  * @this:   pointer to virtual system
  * */
