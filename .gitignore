@@ -1,3 +1,9 @@
 .idea/
 datasheets/*
 datasheets/
+
+build-*/CMakeCache.txt
+build-*/CMakeFiles/
+build-*/Makefile
+build-*/*.a
+build-*/cmake_install.cmake
