@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 // Project Headers (engine, readers)
 #include "engine/include/reader/format/ihex.h"
@@ -97,11 +98,19 @@ static int32_t read_ihex_file(const char *hex_file, vmcu_binary_buffer_t *bb, ui
 
     FILE *f = NULL;
     size_t len; char *line = NULL;
+    ssize_t nread;
 
     if((f = fopen(hex_file, "r")) == NULL)
         return -1;
 
-    while(getline(&line, &len, f) != -1) {
+    while((nread = getline(&line, &len, f)) != -1) {
+
+        size_t i = 0;
+        while(i < nread && (line[i++] != ':')){}
+
+        if (i == nread){
+            continue;
+        }
 
         if(read_ihex_line(line, bb, size) < 0) {
 
